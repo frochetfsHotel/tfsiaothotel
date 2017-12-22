@@ -1,0 +1,27 @@
+﻿@media (max-width: 767px){
+    .hidden_xs{
+        display: none;
+    }
+    .padding-left-media{
+        padding-left: 0;
+    }
+    .padding-right-media{
+        padding-right: 0;
+    }
+    .text-left-media-lbl{
+        text-align: left;
+    }
+    .mt-23-media{
+        margin-top: 0;
+    }
+    .hr_margin {
+        margin: 20px 0 15px;
+    }
+
+}
+
+@media (max-width: 992px){
+    .m-t-md_media{
+        margin-top: 0;
+    }
+}

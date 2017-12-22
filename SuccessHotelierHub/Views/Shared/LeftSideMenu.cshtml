@@ -1,0 +1,237 @@
+﻿<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            <div class="pull-left image">
+                <img src="~/Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+            </div>
+            <div class="pull-left info">
+                <p>Admin</p>
+                @*<a href="#"><i class="fa fa-circle text-success"></i> Online</a>*@
+            </div>
+        </div>
+        <!-- search form -->
+        @*<form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>*@
+        <!-- /.search form -->
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu tree" data-widget="tree">
+            @*<li class="header">MAIN NAVIGATION</li>*@
+            <li>
+                <a href="@Url.Action("Index","Home")">
+                    <i class="fa fa-th"></i> <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-user"></i> <span>Profile</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Individual Profile
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a href="@Url.Action("CreateIndividualProfile","Profile")"><i class="fa fa-circle-o"></i> Create </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("IndividualProfileList","Profile")"><i class="fa fa-circle-o"></i> Search </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-circle-o"></i>Company</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i>Group</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i>Travel Agent</a></li>                    
+                    <li><a href="#"><i class="fa fa-circle-o"></i>Search</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-user"></i> <span>Reservation</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-circle-o"></i>Rate Query</a></li>
+                    <li>
+                        <a href="@Url.Action("Create","Reservation")"><i class="fa fa-circle-o"></i>Add Reservation</a>
+                    </li>
+
+                </ul>
+            </li>            
+           
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-user"></i> <span>Front Desk</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-circle-o"></i>Check In</a></li>
+
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-user"></i> <span>Master Screens</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+
+                <ul class="treeview-menu">
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Preference
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","Preference")"><i class="fa fa-circle-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","Preference")"><i class="fa fa-circle-o"></i> Search </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Room Type
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateRoomType","MasterScreen")"><i class="fa fa-circle-o"></i> Create Room Type </a></li>
+                            <li><a href="@Url.Action("ListingRoomType","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Room Type </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Rate Type
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateRateType","MasterScreen")"><i class="fa fa-circle-o"></i> Create Rate Type </a></li>
+                            <li><a href="@Url.Action("ListingRateType","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Rate Type </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Rate
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateRate","MasterScreen")"><i class="fa fa-circle-o"></i> Create Rate </a></li>
+                            <li><a href="@Url.Action("ListingRate","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Rate </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Title
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateTitle","MasterScreen")"><i class="fa fa-circle-o"></i> Create Title </a></li>
+                            <li><a href="@Url.Action("ListingTitle","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Title </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Nationality
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateNationality","MasterScreen")"><i class="fa fa-circle-o"></i> Create Nationality </a></li>
+                            <li><a href="@Url.Action("ListingNationality","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Nationality </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> VIP
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateVip","MasterScreen")"><i class="fa fa-circle-o"></i> Create VIP </a></li>
+                            <li><a href="@Url.Action("ListingVip","MasterScreen")"><i class="fa fa-circle-o"></i> Listing VIP </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Country
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateCountry","MasterScreen")"><i class="fa fa-circle-o"></i> Create Country </a></li>
+                            <li><a href="@Url.Action("ListingCountry","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Country </a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> State
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateState","MasterScreen")"><i class="fa fa-circle-o"></i> Create State </a></li>
+                            <li><a href="@Url.Action("ListingState","MasterScreen")"><i class="fa fa-circle-o"></i> Listing State </a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> City
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("CreateCity","MasterScreen")"><i class="fa fa-circle-o"></i> Create City </a></li>
+                            <li><a href="@Url.Action("ListingCity","MasterScreen")"><i class="fa fa-circle-o"></i> Listing City </a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>

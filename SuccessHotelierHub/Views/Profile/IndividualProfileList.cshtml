@@ -1,0 +1,315 @@
+﻿@model SuccessHotelierHub.Models.SearchIndividualProfileParametersVM
+@{
+    ViewBag.Title = "List Individual Profile";
+}
+
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "IndividualProfileGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Individual Profile <small>List</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Individual Profile</li>
+        <li class="active">List</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Individual Profile</h3>
+            <div class="pull-right box-tools m-r-md">
+                <a href="@Url.Action("CreateIndividualProfile","Profile")"
+                   class="btn btn-info btn-sm" style="color: #fff" data-toggle="tooltip" title=""
+                   data-original-title="Add Individual Profile"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+        <form class="frmIndividualProfileList" enctype="multipart/form-data" method="post">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <label for="LastName" class="">Last Name</label>
+                        <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Last Name">
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label for="FirstName" class="">First Name</label>
+                        <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="First Name">
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label for="City" class="">City</label>
+                        <input type="text" class="form-control" id="City" name="City" placeholder="City">
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label for="ZipCode" class="">Zip Code</label>
+                        <input type="text" class="form-control" id="ZipCode" name="ZipCode" placeholder="Zip Code">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <button type="button" id="btnSearch"
+                                class="btn btn-success m-r-xs" onclick="searchIndividualProfile()">
+                            Search
+                        </button>
+                        <button type="button" id="btnClear" class="btn btn-danger" onclick="clearIndividualProfile()">Clear</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-sm">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="tblIndividualProfile">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Telephone No</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>City</th>
+                                    <th>Zip Code</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
+                       {
+                           TokenForEnableDisableButtons = PagerName,
+                           PageChangeMethod = "IndividualProfileGridPageChange"
+                       })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+
+    var currentPage = 1;
+    var grdIndividualProfile;
+
+    $(document).ready(function () {
+        setTimeout(InitializeIndividualProfileGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+
+    function SearchIndividualProfileParameters(d) {
+        var lastName = $('#LastName').val();
+        var firstName = $('#FirstName').val();
+        var city = $('#City').val();
+        var zipCode = $('#ZipCode').val();
+
+        d.PageNum = currentPage;
+        d.LastName = lastName;
+        d.FirstName = firstName;
+        d.City = city;
+        d.ZipCode = zipCode;
+    }
+
+    function IndividualProfileGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadIndividualProfileGrid() {
+        grdIndividualProfile.ajax.url("@Url.Content("~/Profile/SearchIndividualProfile")").load();
+    }
+
+    function IndividualProfileGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadIndividualProfileGrid();
+    }
+
+
+    function InitializeIndividualProfileGrid() {
+        grdIndividualProfile = $('#tblIndividualProfile').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Profile/SearchIndividualProfile")',
+                data: SearchIndividualProfileParameters,
+                dataSrc: IndividualProfileGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                "visible": false
+            },
+            {
+                targets: 1,
+                data: "FirstName",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "LastName",
+                orderable: true
+            },
+            {
+                targets: 3,
+                data: "TelephoneNo",
+                orderable: true
+            },
+            {
+                targets: 4,
+                data: "Email",
+                orderable: true
+            },
+            {
+                targets: 5,
+                data: "Address",
+                orderable: true
+            },
+            {
+                targets: 6,
+                data: "City",
+                orderable: true
+            },
+            {
+                targets: 7,
+                data: "ZipCode",
+                orderable: true
+            },
+            {
+                targets: 8,
+                data: "IsActive",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isActive = full.IsActive;
+                    if (isActive == true) {
+                        return "Active";
+                    } else {
+                        return "InActive";
+                    }
+                }
+            },
+            {
+                targets: 9,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs"'
+                        + ' onclick="deleteIndividualProfile(this,event,\'' + full.Id + '\')">Delete</button>';
+                }
+            }
+            ],
+            order: [[0, "desc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function GotoIndividualProfileEdit(Id) {
+        var url = '@Url.Content("~/Profile/EditIndividualProfile/")' + Id;
+        redirectTo(url);
+    }
+
+    function searchIndividualProfile() {
+        currentPage = 1;
+        ReloadIndividualProfileGrid();
+    }
+
+    function clearIndividualProfile() {
+        $('#LastName').val('');
+        $('#FirstName').val('');
+        $('#City').val('');
+        $('#ZipCode').val('');
+
+        searchIndividualProfile();
+    }
+
+    function deleteIndividualProfile(item, e, id) {
+
+        if (confirm("Are you sure do you want to delete ?")) {
+
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Profile/DeleteIndividualProfile")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.IsSuccess == true) {
+
+                        var tr = $('#tblIndividualProfile  tbody tr#' + id)
+                        var row = grdIndividualProfile.row(tr);
+                        var rowNode = row.node();
+                        row.remove();
+                        grdIndividualProfile.draw();
+
+                        showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            });
+        }
+
+    }
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

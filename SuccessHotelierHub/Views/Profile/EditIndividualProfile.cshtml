@@ -1,0 +1,462 @@
+﻿@model SuccessHotelierHub.Models.IndividualProfileVM
+@using SuccessHotelierHub.Models
+@{
+    ViewBag.Title = "Edit Individual Profile";
+}
+
+@{
+
+    var preferenceList = (List<PreferenceVM>)ViewBag.PreferenceList;
+}
+
+<section class="content-header">
+    <h1>
+        Individual Profile <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Individual Profile</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Individual Profile Details</h3>
+        </div>
+
+        <!-- /.box-header -->
+        <!-- form start -->
+        @using (Html.BeginForm("EditIndividualProfile", "Profile", FormMethod.Post, new { id = "frmIndividualProfile", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.ProfileTypeId)
+            @Html.HiddenFor(m => m.PreferenceItems);
+
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label for="TitleId">Title</label>
+                        @Html.DropDownListFor(m => m.TitleId,
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
+                                                "Select Title",
+                                                new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.LastName)
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })                        
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.FirstName)
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.TelephoneNo)
+                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone No" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.BusinessTelephoneNo)
+                        @Html.TextBoxFor(m => m.BusinessTelephoneNo,
+                           new { @class = "form-control", placeholder = "Business Telephone No" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Address)
+                        @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @rows = "3", placeholder = "Address" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.HomeAddress)
+                        @Html.TextAreaFor(m => m.HomeAddress, new { @class = "form-control", @rows = "3", placeholder = "Home Address" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="ddlNationality">Nationality</label>
+                        @Html.DropDownListFor(m => m.NationalityId,
+                                (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label for="ddlCountry">Country</label>
+                        @Html.DropDownListFor(m => m.CountryId,
+                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState()" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="ddlState">State</label>
+                        @Html.DropDownListFor(m => m.StateId,
+                                (IEnumerable<SelectListItem>)ViewBag.StateList, "-- Select State --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlState", @onchange = "getCity()" })
+
+                        @*<select id="ddlState" name="StateId" class="form-control" onchange="getCity()">
+                            <option value="">-- Select State --</option>
+                        </select>*@
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="ddlCity">City</label>
+                        @Html.DropDownListFor(m => m.CityId,
+                                (IEnumerable<SelectListItem>)ViewBag.CityList, "-- Select City --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCity" })
+
+                        @*<select id="ddlCity" name="CityId" class="form-control">
+                            <option value="">-- Select City --</option>
+                        </select>*@
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.ZipCode)
+                        @Html.TextBoxFor(m => m.ZipCode, new { @class = "form-control", placeholder = "Zip Code" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="VipId">VIP</label>
+                        @Html.DropDownListFor(m => m.VipId,
+                                     new SelectList((IEnumerable<SelectListItem>)ViewBag.VipList, "Value", "Text"),
+                                    "Select VIP",
+                                    new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.CarRegistrationNo)
+                        @Html.TextBoxFor(m => m.CarRegistrationNo, new { @class = "form-control", placeholder = "Car Registration No" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.PassportNo)
+                        @Html.TextBoxFor(m => m.PassportNo, new { @class = "form-control", placeholder = "Passport No" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="DOB">Date of Birth</label>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            @Html.TextBoxFor(m => m.DOB, new { @class = "form-control", placeholder = "MM/dd/yyyy" })
+                        </div>
+                    </div>
+                    <div class="col-md-2 form-group m-t-lg m-r-n-lg">
+                        <label for="IsMailingList" class="container1">
+                            Mailing List
+                            @Html.CheckBoxFor(m => m.IsMailingList)
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="col-xs-2 form-group m-t-md m-t-md_media">
+                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
+                            Preference
+                        </button>
+                    </div>
+                </div>
+                <div class="row" style="display:none;" id="divSelectedPreference">
+                    <div class="col-md-12 form-group">
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference</label>
+                        <div class="col-sm-10">
+                            <p id="ListOfSelectedPreferences"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", placeholder = "Remarks" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 form-group m-t-sm m-r-n-lg">
+                        <label for="IsActive" class="container1">
+                            IsActive
+                            @Html.CheckBoxFor(m => m.IsActive)
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer text-center">
+                <button type="button" class="btn btn-success" onclick="return updateIndividualProfile();">Update</button>
+                <a href="@Url.Action("IndividualProfileList", "Profile")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Preference Modal Popup START -->
+<div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Preferences</h4>
+            </div>
+            <div class="modal-body">
+               @Html.Partial("_Preferences", preferenceList)
+            </div>  
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
+                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Preference Modal Popup END -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        //Bind Selected Preference Checkboxes
+        bindSelectedPreferences();
+
+        //Show Selected Preference Checkboxes
+        showSelectedPreferences();
+
+        //Date picker
+        $('#DOB').datepicker({
+            autoclose: true
+        })
+    });
+
+    function openPreferenceModal() {
+        $('#preferenceModal').modal('toggle');
+
+        bindSelectedPreferences();
+    }
+
+    function bindSelectedPreferences() {
+
+        //First clear all the checkboxes.
+        clearPreferencesCheckBox();
+
+        var preferenceIds = $('#PreferenceItems').val();
+
+        if (!IsNullOrEmpty(preferenceIds)) {
+
+            var preferenceIdsArr = preferenceIds.split(',');
+
+            $.each(preferenceIdsArr, function (index, value) {
+                console.log(value);
+                $(".chkPreference").each(function () {
+                    if ($(this).val() == value) {
+                        $(this).prop("checked", true);
+                        return false;
+                    }
+                });
+            });
+        }
+    }
+
+    function selectPreferences() {
+        var preferenceIds = "";
+        var html = "";
+
+         $("input:checkbox[class=chkPreference]:checked").each(function () {
+             preferenceIds += $(this).val() + ",";
+
+             html += $(this).attr("data-preference") + ", ";
+         });
+
+        //Remove last comma.
+         if (!IsNullOrEmpty(preferenceIds)) {
+             var lastChar = preferenceIds.slice(-1);
+             if (lastChar == ',') {
+                 preferenceIds = preferenceIds.slice(0, -1);
+                 html = $.trim(html).slice(0, -1);
+             }
+             $('#PreferenceItems').val(preferenceIds);
+             showSelectedPreferences();
+
+         } else {
+             $('#PreferenceItems').val('');
+             $('#ListOfSelectedPreferences').html('');
+             $('#divSelectedPreference').hide();
+         }
+
+         //console.log(preferenceIds);
+
+         $('#preferenceModal').modal('toggle');
+    }
+
+    function showSelectedPreferences() {
+        var html = "";
+
+        $("input:checkbox[class=chkPreference]:checked").each(function () {
+            html += $(this).attr("data-preference") + ", ";
+        });
+
+        //Remove last comma.
+        if (!IsNullOrEmpty(html)) {
+            var lastChar = html.slice(-1);
+            if (lastChar == ',') {
+                html = $.trim(html).slice(0, -1);
+            }
+
+            $('#divSelectedPreference').show();
+            $('#ListOfSelectedPreferences').html(html);
+        } else {
+            $('#ListOfSelectedPreferences').html('');
+            $('#divSelectedPreference').hide();
+        }
+    }
+
+    function clearPreferencesCheckBox() {
+        $(".chkPreference").each(function () {
+            $(this).prop("checked", false);
+        });
+    }
+
+    function getState() {
+        var country = $('#ddlCountry').val();
+
+        if (!IsNullOrEmpty(country) && country != "0")
+        {
+            //Get State
+            showLoader();
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '/Common/GetState',
+                type: 'GET',
+                data: {
+                    countryId: parseInt(country)
+                },
+                success: function (result) {
+                    if (!IsNullOrEmpty(result)) {
+                        console.log(result);
+                        var optionHtml = "";
+                        optionHtml += "<option value=''>-- Selet State --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].Value + "'>" + result.data[i].Text + "</option>";
+                            }
+                        }
+                        $('#ddlState').html(optionHtml);
+                    }
+                }
+            });
+        }
+    }
+
+    function getCity() {
+        var state = $('#ddlState').val();
+
+        if (!IsNullOrEmpty(state) && state != "0") {
+            //Get City
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '/Common/GetCity',
+                type: 'GET',
+                data: {
+                    stateId: parseInt(state)
+                },
+                success: function (result) {
+                    if (!IsNullOrEmpty(result)) {
+                        console.log(result);
+                        var optionHtml = "";
+                        optionHtml += "<option value=''>-- Selet City --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].Value + "'>" + result.data[i].Text + "</option>";
+                            }
+                        }
+                        $('#ddlCity').html(optionHtml);
+                    }
+                }
+            });
+        }
+    }
+
+    function validateIndividualProfile() {
+        var firstName = $("#FirstName").val();
+        var lastName = $("#LastName").val();
+        var email = $("#Email").val();
+
+        var errorMessage = "";
+        var blnValid = true;
+
+        if (IsNullOrEmpty(firstName)) {
+            errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
+            blnValid = false;
+        }
+        if (IsNullOrEmpty(lastName)) {
+            errorMessage += "Please enter last name." + Delimeter.BREAKLINE + "";
+            blnValid = false;
+        }
+        if (!IsNullOrEmpty(email) && !validateEmail(email)) {
+            errorMessage += "Please enter valid email." + Delimeter.BREAKLINE + "";
+            blnValid = false;
+        }
+
+        if (!blnValid) {
+            showToaster(errorMessage, ToasterType.ERROR);
+            return false;
+        }
+        return blnValid;
+    }
+
+
+    function updateIndividualProfile() {
+
+        if (validateIndividualProfile()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Profile/EditIndividualProfile")',
+                type: 'POST',
+                data: $('#frmIndividualProfile').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Profile details updated successfully.", ToasterType.SUCCESS);
+                        setTimeout(function () {
+                            redirectTo('/Profile/IndividualProfileList');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
+
+</script>
