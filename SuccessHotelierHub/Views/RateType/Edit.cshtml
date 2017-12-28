@@ -129,7 +129,7 @@
                         showToaster("Rate Type details updated successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/RateType/List');
+                            redirectTo('@Url.Content("~/RateType/List")');
                         }, 1000);
                     }
                 }

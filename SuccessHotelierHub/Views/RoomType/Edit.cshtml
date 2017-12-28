@@ -123,7 +123,7 @@
                         showToaster("Room Type details updated successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/RoomType/List');
+                            redirectTo('@Url.Content("~/RoomType/List")');
                         }, 1000);
                     }
                 }

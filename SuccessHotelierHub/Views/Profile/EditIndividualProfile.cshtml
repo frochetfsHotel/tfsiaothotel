@@ -431,7 +431,7 @@
         //    errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
         //    blnValid = false;
         //}
-        
+
         //if (!IsNullOrEmpty(email) && !validateEmail(email)) {
         //    errorMessage += "Please enter valid email." + Delimeter.BREAKLINE + "";
         //    blnValid = false;
@@ -467,7 +467,7 @@
                 url: '@Url.Content("~/Profile/EditIndividualProfile")',
                 type: 'POST',
                 data: $('#frmIndividualProfile').serialize(),
-                success: function (response) {                    
+                success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
@@ -477,7 +477,7 @@
                             redirectTo(response.data);
                         } else {
                             setTimeout(function () {
-                                redirectTo('/Profile/IndividualProfileList');
+                                redirectTo('@Url.Content("~/Profile/IndividualProfileList")');
                             }, 1000);
                         }
                     }

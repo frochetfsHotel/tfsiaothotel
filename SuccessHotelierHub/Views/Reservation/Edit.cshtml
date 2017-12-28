@@ -802,7 +802,7 @@
                         showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/Reservation/List');
+                            redirectTo('@Url.Content("~/Reservation/List")');
                         }, 1000);
 
                     }

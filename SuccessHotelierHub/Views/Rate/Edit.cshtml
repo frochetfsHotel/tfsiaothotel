@@ -141,7 +141,7 @@
                         showToaster("Rate details updated successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/Rate/List');
+                            redirectTo('@Url.Content("~/Rate/List")');
                         }, 1000);
                     }
                 }

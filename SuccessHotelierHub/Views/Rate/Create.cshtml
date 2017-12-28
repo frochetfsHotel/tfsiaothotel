@@ -136,7 +136,8 @@
                         showToaster("Rate details saved successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/Rate/List');
+                            //redirectTo('/Rate/List');
+                            redirectTo('@Url.Content("~/Rate/List")');
                         }, 1000);
                     }
                 }

@@ -765,8 +765,8 @@
                     else {
                         showToaster("Reservation details saved successfully.", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('/Reservation/List');
+                        setTimeout(function () {                            
+                            redirectTo('@Url.Content("~/Reservation/List")');
                         }, 1000);
 
                     }

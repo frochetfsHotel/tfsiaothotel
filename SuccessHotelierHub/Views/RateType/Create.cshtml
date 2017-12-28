@@ -73,7 +73,7 @@
 
 <script type="text/javascript">
     function validateRateType() {
-        //var rateTypeCode = $("#RateTypeCode").val();        
+        //var rateTypeCode = $("#RateTypeCode").val();
         //var amount = $("#Amount").val();
 
         var errorMessage = "";
@@ -109,7 +109,7 @@
                 beforeSend: function (xhr) {
                     showLoader();
                 },
-                error: function (result) {                    
+                error: function (result) {
                     showToaster(result.responseText, ToasterType.ERROR);
                 },
                 complete: function () {
@@ -119,14 +119,14 @@
                 type: 'POST',
                 data: $('#frmRateType').serialize(),
                 success: function (response) {
-                    if (response.IsSuccess == false) {                        
+                    if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
-                    else {                        
+                    else {
                         showToaster("Rate Type details saved successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('/RateType/List');
+                        setTimeout(function () {                            
+                            redirectTo('@Url.Content("~/RateType/List")');
                         }, 1000);
                     }
                 }

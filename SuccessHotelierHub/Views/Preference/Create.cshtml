@@ -110,7 +110,7 @@
                         showToaster("Preference details saved successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/Preference/List');
+                            redirectTo('@Url.Content("~/Preference/List")');
                         }, 1000);
                     }
                 }

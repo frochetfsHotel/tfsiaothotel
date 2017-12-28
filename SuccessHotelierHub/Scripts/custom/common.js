@@ -121,7 +121,7 @@ function validateEmail(email) {
 
 function redirectTo(url) {
     if (!IsNullOrEmpty(url)) {
-        window.location.href = url;
+        window.location.href = (RootPath + url);
     }
 }
 

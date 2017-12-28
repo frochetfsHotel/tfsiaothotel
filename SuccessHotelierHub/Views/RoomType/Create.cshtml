@@ -118,8 +118,8 @@
                     else {
                         showToaster("Room Type details saved successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('/RoomType/List');
+                        setTimeout(function () {                            
+                            redirectTo('@Url.Content("~/RoomType/List")');
                         }, 1000);
                     }
                 }
