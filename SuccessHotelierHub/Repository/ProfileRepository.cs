@@ -133,5 +133,33 @@ namespace SuccessHotelierHub.Repository
 
             return profiles;
         }
+
+        public List<SearchAdvanceProfileResultVM> SearchAdvanceProfile(SearchAdvanceProfileParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
+                    new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
+                    new SqlParameter { ParameterName = "@ViewBy", Value = model.ViewBy },
+                    new SqlParameter { ParameterName = "@City", Value = model.City },
+                    new SqlParameter { ParameterName = "@PostalCode", Value = model.PostalCode},
+                    new SqlParameter { ParameterName = "@MemberTypeId", Value = model.MemberTypeId },                    
+                    new SqlParameter { ParameterName = "@MemberNo", Value = model.MemberNo },
+                    new SqlParameter { ParameterName = "@Keyword", Value = model.Keyword },
+                    new SqlParameter { ParameterName = "@Communication", Value = model.Communication },
+                    new SqlParameter { ParameterName = "@ClientID", Value = model.ClientID },
+                    new SqlParameter { ParameterName = "@CorpNo", Value = model.CorpNo },
+                    new SqlParameter { ParameterName = "@IATANo", Value = model.IATANo},
+                    new SqlParameter { ParameterName = "@IsNegRates", Value = model.IsNegRates},
+                    new SqlParameter { ParameterName = "@IsShowInActive", Value = model.IsShowInActive }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceProfile", parameters);
+
+            var profiles = new List<SearchAdvanceProfileResultVM>();
+            profiles = DALHelper.CreateListFromTable<SearchAdvanceProfileResultVM>(dt);
+
+            return profiles;
+        }
     }
 }

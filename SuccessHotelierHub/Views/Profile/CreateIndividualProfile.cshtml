@@ -5,6 +5,15 @@
 }
 
 @{ 
+    var sourceParam =  Convert.ToString(Request.QueryString["source"]);
+    var btnCancelUrl = Url.Action("IndividualProfileList", "Profile");
+    if (!string.IsNullOrWhiteSpace(sourceParam))
+    {
+        if (sourceParam == "RateQuery")
+        {
+            btnCancelUrl = Url.Action("RateQuery", "Reservation");
+        }
+    }
 
     var preferenceList = (List<PreferenceVM>) ViewBag.PreferenceList;
 }
@@ -44,8 +53,11 @@
         {
             @Html.AntiForgeryToken()
 
+            <!-- HIDDEN FIELD -->
             @Html.HiddenFor(m => m.ProfileTypeId)
             @Html.HiddenFor(m => m.PreferenceItems);
+            <input type="hidden" id="Source" name="Source" value="@sourceParam" />
+            <!-- HIDDEN FIELD -->
 
             <div class="box-body">
                 <div class="row">
@@ -196,7 +208,7 @@
 
             <div class="box-footer text-center">
                 <button type="button" class="btn btn-success" onclick="return saveIndividualProfile();">Save</button>
-                <a href="@Url.Action("IndividualProfileList", "Profile")" class="btn btn-danger">Cancel</a>                               
+                <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>  
             </div>
         }
     </div>
@@ -212,7 +224,7 @@
                 <h4 class="modal-title">Preferences</h4>
             </div>
             <div class="modal-body">
-                @Html.Partial("_Preferences", preferenceList)
+                @Html.Partial("~/Views/Preference/_Preferences.cshtml", preferenceList)
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
@@ -383,14 +395,16 @@
         var errorMessage = "";
         var blnValid = true;
 
-        if (IsNullOrEmpty(firstName)) {        
-            errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
-            blnValid = false;
-        }
         if (IsNullOrEmpty(lastName)) {
             errorMessage += "Please enter last name." + Delimeter.BREAKLINE + "";
             blnValid = false;
         }
+
+        if (IsNullOrEmpty(firstName)) {        
+            errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
+            blnValid = false;
+        }
+       
         if (!IsNullOrEmpty(email) && !validateEmail(email)) {
             errorMessage += "Please enter valid email." + Delimeter.BREAKLINE + "";
             blnValid = false;
@@ -426,9 +440,15 @@
                     }
                     else {
                         showToaster("Profile details saved successfully.", ToasterType.SUCCESS);
-                        setTimeout(function () {                            
-                            redirectTo('/Profile/IndividualProfileList');
-                        }, 1000);
+
+                        if (response.IsExternalUrl) {
+                            redirectTo(response.data);
+                        } else {
+                            setTimeout(function () {
+                                redirectTo('/Profile/IndividualProfileList');
+                            }, 1000);
+                        }
+                       
                     }
                 }
             });

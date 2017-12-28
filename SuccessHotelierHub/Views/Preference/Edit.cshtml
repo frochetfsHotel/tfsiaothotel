@@ -1,6 +1,6 @@
 ﻿@model SuccessHotelierHub.Models.PreferenceVM
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Preference";
 }
 
 <section class="content-header">
@@ -23,7 +23,9 @@
         {
             @Html.AntiForgeryToken()
             
+            <!--HIDDEN FIELD-->
             @Html.HiddenFor(m => m.Id)
+            <!--HIDDEN FIELD-->
 
             <div class="box-body">
                 <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">

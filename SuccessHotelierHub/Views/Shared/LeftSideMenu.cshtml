@@ -55,10 +55,10 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-circle-o"></i>Company</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o"></i>Group</a></li>
+                    <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-circle-o"></i>Company (Design)</a></li>
+                    @*<li><a href="#"><i class="fa fa-circle-o"></i>Group</a></li>
                     <li><a href="#"><i class="fa fa-circle-o"></i>Travel Agent</a></li>                    
-                    <li><a href="#"><i class="fa fa-circle-o"></i>Search</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i>Search</a></li>*@
                 </ul>
             </li>
             <li class="treeview">
@@ -71,9 +71,10 @@
 
                 <ul class="treeview-menu">
                     <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-circle-o"></i>Rate Query</a></li>
-                    <li>
+                    <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-circle-o"></i>Search Reservation</a></li>
+                    @*<li>
                         <a href="@Url.Action("Create","Reservation")"><i class="fa fa-circle-o"></i>Add Reservation</a>
-                    </li>
+                    </li>*@
 
                 </ul>
             </li>            
@@ -87,7 +88,7 @@
                 </a>
 
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-circle-o"></i>Check In</a></li>
+                    <li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-circle-o"></i>Check In (Design)</a></li>
 
                 </ul>
             </li>
@@ -116,27 +117,27 @@
 
                     <li class="treeview">
                         <a href="#">
-                            <i class="fa fa-circle-o"></i> Room Type
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("CreateRoomType","MasterScreen")"><i class="fa fa-circle-o"></i> Create Room Type </a></li>
-                            <li><a href="@Url.Action("ListingRoomType","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Room Type </a></li>
-                        </ul>
-                    </li>
-
-                    <li class="treeview">
-                        <a href="#">
                             <i class="fa fa-circle-o"></i> Rate Type
                             <span class="pull-right-container">
                                 <i class="fa fa-angle-left pull-right"></i>
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href="@Url.Action("CreateRateType","MasterScreen")"><i class="fa fa-circle-o"></i> Create Rate Type </a></li>
-                            <li><a href="@Url.Action("ListingRateType","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Rate Type </a></li>
+                            <li><a href="@Url.Action("Create","RateType")"><i class="fa fa-circle-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","RateType")"><i class="fa fa-circle-o"></i> Search</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Room Type
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","RoomType")"><i class="fa fa-circle-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","RoomType")"><i class="fa fa-circle-o"></i> Search </a></li>
                         </ul>
                     </li>
 
@@ -148,12 +149,12 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href="@Url.Action("CreateRate","MasterScreen")"><i class="fa fa-circle-o"></i> Create Rate </a></li>
-                            <li><a href="@Url.Action("ListingRate","MasterScreen")"><i class="fa fa-circle-o"></i> Listing Rate </a></li>
+                            <li><a href="@Url.Action("Create","Rate")"><i class="fa fa-circle-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","Rate")"><i class="fa fa-circle-o"></i> Search </a></li>
                         </ul>
                     </li>
 
-                    <li class="treeview">
+                    @*<li class="treeview">
                         <a href="#">
                             <i class="fa fa-circle-o"></i> Title
                             <span class="pull-right-container">
@@ -227,7 +228,7 @@
                             <li><a href="@Url.Action("CreateCity","MasterScreen")"><i class="fa fa-circle-o"></i> Create City </a></li>
                             <li><a href="@Url.Action("ListingCity","MasterScreen")"><i class="fa fa-circle-o"></i> Listing City </a></li>
                         </ul>
-                    </li>
+                    </li>*@
 
                 </ul>
             </li>

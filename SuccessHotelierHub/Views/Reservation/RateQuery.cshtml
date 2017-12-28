@@ -1,162 +1,622 @@
-﻿
+﻿@model SuccessHotelierHub.Models.RateQueryVM
+@using SuccessHotelierHub.Models
 @{
     ViewBag.Title = "RateQuery";
 }
 
-<section class="content">
-    <h2 class="mt-0 m-b">Rate Query</h2>
+@{ 
+    var rateTypeList = (List<RateTypeVM>)ViewBag.RateTypeList;
+    var roomTypeList = (List<RoomTypeVM>)ViewBag.RoomTypeList;
+}
+
+
+<section class="content-header">
+    <h1>
+        Rate Query
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Reservation</li>
+        <li class="active">Rate Query</li>
+    </ol>
+</section>
+
+<section class="content">    
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Rate Query Details</h3>
         </div>
+
+        <div class="nav-tabs-custom m-t m-l m-r">
+            <ul class="nav nav-tabs" id="divRateTabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab">Rate Query</a></li>
+                @*<li><a href="#tab_2" data-toggle="tab">Rate Sheet</a></li>*@
+                <li><a href="#tab_2" data-toggle="tab">Rate Sheet</a></li>
+            </ul>
+            <div class="tab-content">     
+                <div class="tab-pane active" id="tab_1">
+                    <form id="frmRateQuery" name="frmRateQuery" enctype="multipart/form-data">
+
+                        <!-- HIDDEN FIELD -->
+                        @*<input type="hidden" id="ProfileId" name="ProfileId"/>*@
+                        @Html.HiddenFor(m => m.ProfileId)
+                        @Html.HiddenFor(m => m.LastName)
+                        @Html.HiddenFor(m => m.FirstName)
+                        <input type="hidden" id="RateTypeId" name="RateTypeId" value="" />
+                        <input type="hidden" id="RateTypeCode" name="RateTypeCode" value="" />
+                        <input type="hidden" id="RoomTypeId" name="RoomTypeId" value="" />
+                        <input type="hidden" id="RoomTypeCode" name="RoomTypeCode" value="" />
+                        <input type="hidden" id="Amount" name="Amount" />
+                        <input type="hidden" id="hdnRoomTypeRateTypeMappingId" name="hdnRoomTypeRateTypeMappingId" value="" />
+                        <!-- HIDDEN FIELD -->
+
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.ArrivalDate) *
+                                    <div class="input-group date">                                        
+                                        @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control", placeholder = "MM/dd/yyyy"})
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.NoOfNight)
+                                    @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange= "calculateDepartureDate();" })
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.DepartureDate)
+                                    <div class="input-group date">                                        
+                                        @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control", placeholder = "MM/dd/yyyy", onchange = "calculateNoOfNights();" })
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.NoOfAdult)
+                                    @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.NoOfChildren)
+                                    @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.NoOfRoom)
+                                    @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.Name) *
+                                    <div class="input-group date">
+                                        @*<input type="text" id="Name" name="Name" class="form-control" placeholder="Name"
+                                               value="@(lastName + " " + firstName)" />*@
+                                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                                        <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
+                                            <i class="fa fa-search"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.MemberTypeId)
+                                    <select class="form-control" id="MemberTypeId" name="MemberTypeId">
+                                        <option value="">--Select Member Type--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.CompanyId)
+                                    <select class="form-control" id="CompanyId" name="CompanyId">
+                                        <option value="">--Select Company--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.AgentId)
+                                    <select class="form-control" id="AgentId" name="AgentId">
+                                        <option value="">--Select Agent--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">                                    
+                                    @Html.LabelFor(m => m.SourceId)
+                                    <select class="form-control" id="SourceId" name="SourceId">
+                                        <option value="">--Select Source--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Source 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">                                    
+                                    @Html.LabelFor(m => m.BlockCodeId)
+                                    <select class="form-control" id="BlockCodeId" name="BlockCodeId">
+                                        <option value="">--Select Group Code--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group 3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.MemberNo)
+                                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member No." })
+                                </div>
+
+                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.CorpNo)
+                                    @Html.TextBoxFor(m => m.CorpNo, new { @class = "form-control", placeholder = "Corp No." })
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.IATANo)
+                                    @Html.TextBoxFor(m => m.IATANo, new { @class = "form-control", placeholder = "IATA No." })
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.SourceNo)
+                                    @Html.TextBoxFor(m => m.SourceNo, new { @class = "form-control", placeholder = "Source No." })
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title mt-10 mb-10">Show Rates</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                            <label class="container1" for="IsClosed">
+                                                Closed
+                                                @Html.CheckBoxFor(m => m.IsClosed)
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                            <label class="container1" for="IsDayUse">
+                                                Day Use
+                                                @Html.CheckBoxFor(m => m.IsDayUse)
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                            <label class="container1" for="IsPseudo">
+                                                Pseudo
+                                                @Html.CheckBoxFor(m => m.IsPseudo)
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">                                    
+                                    @Html.LabelFor(m => m.RateClassId)
+                                    <select class="form-control" id="RateClassId" name="RateClassId">
+                                        <option value="">--Select Rate Class--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D98261B8F944">Rate Class 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D94261B9F945">Rate Class 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-G92261B0F937">Rate Class 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.RateCategoryId)
+                                    <select class="form-control" id="RateCategoryId" name="RateCategoryId">
+                                        <option value="">--Select Rate Category--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D98961B8F944">Rate Category 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D94861B9F945">Rate Category 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-G92061B0F937">Rate Category 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                    @Html.LabelFor(m => m.RateCodeId)
+                                    <select class="form-control" id="RateCodeId" name="RateCodeId">
+                                        <option value="" data-ratecode="">--Select Rate Code--</option>
+                                        @if (rateTypeList != null && rateTypeList.Count > 0)
+                                    {
+                                        foreach (var rateType in rateTypeList)
+                                        {
+                                                <option value="@rateType.Id" data-ratecode="@rateType.RateTypeCode">
+                                                    @rateType.RateTypeCode
+                                                </option>
+                                            }
+                                    }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">                                    
+                                    @Html.LabelFor(m => m.RoomClassId)
+                                    <select class="form-control" id="RoomClassId" name="RoomClassId">
+                                        <option value="">--Select Room Class--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D98961B8F844">Room Class 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-D94861B9F745">Room Class 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A32D-G92061B0F537">Room Class 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">                                    
+                                    @Html.LabelFor(m => m.FeatureId)
+                                    <select class="form-control" id="FeatureId" name="FeatureId">
+                                        <option value="">--Select Features--</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A34D-D98961B8F844">Features 1</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A35D-D94861B9F745">Features 2</option>
+                                        <option value="F15C97B6-4FC0-4AB7-A36D-G92061B0F537">Features 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">                                    
+                                    @Html.LabelFor(m => m.PackageId)
+                                    <select class="form-control" id="PackageId" name="PackageId">
+                                        <option value="">--Select Packages--</option>
+                                        <option value="F15C98B6-4FC0-4AB7-A34D-D98961B8F844">Packages 1</option>
+                                        <option value="F15C99B6-4FC0-4AB7-A35D-D94861B9F745">Packages 2</option>
+                                        <option value="F15C90B6-4FC0-4AB7-A36D-G92061B0F537">Packages 3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="clearfix"></div>
+                                <div class="col-md-12 form-group">
+                                    <label class="container1" for="IsInclNonDeduct">
+                                        Incl Non Deduct
+                                        @Html.CheckBoxFor(m => m.IsInclNonDeduct)
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 text-center m-b-md">
+                            <hr />
+                            <button type="button" class="btn btn-info m-r-xs" onclick="showRateSheet();">Next</button>
+                            @*<button type="submit" class="btn btn-danger">Cancel</button>*@
+                        </div>
+                        <!-- /.box-footer -->
+                    </form>
+                </div>
+                <!-- /.tab-pane -->
+                <div class="tab-pane" id="tab_2">
+                    <!--<p id="reservationInfo">Wednesday, November 01, 2006, 1 Nights, 1 Rooms, 1 Adults, 0 Children</p> -->
+                    <p id="reservationInfo"></p>
+                    <p id="customerName"></p>
+
+                    <div class="table-responsive" id="divRateSheet">
+                        @Html.Partial("_RateSheet",
+                                new ViewDataDictionary {
+                                    { "RateType", rateTypeList },
+                                    { "RoomType", roomTypeList }
+                                })
+                    </div>
+
+                    <div class="col-xs-12 padding-zero">
+                        <div class="col-md-offset-2 col-md-8 col-sm-offset-1 col-sm-10 col-xs-12 padding-zero">
+                            <label id="lblSelectedPrice">0.00</label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 padding-zero">
+                        <div class="col-xs-12 col-sm-12 col-md-8 mt-10 padding-zero m-b-md">
+                            <label class="col-md-1 col-sm-2 col-xs-12 padding_left">Info</label>
+                            <div class="col-md-10 col-sm-10 col-xs-12 padding-zero">
+                                <textarea class="form-control" readonly="readonly" id="txtRateInfo" name="txtRateInfo"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-xs-12 col-md-12 col-sm-12 text-center m-b-md">
+                        <hr />
+                        <button type="button" class="btn btn-info m-r-xs" onclick="showTab('tab_1')">Prev</button>
+                        <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">Ok</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <!-- /.tab-pane -->
+                
+            </div>
+            <!-- /.tab-content -->
+        </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="">
-            <div class="box-body">
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Arrival</label>
-                    <div class="input-group date">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
-                        <input type="text" class="form-control" placeholder="MM/dd/yyyy" />
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Nights</label>
-                    <input type="text" class="form-control" id="" placeholder="1">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Departure</label>
-                    <div class="input-group date">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
-                        <input type="text" class="form-control" placeholder="MM/dd/yyyy" />
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Adults</label>
-                    <input type="text" class="form-control" id="" placeholder="1">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Children</label>
-                    <input type="text" class="form-control" id="" placeholder="0">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">No. of Rooms</label>
-                    <input type="text" class="form-control" id="" placeholder="1">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Last Name</label>
-                    <input type="text" class="form-control" id="" placeholder="Last Name">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Block</label>
-                    <select class="form-control">
-                        <option>--Select--</option>
-                    </select>
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Member Type</label>
-                    <input type="text" class="form-control" id="" placeholder="Member Type">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Member No.</label>
-                    <input type="text" class="form-control" id="" placeholder="Member No.">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Company</label>
-                    <input type="text" class="form-control" id="" placeholder="Company">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Corp No.</label>
-                    <input type="text" class="form-control" id="" placeholder="Corp.No">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Agent</label>
-                    <input type="text" class="form-control" id="" placeholder="Agent">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">TATA No.</label>
-                    <input type="text" class="form-control" id="" placeholder="TATA No.">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Source</label>
-                    <input type="text" class="form-control" id="" placeholder="Source">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Source No.</label>
-                    <input type="text" class="form-control" id="" placeholder="Source No.">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Features</label>
-                    <input type="text" class="form-control" id="" placeholder="Features">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Rate Code</label>
-                    <input type="text" class="form-control" id="" placeholder="Rate Code">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Rate Class</label>
-                    <input type="text" class="form-control" id="" placeholder="Rate Class">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Room Class</label>
-                    <input type="text" class="form-control" id="" placeholder="Room Class">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Rate Category</label>
-                    <input type="text" class="form-control" id="" placeholder="Rate Category">
-                </div>
-                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
-                    <label for="" class="">Packages</label>
-                    <input type="text" class="form-control" id="" placeholder="Packages">
-                </div>
-            </div>
 
-            <div class="box-header with-border">
-                <h3 class="box-title mt-10 mb-10">Show Rates</h3>
-            </div>
-
-            <div class="box-body">
-                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                    <label class="container1">
-                        Closed 
-                        <input type="checkbox">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                    <label class="container1">
-                        Day Use
-                        <input type="checkbox">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                    <label class="container1">
-                        Pseudo
-                        <input type="checkbox">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-               <div class="clearfix"></div>
-                   <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                       <label class="container1">
-                           <input type="checkbox">
-                           <span class="checkmark"></span>
-                           Incl Non Dudct
-                       </label>
-                   </div>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer text-center">
-                <button type="submit" class="btn btn-success">Save</button>
-                <button type="submit" class="btn btn-danger">Cancel</button>
-            </div>
-            <!-- /.box-footer -->
-        </form>
+        <div class="clearfix"></div>
     </div>
 </section>
 
+<div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Profile Search</h4>
+            </div>
+            <div class="modal-body">
+               @Html.Partial("~/Views/Profile/_ProfileSearch.cshtml", 
+                        new ViewDataDictionary {
+                                    { "Source", "RateQuery" }
+                                })
+            </div>
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //Date picker
+        $('#ArrivalDate').datepicker({
+            startDate: new Date(),
+            autoclose: true
+        })
+
+        $('#DepartureDate').datepicker({
+            startDate: new Date(),
+            autoclose: true
+        })
+
+        $('.btnAdvanceSearchProfileOk').click(function (e) {
+            var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');            
+            if (!IsNullOrEmpty(selectedProfile.val())) {
+                var profileId, firstName, lastName;
+                profileId = $(selectedProfile).val();
+                firstName = $(selectedProfile).data('firstname');
+                lastName = $(selectedProfile).data('lastname');
+
+                $('#ProfileId').val(profileId);
+                $('#Name').val(lastName + Delimeter.SPACE + firstName);
+
+                $('#FirstName').val(firstName);
+                $('#LastName').val(lastName);
+
+                //Close Profile Search Modal.
+                $('#profileSearchModal').modal('toggle');
+            } else {
+                showToaster("Please select any one profile.", ToasterType.ERROR);
+            }
+        });
+    });
+
+    function openProfileSearchModal() {
+        $('#profileSearchModal').modal('toggle');
+        //clearProfileSearch();
+    }
+
+    function showTab(tabName) {
+        $('#divRateTabs a[href="#' + tabName + '"]').tab('show');
+    }
+
+    function getRateCode(element) {
+        if (element) {
+            var rateTypeCode = $(element).find("option:selected").data("ratecode");
+            //$('#RateTypeCode').val($(element).find("option:selected").text());
+            $('#RateTypeCode').val(rateTypeCode);
+        }
+    }
+
+    function showRateInfo(element) {
+        if (element) {
+
+            var rateTypeId = $(element).data("ratetypeid");
+            var roomTypeId = $(element).data("roomtypeid");
+            var id = $(element).data("id");
+            var description = $(element).data("description");
+            var amount = $(element).data("amount");
+            var ratetypecode = $(element).data("ratetypecode");
+            var roomtypecode = $(element).data("roomtypecode");
+
+            $('#RateTypeId').val(rateTypeId);
+            $('#RoomTypeId').val(roomTypeId);
+            $('#hdnRoomTypeRateTypeMappingId').val(id);
+            $('#txtRateInfo').val(description);
+            $('#lblSelectedPrice').html(amount);
+            $('#Amount').val(amount);
+            $('#RateTypeCode').val(ratetypecode);
+            $('#RoomTypeCode').val(roomtypecode);
+        }
+    }
+
+
+    function validateRateQueryInfo() {
+        var arrivalDate = $('#ArrivalDate').val();
+        var departureDate = $('#DepartureDate').val();
+        var name = $('#Name').val();
+        var blnValid = true;
+        var errorMessage = "";
+
+        if (IsNullOrEmpty(arrivalDate)) {
+            errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
+            var objArrivalDate = new Date(arrivalDate);
+            var objDepartureDate = new Date(departureDate);
+
+            if (objArrivalDate > objDepartureDate) {
+                errorMessage += "Arrival date must be less than departure date." + Delimeter.BREAKLINE;
+                blnValid = false;
+            }
+        }
+
+        if (IsNullOrEmpty(name)) {
+            errorMessage += "Please search and select client name." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (!blnValid) {
+            showToaster(errorMessage, ToasterType.ERROR);
+            return false;
+        }
+        return blnValid;
+        
+    }
+
+    function showRateSheet() {
+        if (validateRateQueryInfo()) {
+            var customerName = $('#Name').val();
+            var arrivalDate = $('#ArrivalDate').val();
+            var noOfNights = $('#NoOfNights').val();
+            var departureDate = $('#DepartureDate').val();
+            var noOfAdults = $('#NoOfAdults').val();
+            var noOfChildren = $('#NoOfChildren').val();
+            var noOfRooms = $('#NoOfRoom').val();
+
+            $('#RateTypeCode').val('');
+            var rateCodeId = $('#RateCodeId').find("option:selected").data("ratecode");
+
+            if (!IsNullOrEmpty(rateCodeId)) {
+                $('#RateTypeCode').val(rateCodeId);
+            }
+
+            var reservationInfo = '';
+            if (!IsNullOrEmpty(arrivalDate))
+                reservationInfo += arrivalDate + Delimeter.COMMA + Delimeter.SPACE;
+            if (!IsNullOrEmpty(noOfNights))
+                reservationInfo += noOfNights + " Nights" + Delimeter.COMMA + Delimeter.SPACE;
+            if (!IsNullOrEmpty(noOfRooms))
+                reservationInfo += noOfRooms + " Rooms" + Delimeter.COMMA + Delimeter.SPACE;
+            if (!IsNullOrEmpty(noOfAdults))
+                reservationInfo += noOfAdults + " Adults" + Delimeter.COMMA + Delimeter.SPACE;
+            if (!IsNullOrEmpty(noOfChildren))
+                reservationInfo += noOfChildren + " Children" + Delimeter.SPACE;
+
+            $('#reservationInfo').html(reservationInfo);
+            $('#customerName').html(customerName);
+
+            //Ajax Request to fetch Rate Sheet.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Reservation/ViewRateSheet")',
+                type: 'POST',
+                data: $('#frmRateQuery').serialize(),
+                success: function (response) {                    
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        $('#divRateSheet').html();
+                        $('#divRateSheet').html(response);
+
+                        showTab('tab_2');
+                    }
+                }
+            });
+        }
+        return false;
+    }
+    
+    function validateRateSheetInfo() {
+        var rateTypeCode = $('#RateTypeCode').val();
+        var roomTypeCode = $('#RoomTypeCode').val();
+
+        var errorMessage = "";
+        var blnValid = true;
+
+        if (IsNullOrEmpty(rateTypeCode) || IsNullOrEmpty(roomTypeCode)) {
+            errorMessage += "Please select rate price." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (!blnValid) {
+            showToaster(errorMessage, ToasterType.ERROR);
+            return false;
+        }
+        return blnValid;
+
+    }
+
+    function showReservation() {
+        if (validateRateSheetInfo()) {
+            //Ajax Request to goto add reservation.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Reservation/ShowReservation")',
+                type: 'POST',
+                data: $('#frmRateQuery').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        var url = response.data;
+                        if (!IsNullOrEmpty(url)) {
+                            redirectTo(url);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function calculateNoOfNights() {
+        var arrivalDate = $('#ArrivalDate').val();
+        var departureDate = $('#DepartureDate').val();
+        var noOfNight = 1;
+
+        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {            
+            var objArrivalDate = new Date(arrivalDate);
+            var objDepartureDate = new Date(departureDate);
+            var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());            
+            var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (!IsNullOrEmpty(diffDays)) {
+                noOfNight = diffDays > 0 ? diffDays : 1;
+            }
+
+            $('#NoOfNight').val(noOfNight);
+        }
+    }
+
+    function calculateDepartureDate() {
+        var arrivalDate = $('#ArrivalDate').val();
+        var noOfNight = $('#NoOfNight').val();
+        var departureDate = '';
+
+        if (!IsNullOrEmpty(arrivalDate)) {
+            var objArrivalDate = new Date(arrivalDate);            
+            var dt = objArrivalDate;
+            if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
+                dt.setDate(objArrivalDate.getDate() + parseInt(noOfNight));
+            } else {
+                dt.setDate(objArrivalDate.getDate() + 1);
+            }
+
+            if (dt != null) {
+                //MM/dd/yyyy
+                departureDate = GetDate(dt, DateFormat.MMDDYYYY);
+                //$('#DepartureDate').val(departureDate);
+                $("#DepartureDate").datepicker("setDate", new Date(departureDate));
+            }
+        }
+    }
+
+</script>

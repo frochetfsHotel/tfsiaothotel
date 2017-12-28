@@ -77,15 +77,37 @@ namespace SuccessHotelierHub.Controllers
                         {
                             foreach (var item in preferenceItemsArr)
                             {
-                                //Save Preference Profile Mapping.
-                                ProfilePreferenceMappingVM profilePreferenceMappingVM = new ProfilePreferenceMappingVM();
-                                profilePreferenceMappingVM.ProfileTypeId = model.ProfileTypeId;
-                                profilePreferenceMappingVM.PreferenceId = Guid.Parse(item);
-                                profilePreferenceMappingVM.ProfileId = Guid.Parse(profileId);
-                                profilePreferenceMappingVM.CreatedBy = LogInManager.LoggedInUserId;
+                                //Save Profile Preference Mapping.
+                                ProfilePreferenceMappingVM profilePreferenceMapping = new ProfilePreferenceMappingVM();
+                                profilePreferenceMapping.ProfileTypeId = model.ProfileTypeId;
+                                profilePreferenceMapping.PreferenceId = Guid.Parse(item);
+                                profilePreferenceMapping.ProfileId = Guid.Parse(profileId);
+                                profilePreferenceMapping.CreatedBy = LogInManager.LoggedInUserId;
 
-                                preferenceRepository.AddProfilePreferenceMapping(profilePreferenceMappingVM);
+                                preferenceRepository.AddProfilePreferenceMapping(profilePreferenceMapping);
                             }
+                        }
+                    }
+                    #endregion
+
+
+                    #region  Check Source Parameters
+                    if (Request.Form["Source"] != null)
+                    {
+                        string source = string.Empty;
+                        source = Convert.ToString(Request.Form["Source"]);
+                        if (source == "RateQuery")
+                        {
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = Url.Action("RateQuery", "Reservation")
+                            }, JsonRequestBehavior.AllowGet);
                         }
                     }
                     #endregion
@@ -165,6 +187,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditIndividualProfile(IndividualProfileVM model)
         {
             try
@@ -180,8 +203,8 @@ namespace SuccessHotelierHub.Controllers
 
                     var preferenceItems = model.PreferenceItems;
 
-                    //Delete Existing Preference Profile Mapping.
-                    preferenceRepository.DeleteProfilePreferenceMappingByProfile(model.ProfileTypeId, model.Id, LogInManager.LoggedInUserId);
+                    //Delete Existing Profile Preference Mapping.
+                    preferenceRepository.DeleteProfilePreferenceMappingByProfile(model.ProfileTypeId, model.Id);
 
                     if (!string.IsNullOrWhiteSpace(preferenceItems))
                     {
@@ -191,7 +214,7 @@ namespace SuccessHotelierHub.Controllers
                         {
                             foreach (var item in preferenceItemsArr)
                             {
-                                //Save Preference Profile Mapping.
+                                //Save Profile Preference Mapping.
                                 ProfilePreferenceMappingVM profilePreferenceMappingVM = new ProfilePreferenceMappingVM();
                                 profilePreferenceMappingVM.ProfileTypeId = model.ProfileTypeId;
                                 profilePreferenceMappingVM.PreferenceId = Guid.Parse(item);
@@ -200,6 +223,27 @@ namespace SuccessHotelierHub.Controllers
 
                                 preferenceRepository.AddProfilePreferenceMapping(profilePreferenceMappingVM);
                             }
+                        }
+                    }
+                    #endregion
+
+                    #region  Check Source Parameters
+                    if (Request.Form["Source"] != null)
+                    {
+                        string source = string.Empty;
+                        source = Convert.ToString(Request.Form["Source"]);
+                        if (source == "RateQuery")
+                        {
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = Url.Action("RateQuery", "Reservation")
+                            }, JsonRequestBehavior.AllowGet);
                         }
                     }
                     #endregion
@@ -313,6 +357,26 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult SearchAdvanceProfile(SearchAdvanceProfileParametersVM model)
+        {
+            try
+            {
+                var profiles = profileRepository.SearchAdvanceProfile(model);
+                
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = profiles
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         #endregion
 
 
@@ -325,6 +389,7 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
+      
     }
 }
 

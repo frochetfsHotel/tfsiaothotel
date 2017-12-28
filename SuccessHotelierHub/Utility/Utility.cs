@@ -312,8 +312,30 @@ namespace SuccessHotelierHub.Utility
         }
         #endregion
 
+        #region Escape String
+        /// <summary>
+        ///This method is used to remove the single and double quotes from the string
+        /// </summary>
+        /// <param name="strContent">The content</param>
+        /// <returns>String</returns>
+        public static string EscapeString(string strContent)
+        {
+            if ((strContent != null) & !string.IsNullOrEmpty(strContent))
+            {
+                strContent = strContent.Replace("'", "''");
+                return strContent.Trim();
+            }
+            else
+            {
+                return strContent;
+            }
+
+        }
+        #endregion
+
         public static Guid LanguageId = Guid.Parse("0490AE29-FC46-42EA-BB8A-9674B4E8CCAE");
     }
+
 
     #region 'LOGIN-SESSION'
     public class LogInManager

@@ -208,7 +208,10 @@
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\PreferenceController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\RateController.cs" />
+    <Compile Include="Controllers\RateTypeController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
+    <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -224,6 +227,13 @@
     <Compile Include="Models\ProfilePreferenceMappingVM.cs" />
     <Compile Include="Models\ProfileTypeVM.cs" />
     <Compile Include="Models\IndividualProfileVM.cs" />
+    <Compile Include="Models\RateQueryVM.cs" />
+    <Compile Include="Models\RateSheetResultVM.cs" />
+    <Compile Include="Models\RateTypeVM.cs" />
+    <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
+    <Compile Include="Models\ReservationVM.cs" />
+    <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />
+    <Compile Include="Models\RoomTypeVM.cs" />
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
@@ -235,6 +245,10 @@
     <Compile Include="Repository\PreferenceRepository.cs" />
     <Compile Include="Repository\ProfileRepository.cs" />
     <Compile Include="Repository\ProfileTypeRepository.cs" />
+    <Compile Include="Repository\RateRepository.cs" />
+    <Compile Include="Repository\RateTypeRepository.cs" />
+    <Compile Include="Repository\ReservationRepository.cs" />
+    <Compile Include="Repository\RoomTypeRepository.cs" />
     <Compile Include="Repository\StateRepository.cs" />
     <Compile Include="Repository\TitleRepository.cs" />
     <Compile Include="Repository\VipRepository.cs" />
@@ -255,6 +269,14 @@
     <Content Include="Content\css\AdminLTE\alt\AdminLTE-without-plugins.css" />
     <Content Include="Content\css\AdminLTE\alt\AdminLTE-without-plugins.min.css" />
     <Content Include="Content\css\AdminLTE\bootstrap-datepicker.min.css" />
+    <Content Include="Content\css\AdminLTE\bootstrap-timepicker.min.css" />
+    <Content Include="Content\css\AdminLTE\dataTables.bootstrap.css" />
+    <Content Include="Content\css\AdminLTE\dataTables.bootstrap.min.css" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\css\dataTables.bootstrap.css" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\css\dataTables.bootstrap.min.css" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\js\dataTables.bootstrap.js" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\js\dataTables.bootstrap.min.js" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\License.txt" />
     <Content Include="Content\css\AdminLTE\skins\skin-black-light.css" />
     <Content Include="Content\css\AdminLTE\skins\skin-black-light.min.css" />
     <Content Include="Content\css\AdminLTE\skins\skin-black.css" />
@@ -281,6 +303,7 @@
     <Content Include="Content\css\AdminLTE\skins\skin-yellow.min.css" />
     <Content Include="Content\css\AdminLTE\skins\_all-skins.css" />
     <Content Include="Content\css\AdminLTE\skins\_all-skins.min.css" />
+    <Content Include="Content\css\AdminLTE\toastr.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Content\css\font-awesome\css\font-awesome.css" />
@@ -1663,9 +1686,21 @@
     <Content Include="Scripts\AdminLTE\adminlte.js" />
     <Content Include="Scripts\AdminLTE\adminlte.min.js" />
     <Content Include="Scripts\AdminLTE\bootstrap-datepicker.min.js" />
+    <Content Include="Scripts\AdminLTE\bootstrap-timepicker.min.js" />
+    <Content Include="Scripts\AdminLTE\dataTables.bootstrap.js" />
+    <Content Include="Scripts\AdminLTE\dataTables.bootstrap.min.js" />
     <Content Include="Scripts\AdminLTE\demo.js" />
+    <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.date.extensions.js" />
+    <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.extensions.js" />
+    <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.js" />
+    <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.numeric.extensions.js" />
+    <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.phone.extensions.js" />
+    <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.regex.extensions.js" />
+    <Content Include="Scripts\AdminLTE\jquery.dataTables.js" />
+    <Content Include="Scripts\AdminLTE\jquery.dataTables.min.js" />
     <Content Include="Scripts\AdminLTE\pages\dashboard.js" />
     <Content Include="Scripts\AdminLTE\pages\dashboard2.js" />
+    <Content Include="Scripts\AdminLTE\toastr.min.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -1734,6 +1769,9 @@
     <Content Include="Content\css\Ionicons\scss\_ionicons-font.scss" />
     <Content Include="Content\css\Ionicons\scss\_ionicons-icons.scss" />
     <Content Include="Content\css\Ionicons\scss\_ionicons-variables.scss" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\.bower.json" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\bower.json" />
+    <Content Include="Content\css\AdminLTE\datatables.net-bs\Readme.md" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom\common.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -1816,7 +1854,20 @@
     <Content Include="Views\Shared\_Pagination.cshtml" />
     <Content Include="Views\Profile\IndividualProfileList.cshtml" />
     <Content Include="Views\Profile\EditIndividualProfile.cshtml" />
-    <Content Include="Views\Profile\_Preferences.cshtml" />
+    <Content Include="Views\Reservation\_RateSheet.cshtml" />
+    <Content Include="Views\Preference\_Preferences.cshtml" />
+    <Content Include="Views\Profile\_ProfileSearch.cshtml" />
+    <Content Include="Views\Reservation\List.cshtml" />
+    <Content Include="Views\Reservation\Edit.cshtml" />
+    <Content Include="Views\RoomType\Create.cshtml" />
+    <Content Include="Views\RoomType\Edit.cshtml" />
+    <Content Include="Views\RoomType\List.cshtml" />
+    <Content Include="Views\RateType\Create.cshtml" />
+    <Content Include="Views\RateType\Edit.cshtml" />
+    <Content Include="Views\RateType\List.cshtml" />
+    <Content Include="Views\Rate\Create.cshtml" />
+    <Content Include="Views\Rate\Edit.cshtml" />
+    <Content Include="Views\Rate\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -145,15 +145,14 @@ namespace SuccessHotelierHub.Repository
             return profilePreferenceMappingId;
         }
 
-        public string DeleteProfilePreferenceMappingByProfile(Guid? profileTypeId, Guid? profileId, int updatedBy)
+        public string DeleteProfilePreferenceMappingByProfile(Guid? profileTypeId, Guid? profileId)
         {
             string preferenceId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ProfileTypeId", Value = (object) profileTypeId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@ProfileId", Value = (object) profileId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@ProfileId", Value = (object) profileId ?? DBNull.Value }
                 };
 
             preferenceId = Convert.ToString(DALHelper.ExecuteScalar("DeleteProfilePreferenceMappingByProfile", parameters));
@@ -162,6 +161,56 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion #region Profile Preference Mapping
+
+        #region Reservation Preference Mapping 
+
+        public string AddReservationPreferenceMapping(ReservationPreferenceMappingVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = model.ReservationId },
+                    new SqlParameter { ParameterName = "@PreferenceId", Value = model.PreferenceId } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddReservationPreferenceMapping", parameters));
+
+            return id;
+        }
+
+        public string DeleteReservationPreferenceMappingByReservation(Guid reservationId)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPreferenceMappingByReservation", parameters));
+
+            return id;
+        }
+
+        public List<ReservationPreferenceMappingVM> GetReservationPreferenceMapping(Guid? reservationId, Guid? preferenceId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@PreferenceId", Value = (object) preferenceId ?? DBNull.Value }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationPreferenceMapping", parameters);
+
+            var reservationPreferenceMapping = new List<ReservationPreferenceMappingVM>();
+            reservationPreferenceMapping = DALHelper.CreateListFromTable<ReservationPreferenceMappingVM>(dt);
+
+            return reservationPreferenceMapping;
+        }
+
+        #endregion
     }
 
 }

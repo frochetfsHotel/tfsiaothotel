@@ -32,11 +32,13 @@ namespace SuccessHotelierHub
                       "~/Content/css/Site.css",
                       "~/Content/css/responsive.css",
                       "~/Content/css/AdminLTE/bootstrap-datepicker.min.css",
+                      "~/Content/css/AdminLTE/bootstrap-timepicker.min.css",
                       "~/Content/css/AdminLTE/toastr.min.css"
                       ));
 
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
                       "~/Scripts/AdminLTE/bootstrap-datepicker.min.js",
+                      "~/Scripts/AdminLTE/bootstrap-timepicker.min.js",
                       "~/Scripts/AdminLTE/adminlte.min.js",
                       "~/Scripts/AdminLTE/toastr.min.js",
                       "~/Scripts/AdminLTE/demo.js",

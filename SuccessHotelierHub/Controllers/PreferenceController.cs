@@ -80,6 +80,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(PreferenceVM model)
         {
             try

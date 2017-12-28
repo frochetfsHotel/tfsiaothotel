@@ -38,10 +38,17 @@ var Delimeter = {
     SPACE: " "
 };
 
+var DateFormat = {
+    DDMMYYYY: "dd/MM/yyyy",
+    MMDDYYYY: "MM/dd/yyyy",
+    YYYYMMDD: "yyyy/MM/dd"
+};
+
 function loadToastrSetting() {
     toastr.options = {
         closeButton: true,
         progressBar: false,
+        preventDuplicates: true,
         showMethod: 'slideDown',
         timeOut: 4000
     };
@@ -116,4 +123,58 @@ function redirectTo(url) {
     if (!IsNullOrEmpty(url)) {
         window.location.href = url;
     }
+}
+
+
+function onlyDigits(e) {
+
+    //if (e.shiftKey || e.ctrlKey || e.altKey) {
+    //    e.preventDefault();        
+    //} else {        
+        var key = e.keyCode;
+
+        //key = 9; TAB Key. (Allow Tab Key)
+
+        if (!((key == 9) || (key == 8) || (key == 46) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
+            e.preventDefault();
+        }
+    //}
+}
+
+function GetDate(objDate, dateFormat) {    
+    var d = objDate;
+    var month, date, year;
+    var MM, dd, yyyy;
+    var fullDate = "";
+
+    date = d.getDate();
+    month = (d.getMonth() + 1); // : Month start with (0-11) e.g. Jan = 0, Feb = 1, Mar = 2 etc.
+    year = d.getFullYear();
+
+    //set initial value.
+    yyyy = year;
+    MM = month;
+    dd = date;
+    
+    //Append '0' prefix in date.
+    if (date >= 1 && date <= 9) {
+        dd = ("0" + date);
+    }
+
+    //Append '0' prefix in month.
+    if (month >= 1 && month <= 9) {
+        MM = ("0" + month);
+    }
+
+    if (dateFormat == DateFormat.DDMMYYYY) {
+        fullDate = dd + "/" + MM + "/" + yyyy;
+    }
+    else if (dateFormat == DateFormat.MMDDYYYY) {
+        fullDate = MM + "/" + dd + "/" + yyyy;
+    }
+    else if (dateFormat == DateFormat.YYYYMMDD) {
+        fullDate = yyyy + "/" + MM + "/" + dd;
+    }
+
+    return fullDate;
 }

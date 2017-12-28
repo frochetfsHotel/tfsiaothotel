@@ -1,111 +1,166 @@
-﻿@{
-    ViewBag.Title = "Create";
+﻿@model SuccessHotelierHub.Models.ReservationVM
+@using SuccessHotelierHub.Models
+@{
+    ViewBag.Title = "Create Reservation";
+
+    var preferenceList = (List<PreferenceVM>)ViewBag.PreferenceList;
+
+    string arrivalDate = string.Empty;
+    string departureDate = string.Empty;
+
+    if (Model.ArrivalDate.HasValue && Model.ArrivalDate.Value != null)
+    {
+        arrivalDate = Model.ArrivalDate.Value.ToString("MM/dd/yyyy");
+    }
+
+    if (Model.DepartureDate.HasValue && Model.DepartureDate.Value != null)
+    {
+        departureDate = Model.DepartureDate.Value.ToString("MM/dd/yyyy");
+    }
 }
+
+
+<section class="content-header">
+    <h1>
+        Reservation <small>Create</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Reservation</li>
+        <li class="active">Create</li>
+    </ol>
+</section>
+
 <section class="content">
-    <h2 class="mt-0 m-b">Reservation</h2>
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Reservation Details</h3>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="">
+        @using (Html.BeginForm("Create", "Reservation", FormMethod.Post, new { id = "frmReservation", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- HIDDEN FIELD -->
+            @Html.HiddenFor(m => m.ProfileId)
+            @Html.HiddenFor(m => m.PreferenceItems);
+            <!-- HIDDEN FIELD -->
+
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Title</label>
-                        <select class="form-control">
-                            <option>--Select Title--</option>
-                            <option>Ms.</option>
-                            <option>Mr.</option>
-                            <option>Mrs.</option>
-                            <option>Miss</option>
-                        </select>
+                        @Html.LabelFor(m => m.TitleId)
+                        @Html.DropDownListFor(m => m.TitleId,
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
+                                                "Select Title",
+                                                new { @class = "form-control" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Last Name *</label>
-                        <input type="text" class="form-control" id="" placeholder="Last Name">
+                        @Html.LabelFor(m => m.LastName) *
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">First Name</label>
-                        <input type="text" class="form-control" id="" placeholder="First Name">
+                        @Html.LabelFor(m => m.FirstName)
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Member Type</label>
-                        <select class="form-control">
-                            <option>--Select --</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Country</label>
-                        <select class="form-control">
-                            <option>--Select Country--</option>
-                            <option>US</option>
-                            <option>India</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Language</label>
-                        <select class="form-control">
-                            <option>--Select Language--</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">VIP</label>
-                        <select class="form-control">
-                            <option>--Select VIP--</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Phone</label>
-                        <input type="text" class="form-control" id="" placeholder="Phone">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Member No</label>
-                        <input type="text" class="form-control" id="" placeholder="Member No">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Member LVT.</label>
-                        <input type="text" class="form-control" id="" placeholder="Member LVT.">
-                    </div>
-
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Agent</label>
-                        <select class="form-control">
-                            <option>--Select Agent--</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Company</label>
-                        <select class="form-control">
-                            <option>--Select Company--</option>
+                        @Html.LabelFor(m => m.MemberTypeId)
+                        <select class="form-control" id="MemberTypeId" name="MemberTypeId">
+                            <option value="">--Select Member Type--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Group</label>
-                        <select class="form-control">
-                            <option>--Select Group--</option>
+                        @Html.LabelFor(m => m.CountryId)
+                        @Html.DropDownListFor(m => m.CountryId,
+                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState()" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.LanguageId)
+                        <select class="form-control" id="LanguageId" name="LanguageId">
+                            <option value="">--Select Language--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">English</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Hindi</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">France</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Source</label>
-                        <select class="form-control">
-                            <option>--Select Source--</option>
+                        @Html.LabelFor(m => m.VipId)
+                        @Html.DropDownListFor(m => m.VipId,
+                                     new SelectList((IEnumerable<SelectListItem>)ViewBag.VipList, "Value", "Text"),
+                                    "Select VIP",
+                                    new { @class = "form-control" })
+
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.PhoneNo)
+                        @Html.TextBoxFor(m => m.PhoneNo, new { @class = "form-control", placeholder = "Phone" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.MemberNo)
+                        @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member No" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.MemberLvt)
+                        @Html.TextBoxFor(m => m.MemberLvt, new { @class = "form-control", placeholder = "Member LVT." })
+                    </div>
+
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.AgentId)
+                        <select class="form-control" id="AgentId" name="AgentId">
+                            <option value="">--Select Agent--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Contact</label>
-                        <select class="form-control">
-                            <option>--Select Contact--</option>
+                        @Html.LabelFor(m => m.CompanyId)
+                        <select class="form-control" id="CompanyId" name="CompanyId">
+                            <option value="">--Select Company--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.GroupId)
+                        <select class="form-control" id="GroupId" name="GroupId">
+                            <option value="">--Select Group--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Group 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Group 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.SourceId)
+                        <select class="form-control" id="SourceId" name="SourceId">
+                            <option value="">--Select Source--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Source 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.ContactId)
+                        <select class="form-control" id="ContactId" name="ContactId">
+                            <option value="">--Select Contact--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Contact 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Contact 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Contact 3</option>
                         </select>
                     </div>
                 </div>
@@ -114,182 +169,239 @@
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Arrival Date *</label>
+                        @Html.LabelFor(m => m.ArrivalDate) *
                         <div class="input-group date">
-                            <input type="text" class="form-control" id="datetimepicker4" placeholder="MM/dd/yyyy">
+                            @*@Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control", placeholder = "MM/dd/yyyy" })*@
+                            <input type="text" id="ArrivalDate" name="ArrivalDate" value="@arrivalDate" class="form-control" 
+                                   placeholder="MM/dd/yyyy" />
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-1 form-group">
-                        <label for="" class="">Nights</label>
-                        <input type="text" class="form-control" id="" placeholder="1">
+                        @Html.LabelFor(m => m.NoOfNight)
+                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Departure Date *</label>
+                        @Html.LabelFor(m => m.DepartureDate) *
                         <div class="input-group date">
-                            <input type="text" class="form-control" id="datetimepicker4" placeholder="MM/dd/yyyy">
+                            @*@Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control", placeholder = "MM/dd/yyyy" })*@
+                            <input type="text" id="DepartureDate" name="DepartureDate" value="@departureDate" class="form-control"
+                                   placeholder="MM/dd/yyyy" onchange = "calculateNoOfNights();" />
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-1 form-group">
-                        <label for="" class="">Adults</label>
-                        <input type="text" class="form-control" id="" placeholder="1">
+                        @Html.LabelFor(m => m.NoOfAdult)
+                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-1 form-group">
-                        <label for="" class="">Child</label>
-                        <input type="text" class="form-control" id="" placeholder="0">
+                        @Html.LabelFor(m => m.NoOfChildren)
+                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
                     </div>
 
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Room Type *</label>
-                        <select class="form-control">
-                            <option>--Select Room Type--</option>
-                        </select>
+                        @Html.LabelFor(m => m.RoomTypeId) *
+                        @Html.DropDownListFor(m => m.RoomTypeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
+                                "Select Room Type",
+                                new { @class = "form-control" })
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">No Of Rooms.</label>
-                        <input type="text" class="form-control" id="" placeholder="1">
+                        @Html.LabelFor(m => m.NoOfRoom)
+                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">RTC.</label>
-                        <select class="form-control">
-                            <option>--Select RTC--</option>
+                        @Html.LabelFor(m => m.RtcId)
+                        <select class="form-control" id="RtcId" name="RtcId">
+                            <option value="">--Select RTC--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">RTC 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">RTC 2</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Room</label>
-                        <select class="form-control">
-                            <option>--Select Room--</option>
+                        @Html.LabelFor(m => m.RoomId)
+                        <select class="form-control" id="RoomId" name="RoomId">
+                            <option value="">--Select Room--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">101</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">102</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Extn.</label>
-                        <select class="form-control">
-                            <option>--Select Extn--</option>
+                        @Html.LabelFor(m => m.ExtnId)
+                        <select class="form-control" id="ExtnId" name="ExtnId">
+                            <option value="">--Select Extn.--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Extn 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Extn 2</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Rate Code *</label>
-                        <input type="text" class="form-control" id="" placeholder="CORP">
-                    </div>
-                    
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Rate</label>
-                        <input type="text" class="form-control" id="" placeholder="90.00">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Curr.</label>
-                        <select class="form-control">
-                            <option>--Select Currency--</option>
-                            <option>USD</option>
-                        </select>
+                        @Html.LabelFor(m => m.RateCodeId) *
+                        @Html.DropDownListFor(m => m.RateCodeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
+                                "Select Rate Code",
+                                new { @class = "form-control" })
                     </div>
 
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Rate)
+                        @Html.TextBoxFor(m => m.Rate, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                    </div>
                     <div class="col-md-3 form-group m-t-lg m-r-n-lg">
-                        <label class="container1">
+                        <label class="container1" for="IsFixedRate">
                             Fixed Rate
-                            <input type="checkbox">
+                            @Html.CheckBoxFor(m => m.IsFixedRate)
                             <span class="checkmark"></span>
                         </label>
                     </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CurrencyId)
+                        <select class="form-control" id="CurrencyId" name="CurrencyId">
+                            <option value="">--Select Currency--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">USD</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">EUR</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F905">INR</option>
+                        </select>
+                    </div>
+
+
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Packages</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.PackageId)
+                        <select class="form-control" id="PackageId" name="PackageId">
+                            <option value="">--Select Packages--</option>
+                            <option value="F15C98B6-4FC0-4AB7-A34D-D98961B8F844">Packages 1</option>
+                            <option value="F15C99B6-4FC0-4AB7-A35D-D94861B9F745">Packages 2</option>
+                            <option value="F15C90B6-4FC0-4AB7-A36D-G92061B0F537">Packages 3</option>
+                        </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Block Code</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.BlockCodeId)
+                        <select class="form-control" id="BlockCodeId" name="BlockCodeId">
+                            <option value="">--Select Group Code--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group Code 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
+                        </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">ETA</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        <div class="bootstrap-timepicker">
+                            @Html.LabelFor(m => m.ETAText)
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.ETAText, new { @class = "form-control", placeholder = "hh:mm tt" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Res. Type *</label>
-                        <select class="form-control">
-                            <option>--Select Res. Type--</option>
+                        @Html.LabelFor(m => m.ReservationTypeId) *
+                        <select class="form-control" id="ReservationTypeId" name="ReservationTypeId">
+                            <option value="">--Select Reservation Type--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Credit Card</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">6pm Courtesy Hold</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Guarantee Type</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Market *</label>
-                        <select class="form-control">
-                            <option>--Select Market--</option>
+                        @Html.LabelFor(m => m.MarketId) *
+                        <select class="form-control" id="MarketId" name="MarketId">
+                            <option value="">--Select Market--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Market 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Market 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Market 3</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group"> 
+                        @Html.LabelFor(m => m.ReservationSourceId) *
+                        <select class="form-control" id="ReservationSourceId" name="ReservationSourceId">
+                            <option value="">--Select Reservation Source--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Guest Direct</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">CRS</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Internet</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Source *</label>
-                        <select class="form-control">
-                            <option>--Select Source--</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="" class="">Origin</label>
-                        <select class="form-control">
-                            <option>--Select Origin--</option>
+                        @Html.LabelFor(m => m.OriginId)
+                        <select class="form-control" id="OriginId" name="OriginId">
+                            <option value="">--Select Origin--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Origin 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Origin 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Origin 3</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Payment *</label>
-                        <select class="form-control">
-                            <option>--Select Payment--</option>
+                        @Html.LabelFor(m => m.PaymentMethodId) *
+                        <select class="form-control" id="PaymentMethodId" name="PaymentMethodId">
+                            <option value="">--Select Payment Method--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Visa</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">American Express</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Discover</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F939">Master Card</option>
                         </select>
                     </div>
 
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Credit Card Number</label>
-                        <input type="text" class="form-control" id="" placeholder="11111">
+                        @Html.LabelFor(m => m.CreditCardNo)
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card No" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Exp. Date</label>
-                        <div class="input-group date">
-                            <input type="text" class="form-control" id="datetimepicker4">
+                        @Html.LabelFor(m => m.CardExpiryDate)
+                        <div class="input-group">                            
+                            <input type="text" id="CardExpiryDate" name="CardExpiryDate"
+                                class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
+                        @*<div class="input-group date">
+
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>*@
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">CRS No.</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.CRSNo)
+                        @Html.TextBoxFor(m => m.CRSNo, new { @class = "form-control", placeholder = "CRS No." })
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Approval Code</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.ApprovalCode)
+                        @Html.TextBoxFor(m => m.ApprovalCode, new { @class = "form-control", placeholder = "Approval Code" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Approval Amt.</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.ApprovalAmount)
+                        @Html.TextBoxFor(m => m.ApprovalAmount, new { @class = "form-control", placeholder = "Approval Amt." })
                     </div>
 
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Suite With</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.SuitWith)
+                        @Html.TextBoxFor(m => m.SuitWith, new { @class = "form-control", placeholder = "Suit With" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg m-r-n-lg">
-                        <label class="container1">
+                        <label class="container1" for="IsEmailConfirmation">
                             Email Confirmation
-                            <input type="checkbox">
+                            @Html.CheckBoxFor(m => m.IsEmailConfirmation)
                             <span class="checkmark"></span>
                         </label>
                     </div>
@@ -297,60 +409,80 @@
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Guest Balance</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.GuestBalance)
+                        @Html.TextBoxFor(m => m.GuestBalance, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="col-xs-12 padding-zero">Disc. Amount</label>
-
+                        <label for="" class="col-xs-12 padding-zero">Disc. Amt</label>
                         <div class="col-md-5 col-sm-5 padding-zero">
-                            <input type="text" class="form-control" id="" placeholder="">
+                            @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
                         </div>
                         <div class="col-md-2 col-sm-2 padding-zero text-center">
                             <span>%</span>
                         </div>
                         <div class="col-md-5 col-sm-5 padding-zero">
-                            <input type="text" class="form-control" id="" placeholder="">
+                            @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
                         </div>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Reason</label>
-                        <select class="form-control">
-                            <option>--Select Reason--</option>
+                        @Html.LabelFor(m => m.DiscountReasonId)
+                        <select class="form-control" id="DiscountReasonId" name="DiscountReasonId">
+                            <option value="">--Select Reason--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Reason 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Reason 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Reason 3</option>
                         </select>
-                    </div>
-
+                    </div>                    
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">TA Rec Loc</label>
-                        <input type="text" class="form-control" id="" placeholder="0">
+                        @Html.LabelFor(m => m.TARecordLocator)
+                        @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Loc" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Specials</label>
-                        <select class="form-control">
-                            <option>--Select Specials--</option>
+                        @Html.LabelFor(m => m.SpecialsId)
+                        <select class="form-control" id="SpecialsId" name="SpecialsId">
+                            <option value="">--Select Specials--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Early Check in</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Down pillow</option>
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Comments</label>
-                        <select class="form-control">
-                            <option>--Select Comments--</option>
+                        @Html.LabelFor(m => m.ItemInventoryId)
+                        <select class="form-control" id="ItemInventoryId" name="ItemInventoryId">
+                            <option value="">--Select Item Inv.--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Rollaway Bed</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Crib</option>
                         </select>
                     </div>
+                    
+                </div>
+                <div class="row">
                     <div class="col-md-3 form-group">
-                        <label for="" class="">Item Inv.</label>
-                        <input type="text" class="form-control" id="" placeholder="">
+                        @Html.LabelFor(m => m.ReservationComments)
+                        @Html.TextAreaFor(m => m.ReservationComments, new { @class = "form-control", placeholder = "Reservation Comments", rows = "3" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.InHouseComments)
+                        @Html.TextAreaFor(m => m.InHouseComments, new { @class = "form-control", placeholder = "In-House Comments", rows = "3" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CashieringComments)
+                        @Html.TextAreaFor(m => m.CashieringComments, new { @class = "form-control", placeholder = "Cashiering Comments", rows = "3" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.HouseKeepingComments)
+                        @Html.TextAreaFor(m => m.HouseKeepingComments, new { @class = "form-control", placeholder = "House Keeping Comments", rows = "3" })
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-9 form-group">
-                        <label for="txtRemarks">Remarks</label>
-                        <textarea id="txtRemarks" class="form-control" rows="3" placeholder="Remarks"></textarea>
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
                     </div>
                     <div class="col-xs-3 form-group m-t-xl m-t-md_media">
-                        <button type="button" class="btn btn-info btn-sm">
+                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
                             Preference
                         </button>
                     </div>
@@ -368,12 +500,282 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer text-center">
-                <button type="submit" class="btn btn-success">Save</button>
-                <button type="submit" class="btn btn-danger">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="saveReservation();">Save</button>                
+                <a href="@Url.Action("List","Reservation")" class="btn btn-danger">Cancel</a>  
             </div>
             <!-- /.box-footer -->
-        </form>
+        }
     </div>
 </section>
 
 <!-- This is the add reservation form-->
+
+<!-- Preference Modal Popup START -->
+<div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Preferences</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("~/Views/Preference/_Preferences.cshtml", preferenceList)
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
+                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Preference Modal Popup END -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //CardExpiryDate mm/yyyy
+        $('#CardExpiryDate').inputmask('mm/yyyy', { 'placeholder': 'mm/yyyy' });
+
+        //Date picker
+        $('#ArrivalDate').datepicker({
+            startDate: new Date(),
+            autoclose: true
+        });
+
+        $('#DepartureDate').datepicker({
+            startDate: new Date(),
+            autoclose: true
+        });
+
+        //Timepicker
+        $('#ETAText').timepicker({
+            showInputs: false
+        });
+    });
+
+    function openPreferenceModal() {
+        $('#preferenceModal').modal('toggle');
+
+        bindSelectedPreferences();
+    }
+
+    function bindSelectedPreferences() {
+
+        //First clear all the checkboxes.
+        clearPreferencesCheckBox();
+
+        var preferenceIds = $('#PreferenceItems').val();
+
+        if (!IsNullOrEmpty(preferenceIds)) {
+
+            var preferenceIdsArr = preferenceIds.split(',');
+
+            $.each(preferenceIdsArr, function (index, value) {
+                console.log(value);
+                $(".chkPreference").each(function () {
+                    if ($(this).val() == value) {
+                        $(this).prop("checked", true);
+                        return false;
+                    }
+                });
+            });
+        }
+    }
+
+    function selectPreferences() {
+        var preferenceIds = "";
+        var html = "";
+
+        $("input:checkbox[class=chkPreference]:checked").each(function () {
+            preferenceIds += $(this).val() + ",";
+
+            html += $(this).attr("data-preference") + ", ";
+        });
+
+        //Remove last comma.
+        if (!IsNullOrEmpty(preferenceIds)) {
+            var lastChar = preferenceIds.slice(-1);
+            if (lastChar == ',') {
+                preferenceIds = preferenceIds.slice(0, -1);
+                html = $.trim(html).slice(0, -1);
+            }
+
+            $('#divSelectedPreference').show();
+            $('#PreferenceItems').val(preferenceIds);
+            $('#ListOfSelectedPreferences').html(html);
+        } else {
+            $('#PreferenceItems').val('');
+            $('#ListOfSelectedPreferences').html('');
+            $('#divSelectedPreference').hide();
+        }
+
+        console.log(preferenceIds);
+
+        $('#preferenceModal').modal('toggle');
+    }
+
+    function clearPreferencesCheckBox() {
+        $(".chkPreference").each(function () {
+            $(this).prop("checked", false);
+        });
+    }
+
+    function validateReservationData() {
+        var lastName = $('#LastName').val();
+        var arrivalDate = $('#ArrivalDate').val();
+        var departureDate = $('#DepartureDate').val();
+        var roomTypeId = $('#RoomTypeId').val();
+        var rateCodeId = $('#RateCodeId').val();
+        var reservationTypeId = $('#ReservationTypeId').val();
+        var marketId = $('#MarketId').val();
+        var reservationSourceId = $('#ReservationSourceId').val();
+        var paymentMethodId = $('#PaymentMethodId').val();
+
+        var errorMessage = "";
+        var blnValid = true;
+
+        if (IsNullOrEmpty(lastName)) {
+            errorMessage += "Please enter last name." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (IsNullOrEmpty(arrivalDate)) {
+            errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+        if (IsNullOrEmpty(departureDate)) {
+            errorMessage += "Please select departure date." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
+            var objArrivalDate = new Date(arrivalDate);
+            var objDepartureDate = new Date(departureDate);
+
+            if (objArrivalDate > objDepartureDate) {
+                errorMessage += "Arrival date must be less than departure date." + Delimeter.BREAKLINE;
+                blnValid = false;
+            }
+        }
+
+        if (IsNullOrEmpty(roomTypeId)) {
+            errorMessage += "Please select room type." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (IsNullOrEmpty(rateCodeId)) {
+            errorMessage += "Please select rate code." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (IsNullOrEmpty(reservationTypeId)) {
+            errorMessage += "Please select reservation type." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (IsNullOrEmpty(marketId)) {
+            errorMessage += "Please select market." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (IsNullOrEmpty(reservationSourceId)) {
+            errorMessage += "Please select reservation source." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (IsNullOrEmpty(paymentMethodId)) {
+            errorMessage += "Please select payment method." + Delimeter.BREAKLINE;
+            blnValid = false;
+        }
+
+        if (!blnValid) {
+            showToaster(errorMessage, ToasterType.ERROR);
+            return false;
+        }
+        return blnValid;
+
+    }
+
+    function saveReservation() {
+        if (validateReservationData()) {
+
+            //Ajax Request to create reservation.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Reservation/Create")',
+                type: 'POST',
+                data: $('#frmReservation').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Reservation details saved successfully.", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('/Reservation/List');
+                        }, 1000);
+                        
+                    }
+                }
+            });
+        }
+    }
+
+    function calculateNoOfNights() {
+        var arrivalDate = $('#ArrivalDate').val();
+        var departureDate = $('#DepartureDate').val();
+        var noOfNight = 1;
+
+        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {            
+            var objArrivalDate = new Date(arrivalDate);
+            var objDepartureDate = new Date(departureDate);
+            var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());            
+            var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (!IsNullOrEmpty(diffDays)) {
+                noOfNight = diffDays > 0 ? diffDays : 1;
+            }
+
+            $('#NoOfNight').val(noOfNight);
+        }
+    }
+
+    function calculateDepartureDate() {
+        var arrivalDate = $('#ArrivalDate').val();
+        var noOfNight = $('#NoOfNight').val();
+        var departureDate = '';
+
+        if (!IsNullOrEmpty(arrivalDate)) {
+            var objArrivalDate = new Date(arrivalDate);            
+            var dt = objArrivalDate;
+            if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
+                dt.setDate(objArrivalDate.getDate() + parseInt(noOfNight));
+            } else {
+                dt.setDate(objArrivalDate.getDate() + 1);
+            }
+
+            if (dt != null) {
+                //MM/dd/yyyy
+                departureDate = GetDate(dt, DateFormat.MMDDYYYY);
+                //$('#DepartureDate').val(departureDate);
+                $("#DepartureDate").datepicker("setDate", new Date(departureDate));
+            }
+        }
+    }
+</script>
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
+    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
+}

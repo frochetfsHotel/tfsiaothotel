@@ -30,4 +30,7 @@
     .padding-right-media-sm{
         padding-right: 0;
     }
+    .modal-dialog {
+    width: 80%;
+}
 }
