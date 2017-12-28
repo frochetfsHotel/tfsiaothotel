@@ -1,0 +1,216 @@
+﻿@model SuccessHotelierHub.Models.SearchAdvanceProfileParametersVM
+
+@{ 
+
+    var sourceRedirectionParam = "";
+
+    sourceRedirectionParam = (string) ViewData["Source"];
+}
+
+<form id="frmAdvanceProfileSearch" name="frmAdvanceProfileSearch" enctype="multipart/form-data" method="post">
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.LastName)
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.FirstName)
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.ViewBy)
+            <select class="form-control" id="ViewBy" name="ViewBy">
+                <option value="">--Select--</option>
+                <option value="EDD50DD1-BCC2-49CC-9052-60B1BBCB6491">Individual</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.City)
+            @Html.TextBoxFor(m => m.City, new { @class = "form-control", placeholder = "City" })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.PostalCode)
+            @Html.TextBoxFor(m => m.City, new { @class = "form-control", placeholder = "Postal Code" })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.MemberTypeId)
+            <select class="form-control" id="MemberTypeId" name="MemberTypeId">
+                <option value="">--Select Member Type--</option>
+                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
+                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
+                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.MemberNo)
+            @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member No." })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.Keyword)
+            @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", placeholder = "Keyword" })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.Communication)
+            @Html.TextBoxFor(m => m.Communication, new { @class = "form-control", placeholder = "Communication" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.ClientID)
+            @Html.TextBoxFor(m => m.ClientID, new { @class = "form-control", placeholder = "Client ID" })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.IATANo)
+            @Html.TextBoxFor(m => m.IATANo, new { @class = "form-control", placeholder = "IATA No." })
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            @Html.LabelFor(m => m.CorpNo)
+            @Html.TextBoxFor(m => m.CorpNo, new { @class = "form-control", placeholder = "Corp No." })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            <label class="container1" for="IsNegRates">
+                Neg. Rates
+                @Html.CheckBoxFor(m => m.IsNegRates)
+                <span class="checkmark"></span>
+            </label>
+
+        </div>
+
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            <label class="container1" for="IsShowInActive">
+                Show Inactive
+                @Html.CheckBoxFor(m => m.IsShowInActive, new { @checked= "checked"})
+                <span class="checkmark"></span>
+            </label>
+        </div>
+    </div>
+    <div class="col-xs-12 text-center m-b-md padding-zero">
+        <hr class="hr_margin" />
+        <button type="button" class="btn btn-success m-r-xs" onclick="searchProfile()">Search</button>
+        <button type="button" class="btn btn-danger" onclick="clearProfileSearch()">Clear</button>
+    </div>
+
+    <div class="table-responsive" style="min-height:225px; height:225px;">
+        <table class="table table-bordered table-hover table-striped" id="tblProfile">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Postal Code</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-xs-12 text-center m-b-md padding-zero">
+        <hr class="hr_margin" />
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchProfileOk">Ok</button>
+        <button type="button" class="btn btn-success m-r-xs" onclick="addNewProfile()">New</button>
+        <button type="button" class="btn btn-warning m-r-xs" onclick="editSelectedProfile()">Edit</button>
+        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    function searchProfile() {
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (result) {
+                showToaster(result.responseText, ToasterType.ERROR);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Profile/SearchAdvanceProfile")',
+            type: 'POST',
+            data: $('#frmAdvanceProfileSearch').serialize(),
+            success: function (response) {                
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    //Show data in table.
+                    var result = response.data;
+
+                    $("#tblProfile tbody").empty();
+                    var tbody = $("#tblProfile tbody");
+
+                    var markup = "";
+
+                    //Add the data rows.
+                    for (var i = 0; i < result.length; i++) {
+                        markup += "<tr>";
+
+                        markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbProfile_" + result[i].Id + "\' name=\'rbProfile\' value=\'" + result[i].Id + "\'  data-firstname=\'" + result[i].FirstName + "\'  data-lastname=\'" + result[i].LastName + "\'/></td>";
+                        markup += "<td>" + result[i].LastName + "</td>";
+                        markup += "<td>" + result[i].FirstName + "</td>";
+                        markup += "<td>" + result[i].Address + "</td>";
+                        markup += "<td>" + result[i].City + "</td>";
+                        markup += "<td>" + result[i].ZipCode + "</td>";
+                        markup += "<td>" + result[i].Email + "</td>";
+
+                        markup += "</tr>";
+                    }
+
+                    tbody.append(markup);
+                }
+            }
+        });
+    }
+
+    function clearProfileSearch() {
+        $('#LastName').val('');
+        $('#FirstName').val('');
+        $('#ViewBy').val('');
+        $('#City').val('');
+        $('#PostalCode').val('');
+        $('#MemberTypeId').val('');
+        $('#MemberNo').val('');
+        $('#Keyword').val('');
+        $('#Communication').val('');
+        $('#ClientID').val('');
+        $('#IATANo').val('');
+        $('#CorpNo').val('');
+        $('#IsNegRates').prop("checked", false);
+        $('#IsShowInActive').prop("checked", true);
+
+        $("#tblProfile tbody").empty();
+    }
+
+
+    function addNewProfile() {
+        var url = '@Url.Content("~/Profile/CreateIndividualProfile")' + "?source=@sourceRedirectionParam";        
+        redirectTo(url);
+    }
+
+    function editSelectedProfile() {
+        var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');
+
+        if (selectedProfile.val()) {
+            var profileId = $(selectedProfile).val();
+            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=@sourceRedirectionParam";            
+            redirectTo(url);
+        } else {
+            showToaster("Please select any one profile.", ToasterType.ERROR);
+        }
+    }
+
+</script>

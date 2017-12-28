@@ -1,0 +1,19 @@
+﻿@model IEnumerable<SuccessHotelierHub.Models.PreferenceVM>
+
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (var preference in Model)
+    {
+        <label class="col-md-4 col-sm-4 col-xs-6 container1">
+            @preference.Description
+            <input type="checkbox" id="@("chkPreference_" + preference.Id)" name="@("chkPreference_" + preference.Id)" class="chkPreference" data-preference="@preference.Description" value="@preference.Id">
+            <span class="checkmark"></span>
+        </label>
+    }
+}
+else
+{
+    <h2>No Preferences Found.</h2>
+}
+
+<div class="clearfix"></div>

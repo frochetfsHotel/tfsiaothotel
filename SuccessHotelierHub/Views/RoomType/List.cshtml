@@ -1,0 +1,267 @@
+﻿@model SuccessHotelierHub.Models.SearchRoomTypeParametersVM
+@{
+    ViewBag.Title = "Search Room Type";
+}
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "RoomTypeGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Room Type <small>List</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Room Type</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Room Type</h3>
+            <div class="pull-right box-tools m-r-md">
+                <a href="@Url.Action("Create","RoomType")"
+                   class="btn btn-info btn-sm" style="color: #fff" data-toggle="tooltip" title=""
+                   data-original-title="Add Room Type"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+        <form class="frmRoomTypeList" enctype="multipart/form-data" method="post">
+            <div class="box-body">
+                <div class="col-xs-12 padding-zero">
+                    <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                        <label for="RoomTypeCode" class="">Room Type Code</label>
+                        @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                        <label for="NoOfRooms" class="">No Of Rooms</label>
+                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms" })
+                    </div>
+
+                    <div class="col-md-4 col-sm-4 col-xs-12 mt-23 mt-23-media padding_left padding-right-media form-group">
+                        <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRoomType()">Search</button>
+                        <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRoomType()">Clear</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-sm">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblRoomTypes">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Room Type Code</th>
+                                    <th>Description</th>
+                                    <th>No Of Rooms</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RoomTypeGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdRoomType;
+
+    $(document).ready(function () {
+        setTimeout(InitializeRoomTypeGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+
+    function SearchRoomTypeParameters(d) {
+        var roomTypeCode = $('#RoomTypeCode').val();
+        var noOfRooms = $('#NoOfRooms').val();
+
+        d.PageNum = currentPage;
+        d.RoomTypeCode = roomTypeCode;
+        d.NoOfRooms = noOfRooms;
+    }
+
+    function RoomTypeGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadRoomTypeGrid() {
+        grdRoomType.ajax.url("@Url.Content("~/RoomType/Search")").load();
+    }
+
+    function RoomTypeGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadRoomTypeGrid();
+    }
+
+
+    function InitializeRoomTypeGrid() {
+        grdRoomType = $('#tblRoomTypes').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RoomType/Search")',
+                data: SearchRoomTypeParameters,
+                dataSrc: RoomTypeGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                "visible": false
+            },
+            {
+                targets: 1,
+                data: "RoomTypeCode",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "Description",
+                orderable: false
+            },
+            {
+                targets: 3,
+                data: "NoOfRooms",
+                orderable: true
+            },
+            {
+                targets: 4,
+                data: "IsActive",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isActive = full.IsActive;
+                    if (isActive == true) {
+                        return "Active";
+                    } else {
+                        return "InActive";
+                    }
+                }
+            },
+            {
+                targets: 5,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoRoomTypeEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs"'
+                        + ' onclick="deleteRoomType(this,event,\'' + full.Id + '\')">Delete</button>';
+                }
+            }
+            ],
+            order: [[ 0, "desc" ]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function GotoRoomTypeEdit(Id) {
+        var url = '@Url.Content("~/RoomType/Edit/")' + Id;
+        redirectTo(url);
+    }
+
+    function searchRoomType() {
+        currentPage = 1;
+        ReloadRoomTypeGrid();
+    }
+
+    function clearRoomType() {
+        $('#RoomTypeCode').val('');
+        $('#NoOfRooms').val('');
+
+        searchRoomType();
+    }
+
+    function deleteRoomType(item, e, id) {
+
+        if (confirm("Are you sure do you want to delete ?")) {
+
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RoomType/Delete")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.IsSuccess == true) {
+
+                        var tr = $('#tblRoomTypes  tbody tr#' + id)
+                        var row = grdRoomType.row(tr);
+                        var rowNode = row.node();
+                        row.remove();
+                        grdRoomType.draw();
+
+                        showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            });
+        }
+
+    }
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

@@ -1,0 +1,267 @@
+﻿@model SuccessHotelierHub.Models.SearchRateTypeParametersVM
+@{
+    ViewBag.Title = "Search Rate Type";
+}
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "RateTypeGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Rate Type <small>List</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Rate Type</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Rate Type</h3>
+            <div class="pull-right box-tools m-r-md">
+                <a href="@Url.Action("Create","RateType")"
+                   class="btn btn-info btn-sm" style="color: #fff" data-toggle="tooltip" title=""
+                   data-original-title="Add Rate Type"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+        <form class="frmRateTypeList" enctype="multipart/form-data" method="post">
+            <div class="box-body">
+                <div class="col-xs-12 padding-zero">
+                    <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                        <label for="RateTypeCode" class="">Rate Type Code</label>
+                        @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                        <label for="Amount" class="">Amount</label>
+                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount" })
+                    </div>
+
+                    <div class="col-md-4 col-sm-4 col-xs-12 mt-23 mt-23-media padding_left padding-right-media form-group">
+                        <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRateType()">Search</button>
+                        <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRateType()">Clear</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-sm">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblRateTypes">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Rate Type Code</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RateTypeGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdRateType;
+
+    $(document).ready(function () {
+        setTimeout(InitializeRateTypeGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+
+    function SearchRateTypeParameters(d) {
+        var rateTypeCode = $('#RateTypeCode').val();
+        var amount = $('#Amount').val();
+
+        d.PageNum = currentPage;
+        d.RateTypeCode = rateTypeCode;
+        d.Amount = amount;
+    }
+
+    function RateTypeGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {            
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadRateTypeGrid() {
+        grdRateType.ajax.url("@Url.Content("~/RateType/Search")").load();
+    }
+
+    function RateTypeGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadRateTypeGrid();
+    }
+
+
+    function InitializeRateTypeGrid() {
+        grdRateType = $('#tblRateTypes').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RateType/Search")',
+                data: SearchRateTypeParameters,
+                dataSrc: RateTypeGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                "visible": false
+            },
+            {
+                targets: 1,
+                data: "RateTypeCode",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "Description",
+                orderable: false
+            },
+            {
+                targets: 3,
+                data: "Amount",
+                orderable: true
+            },
+            {
+                targets: 4,
+                data: "IsActive",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isActive = full.IsActive;
+                    if (isActive == true) {
+                        return "Active";
+                    } else {
+                        return "InActive";
+                    }
+                }
+            },
+            {
+                targets: 5,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoRateTypeEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs"'
+                        + ' onclick="deleteRateType(this,event,\'' + full.Id + '\')">Delete</button>';
+                }
+            }
+            ],
+            order: [[ 0, "desc" ]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function GotoRateTypeEdit(Id) {
+        var url = '@Url.Content("~/RateType/Edit/")' + Id;
+        redirectTo(url);
+    }
+
+    function searchRateType() {
+        currentPage = 1;
+        ReloadRateTypeGrid();
+    }
+
+    function clearRateType() {
+        $('#RateTypeCode').val('');
+        $('#Amount').val('');
+
+        searchRateType();
+    }
+
+    function deleteRateType(item, e, id) {
+
+        if (confirm("Are you sure do you want to delete ?")) {
+
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {                    
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RateType/Delete")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.IsSuccess == true) {
+
+                        var tr = $('#tblRateTypes  tbody tr#' + id)
+                        var row = grdRateType.row(tr);
+                        var rowNode = row.node();
+                        row.remove();
+                        grdRateType.draw();
+                                                
+                        showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                    }
+                    else {                        
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            });
+        }
+
+    }
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}
