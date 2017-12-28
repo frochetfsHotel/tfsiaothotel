@@ -5,19 +5,19 @@
 
     var preferenceList = (List<PreferenceVM>)ViewBag.PreferenceList;
 
-    string arrivalDate = string.Empty;
-    string departureDate = string.Empty;
+    //string arrivalDate = string.Empty;
+    //string departureDate = string.Empty;
     string ETAText = string.Empty;
 
-    if (Model.ArrivalDate.HasValue && Model.ArrivalDate.Value != null)
-    {
-        arrivalDate = Model.ArrivalDate.Value.ToString("MM/dd/yyyy");
-    }
+    //if (Model.ArrivalDate.HasValue && Model.ArrivalDate.Value != null)
+    //{
+    //    arrivalDate = Model.ArrivalDate.Value.ToString("MM/dd/yyyy");
+    //}
 
-    if (Model.DepartureDate.HasValue && Model.DepartureDate.Value != null)
-    {
-        departureDate = Model.DepartureDate.Value.ToString("MM/dd/yyyy");
-    }
+    //if (Model.DepartureDate.HasValue && Model.DepartureDate.Value != null)
+    //{
+    //    departureDate = Model.DepartureDate.Value.ToString("MM/dd/yyyy");
+    //}
 
     if (Model.ETA.HasValue && Model.ETA.Value != null)
     {
@@ -68,6 +68,7 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.LastName) *
                         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.FirstName)
@@ -180,13 +181,14 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ArrivalDate) *
                         <div class="input-group date">
-                            @*@Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control", placeholder = "MM/dd/yyyy" })*@
-                            <input type="text" id="ArrivalDate" name="ArrivalDate" value="@arrivalDate" class="form-control"
-                                   placeholder="MM/dd/yyyy" />
+                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:MM/dd/yyyy}", new { @class = "form-control datecontrol formnovalidate", @placeholder = "MM/dd/yyyy" })
+                            @*<input type="text" id="ArrivalDate" name="ArrivalDate" value="@arrivalDate" class="form-control"
+                                placeholder="MM/dd/yyyy" />*@
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
+                        @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfNight)
@@ -195,13 +197,13 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DepartureDate) *
                         <div class="input-group date">
-                            @*@Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control", placeholder = "MM/dd/yyyy" })*@
-                            <input type="text" id="DepartureDate" name="DepartureDate" value="@departureDate" class="form-control"
-                                   placeholder="MM/dd/yyyy" onchange = "calculateNoOfNights();"/>
+                            @Html.TextBoxFor(m => m.DepartureDate, "{0:MM/dd/yyyy}", new { @class = "form-control datecontrol formnovalidate", @placeholder = "MM/dd/yyyy" })
+                            @*<input type="text" id="DepartureDate" name="DepartureDate" value="@departureDate" class="form-control" placeholder="MM/dd/yyyy" onchange = "calculateNoOfNights();"/>*@
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
+                        @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfAdult)
@@ -218,6 +220,7 @@
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
                                 "Select Room Type",
                                 new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -258,6 +261,7 @@
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
                                 "Select Rate Code",
                                 new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.RateCodeId, "", new { @class = "text-danger" })
                     </div>
 
                     <div class="col-md-3 form-group">
@@ -306,7 +310,7 @@
                     <div class="col-md-3 form-group">
                         <div class="bootstrap-timepicker">
                             @Html.LabelFor(m => m.ETAText)
-                            <div class="input-group">                                
+                            <div class="input-group">
                                 <input type="text" id="ETAText" name="ETAText" value="@ETAText" class="form-control"
                                        placeholder="hh:mm tt" />
                                 <div class="input-group-addon">
@@ -320,30 +324,55 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationTypeId) *
-                        <select class="form-control" id="ReservationTypeId" name="ReservationTypeId">
-                            <option value="">--Select Reservation Type--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Credit Card</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">6pm Courtesy Hold</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Guarantee Type</option>
-                        </select>
+                        @*<select class="form-control" id="ReservationTypeId" name="ReservationTypeId">
+                                <option value="">--Select Reservation Type--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Credit Card</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">6pm Courtesy Hold</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Guarantee Type</option>
+                            </select>*@
+                        @Html.DropDownListFor(m => m.ReservationTypeId, new List<SelectListItem>
+                            {
+                                new SelectListItem{ Text="Select Reservation Type", Value = "" },
+                                new SelectListItem{ Text="Credit Card", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
+                                new SelectListItem{ Text="6pm Courtesy Hold", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
+                                new SelectListItem{ Text="Guarantee Type", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
+                            }, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ReservationTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.MarketId) *
-                        <select class="form-control" id="MarketId" name="MarketId">
-                            <option value="">--Select Market--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Market 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Market 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Market 3</option>
-                        </select>
+                        @*<select class="form-control" id="MarketId" name="MarketId">
+                                <option value="">--Select Market--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Market 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Market 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Market 3</option>
+                            </select>*@
+                        @Html.DropDownListFor(m => m.MarketId, new List<SelectListItem>
+                            {
+                                new SelectListItem{ Text = "--Select Market--", Value = "" },
+                                new SelectListItem{ Text = "Market 1", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
+                                new SelectListItem{ Text = "Market 2", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
+                                new SelectListItem{ Text = "Market 3", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
+                            }, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.MarketId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationSourceId) *
-                        <select class="form-control" id="ReservationSourceId" name="ReservationSourceId">
-                            <option value="">--Select Reservation Source--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Guest Direct</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">CRS</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Internet</option>
-                        </select>
+                        @*<select class="form-control" id="ReservationSourceId" name="ReservationSourceId">
+                                <option value="">--Select Reservation Source--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Guest Direct</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">CRS</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Internet</option>
+                            </select>*@
+                        @Html.DropDownListFor(m => m.ReservationSourceId, new List<SelectListItem>
+                            {
+                                new SelectListItem{ Text = "--Select Market--", Value = "" },
+                                new SelectListItem{ Text = "Guest Direct", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
+                                new SelectListItem{ Text = "CRS", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
+                                new SelectListItem{ Text = "Internet", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
+                            }, htmlAttributes: new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.OriginId)
@@ -359,13 +388,23 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.PaymentMethodId) *
-                        <select class="form-control" id="PaymentMethodId" name="PaymentMethodId">
-                            <option value="">--Select Payment Method--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Visa</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">American Express</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Discover</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F939">Master Card</option>
-                        </select>
+                        @*<select class="form-control" id="PaymentMethodId" name="PaymentMethodId">
+                                <option value="">--Select Payment Method--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Visa</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">American Express</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Discover</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F939">Master Card</option>
+                            </select>*@
+                        @Html.DropDownListFor(m => m.PaymentMethodId, new List<SelectListItem>
+                            {
+                                new SelectListItem{ Text = "--Select Payment Method--", Value = "" },
+                                new SelectListItem{ Text = "Visa", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
+                                new SelectListItem{ Text = "American Express", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
+                                new SelectListItem{ Text = "Discover", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
+                                new SelectListItem{ Text = "Master Card", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F939" },
+                            }, htmlAttributes: new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
                     </div>
 
                     <div class="col-md-3 form-group">
@@ -436,7 +475,7 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Reason 2</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Reason 3</option>
                         </select>
-                    </div>                    
+                    </div>
                 </div>
 
                 <div class="row">
@@ -459,7 +498,7 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Rollaway Bed</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Crib</option>
                         </select>
-                    </div>                    
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3 form-group">
@@ -555,7 +594,7 @@
             showInputs: false
         });
 
-        //Show value of selected drop down.        
+        //Show value of selected drop down.
         $('#ReservationTypeId').val('@Convert.ToString(Model.ReservationTypeId).ToUpper()');
         $('#MarketId').val('@Convert.ToString(Model.MarketId).ToUpper()');
         $('#ReservationSourceId').val('@Convert.ToString(Model.ReservationSourceId).ToUpper()');
@@ -616,7 +655,7 @@
                 preferenceIds = preferenceIds.slice(0, -1);
                 html = $.trim(html).slice(0, -1);
             }
-                        
+
             $('#PreferenceItems').val(preferenceIds);
             showSelectedPreferences();
         } else {
@@ -659,84 +698,88 @@
     }
 
     function validateReservationData() {
-        var lastName = $('#LastName').val();
-        var arrivalDate = $('#ArrivalDate').val();
-        var departureDate = $('#DepartureDate').val();
-        var roomTypeId = $('#RoomTypeId').val();
-        var rateCodeId = $('#RateCodeId').val();
-        var reservationTypeId = $('#ReservationTypeId').val();
-        var marketId = $('#MarketId').val();
-        var reservationSourceId = $('#ReservationSourceId').val();
-        var paymentMethodId = $('#PaymentMethodId').val();
+        //var lastName = $('#LastName').val();
+        //var arrivalDate = $('#ArrivalDate').val();
+        //var departureDate = $('#DepartureDate').val();
+        //var roomTypeId = $('#RoomTypeId').val();
+        //var rateCodeId = $('#RateCodeId').val();
+        //var reservationTypeId = $('#ReservationTypeId').val();
+        //var marketId = $('#MarketId').val();
+        //var reservationSourceId = $('#ReservationSourceId').val();
+        //var paymentMethodId = $('#PaymentMethodId').val();
 
         var errorMessage = "";
         var blnValid = true;
 
-        if (IsNullOrEmpty(lastName)) {
-            errorMessage += "Please enter last name." + Delimeter.BREAKLINE;
+        //if (IsNullOrEmpty(lastName)) {
+        //    errorMessage += "Please enter last name." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (IsNullOrEmpty(arrivalDate)) {
+        //    errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+        //if (IsNullOrEmpty(departureDate)) {
+        //    errorMessage += "Please select departure date." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
+        //    var objArrivalDate = new Date(arrivalDate);
+        //    var objDepartureDate = new Date(departureDate);
+
+        //    if (objArrivalDate > objDepartureDate) {
+        //        errorMessage += "Arrival date must be less than departure date." + Delimeter.BREAKLINE;
+        //        blnValid = false;
+        //    }
+        //}
+
+        //if (IsNullOrEmpty(roomTypeId)) {
+        //    errorMessage += "Please select room type." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (IsNullOrEmpty(rateCodeId)) {
+        //    errorMessage += "Please select rate code." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (IsNullOrEmpty(reservationTypeId)) {
+        //    errorMessage += "Please select reservation type." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (IsNullOrEmpty(marketId)) {
+        //    errorMessage += "Please select market." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (IsNullOrEmpty(reservationSourceId)) {
+        //    errorMessage += "Please select reservation source." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (IsNullOrEmpty(paymentMethodId)) {
+        //    errorMessage += "Please select payment method." + Delimeter.BREAKLINE;
+        //    blnValid = false;
+        //}
+
+        //if (!blnValid) {
+        //    showToaster(errorMessage, ToasterType.ERROR);
+        //    return false;
+        //}
+
+        if ($("#frmReservation").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
 
-        if (IsNullOrEmpty(arrivalDate)) {
-            errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-        if (IsNullOrEmpty(departureDate)) {
-            errorMessage += "Please select departure date." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-            var objArrivalDate = new Date(arrivalDate);
-            var objDepartureDate = new Date(departureDate);
-
-            if (objArrivalDate > objDepartureDate) {
-                errorMessage += "Arrival date must be less than departure date." + Delimeter.BREAKLINE;
-                blnValid = false;
-            }
-        }
-
-        if (IsNullOrEmpty(roomTypeId)) {
-            errorMessage += "Please select room type." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (IsNullOrEmpty(rateCodeId)) {
-            errorMessage += "Please select rate code." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (IsNullOrEmpty(reservationTypeId)) {
-            errorMessage += "Please select reservation type." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (IsNullOrEmpty(marketId)) {
-            errorMessage += "Please select market." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (IsNullOrEmpty(reservationSourceId)) {
-            errorMessage += "Please select reservation source." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (IsNullOrEmpty(paymentMethodId)) {
-            errorMessage += "Please select payment method." + Delimeter.BREAKLINE;
-            blnValid = false;
-        }
-
-        if (!blnValid) {
-            showToaster(errorMessage, ToasterType.ERROR);
-            return false;
-        }
         return blnValid;
-
     }
 
     function updateReservation() {
         if (validateReservationData()) {
-
             //Ajax Request to edit reservation.
             $.ajax({
                 beforeSend: function (xhr) {
@@ -773,10 +816,10 @@
         var departureDate = $('#DepartureDate').val();
         var noOfNight = 1;
 
-        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {            
+        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
             var objArrivalDate = new Date(arrivalDate);
             var objDepartureDate = new Date(departureDate);
-            var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());            
+            var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
             if (!IsNullOrEmpty(diffDays)) {
@@ -793,7 +836,7 @@
         var departureDate = '';
 
         if (!IsNullOrEmpty(arrivalDate)) {
-            var objArrivalDate = new Date(arrivalDate);            
+            var objArrivalDate = new Date(arrivalDate);
             var dt = objArrivalDate;
             if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
                 dt.setDate(objArrivalDate.getDate() + parseInt(noOfNight));

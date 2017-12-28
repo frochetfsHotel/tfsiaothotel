@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace SuccessHotelierHub.Models
 {
@@ -14,9 +15,10 @@ namespace SuccessHotelierHub.Models
         public Guid? TitleId { get; set; }
 
         [DisplayName("Last Name")]
+        [Required(ErrorMessage = "Please enter last name.")]
         public string LastName { get; set; }
 
-        [DisplayName("First Name")]
+        [DisplayName("First Name")]        
         public string FirstName { get; set; }
 
         public Guid? ProfileId { get; set; }
@@ -58,12 +60,18 @@ namespace SuccessHotelierHub.Models
         public Guid? ContactId { get; set; }
 
         [DisplayName("Arrival Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [Required(ErrorMessage = "Please select arrival date.")]
         public DateTime? ArrivalDate { get; set; }
 
         [DisplayName("Nights")]
         public int NoOfNight { get; set; }
 
         [DisplayName("Departure Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [Required(ErrorMessage = "Please select departure date.")]
         public DateTime? DepartureDate { get; set; }
 
         [DisplayName("Adults")]
@@ -76,6 +84,7 @@ namespace SuccessHotelierHub.Models
         public int NoOfRoom { get; set; }
 
         [DisplayName("Room Type")]
+        [Required(ErrorMessage = "Please select room type.")]
         public Guid? RoomTypeId { get; set; }
 
         [DisplayName("RTC")]
@@ -88,6 +97,7 @@ namespace SuccessHotelierHub.Models
         public Guid? ExtnId { get; set; }
 
         [DisplayName("Rate Code")]
+        [Required(ErrorMessage = "Please select rate code.")]
         public Guid? RateCodeId { get; set; }
 
         [DisplayName("Fixed Rate")]
@@ -112,18 +122,22 @@ namespace SuccessHotelierHub.Models
         public string ETAText { get; set; }
 
         [DisplayName("Res. Type")]
+        [Required(ErrorMessage = "Please select reservation type.")]
         public Guid? ReservationTypeId { get; set; }
 
         [DisplayName("Market")]
+        [Required(ErrorMessage = "Please select market.")]
         public Guid? MarketId { get; set; }
 
         [DisplayName("Source")]
+        [Required(ErrorMessage = "Please select reservation source.")]
         public Guid? ReservationSourceId { get; set; }
 
         [DisplayName("Origin")]
         public Guid? OriginId { get; set; }
 
         [DisplayName("Payment")]
+        [Required(ErrorMessage ="Please select payment method.")]
         public Guid? PaymentMethodId { get; set; }
 
         [DisplayName("Credit Card No")]

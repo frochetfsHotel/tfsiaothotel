@@ -1,0 +1,16 @@
+﻿@using SuccessHotelierHub.Models
+@{ 
+    var roomList = (List<RoomVM>)ViewBag.RoomList;
+    var noOfRooms = (int)ViewBag.NoOfRooms;
+
+}
+
+<table class="table table-bordered table-hover table-striped" id="tblRoom">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+</table>

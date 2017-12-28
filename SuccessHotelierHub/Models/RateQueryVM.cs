@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -9,12 +10,17 @@ namespace SuccessHotelierHub.Models
     public class RateQueryVM
     {
         [DisplayName("Arrival Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [Required(ErrorMessage = "Please select arrival date.")]
         public DateTime? ArrivalDate { get; set; }
 
         [DisplayName("No Of Night")]
         public int NoOfNight { get; set; }
 
         [DisplayName("Departure Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]        
         public DateTime? DepartureDate { get; set; }
 
         [DisplayName("No Of Adult")]
@@ -29,6 +35,7 @@ namespace SuccessHotelierHub.Models
         public Guid? ProfileId { get; set; }
 
         [DisplayName("Name")]
+        [Required(ErrorMessage = "Please search and select client name.")]
         public string Name { get; set; }
 
         public string LastName { get; set; }

@@ -44,6 +44,8 @@ namespace SuccessHotelierHub
                       "~/Scripts/AdminLTE/demo.js",
                       "~/Scripts/Custom/common.js"
                       ));
+
+            BundleTable.EnableOptimizations = false;
         }
     }
 }

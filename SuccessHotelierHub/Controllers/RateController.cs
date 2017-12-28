@@ -26,7 +26,7 @@ namespace SuccessHotelierHub.Controllers
 
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.RateTypeList = ratetypeList;
-
+            
             return View();
         }
 

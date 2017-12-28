@@ -22,7 +22,9 @@ namespace SuccessHotelierHub.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            return View();
+            PreferenceVM model = new PreferenceVM();
+            model.IsActive = true;
+            return View(model);
         }
 
         [HttpPost]

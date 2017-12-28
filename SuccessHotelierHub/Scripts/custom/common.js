@@ -141,6 +141,12 @@ function onlyDigits(e) {
     //}
 }
 
+function onlyNumeric(event) {
+    if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+        event.preventDefault();
+    }
+}
+
 function GetDate(objDate, dateFormat) {    
     var d = objDate;
     var month, date, year;

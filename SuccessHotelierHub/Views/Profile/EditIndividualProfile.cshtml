@@ -59,11 +59,13 @@
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.LastName)
-                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })                        
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.FirstName)
-                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })                        
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })     
+                        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })                   
                     </div>
                 </div>
 
@@ -71,6 +73,7 @@
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Email)
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.TelephoneNo)
@@ -192,7 +195,7 @@
                 <div class="row">
                     <div class="col-md-2 form-group m-t-sm m-r-n-lg">
                         <label for="IsActive" class="container1">
-                            IsActive
+                            Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
                             <span class="checkmark"></span>
                         </label>
@@ -232,6 +235,8 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
+
+
 
         //Bind Selected Preference Checkboxes
         bindSelectedPreferences();
@@ -410,32 +415,38 @@
     }
 
     function validateIndividualProfile() {
-        var firstName = $("#FirstName").val();
-        var lastName = $("#LastName").val();
-        var email = $("#Email").val();
+        //var firstName = $("#FirstName").val();
+        //var lastName = $("#LastName").val();
+        //var email = $("#Email").val();
 
         var errorMessage = "";
         var blnValid = true;
 
-        if (IsNullOrEmpty(lastName)) {
-            errorMessage += "Please enter last name." + Delimeter.BREAKLINE + "";
-            blnValid = false;
-        }
+        //if (IsNullOrEmpty(lastName)) {
+        //    errorMessage += "Please enter last name." + Delimeter.BREAKLINE + "";
+        //    blnValid = false;
+        //}
 
-        if (IsNullOrEmpty(firstName)) {
-            errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
-            blnValid = false;
-        }
+        //if (IsNullOrEmpty(firstName)) {
+        //    errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
+        //    blnValid = false;
+        //}
         
-        if (!IsNullOrEmpty(email) && !validateEmail(email)) {
-            errorMessage += "Please enter valid email." + Delimeter.BREAKLINE + "";
+        //if (!IsNullOrEmpty(email) && !validateEmail(email)) {
+        //    errorMessage += "Please enter valid email." + Delimeter.BREAKLINE + "";
+        //    blnValid = false;
+        //}
+
+        //if (!blnValid) {
+        //    showToaster(errorMessage, ToasterType.ERROR);
+        //    return false;
+        //}
+
+        if ($("#frmIndividualProfile").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
 
-        if (!blnValid) {
-            showToaster(errorMessage, ToasterType.ERROR);
-            return false;
-        }
         return blnValid;
     }
 
@@ -456,8 +467,7 @@
                 url: '@Url.Content("~/Profile/EditIndividualProfile")',
                 type: 'POST',
                 data: $('#frmIndividualProfile').serialize(),
-                success: function (response) {
-                    debugger;
+                success: function (response) {                    
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }

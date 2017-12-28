@@ -211,6 +211,7 @@
     <Compile Include="Controllers\RateController.cs" />
     <Compile Include="Controllers\RateTypeController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
+    <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -234,6 +235,7 @@
     <Compile Include="Models\ReservationVM.cs" />
     <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />
     <Compile Include="Models\RoomTypeVM.cs" />
+    <Compile Include="Models\RoomVM.cs" />
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
@@ -248,6 +250,7 @@
     <Compile Include="Repository\RateRepository.cs" />
     <Compile Include="Repository\RateTypeRepository.cs" />
     <Compile Include="Repository\ReservationRepository.cs" />
+    <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomTypeRepository.cs" />
     <Compile Include="Repository\StateRepository.cs" />
     <Compile Include="Repository\TitleRepository.cs" />
@@ -1772,6 +1775,7 @@
     <Content Include="Content\css\AdminLTE\datatables.net-bs\.bower.json" />
     <Content Include="Content\css\AdminLTE\datatables.net-bs\bower.json" />
     <Content Include="Content\css\AdminLTE\datatables.net-bs\Readme.md" />
+    <None Include="Properties\PublishProfiles\LocalSuccessHotelierHub.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom\common.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -1868,6 +1872,8 @@
     <Content Include="Views\Rate\Create.cshtml" />
     <Content Include="Views\Rate\Edit.cshtml" />
     <Content Include="Views\Rate\List.cshtml" />
+    <Content Include="Views\Room\Index.cshtml" />
+    <Content Include="Views\Room\_RoomList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

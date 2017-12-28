@@ -14,9 +14,11 @@ namespace SuccessHotelierHub.Models
         public Guid ProfileTypeId { get; set; }
         
         [Display(Name = "First Name *")]
+        [Required(ErrorMessage = "Please enter first name")]
         public string FirstName { get; set; }
         
         [Display(Name = "Last Name *")]
+        [Required(ErrorMessage ="Please enter last name")]
         public string LastName { get; set; }
 
         public Guid? TitleId { get; set; }
@@ -27,7 +29,8 @@ namespace SuccessHotelierHub.Models
         [Display(Name = "Business Telephone No")]
         public string BusinessTelephoneNo { get; set; }
 
-        [EmailAddress(ErrorMessage = "Please enter valid email address")]
+        //[EmailAddress(ErrorMessage = "Please enter valid email address")]
+        [RegularExpression("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$", ErrorMessage = "Please enter valid email address")]
         public string Email { get; set; }
 
         public string Address { get; set; }

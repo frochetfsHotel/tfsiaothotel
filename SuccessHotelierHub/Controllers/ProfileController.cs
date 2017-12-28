@@ -42,7 +42,7 @@ namespace SuccessHotelierHub.Controllers
 
             IndividualProfileVM model = new IndividualProfileVM();
             model.ProfileTypeId = profileTypeId;
-
+            model.IsActive = true;
 
             ViewBag.TitleList = titleList;
             ViewBag.VipList = vipList;
@@ -172,10 +172,15 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.PreferenceList = preferenceList;
 
                 //Get State
-                var stateList = new SelectList(stateRepository.GetStates(model.CountryId), "Id", "Name").ToList();
+                var stateList = new SelectList(new List<StateVM>(), "Id", "Name").ToList();          
+                    
+                if(model.CountryId.HasValue)
+                    stateList = new SelectList(stateRepository.GetStates(model.CountryId), "Id", "Name").ToList();
 
                 //Get City
-                var cityList = new SelectList(cityRepository.GetCities(model.StateId), "Id", "Name").ToList();
+                var cityList = new SelectList(new List<CityVM>(), "Id", "Name").ToList();
+                if (model.StateId.HasValue)
+                    cityList = new SelectList(cityRepository.GetCities(model.StateId), "Id", "Name").ToList();
 
                 ViewBag.StateList = stateList;
                 ViewBag.CityList = cityList;
