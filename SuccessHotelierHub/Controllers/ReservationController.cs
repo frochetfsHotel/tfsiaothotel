@@ -376,11 +376,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
 
-            RateQueryVM model = new RateQueryVM();
-            model.NoOfAdult = 1;
-            model.NoOfChildren = 1;
-            model.NoOfNight = 1;
-            model.NoOfRoom = 1;
+            RateQueryVM model = new RateQueryVM();            
 
             if(!string.IsNullOrWhiteSpace(profileId))
             {

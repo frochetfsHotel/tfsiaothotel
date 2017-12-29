@@ -281,7 +281,7 @@
                         <div class="col-xs-12 text-center m-b-md">
                             <hr />
                             @*<button type="button" class="btn btn-info m-r-xs" onclick="showRateSheet();">Next</button>*@
-                            <a class="btn btn-info m-r-xs" onclick="showRateSheet();">Next</a>
+                            <a class="btn btn-info m-r-xs" onclick="showRateSheet();">Search</a>
                             @*<button type="submit" class="btn btn-danger">Cancel</button>*@
                         </div>
                         <!-- /.box-footer -->
@@ -397,8 +397,21 @@
         var name = $("#Name").val();
 
         if (!IsNullOrEmpty(name)) {
+
+            var lastName = "";
+            var firstName = "";
+
+            lastName = name;
+
+            if (name.indexOf(',') != -1) {
+                var nameArr = name.split(',');
+                lastName = nameArr[0];
+                firstName = nameArr[1];
+            }
+
             //Show search results based on entered name.
-            $("form#frmAdvanceProfileSearch #LastName").val(name);
+            $("form#frmAdvanceProfileSearch #LastName").val(lastName);
+            $("form#frmAdvanceProfileSearch #FirstName").val(firstName);
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
 
