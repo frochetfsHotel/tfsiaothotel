@@ -259,7 +259,7 @@
                         @Html.TextBoxFor(m => m.Rate, new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "calculateTotalPrice();" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">
-                        <label class="m-l-n-md">Total Price : <span id="totalPrice">&euro; 0.00</span></label>                        
+                        <label>Total Price : <span id="totalPrice">&euro; 0.00</span></label>                        
                         <label class="container1 pull-right" for="IsFixedRate">
                             Fixed Rate
                             @Html.CheckBoxFor(m => m.IsFixedRate)

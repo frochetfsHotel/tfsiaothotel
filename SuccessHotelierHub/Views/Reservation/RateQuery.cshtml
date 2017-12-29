@@ -51,122 +51,125 @@
                         <!-- HIDDEN FIELD -->
 
                         <div class="box-body">
-                            <div class="row">
-                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" }) 
-                                    <div class="input-group date">
-                                        @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy" })
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
+                            <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                                <div class="row">
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
+                                        <div class="input-group date">
+                                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy" })
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.NoOfNight)
+                                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.DepartureDate)
+                                        <div class="input-group date">
+                                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                    @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
-                                </div>
-                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.NoOfNight)
-                                    @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();" })
-                                </div>
-                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.DepartureDate)
-                                    <div class="input-group date">
-                                        @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
-                                        </div>
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.NoOfAdult)
+                                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.NoOfChildren)
+                                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.NoOfRoom)
+                                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
                                     </div>
                                 </div>
-                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.NoOfAdult)
-                                    @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
-                                </div>
-                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.NoOfChildren)
-                                    @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
-                                </div>
-                                <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.NoOfRoom)
-                                    @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.Name, new { @class = "required-label" })
-                                    <div class="input-group date">
-                                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
-                                        <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
-                                            <i class="fa fa-search"></i>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                                        <div class="input-group date">
+                                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                                            <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
+                                                <i class="fa fa-search"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
 
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.MemberTypeId)
+                                        <select class="form-control" id="MemberTypeId" name="MemberTypeId">
+                                            <option value="">--Select Member Type--</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.CompanyId)
+                                        <select class="form-control" id="CompanyId" name="CompanyId">
+                                            <option value="">--Select Company--</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.MemberTypeId)
-                                    <select class="form-control" id="MemberTypeId" name="MemberTypeId">
-                                        <option value="">--Select Member Type--</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.AgentId)
+                                        <select class="form-control" id="AgentId" name="AgentId">
+                                            <option value="">--Select Agent--</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.SourceId)
+                                        <select class="form-control" id="SourceId" name="SourceId">
+                                            <option value="">--Select Source--</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Source 1</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.BlockCodeId)
+                                        <select class="form-control" id="BlockCodeId" name="BlockCodeId">
+                                            <option value="">--Select Group Code--</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group 1</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group 2</option>
+                                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group 3</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.CompanyId)
-                                    <select class="form-control" id="CompanyId" name="CompanyId">
-                                        <option value="">--Select Company--</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.AgentId)
-                                    <select class="form-control" id="AgentId" name="AgentId">
-                                        <option value="">--Select Agent--</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.SourceId)
-                                    <select class="form-control" id="SourceId" name="SourceId">
-                                        <option value="">--Select Source--</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Source 1</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.BlockCodeId)
-                                    <select class="form-control" id="BlockCodeId" name="BlockCodeId">
-                                        <option value="">--Select Group Code--</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group 1</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group 2</option>
-                                        <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.MemberNo)
-                                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
-                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.MemberNo)
+                                        @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
+                                    </div>
 
-                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.CorpNo)
-                                    @Html.TextBoxFor(m => m.CorpNo, new { @class = "form-control", placeholder = "Corp #" })
-                                </div>
-                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.IATANo)
-                                    @Html.TextBoxFor(m => m.IATANo, new { @class = "form-control", placeholder = "IATA #" })
-                                </div>
-                                <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.SourceNo)
-                                    @Html.TextBoxFor(m => m.SourceNo, new { @class = "form-control", placeholder = "Source #" })
+                                    <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.CorpNo)
+                                        @Html.TextBoxFor(m => m.CorpNo, new { @class = "form-control", placeholder = "Corp #" })
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.IATANo)
+                                        @Html.TextBoxFor(m => m.IATANo, new { @class = "form-control", placeholder = "IATA #" })
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                                        @Html.LabelFor(m => m.SourceNo)
+                                        @Html.TextBoxFor(m => m.SourceNo, new { @class = "form-control", placeholder = "Source #" })
+                                    </div>
                                 </div>
                             </div>
+                           
 
                             <div class="row">
                                 <div class="box-header with-border">

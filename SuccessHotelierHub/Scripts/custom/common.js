@@ -1,5 +1,8 @@
 ﻿$(function () {
-    $('.mydatepicker').datepicker({            
+
+    LoadLeftSideMenu();
+
+    $('.mydatepicker').datepicker({
         autoclose: true,
         format: 'dd/mm/yyyy'
     });
@@ -54,17 +57,17 @@ var DateFormat = {
 var DateSeprator = {
     SLASH: "/",
     DASH: "-",
-    DOT : "."
+    DOT: "."
 }
 
 function loadToastrSetting() {
     toastr.options = {
-            closeButton: true,
-            progressBar: false,
-            preventDuplicates: true,
-            showMethod: 'slideDown',
-            timeOut: 4000
-};
+        closeButton: true,
+        progressBar: false,
+        preventDuplicates: true,
+        showMethod: 'slideDown',
+        timeOut: 4000
+    };
 
 }
 
@@ -204,7 +207,7 @@ function GetDate(objDate, dateFormat) {
     return fullDate;
 }
 
-function ConvertDDMMYYYY_To_MMDDYYYY(inputDate, dateSeparator) {    
+function ConvertDDMMYYYY_To_MMDDYYYY(inputDate, dateSeparator) {
     if (IsNullOrEmpty(inputDate)) { return ""; }
     if (IsNullOrEmpty(dateSeparator)) { dateSeparator = DateSeprator.SLASH; }
 
@@ -245,3 +248,72 @@ function trim(item) {
     return item;
 }
 
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() +(exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" +cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+
+/**** Load Left Side Menu ***/
+
+function setCurrentMenu(menu, redirectUrl) {
+    setCookie('TopMenu', menu, 1);
+
+    setTimeout(function () {
+        redirectTo(redirectUrl);
+    },200);
+    
+}
+
+function LoadLeftSideMenu() {
+    debugger;
+    var menu = getCookie('TopMenu');
+
+    if (!IsNullOrEmpty(menu)) {
+        hideAllLeftSideMenu();
+        $('.topMenu').removeClass('active');
+
+        if (menu == "Dashboard") {
+            $('#MenusDashboard').show();
+            $('#menuDashboard').addClass('active');
+        } else if (menu == "Profile") {
+            $('#MenusProfile').show();
+            $('#menuProfile').addClass('active');
+        }
+        else if (menu == "Reservation") {
+            $('#MenusReservation').show();
+            $('#menuReservation').addClass('active');
+        }
+        else if (menu == "FrontDesk") {
+            $('#MenusFrontDesk').show();
+            $('#menuFrontDesk').addClass('active');
+        }
+        else if (menu == "MasterScreen") {
+            $('#MenusMasterScreens').show();
+            $('#menuMasterScreen').addClass('active');
+        }
+    }
+}
+
+function hideAllLeftSideMenu() {
+    $('.leftsidemenu').hide();
+}

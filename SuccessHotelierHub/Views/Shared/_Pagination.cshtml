@@ -1,8 +1,8 @@
 ﻿@model SuccessHotelierHub.Models.PaginationVM
 
-<nav aria-label="...">
-    <div class="hidden-xs">
-        <ul class="pagination pagination-sm" style="margin:0;">
+<nav aria-label="..." class="">
+    <div class="hidden-xs m-t-sm">
+        <ul class="pagination pagination-sm pull-right" style="margin:0;">
             <li id="liFirst" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "FirstButtonClick")(this, event)">
                     <span>First</span>
@@ -15,7 +15,7 @@
                 </a>
             </li>
 
-            <li class="page-item pull-left liPageNum" style="width:30%;">
+            <li class="page-item pull-left liPageNum">
                 <input id="txtPageNumber" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event)" onblur="return PaginationGoToSpecificPage(this, event)" />
                 <span class="pull-right spanPageNum hovered">of <span id="spanTotalPages"></span> Pages.</span>
             </li>
@@ -34,7 +34,7 @@
         </ul>
         </div>
 
-    <div class="visible-xs">
+    <div class="visible-xs m-t-sm">
         <ul class="pagination pagination-sm" style="margin:0;">
             <li id="liFirst" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "FirstButtonClick")(this, event)">

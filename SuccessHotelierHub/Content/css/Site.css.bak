@@ -377,5 +377,135 @@ textarea {
     vertical-align: middle;
 }
 .box-footer {
-    padding: 15px 0 20px;
+    /*padding: 15px 0 20px;*/
+}
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+.cursor-P{
+        cursor: pointer !important;
+}
+/*.modal-dialog {
+    width: 900px;
+}*/
+
+
+/** Override css of bootstrap label*/
+label{
+    font-weight: 400 !important;
+}
+.required-label {
+    font-weight: bold !important;
+}
+
+
+.searchBox_Border{
+    border:1px solid #cec410 !important;
+}
+
+/** Custom Margin **/
+.mt_5 {
+    margin-top:5px !important;
+}
+.mt_10 {
+    margin-top:10px !important;
+}
+.mt_15 {
+    margin-top:15px !important;
+}
+.mt_20 {
+    margin-top:20px !important;
+}
+
+.ml_5 {
+    margin-left:5px !important;
+}
+.ml_10 {
+    margin-left:10px !important;
+}
+.ml_15 {
+    margin-left:15px !important;
+}
+.ml_20 {
+    margin-left:20px !important;
+}
+
+.mr_5 {
+    margin-right:5px !important;
+}
+.mr_10 {
+    margin-right:10px !important;
+}
+.mr_15 {
+    margin-right:15px !important;
+}
+.mr_20 {
+    margin-right:20px !important;
+}
+
+.mb_5 {
+    margin-bottom:5px !important;
+}
+.mb_10 {
+    margin-bottom:10px !important;
+}
+.mb_15 {
+    margin-bottom:15px !important;
+}
+.mb_20 {
+    margin-bottom:20px !important;
+}
+
+/** Custom Padding **/
+.pt_5 {
+    padding-top:5px !important;
+}
+.pt_10 {
+    padding-top:10px !important;
+}
+.pt_15 {
+    padding-top:15px !important;
+}
+.pt_20 {
+    padding-top:20px !important;
+}
+
+.pl_5 {
+    padding-left:5px !important;
+}
+.pl_10 {
+    padding-left:10px !important;
+}
+.pl_15 {
+    padding-left:15px !important;
+}
+.pl_20 {
+    padding-left:20px !important;
+}
+
+.pr_5 {
+    padding-right:5px !important;
+}
+.pr_10 {
+    padding-right:10px !important;
+}
+.pr_15 {
+    padding-right:15px !important;
+}
+.pr_20 {
+    padding-right:20px !important;
+}
+
+.pb_5 {
+    padding-bottom:5px !important;
+}
+.pb_10 {
+    padding-bottom:10px !important;
+}
+.pb_15 {
+    padding-bottom:15px !important;
+}
+.pb_20 {
+    padding-bottom:20px !important;
 }

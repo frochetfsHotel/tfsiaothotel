@@ -16,6 +16,34 @@
             <span class="icon-bar"></span>
         </a>
 
+        <ul class="nav navbar-nav">
+            <li class="active text-center topMenu" id="menuDashboard">
+                <a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');">
+                    <i class="fa fa-th font_20 m-b-xs"></i><br /> Dashboard <span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="text-center topMenu" id="menuProfile">
+                <a href="javascript:void(0);" onclick="setCurrentMenu('Profile','@Url.Content("~/Home/Index")');">
+                    <i class="fa fa-user font_20 m-b-xs" aria-hidden="true"></i><br /> Profile
+                </a>
+            </li>
+            <li class="text-center topMenu" id="menuReservation">
+                <a href="javascript:void(0);" onclick="setCurrentMenu('Reservation','@Url.Content("~/Reservation/List")');">
+                    <i class="fa fa-ticket font_20 m-b-xs" aria-hidden="true"></i><br /> Reservation
+                </a>
+            </li>
+            <li class="text-center topMenu" id="menuFrontDesk">
+                <a href="javascript:void(0);"  onclick="setCurrentMenu('FrontDesk','@Url.Content("~/FrontDesk/CheckIn")');">
+                    <i class="fa fa-building-o font_20 m-b-xs" aria-hidden="true"></i><br /> Front Desk
+                </a>
+            </li>
+            <li class="text-center topMenu" id="menuMasterScreen">
+                <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Preference/List")');">
+                    <i class="fa fa-cc-mastercard font_20 m-b-xs" aria-hidden="true"></i><br /> Master Screens
+                </a>
+            </li>
+        </ul>
+
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <!-- User Account: style can be found in dropdown.less -->
@@ -25,30 +53,17 @@
                         <span class="hidden_xs">Admin</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <!-- User image -->
-                        @*<li class="user-header">*@
-                            @*<img src="../../dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">*@
-                            @*<img src="~/Content/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
-                            <p>
-                                Alexander Pierce - Web Developer
-                                <small>Member since Nov. 2012</small>
-                            </p>*@
-                        @*</li>*@                        
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             @*<div class="pull-left">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
-                            </div>*@
+                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                </div>*@
                             <div class="pull-right">
                                 <a href="#" class="btn btn-default btn-flat">Sign out</a>
                             </div>
                         </li>
                     </ul>
                 </li>
-                <!-- Control Sidebar Toggle Button -->
-                @*<li>
-                    <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-                </li>*@
             </ul>
         </div>
     </nav>

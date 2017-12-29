@@ -356,7 +356,10 @@ textarea {
     transform: rotate(45deg);
 }
 .box-body {
-    padding: 10px 15px;
+    padding: 20px 15px;
+}
+.box-body-list{
+     padding: 10px 15px 20px;
 }
 .padding_left{
     padding-left: 0;
@@ -380,7 +383,7 @@ textarea {
     /*padding: 15px 0 20px;*/
 }
 .table-responsive {
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 .cursor-P{
@@ -389,6 +392,68 @@ textarea {
 /*.modal-dialog {
     width: 900px;
 }*/
+
+
+/*Pagging*/
+
+.pageNumTextBox {
+    height: 23px;
+    padding: 5px;
+    font-size: 12px;
+    width: 35%;
+    border: 0 !important;
+}
+
+.spanPageNum {
+    width: 64%;
+    border: 0 !important;
+    background-color: #eee !important;
+    cursor: default !important;
+}
+
+li.page-item.pull-left.liPageNum {
+    width: 195px;
+}
+
+
+.hovered {
+    color: #23527c !important;
+}
+
+.liPageNum {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+.pagination > li > a, .pagination > li > span {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    color: inherit;
+    float: left;
+    line-height: 1.42857;
+    margin-left: -1px;
+    padding: 4px 10px;
+    position: relative;
+    text-decoration: none;
+}
+/*Pagging Over*/
+.pb-0{
+    padding-bottom: 0;
+}
+.font_20{
+    font-size: 20px;
+}
+header .nav>li>a {
+    padding: 10px 40px;
+}
+.main-header .logo {
+    height: 64px;
+    padding: 7px 15px;
+}
+.main-sidebar {
+    padding-top: 64px;
+}
+
+
 
 
 /** Override css of bootstrap label*/
@@ -509,3 +574,4 @@ label{
 .pb_20 {
     padding-bottom:20px !important;
 }
+
