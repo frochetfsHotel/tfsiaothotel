@@ -397,7 +397,6 @@
         var name = $("#Name").val();
 
         if (!IsNullOrEmpty(name)) {
-
             var lastName = "";
             var firstName = "";
 
@@ -410,8 +409,8 @@
             }
 
             //Show search results based on entered name.
-            $("form#frmAdvanceProfileSearch #LastName").val(lastName);
-            $("form#frmAdvanceProfileSearch #FirstName").val(firstName);
+            $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));
+            $("form#frmAdvanceProfileSearch #FirstName").val(trim(firstName));
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
 

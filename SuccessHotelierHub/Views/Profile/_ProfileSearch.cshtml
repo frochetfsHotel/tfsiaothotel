@@ -150,8 +150,8 @@
                     //Show data in table.
                     var result = response.data;
 
-                    $("#tblProfile tbody").empty();
-                    var tbody = $("#tblProfile tbody");
+                    $("form#frmAdvanceProfileSearch #tblProfile tbody").empty();
+                    var tbody = $("form#frmAdvanceProfileSearch #tblProfile tbody");
 
                     var markup = "";
 
@@ -181,22 +181,22 @@
     }
 
     function clearProfileSearch() {
-        $('#LastName').val('');
-        $('#FirstName').val('');
-        $('#ViewBy').val('');
-        $('#City').val('');
-        $('#PostalCode').val('');
-        $('#MemberTypeId').val('');
-        $('#MemberNo').val('');
-        $('#Keyword').val('');
-        $('#Communication').val('');
-        $('#ClientID').val('');
-        $('#IATANo').val('');
-        $('#CorpNo').val('');
-        $('#IsNegRates').prop("checked", false);
-        $('#IsShowInActive').prop("checked", true);
+        $('form#frmAdvanceProfileSearch #LastName').val('');
+        $('form#frmAdvanceProfileSearch #FirstName').val('');
+        $('form#frmAdvanceProfileSearch #ViewBy').val('');
+        $('form#frmAdvanceProfileSearch #City').val('');
+        $('form#frmAdvanceProfileSearch #PostalCode').val('');
+        $('form#frmAdvanceProfileSearch #MemberTypeId').val('');
+        $('form#frmAdvanceProfileSearch #MemberNo').val('');
+        $('form#frmAdvanceProfileSearch #Keyword').val('');
+        $('form#frmAdvanceProfileSearch #Communication').val('');
+        $('form#frmAdvanceProfileSearch #ClientID').val('');
+        $('form#frmAdvanceProfileSearch #IATANo').val('');
+        $('form#frmAdvanceProfileSearch #CorpNo').val('');
+        $('form#frmAdvanceProfileSearch #IsNegRates').prop("checked", false);
+        $('form#frmAdvanceProfileSearch #IsShowInActive').prop("checked", true);
 
-        $("#tblProfile tbody").empty();
+        $("form#frmAdvanceProfileSearch #tblProfile tbody").empty();
     }
 
 

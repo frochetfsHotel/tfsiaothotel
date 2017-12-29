@@ -184,3 +184,10 @@ function GetDate(objDate, dateFormat) {
 
     return fullDate;
 }
+
+function trim(item) {
+    if (!IsNullOrEmpty(item)) { 
+        return item.trim();
+    }
+    return item;
+}
