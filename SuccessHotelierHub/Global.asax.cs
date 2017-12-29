@@ -24,7 +24,7 @@ namespace SuccessHotelierHub
         {
             // Date format overwrite - culture information
             CultureInfo newCulture = (CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-            newCulture.DateTimeFormat.ShortDatePattern = "MM/dd/yyyy";
+            newCulture.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
             newCulture.DateTimeFormat.DateSeparator = "/";
             Thread.CurrentThread.CurrentCulture = newCulture;
         }

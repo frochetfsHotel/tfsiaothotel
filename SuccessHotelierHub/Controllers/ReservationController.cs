@@ -13,6 +13,7 @@ namespace SuccessHotelierHub.Controllers
     {
         #region Declaration
 
+        private ProfileRepository profileRepository = new ProfileRepository();
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
@@ -41,7 +42,11 @@ namespace SuccessHotelierHub.Controllers
             {
                 //rateQuery = (RateQueryVM)TempData["RateQueryVM"];
                 rateQuery = (RateQueryVM)Session["RateQueryVM"];
-                
+
+                var profile = new IndividualProfileVM();
+                if(rateQuery.ProfileId.HasValue)
+                    profile = profileRepository.GetIndividualProfileById(rateQuery.ProfileId.Value).FirstOrDefault();
+
                 model.ArrivalDate = rateQuery.ArrivalDate;
                 model.NoOfNight = rateQuery.NoOfNight;
                 model.DepartureDate = rateQuery.DepartureDate;
@@ -52,6 +57,7 @@ namespace SuccessHotelierHub.Controllers
                 model.LastName = rateQuery.LastName;
                 model.FirstName = rateQuery.FirstName;
                 model.ProfileId = rateQuery.ProfileId;
+                model.TitleId = profile.TitleId;
 
                 model.MemberTypeId = rateQuery.MemberTypeId;
                 model.CompanyId = rateQuery.CompanyId;
@@ -91,7 +97,7 @@ namespace SuccessHotelierHub.Controllers
                 string ETAText = model.ETAText;
                 if (!string.IsNullOrWhiteSpace(ETAText))
                 {
-                    string todayDate = DateTime.Now.ToString("MM/dd/yyyy");
+                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
                     string date = (todayDate + " " + ETAText);
                     DateTime time = Convert.ToDateTime(date);
 
@@ -208,7 +214,7 @@ namespace SuccessHotelierHub.Controllers
                 string ETAText = model.ETAText;
                 if(!string.IsNullOrWhiteSpace(ETAText))
                 {
-                    string todayDate = DateTime.Now.ToString("MM/dd/yyyy");
+                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
                     string date = (todayDate + " " + ETAText);
                     DateTime time = Convert.ToDateTime(date);
 

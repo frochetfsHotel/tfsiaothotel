@@ -30,122 +30,124 @@
             <h3 class="box-title">Search Reservation</h3>
             <div class="pull-right box-tools m-r-md">
                 <a href="@Url.Action("RateQuery","Reservation")"
-                   class="btn btn-info btn-sm" style="color: #fff" data-toggle="tooltip" title=""
-                   data-original-title="Add Reservation"><i class="fa fa-plus"></i></a>
+                   class="btn btn-info btn-sm" style="color: #fff">Add Reservation</a>
             </div>
         </div>
         <form class="frmReservationList" enctype="multipart/form-data" method="post">
             <div class="box-body">
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.LastName)
-                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })                        
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.LastName)
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.FirstName)
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.CVVNo)
+                            @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.TARecordLocator)
+                            @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Locator" })
+                        </div>
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.FirstName)
-                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })                        
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.CompanyId)
+                            <select class="form-control" id="CompanyId" name="CompanyId">
+                                <option value="">--Select Company--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.GroupId)
+                            <select class="form-control" id="GroupId" name="GroupId">
+                                <option value="">--Select Group--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Group 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Group 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.BlockCodeId)
+                            <select class="form-control" id="BlockCodeId" name="BlockCodeId">
+                                <option value="">--Select Group Code--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group Code 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.SourceId)
+                            <select class="form-control" id="SourceId" name="SourceId">
+                                <option value="">--Select Source--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Source 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CRSNo)
-                        @Html.TextBoxFor(m => m.CRSNo, new { @class = "form-control", placeholder = "CRS No." })                        
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.AgentId)
+                            <select class="form-control" id="AgentId" name="AgentId">
+                                <option value="">--Select Agent--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ContactId)
+                            <select class="form-control" id="ContactId" name="ContactId">
+                                <option value="">--Select Contact--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Contact 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Contact 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Contact 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.MemberTypeId)
+                            <select class="form-control" id="MemberTypeId" name="MemberTypeId">
+                                <option value="">--Select Member Type--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.MemberNo)
+                            @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
+                        </div>
                     </div>
-                    <div class="col-md-3 form-group">
-                       @Html.LabelFor(m => m.TARecordLocator)
-                       @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Locator" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CompanyId)
-                        <select class="form-control" id="CompanyId" name="CompanyId">
-                            <option value="">--Select Company--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.GroupId)
-                        <select class="form-control" id="GroupId" name="GroupId">
-                            <option value="">--Select Group--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Group 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Group 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.BlockCodeId)
-                        <select class="form-control" id="BlockCodeId" name="BlockCodeId">
-                            <option value="">--Select Group Code--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group Code 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.SourceId)
-                        <select class="form-control" id="SourceId" name="SourceId">
-                            <option value="">--Select Source--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Source 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                       @Html.LabelFor(m => m.AgentId)
-                        <select class="form-control" id="AgentId" name="AgentId">
-                            <option value="">--Select Agent--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ContactId)
-                        <select class="form-control" id="ContactId" name="ContactId">
-                            <option value="">--Select Contact--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Contact 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Contact 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Contact 3</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.MemberTypeId)
-                        <select class="form-control" id="MemberTypeId" name="MemberTypeId">
-                            <option value="">--Select Member Type--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                       @Html.LabelFor(m => m.MemberNo)
-                       @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member No" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ArrivalFrom)
-                        <div class="input-group date">                            
-                            @Html.TextBoxFor(m => m.ArrivalFrom, new { @class = "form-control", placeholder = "MM/dd/yyyy" })
-                            <div class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ArrivalFrom)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalFrom, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ArrivalTo)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalTo, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ArrivalTo)
-                        <div class="input-group date">
-                            @Html.TextBoxFor(m => m.ArrivalTo, new { @class = "form-control", placeholder = "MM/dd/yyyy" })
-                            <div class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <div class="row">
+
+                <div class="row m-t-sm">
                     <div class="col-md-12 form-group">
                         <button type="button" id="btnSearch"
                                 class="btn btn-success m-r-xs" onclick="searchReservation()">
@@ -164,7 +166,7 @@
                                     <th>CreatedOn</th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
-                                    <th>Phone No</th>
+                                    <th>Phone #</th>
                                     <th>Arrival</th>
                                     <th>Nights</th>
                                     <th>Departure</th>
@@ -181,10 +183,10 @@
                     <div class="clearfix"></div>
                     <div class="text-left">
                         @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
-                   {
-                       TokenForEnableDisableButtons = PagerName,
-                       PageChangeMethod = "ReservationGridPageChange"
-                   })
+                       {
+                           TokenForEnableDisableButtons = PagerName,
+                           PageChangeMethod = "ReservationGridPageChange"
+                       })
                     </div>
                 </div>
             </div>
@@ -199,15 +201,6 @@
 
     $(document).ready(function () {
 
-        //Date picker
-        $('#ArrivalFrom').datepicker({
-            autoclose: true
-        });
-
-        $('#ArrivalTo').datepicker({
-            autoclose: true
-        });
-
         setTimeout(InitializeReservationGrid, 200);
 
         $("input[type='text']").keyup(function (event) {
@@ -221,7 +214,7 @@
     function SearchReservationParameters(d) {
         var lastName = $('#LastName').val();
         var firstName = $('#FirstName').val();
-        var crsNo = $('#CRSNo').val();
+        var cvvNo = $('#CVVNo').val();
         var taRecordLocator = $('#TARecordLocator').val();
         var companyId = $('#CompanyId').val();
         var groupId = $('#GroupId').val();
@@ -237,7 +230,7 @@
         d.PageNum = currentPage;
         d.LastName = lastName;
         d.FirstName = firstName;
-        d.CRSNo = crsNo;
+        d.CVVNo = cvvNo;
         d.TARecordLocator = taRecordLocator;
         d.CompanyId = companyId;
         d.GroupId = groupId;
@@ -247,8 +240,8 @@
         d.ContactId = contactId;
         d.MemberTypeId = memberTypeId;
         d.MemberNo = memberNo;
-        d.ArrivalFrom = arrivalFrom;
-        d.ArrivalTo = arrivalTo;
+        d.ArrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
+        d.ArrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
     }
 
     function ReservationGridDataBound(response) {
@@ -311,12 +304,22 @@
             {
                 targets: 1,
                 data: "LastName",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
+
+                }
             },
             {
                 targets: 2,
                 data: "FirstName",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.FirstName + '</a> ';
+
+                }
             },
             {
                 targets: 3,
@@ -396,8 +399,15 @@
         var blnValid = true;
 
         if (!IsNullOrEmpty(arrivalFrom) && !IsNullOrEmpty(arrivalTo)) {
-            var objArrivalFrom = new Date(arrivalFrom);
-            var objArrivalTo = new Date(arrivalTo);
+            ////Convert dd/MM/yyyy to MM/dd/yyyy date.
+            //arrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
+            //arrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
+
+            //var objArrivalFrom = new Date(arrivalFrom);
+            //var objArrivalTo = new Date(arrivalTo);
+
+            var objArrivalFrom = GetDateObject(arrivalFrom, DateSeprator.SLASH);
+            var objArrivalTo = GetDateObject(arrivalTo, DateSeprator.SLASH);
 
             if (objArrivalFrom > objArrivalTo) {
                 errorMessage += "Arrival from date must be less than arrival to." + Delimeter.BREAKLINE;
@@ -413,7 +423,7 @@
     }
 
     function searchReservation() {
-        if (validateReservationSearchData()){
+        if (validateReservationSearchData()) {
             currentPage = 1;
             ReloadReservationGrid();
         }
@@ -422,7 +432,7 @@
     function clearReservation() {
         $('#LastName').val('');
         $('#FirstName').val('');
-        $('#CRSNo').val('');
+        $('#CVVNo').val('');
         $('#TARecordLocator').val('');
         $('#CompanyId').val('');
         $('#GroupId').val('');

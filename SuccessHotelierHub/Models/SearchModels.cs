@@ -49,10 +49,18 @@ namespace SuccessHotelierHub.Models
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
+
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
+
+        [DisplayName("Last Name")]
         public string LastName { get; set; }
-        public string City { get; set; }
-        public string ZipCode { get; set; }
+
+        [DisplayName("Telephone #")]
+        public string TelephoneNo { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -97,7 +105,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Member Type")]
         public Guid? MemberTypeId { get; set; }
 
-        [DisplayName("Member No.")]
+        [DisplayName("Member #")]
         public string MemberNo { get; set; }
 
         public string Keyword { get; set; }
@@ -106,10 +114,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Client ID")]
         public string ClientID { get; set; }
 
-        [DisplayName("IATA No.")]
+        [DisplayName("IATA #.")]
         public string IATANo { get; set; }
 
-        [DisplayName("Corp No.")]
+        [DisplayName("Corp #.")]
         public string CorpNo { get; set; }
 
         public bool IsNegRates { get; set; }
@@ -123,6 +131,8 @@ namespace SuccessHotelierHub.Models
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        [DisplayName("Telephone #")]
         public string TelephoneNo { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
@@ -150,8 +160,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Fist Name")]
         public string FirstName { get; set; }
 
-        [DisplayName("CRS No")]
-        public string CRSNo { get; set; }
+        [DisplayName("CVV #")]
+        public string CVVNo { get; set; }
 
         [DisplayName("TA Record Locator")]
         public string TARecordLocator { get; set; }
@@ -177,7 +187,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Member Type")]
         public Guid? MemberTypeId { get; set; }
 
-        [DisplayName("Member No")]
+        [DisplayName("Member #")]
         public string MemberNo { get; set; }
 
         [DisplayName("Arrival From")]
@@ -199,6 +209,8 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }        
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        [DisplayName("Phone #")]
         public string PhoneNo { get; set; }
         public string ArrivalDate { get; set; }
         public int NoOfNight { get; set; }

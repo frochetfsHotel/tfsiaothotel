@@ -31,12 +31,12 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.RateTypeCode) *
+                        @Html.LabelFor(m => m.RateTypeCode, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
                         @Html.ValidationMessageFor(m => m.RateTypeCode, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.Amount) *
+                        @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
                     </div>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="box-footer">
+            <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return updateRateType();">Update</button>
                 <a href="@Url.Action("List", "RateType")" class="btn btn-danger">Cancel</a>
             </div>

@@ -1778,6 +1778,7 @@
     <None Include="Properties\PublishProfiles\LocalSuccessHotelierHub.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom\common.js" />
+    <Content Include="Scripts\custom\jquery.validate.date.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

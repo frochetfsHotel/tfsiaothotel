@@ -53,9 +53,9 @@
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-2 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.ArrivalDate) *
+                                    @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" }) 
                                     <div class="input-group date">
-                                        @Html.TextBoxFor(m => m.ArrivalDate, "{0:MM/dd/yyyy}", new { @class = "form-control datecontrol", @placeholder = "MM/dd/yyyy" })
+                                        @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy" })
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                         </div>
@@ -69,7 +69,7 @@
                                 <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.DepartureDate)
                                     <div class="input-group date">
-                                        @Html.TextBoxFor(m => m.DepartureDate, "{0:MM/dd/yyyy}", new { @class = "form-control datecontrol", @placeholder = "MM/dd/yyyy", onchange = "calculateNoOfNights();" })
+                                        @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                         </div>
@@ -90,10 +90,8 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                                    @Html.LabelFor(m => m.Name) *
+                                    @Html.LabelFor(m => m.Name, new { @class = "required-label" })
                                     <div class="input-group date">
-                                        @*<input type="text" id="Name" name="Name" class="form-control" placeholder="Name"
-                                            value="@(lastName + " " + firstName)" />*@
                                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                                         <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
                                             <i class="fa fa-search"></i>
@@ -153,20 +151,20 @@
                             <div class="row">
                                 <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.MemberNo)
-                                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member No." })
+                                    @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
                                 </div>
 
                                 <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.CorpNo)
-                                    @Html.TextBoxFor(m => m.CorpNo, new { @class = "form-control", placeholder = "Corp No." })
+                                    @Html.TextBoxFor(m => m.CorpNo, new { @class = "form-control", placeholder = "Corp #" })
                                 </div>
                                 <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.IATANo)
-                                    @Html.TextBoxFor(m => m.IATANo, new { @class = "form-control", placeholder = "IATA No." })
+                                    @Html.TextBoxFor(m => m.IATANo, new { @class = "form-control", placeholder = "IATA #" })
                                 </div>
                                 <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.SourceNo)
-                                    @Html.TextBoxFor(m => m.SourceNo, new { @class = "form-control", placeholder = "Source No." })
+                                    @Html.TextBoxFor(m => m.SourceNo, new { @class = "form-control", placeholder = "Source #" })
                                 </div>
                             </div>
 
@@ -278,7 +276,7 @@
                             </div>
                         </div>
 
-                        <div class="col-xs-12 text-center m-b-md">
+                        <div class="col-xs-12 m-b-md text-right">
                             <hr />
                             @*<button type="button" class="btn btn-info m-r-xs" onclick="showRateSheet();">Next</button>*@
                             <a class="btn btn-info m-r-xs" onclick="showRateSheet();">Search</a>
@@ -316,7 +314,7 @@
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-xs-12 col-md-12 col-sm-12 text-center m-b-md">
+                    <div class="col-xs-12 col-md-12 col-sm-12 text-right m-b-md">
                         <hr />
                         <button type="button" class="btn btn-info m-r-xs" onclick="showTab('tab_1')">Prev</button>
                         <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">Ok</button>
@@ -363,12 +361,14 @@
         //Date picker
         $('#ArrivalDate').datepicker({
             startDate: new Date(),
-            autoclose: true
+            autoclose: true,
+            format: 'dd/mm/yyyy'
         })
 
         $('#DepartureDate').datepicker({
             startDate: new Date(),
-            autoclose: true
+            autoclose: true,
+            format: 'dd/mm/yyyy'
         })
 
         $('.btnAdvanceSearchProfileOk').click(function (e) {
@@ -425,8 +425,7 @@
 
     function getRateCode(element) {
         if (element) {
-            var rateTypeCode = $(element).find("option:selected").data("ratecode");
-            //$('#RateTypeCode').val($(element).find("option:selected").text());
+            var rateTypeCode = $(element).find("option:selected").data("ratecode");            
             $('#RateTypeCode').val(rateTypeCode);
         }
     }
@@ -455,37 +454,8 @@
 
 
     function validateRateQueryInfo() {
-        //var arrivalDate = $('#ArrivalDate').val();
-        //var departureDate = $('#DepartureDate').val();
-        //var name = $('#Name').val();
-
         var blnValid = true;
         var errorMessage = "";
-
-        //if (IsNullOrEmpty(arrivalDate)) {
-        //    errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
-        //    blnValid = false;
-        //}
-
-        //if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-        //    var objArrivalDate = new Date(arrivalDate);
-        //    var objDepartureDate = new Date(departureDate);
-
-        //    if (objArrivalDate > objDepartureDate) {
-        //        errorMessage += "Arrival date must be less than departure date." + Delimeter.BREAKLINE;
-        //        blnValid = false;
-        //    }
-        //}
-
-        //if (IsNullOrEmpty(name)) {
-        //    errorMessage += "Please search and select client name." + Delimeter.BREAKLINE;
-        //    blnValid = false;
-        //}
-
-        //if (!blnValid) {
-        //    showToaster(errorMessage, ToasterType.ERROR);
-        //    return false;
-        //}
 
         if ($("#frmRateQuery").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
@@ -612,10 +582,18 @@
         var arrivalDate = $('#ArrivalDate').val();
         var departureDate = $('#DepartureDate').val();
         var noOfNight = 1;
-
+        debugger;
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-            var objArrivalDate = new Date(arrivalDate);
-            var objDepartureDate = new Date(departureDate);
+            //Convert dd/MM/yyyy to MM/dd/yyyy date.
+            //arrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
+            //departureDate = ConvertDDMMYYYY_To_MMDDYYYY(departureDate, DateSeprator.SLASH);
+
+            //var objArrivalDate = new Date(arrivalDate);
+            //var objDepartureDate = new Date(departureDate);
+
+            var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+            var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
+
             var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
@@ -631,9 +609,12 @@
         var arrivalDate = $('#ArrivalDate').val();
         var noOfNight = $('#NoOfNight').val();
         var departureDate = '';
-
+        debugger;
         if (!IsNullOrEmpty(arrivalDate)) {
-            var objArrivalDate = new Date(arrivalDate);
+                        
+            //Get Date Objects from dd/MM/yyyy date.
+            var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+
             var dt = objArrivalDate;
             if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
                 dt.setDate(objArrivalDate.getDate() + parseInt(noOfNight));
@@ -642,10 +623,11 @@
             }
 
             if (dt != null) {
-                //MM/dd/yyyy
-                departureDate = GetDate(dt, DateFormat.MMDDYYYY);
-                //$('#DepartureDate').val(departureDate);
-                $("#DepartureDate").datepicker("setDate", new Date(departureDate));
+                //dd/MM/yyyy
+                //departureDate = GetDate(dt, DateFormat.DDMMYYYY);                 
+
+                //$("#DepartureDate").datepicker("setDate", new Date(departureDate));
+                $("#DepartureDate").datepicker("setDate", dt);
             }
         }
     }

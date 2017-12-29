@@ -29,32 +29,34 @@
             <h3 class="box-title">Search Individual Profile</h3>
             <div class="pull-right box-tools m-r-md">
                 <a href="@Url.Action("CreateIndividualProfile","Profile")"
-                   class="btn btn-info btn-sm" style="color: #fff" data-toggle="tooltip" title=""
-                   data-original-title="Add Individual Profile"><i class="fa fa-plus"></i></a>
+                   class="btn btn-info btn-sm" style="color: #fff">Add Individual Profile</a>
             </div>
         </div>
         <form class="frmIndividualProfileList" enctype="multipart/form-data" method="post">
             <div class="box-body">
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        <label for="LastName" class="">Last Name</label>
-                        <input type="text" class="form-control" id="LastName" name="LastName" placeholder="Last Name">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="FirstName" class="">First Name</label>
-                        <input type="text" class="form-control" id="FirstName" name="FirstName" placeholder="First Name">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="City" class="">City</label>
-                        <input type="text" class="form-control" id="City" name="City" placeholder="City">
-                    </div>
-                    <div class="col-md-3 form-group">
-                        <label for="ZipCode" class="">Zip Code</label>
-                        <input type="text" class="form-control" id="ZipCode" name="ZipCode" placeholder="Zip Code">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.LastName, new { @class = "normal-label" })
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.FirstName, new { @class = "normal-label" })
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.TelephoneNo, new { @class = "normal-label" })
+                            @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone #" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.Email, new { @class = "normal-label" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12 form-group">
+                
+                <div class="row m-t-sm">
+                    <div class="col-md-12 form-group text-right">
                         <button type="button" id="btnSearch"
                                 class="btn btn-success m-r-xs" onclick="searchIndividualProfile()">
                             Search
@@ -72,7 +74,7 @@
                                     <th>CreatedOn</th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
-                                    <th>Telephone No</th>
+                                    <th>Telephone #</th>
                                     <th>Email</th>
                                     <th>Address</th>
                                     <th>City</th>
@@ -117,14 +119,14 @@
     function SearchIndividualProfileParameters(d) {
         var lastName = $('#LastName').val();
         var firstName = $('#FirstName').val();
-        var city = $('#City').val();
-        var zipCode = $('#ZipCode').val();
+        var telephoneNo = $('#TelephoneNo').val();
+        var email = $('#Email').val();
 
         d.PageNum = currentPage;
         d.LastName = lastName;
         d.FirstName = firstName;
-        d.City = city;
-        d.ZipCode = zipCode;
+        d.TelephoneNo = telephoneNo;
+        d.Email = email;
     }
 
     function IndividualProfileGridDataBound(response) {
@@ -186,12 +188,22 @@
             {
                 targets: 1,
                 data: "LastName",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
+
+                }
             },
             {
                 targets: 2,
                 data: "FirstName",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.FirstName + '</a> ';
+
+                }
             },
             {
                 targets: 3,
@@ -264,8 +276,8 @@
     function clearIndividualProfile() {
         $('#LastName').val('');
         $('#FirstName').val('');
-        $('#City').val('');
-        $('#ZipCode').val('');
+        $('#TelephoneNo').val('');
+        $('#Email').val('');
 
         searchIndividualProfile();
     }

@@ -13,20 +13,21 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public Guid ProfileTypeId { get; set; }
         
-        [Display(Name = "First Name *")]
+        [Display(Name = "First Name")]
         [Required(ErrorMessage = "Please enter first name")]
         public string FirstName { get; set; }
         
-        [Display(Name = "Last Name *")]
+        [Display(Name = "Last Name")]
         [Required(ErrorMessage ="Please enter last name")]
         public string LastName { get; set; }
 
         public Guid? TitleId { get; set; }
 
-        [Display(Name = "Telephone No")]
+        [Display(Name = "Telephone #")]
+        [Required(ErrorMessage = "Please enter telephone no.")]
         public string TelephoneNo { get; set; }
 
-        [Display(Name = "Business Telephone No")]
+        [Display(Name = "Business Telephone #")]
         public string BusinessTelephoneNo { get; set; }
 
         //[EmailAddress(ErrorMessage = "Please enter valid email address")]
@@ -49,10 +50,10 @@ namespace SuccessHotelierHub.Models
 
         public Guid? NationalityId { get; set; }
 
-        [Display(Name = "Car Registration No")]
+        [Display(Name = "Car Registration #")]
         public string CarRegistrationNo { get; set; }
 
-        [Display(Name = "Passport No")]
+        [Display(Name = "Passport #")]
         public string PassportNo { get; set; }
         
         public DateTime? DOB { get; set; }

@@ -118,8 +118,8 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
                     new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
-                    new SqlParameter { ParameterName = "@City", Value = model.City },
-                    new SqlParameter { ParameterName = "@ZipCode", Value = model.ZipCode },                    
+                    new SqlParameter { ParameterName = "@TelephoneNo", Value = model.TelephoneNo },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },                    
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

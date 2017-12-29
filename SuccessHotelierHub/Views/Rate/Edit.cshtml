@@ -32,7 +32,7 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.RoomTypeId) *
+                        @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RoomTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
                                             "Select Room Type",
@@ -40,7 +40,7 @@
                         @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.RateTypeId) *
+                        @Html.LabelFor(m => m.RateTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RateTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
                                             "Select Rate Type",
@@ -50,7 +50,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.Amount) *
+                        @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Amount, new { @class = "form-group form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
                     </div>
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-            <div class="box-footer">
+            <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return updateRate();">Update</button>
                 <a href="@Url.Action("List", "Rate")" c class="btn btn-danger">Cancel</a>
             </div>

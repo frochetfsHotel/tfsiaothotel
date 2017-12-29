@@ -22,10 +22,11 @@ namespace SuccessHotelierHub.Models
           
         public Guid? TitleId { get; set; }
         
-        [Display(Name = "Telephone No")]
+        [Display(Name = "Telephone #")]
+        [Required(ErrorMessage = "Please enter telephone no.")]
         public string TelephoneNo { get; set; }
 
-        [Display(Name = "Business Telephone No")]
+        [Display(Name = "Business Telephone #")]
         public string BusinessTelephoneNo { get; set; }
 
         [EmailAddress(ErrorMessage ="Please enter valid email address")]        
@@ -44,9 +45,10 @@ namespace SuccessHotelierHub.Models
         public Guid? VipId { get; set; }
         public Guid? NationalityId { get; set; }
 
-        [Display(Name = "Car Registration No")]
+        [Display(Name = "Car Registration #")]
         public string CarRegistrationNo { get; set; }
-        [Display(Name = "Passport No")]
+
+        [Display(Name = "Passport #")]
         public string PassportNo { get; set; }
         public DateTime? DOB { get; set; }
         public bool IsMailingList { get; set; }

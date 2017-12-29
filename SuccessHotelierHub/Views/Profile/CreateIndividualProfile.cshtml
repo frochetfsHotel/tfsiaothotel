@@ -64,18 +64,18 @@
                     <div class="col-md-4 form-group">
                         <label for="TitleId">Title</label>
                         @Html.DropDownListFor(m => m.TitleId,
-                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
-                                                "Select Title",
-                                                new { @class = "form-control" })
+                             new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
+                             "Select Title",
+                             new { @class = "form-control" })
                     </div>
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.LastName)
+                        @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
                         @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
                     </div>   
                     <div class="col-md-4 form-group">                        
-                        @Html.LabelFor(m => m.FirstName)  
-                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name"})
+                        @Html.LabelFor(m => m.FirstName, new { @class = "required-label" })  
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
                         @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -88,13 +88,14 @@
                         
                     </div>
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.TelephoneNo)
-                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone No" })
+                        @Html.LabelFor(m => m.TelephoneNo, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone #" })
+                        @Html.ValidationMessageFor(m => m.TelephoneNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.BusinessTelephoneNo)
                         @Html.TextBoxFor(m => m.BusinessTelephoneNo,
-                           new { @class = "form-control", placeholder = "Business Telephone No" })                        
+                           new { @class = "form-control", placeholder = "Business Telephone #" })                        
                     </div>
                 </div>
 
@@ -150,14 +151,14 @@
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.CarRegistrationNo)
-                        @Html.TextBoxFor(m => m.CarRegistrationNo, new { @class = "form-control", placeholder = "Car Registration No" })
+                        @Html.TextBoxFor(m => m.CarRegistrationNo, new { @class = "form-control", placeholder = "Car Registration #" })
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.PassportNo)
-                        @Html.TextBoxFor(m => m.PassportNo, new { @class = "form-control", placeholder = "Passport No" })
+                        @Html.TextBoxFor(m => m.PassportNo, new { @class = "form-control", placeholder = "Passport #" })
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="DOB">Date of Birth</label>
@@ -165,7 +166,7 @@
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
-                            @Html.TextBoxFor(m => m.DOB, new { @class = "form-control", placeholder = "MM/dd/yyyy" })
+                            @Html.TextBoxFor(m => m.DOB, new { @class = "form-control mydatepicker", placeholder = "dd /MM/yyyy" })
                         </div>
                     </div>
                     <div class="col-md-2 form-group m-t-lg m-r-n-lg">
@@ -209,7 +210,7 @@
             </div>
             <!-- /.box-body -->
 
-            <div class="box-footer text-center">
+            <div class="box-footer text-right">
                 <button type="button" class="btn btn-success" onclick="return saveIndividualProfile();">Save</button>
                 <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>  
             </div>
@@ -229,7 +230,7 @@
             <div class="modal-body">
                 @Html.Partial("~/Views/Preference/_Preferences.cshtml", preferenceList)
             </div>
-            <div class="modal-footer text-center">
+            <div class="modal-footer text-right">
                 <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
                 <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>                
             </div>
@@ -240,11 +241,7 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-
-        //Date picker
-        $('#DOB').datepicker({
-            autoclose: true
-        })
+                
     });
 
     function openPreferenceModal() {
@@ -454,7 +451,7 @@
                             redirectTo(response.data);
                         } else {
                             setTimeout(function () {
-                                redirectTo('@Url.Action("~/Profile/IndividualProfileList")');
+                                redirectTo('@Url.Content("~/Profile/IndividualProfileList")');
                             }, 1000);
                         }
                        

@@ -1,4 +1,11 @@
-﻿var RootPath = ""; //Store Site Root Location.
+﻿$(function () {
+    $('.mydatepicker').datepicker({            
+        autoclose: true,
+        format: 'dd/mm/yyyy'
+    });
+});
+
+var RootPath = ""; //Store Site Root Location.
 
 var StatusCode = {
     SUCCESS: 200,
@@ -44,14 +51,21 @@ var DateFormat = {
     YYYYMMDD: "yyyy/MM/dd"
 };
 
+var DateSeprator = {
+    SLASH: "/",
+    DASH: "-",
+    DOT : "."
+}
+
 function loadToastrSetting() {
     toastr.options = {
-        closeButton: true,
-        progressBar: false,
-        preventDuplicates: true,
-        showMethod: 'slideDown',
-        timeOut: 4000
-    };
+            closeButton: true,
+            progressBar: false,
+            preventDuplicates: true,
+            showMethod: 'slideDown',
+            timeOut: 4000
+};
+
 }
 
 function showToaster(message, toastrType) {
@@ -95,21 +109,21 @@ function scrollToControl(control) {
 }
 
 
-function IsNullOrEmpty(item) {    
+function IsNullOrEmpty(item) {
     if (item == null || item == undefined || item == "") {
         return true;
     }
     return false;
 }
 
-function showLoader() {    
+function showLoader() {
     $('#divLoader').show();
 }
 
 function hideLoader() {
     $('#divLoader').hide();
 }
- 
+
 function validateEmail(email) {
     var pattern = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
     if (pattern.test(email)) {
@@ -131,13 +145,13 @@ function onlyDigits(e) {
     //if (e.shiftKey || e.ctrlKey || e.altKey) {
     //    e.preventDefault();        
     //} else {        
-        var key = e.keyCode;
+    var key = e.keyCode;
 
-        //key = 9; TAB Key. (Allow Tab Key)
+    //key = 9; TAB Key. (Allow Tab Key)
 
-        if (!((key == 9) || (key == 8) || (key == 46) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
-            e.preventDefault();
-        }
+    if (!((key == 9) || (key == 8) || (key == 46) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
+        e.preventDefault();
+    }
     //}
 }
 
@@ -147,8 +161,14 @@ function onlyNumeric(event) {
     }
 }
 
-function GetDate(objDate, dateFormat) {    
+
+/*** Date Utility Functions START ****/
+function GetDate(objDate, dateFormat) {
     var d = objDate;
+    if (IsNullOrEmpty(d) || d == "Invalid Date") {
+        return "";
+    }
+
     var month, date, year;
     var MM, dd, yyyy;
     var fullDate = "";
@@ -161,7 +181,7 @@ function GetDate(objDate, dateFormat) {
     yyyy = year;
     MM = month;
     dd = date;
-    
+
     //Append '0' prefix in date.
     if (date >= 1 && date <= 9) {
         dd = ("0" + date);
@@ -181,13 +201,47 @@ function GetDate(objDate, dateFormat) {
     else if (dateFormat == DateFormat.YYYYMMDD) {
         fullDate = yyyy + "/" + MM + "/" + dd;
     }
-
     return fullDate;
 }
 
+function ConvertDDMMYYYY_To_MMDDYYYY(inputDate, dateSeparator) {    
+    if (IsNullOrEmpty(inputDate)) { return ""; }
+    if (IsNullOrEmpty(dateSeparator)) { dateSeparator = DateSeprator.SLASH; }
+
+
+    var dateParts = inputDate.split(dateSeparator)
+
+    var MM, dd, yyyy;
+
+    dd = dateParts[0];
+    MM = dateParts[1];
+    yyyy = dateParts[2];
+
+    return trim(MM + dateSeparator + dd + dateSeparator + yyyy);
+}
+
+function GetDateObject(inputDateString, dateSeparator) {
+    debugger;
+    if (IsNullOrEmpty(inputDateString)) { return null; }
+
+    var dateParts = inputDateString.split(dateSeparator)
+
+    var MM, dd, yyyy;
+
+    dd = dateParts[0];
+    MM = dateParts[1];
+    yyyy = dateParts[2];
+
+    var dObj = new Date(Number(yyyy), (Number(MM) - 1), Number(dd));
+
+    return dObj;
+}
+
+/*** Date Utility Functions END ****/
 function trim(item) {
-    if (!IsNullOrEmpty(item)) { 
+    if (!IsNullOrEmpty(item)) {
         return item.trim();
     }
     return item;
 }
+

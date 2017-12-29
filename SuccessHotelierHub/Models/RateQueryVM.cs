@@ -11,7 +11,7 @@ namespace SuccessHotelierHub.Models
     {
         [DisplayName("Arrival Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Please select arrival date.")]
         public DateTime? ArrivalDate { get; set; }
 
@@ -20,13 +20,13 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Departure Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]        
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
         public DateTime? DepartureDate { get; set; }
 
-        [DisplayName("No Of Adult")]
+        [DisplayName("Adults")]
         public int NoOfAdult { get; set; }
 
-        [DisplayName("No Of Children")]
+        [DisplayName("Childrens")]
         public int NoOfChildren { get; set; }
 
         [DisplayName("No Of Room")]
@@ -56,16 +56,16 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }
 
-        [DisplayName("Member No")]
+        [DisplayName("Member #")]
         public string MemberNo { get; set; }
 
-        [DisplayName("Corp No")]
+        [DisplayName("Corp #")]
         public string CorpNo { get; set; }
 
-        [DisplayName("IATA No")]
+        [DisplayName("IATA #")]
         public string IATANo { get; set; }
 
-        [DisplayName("Source No")]
+        [DisplayName("Source #")]
         public string SourceNo { get; set; }
 
         public bool IsClosed { get; set; }

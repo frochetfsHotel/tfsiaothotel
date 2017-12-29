@@ -21,7 +21,7 @@
             <h3 class="box-title">Room Type Details</h3>
         </div>
         @using (Html.BeginForm("Edit", "RoomType", FormMethod.Post, new { id = "frmRoomType", enctype = "multipart/form-data" }))
-            {
+        {
             @Html.AntiForgeryToken()
 
             <!--HIDDEN FIELD-->
@@ -31,12 +31,12 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.RoomTypeCode) *
+                        @Html.LabelFor(m => m.RoomTypeCode, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
                         @Html.ValidationMessageFor(m => m.RoomTypeCode, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.NoOfRooms) *
+                        @Html.LabelFor(m => m.NoOfRooms, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms", onkeydown = "onlyDigits(event)" })
                         @Html.ValidationMessageFor(m => m.NoOfRooms, "", new { @class = "text-danger" })
                     </div>
@@ -54,8 +54,8 @@
                         </label>
                     </div>
                 </div>
-            </div>
-            <div class="box-footer">
+            </div>        
+            <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return updateRoomType();">Update</button>
                 <a href="@Url.Action("List", "RoomType")" c class="btn btn-danger">Cancel</a>
             </div>

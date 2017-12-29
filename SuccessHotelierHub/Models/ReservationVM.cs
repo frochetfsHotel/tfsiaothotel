@@ -35,10 +35,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("VIP")]
         public Guid? VipId { get; set; }
 
-        [DisplayName("Phone")]
+        [DisplayName("Phone #")]
         public string PhoneNo { get; set; }
 
-        [DisplayName("Member No")]
+        [DisplayName("Member #")]
         public string MemberNo { get; set; }
 
         [DisplayName("Member LVT.")]
@@ -61,7 +61,8 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Arrival Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        //[RegularExpression("(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$", ErrorMessage = "Please enter valid arrival date.")]
         [Required(ErrorMessage = "Please select arrival date.")]
         public DateTime? ArrivalDate { get; set; }
 
@@ -70,14 +71,14 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Departure Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Please select departure date.")]
         public DateTime? DepartureDate { get; set; }
 
         [DisplayName("Adults")]
         public int NoOfAdult { get; set; }
 
-        [DisplayName("Child")]
+        [DisplayName("Childrens")]
         public int NoOfChildren { get; set; }
 
         [DisplayName("No Of Rooms.")]
@@ -141,14 +142,14 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage ="Please select payment method.")]
         public Guid? PaymentMethodId { get; set; }
 
-        [DisplayName("Credit Card No")]
+        [DisplayName("Credit Card #")]
         public string CreditCardNo { get; set; }
 
         [DisplayName("Exp. Date")]
         public string CardExpiryDate { get; set; }
 
-        [DisplayName("CRS No.")]
-        public string CRSNo { get; set; }
+        [DisplayName("CVV #")]
+        public string CVVNo { get; set; }
 
         [DisplayName("Approval Code ")]
         public string ApprovalCode { get; set; }

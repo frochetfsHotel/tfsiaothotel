@@ -42,6 +42,7 @@ namespace SuccessHotelierHub
                       "~/Scripts/AdminLTE/adminlte.min.js",
                       "~/Scripts/AdminLTE/toastr.min.js",
                       "~/Scripts/AdminLTE/demo.js",
+                      "~/Scripts/Custom/jquery.validate.date.js",
                       "~/Scripts/Custom/common.js"
                       ));
 
