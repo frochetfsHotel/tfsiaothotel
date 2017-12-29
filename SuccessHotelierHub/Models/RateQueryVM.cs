@@ -97,7 +97,9 @@ namespace SuccessHotelierHub.Models
         public string RateTypeCode { get; set; }
         public Guid? RoomTypeId { get; set; }
         public string RoomTypeCode { get; set; }
-        public double? Amount { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public float? Amount { get; set; }
 
     }
 }

@@ -310,12 +310,12 @@
             },
             {
                 targets: 1,
-                data: "FirstName",
+                data: "LastName",
                 orderable: true
             },
             {
                 targets: 2,
-                data: "LastName",
+                data: "FirstName",
                 orderable: true
             },
             {
@@ -376,7 +376,7 @@
                 }
             }
             ],
-            order: [[0, "desc"]],
+            order: [[1, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }

@@ -30,12 +30,12 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.Code)
+                        @Html.LabelFor(m => m.Code) *
                         @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.Description)
+                        @Html.LabelFor(m => m.Description) *
                         @Html.TextBoxFor(m => m.Description, new { @class = "form-control", placeholder = "Preference" })
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>

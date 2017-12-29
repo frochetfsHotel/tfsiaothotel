@@ -104,7 +104,8 @@ namespace SuccessHotelierHub.Models
         public bool IsFixedRate { get; set; }
 
         [DisplayName("Rate")]
-        public double? Rate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public float? Rate { get; set; }
 
         [DisplayName("Currency")]
         public Guid? CurrencyId { get; set; }
@@ -160,7 +161,7 @@ namespace SuccessHotelierHub.Models
         
         public bool IsEmailConfirmation { get; set; }
 
-        [DisplayName("Nights")]
+        [DisplayName("Guest Balance")]
         public double? GuestBalance { get; set; }
 
         [DisplayName("Dis. Amt.")]

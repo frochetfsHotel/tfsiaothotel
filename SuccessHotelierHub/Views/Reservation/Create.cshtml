@@ -185,7 +185,7 @@
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfNight)
-                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();" })
+                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "calculateTotalPrice();" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DepartureDate) *
@@ -259,10 +259,11 @@
 
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Rate)
-                        @Html.TextBoxFor(m => m.Rate, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.Rate, new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "calculateTotalPrice();" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">
-                        <label class="container1" for="IsFixedRate">
+                        <label class="m-l-n-md">Total Price : <span id="totalPrice">&euro; 0.00</span></label>                        
+                        <label class="container1 pull-right" for="IsFixedRate">
                             Fixed Rate
                             @Html.CheckBoxFor(m => m.IsFixedRate)
                             <span class="checkmark"></span>
@@ -273,7 +274,7 @@
                         <select class="form-control" id="CurrencyId" name="CurrencyId">
                             <option value="">--Select Currency--</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">USD</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">EUR</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945" selected>EUR</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F905">INR</option>
                         </select>
                     </div>
@@ -391,6 +392,7 @@
                         @Html.DropDownListFor(m => m.PaymentMethodId, new List<SelectListItem>
                             {
                                 new SelectListItem{ Text = "--Select Payment Method--", Value = "" },
+                                new SelectListItem{ Text = "Cash", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F946" },
                                 new SelectListItem{ Text = "Visa", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
                                 new SelectListItem{ Text = "American Express", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
                                 new SelectListItem{ Text = "Discover", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
@@ -816,6 +818,21 @@
             }
         }
     }
+
+    function calculateTotalPrice() {
+        var noOfNights = $("#NoOfNight").val();
+        var rate = $('#Rate').val();
+
+        var totalPrice = "0.00";
+
+        if (IsNullOrEmpty(noOfNights)) { noOfNights = 1; }
+        if (IsNullOrEmpty(rate)) { rate = 1; }
+
+        totalPrice = parseInt(noOfNights) * parseFloat(rate);
+
+        $('#totalPrice').html("&euro; " + totalPrice);
+    }
+
 </script>
 
 @section scripts {

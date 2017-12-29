@@ -24,46 +24,35 @@
             @Html.AntiForgeryToken()
 
             <div class="box-body">
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="RoomTypeCode" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">
-                        Room Type Code *
-                    </label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
-                        @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-group form-control", placeholder = "Room Type Code" })
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.RoomTypeCode) *
+                        @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                        @Html.ValidationMessageFor(m => m.RoomTypeCode, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.NoOfRooms) *
+                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms", onkeydown = "onlyDigits(event)" })
+                        @Html.ValidationMessageFor(m => m.NoOfRooms, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="NoOfRooms" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">No. Of Rooms  *</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
-                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-group form-control", placeholder = "No Of Rooms", onkeydown = "onlyDigits(event)" })
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.Description)
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
-                </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="Description" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Description</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-group form-control", placeholder = "Description", rows = "3" })
-                    </div>
-                </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="IsActive" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Is Active</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
-                        <label class="col-md-4 col-sm-4 col-xs-6 container1">
+                    <div class="col-md-6 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
                             <span class="checkmark"></span>
                         </label>
                     </div>
                 </div>
-                <div class="clearfix"></div>
-                <hr class="hr_margin" />
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero m-b-sm">
-                    <div class="col-lg-offset-3 col-lg-9 col-md-offset-4 col-md-8 col-sm-offset-3 col-sm-9 col-xs-12 padding-zero">
-                        <button type="button" class="btn btn-success m-r-xs" onclick="return saveRoomType();">Save</button>
-                        <a href="@Url.Action("List", "RoomType")" c class="btn btn-danger">Cancel</a>
-                    </div>
-                </div>
+            </div>
+            <div class="box-footer">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveRoomType();">Save</button>
+                <a href="@Url.Action("List", "RoomType")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
@@ -72,25 +61,31 @@
 
 <script type="text/javascript">
     function validateRoomType() {
-        var roomTypeCode = $("#RoomTypeCode").val();
-        var noOfRooms = $("#NoOfRooms").val();
+        //var roomTypeCode = $("#RoomTypeCode").val();
+        //var noOfRooms = $("#NoOfRooms").val();
 
         var errorMessage = "";
         var blnValid = true;
 
-        if (IsNullOrEmpty(roomTypeCode)) {
-            errorMessage += "Please enter room type code." + Delimeter.BREAKLINE + "";
-            blnValid = false;
-        }
-        if (IsNullOrEmpty(noOfRooms)) {
-            errorMessage += "Please no of rooms." + Delimeter.BREAKLINE + "";
+        //if (IsNullOrEmpty(roomTypeCode)) {
+        //    errorMessage += "Please enter room type code." + Delimeter.BREAKLINE + "";
+        //    blnValid = false;
+        //}
+        //if (IsNullOrEmpty(noOfRooms)) {
+        //    errorMessage += "Please no of rooms." + Delimeter.BREAKLINE + "";
+        //    blnValid = false;
+        //}
+
+        //if (!blnValid) {
+        //    showToaster(errorMessage, ToasterType.ERROR);
+        //    return false;
+        //}
+
+        if ($("#frmRoomType").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
 
-        if (!blnValid) {
-            showToaster(errorMessage, ToasterType.ERROR);
-            return false;
-        }
         return blnValid;
     }
 
