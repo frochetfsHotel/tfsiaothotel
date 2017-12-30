@@ -61,25 +61,10 @@
 
 <script type="text/javascript">
     function validateRoomType() {
-        //var roomTypeCode = $("#RoomTypeCode").val();
-        //var noOfRooms = $("#NoOfRooms").val();
 
         var errorMessage = "";
         var blnValid = true;
 
-        //if (IsNullOrEmpty(roomTypeCode)) {
-        //    errorMessage += "Please enter room type code." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-        //if (IsNullOrEmpty(noOfRooms)) {
-        //    errorMessage += "Please no of rooms." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (!blnValid) {
-        //    showToaster(errorMessage, ToasterType.ERROR);
-        //    return false;
-        //}
 
         if ($("#frmRoomType").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);

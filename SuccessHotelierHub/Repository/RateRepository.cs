@@ -102,7 +102,7 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
-        public List<RoomTypeRateTypeMappingVM> CheckRoomTypeRateTypeMappingAvaiable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId )
+        public List<RoomTypeRateTypeMappingVM> CheckRoomTypeRateTypeMappingAvailable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId )
         {
             SqlParameter[] parameters =
                {
@@ -111,7 +111,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateTypeId", Value = ratetypeId }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomTypeRateTypeMappingAvaiable", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomTypeRateTypeMappingAvailable", parameters);
 
             var mapping = new List<RoomTypeRateTypeMappingVM>();
             mapping = DALHelper.CreateListFromTable<RoomTypeRateTypeMappingVM>(dt);

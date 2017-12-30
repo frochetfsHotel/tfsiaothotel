@@ -15,7 +15,9 @@
         }
     }
 
-    var preferenceList = (List<PreferenceVM>)ViewBag.PreferenceList;
+    var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
+
+    var selectedPreferences = (string)ViewBag.SelectedPreferenceDescription;
 }
 
 <section class="content-header">
@@ -181,7 +183,7 @@
                 </div>
                 <div class="row" style="display:none;" id="divSelectedPreference">
                     <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference</label>
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl">Selected Preference : </label>
                         <div class="col-sm-10">
                             <p id="ListOfSelectedPreferences"></p>
                         </div>
@@ -216,7 +218,7 @@
 
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -224,12 +226,13 @@
                 <h4 class="modal-title">Preferences</h4>
             </div>
             <div class="modal-body">
-               @Html.Partial("~/Views/Preference/_Preferences.cshtml", preferenceList)
-            </div>  
-            <div class="modal-footer text-right">
-                <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
-                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
+                @Html.Partial("~/Views/Preference/_Preferences.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateProfile" },
+                                    { "PreferenceGroup", preferenceGroupList }
+                                })
             </div>
+            <div class="clearfix"></div>
         </div>
     </div>
 </div>
@@ -238,95 +241,59 @@
 <script type="text/javascript">
     $(document).ready(function(){
 
-
-
-        //Bind Selected Preference Checkboxes
-        bindSelectedPreferences();
-
         //Show Selected Preference Checkboxes
         showSelectedPreferences();
+
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {
+            debugger;
+            var preferenceIds = "";
+            var html = "";
+
+            $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
+                preferenceIds += $(this).val() + ",";
+
+                html += $(this).attr("data-preference") + ", ";
+            });
+
+            console.log(preferenceIds);
+
+            //Remove last comma.
+            if (!IsNullOrEmpty(preferenceIds)) {
+                var lastChar = preferenceIds.slice(-1);
+                if (lastChar == ',') {
+                    preferenceIds = preferenceIds.slice(0, -1);
+                    html = $.trim(html).slice(0, -1);
+                }
+
+                $('#divSelectedPreference').show();
+                $('#PreferenceItems').val(preferenceIds);
+                $('#ListOfSelectedPreferences').html(html);
+
+                //Close Preference Search Modal.
+                $('#preferenceModal').modal('toggle');
+
+            } else {
+                $('#PreferenceItems').val('');
+                $('#ListOfSelectedPreferences').html('');
+                $('#divSelectedPreference').hide();
+
+                showToaster("Please select at least one preference.", ToasterType.ERROR);
+            }
+        });
+
+        
 
     });
 
     function openPreferenceModal() {
         $('#preferenceModal').modal('toggle');
-
-        bindSelectedPreferences();
     }
 
-    function bindSelectedPreferences() {
-
-        //First clear all the checkboxes.
-        clearPreferencesCheckBox();
-
-        var preferenceIds = $('#PreferenceItems').val();
-
-        if (!IsNullOrEmpty(preferenceIds)) {
-
-            var preferenceIdsArr = preferenceIds.split(',');
-
-            $.each(preferenceIdsArr, function (index, value) {
-                console.log(value);
-                $(".chkPreference").each(function () {
-                    if ($(this).val() == value) {
-                        $(this).prop("checked", true);
-                        return false;
-                    }
-                });
-            });
-        }
-    }
-
-    function selectPreferences() {
-        var preferenceIds = "";
-        var html = "";
-
-         $("input:checkbox[class=chkPreference]:checked").each(function () {
-             preferenceIds += $(this).val() + ",";
-
-             html += $(this).attr("data-preference") + ", ";
-         });
-
-        //Remove last comma.
-         if (!IsNullOrEmpty(preferenceIds)) {
-             var lastChar = preferenceIds.slice(-1);
-             if (lastChar == ',') {
-                 preferenceIds = preferenceIds.slice(0, -1);
-                 html = $.trim(html).slice(0, -1);
-             }
-             $('#PreferenceItems').val(preferenceIds);
-             showSelectedPreferences();
-
-         } else {
-             $('#PreferenceItems').val('');
-             $('#ListOfSelectedPreferences').html('');
-             $('#divSelectedPreference').hide();
-         }
-
-         //console.log(preferenceIds);
-
-         $('#preferenceModal').modal('toggle');
-    }
 
     function showSelectedPreferences() {
-        var html = "";
-
-        $("input:checkbox[class=chkPreference]:checked").each(function () {
-            html += $(this).attr("data-preference") + ", ";
-        });
-
-        //Remove last comma.
-        if (!IsNullOrEmpty(html)) {
-            var lastChar = html.slice(-1);
-            if (lastChar == ',') {
-                html = $.trim(html).slice(0, -1);
-            }
-
-            $('#divSelectedPreference').show();
-            $('#ListOfSelectedPreferences').html(html);
-        } else {
-            $('#ListOfSelectedPreferences').html('');
-            $('#divSelectedPreference').hide();
+        if (!IsNullOrEmpty('@selectedPreferences')) {
+            $('#divSelectedPreference').show();            
+            $('#ListOfSelectedPreferences').html('@selectedPreferences');
         }
     }
 

@@ -11,6 +11,8 @@ namespace SuccessHotelierHub.Models
         public Guid? ProfileTypeId { get; set; }
         public Guid? ProfileId { get; set; }
         public Guid? PreferenceId { get; set; }
+        public string PreferenceCode { get; set; }
+        public string PreferenceDescription { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
     }

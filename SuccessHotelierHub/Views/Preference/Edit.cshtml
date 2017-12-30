@@ -29,18 +29,26 @@
 
             <div class="box-body">
                 <div class="row">
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.PreferenceGroupId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.PreferenceGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.PreferenceGroupList, "-- Select Preference Group --",
+                                htmlAttributes: new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(m => m.PreferenceGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Code, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Description, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Description, new { @class = "form-control", placeholder = "Preference" })
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
 
-                    <div class="col-md-4 form-group m-t-lg">
+                    <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
@@ -59,26 +67,10 @@
 
 <script type="text/javascript">
     function validatePreference() {
-        //var code= $("#Code").val();
-        //var description = $("#Description").val();
 
         var errorMessage = "";
         var blnValid = true;
 
-        //if (IsNullOrEmpty(code)) {
-        //    errorMessage += "Please enter code." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-        //if (IsNullOrEmpty(description)) {
-        //    errorMessage += "Please enter description." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (!blnValid) {
-        //    //showAlert(errorMessage, Alert.ERROR);
-        //    showToaster(errorMessage, ToasterType.ERROR);
-        //    return false;
-        //}
 
         if ($("#frmPreference").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
@@ -86,9 +78,6 @@
         }
 
         return blnValid;
-
-
-
     }
 
 
@@ -100,7 +89,6 @@
                     showLoader();
                 },
                 error: function (result) {
-                    //showAlert(result.responseText, Alert.ERROR);
                     showToaster(result.responseText, ToasterType.ERROR);
                 },
                 complete: function () {
@@ -111,11 +99,10 @@
                 data: $('#frmPreference').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
-                        //showAlert(response.errorMessage, Alert.ERROR);
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        //showAlert("Preference details updated successfully.", Alert.SUCCESS);
+                     
                         showToaster("Preference details updated successfully", ToasterType.SUCCESS);
                         setTimeout(function () {
                             redirectTo('@Url.Content("~/Preference/List")');

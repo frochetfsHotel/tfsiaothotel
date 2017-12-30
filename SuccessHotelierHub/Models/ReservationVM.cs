@@ -194,7 +194,14 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Item Inv.")]
         public Guid? ItemInventoryId { get; set; }
-        
+
+        [DisplayName("Confirmation #")]
+        public string ConfirmationNumber { get; set; }
+
+        public Guid? CancellationReasonId { get; set; }
+        public string CancellationReasonComment { get; set; }
+        public bool IsReservationCancel { get; set; }
+
         public string Remarks { get; set; }
         public string PreferenceItems { get; set; }
 

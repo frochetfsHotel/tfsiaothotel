@@ -21,6 +21,8 @@ namespace SuccessHotelierHub.Controllers
         private TitleRepository titleRepository = new TitleRepository();
         private VipRepository vipRepository = new VipRepository();
         private PreferenceRepository preferenceRepository = new PreferenceRepository();
+        private PreferenceGroupRepository preferenceGroupRepository = new PreferenceGroupRepository();
+        private ReservationCancellationReasonRepository reservationCancellationReasonRepository = new ReservationCancellationReasonRepository();
 
         #endregion
 
@@ -34,7 +36,7 @@ namespace SuccessHotelierHub.Controllers
             var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();            
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
             var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
-            var preferenceList = preferenceRepository.GetPreferences();
+            var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
 
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();                        
@@ -77,7 +79,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.TitleList = titleList;
             ViewBag.VipList = vipList;
             ViewBag.CountryList = countryList;
-            ViewBag.PreferenceList = preferenceList;
+            ViewBag.PreferenceGroupList = preferenceGroupList;
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
 
@@ -103,6 +105,43 @@ namespace SuccessHotelierHub.Controllers
 
                     model.ETA = time.TimeOfDay;
                 }
+
+
+
+                #region Generate Confirmation No
+                string confirmationNo = string.Empty;
+                Int64 confirmationSuffix = 1;
+
+                var lastReservation = reservationRepository.GetLastReservationByDate(DateTime.Now);
+                
+                if (lastReservation != null)
+                {
+                    string confirmationPrefix = DateTime.Now.ToString("ddMMyyyy");
+
+                    string lastConfirmationNo = lastReservation.ConfirmationNumber;
+                    
+
+                    if (!string.IsNullOrWhiteSpace(lastConfirmationNo))
+                    {
+                        lastConfirmationNo = lastConfirmationNo.Replace(confirmationPrefix, "");
+
+                        confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : 1;
+
+                        confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
+                    }
+                    else
+                    {
+                        confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
+                    }
+                }
+                else
+                {
+                    confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
+                }
+
+                model.ConfirmationNumber = confirmationNo;
+
+                #endregion
 
                 reservationId = reservationRepository.AddReservation(model);
 
@@ -139,7 +178,8 @@ namespace SuccessHotelierHub.Controllers
                         IsSuccess = true,
                         data = new
                         {
-                            ReservationId = model.Id
+                            ReservationId = model.Id,
+                            ConfirmationNo = confirmationNo
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -170,28 +210,37 @@ namespace SuccessHotelierHub.Controllers
                 //Get Preference Mapping
                 var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);
                 string preferenceItems = string.Empty;
+                string preferenceDescription = string.Empty;
 
                 if (selectedPreferences != null && selectedPreferences.Count > 0)
                 {
                     preferenceItems += string.Join(",", selectedPreferences.Select(i => i.PreferenceId));
 
+                    //Remove last comma.
                     if (!string.IsNullOrWhiteSpace(preferenceItems))
-                        preferenceItems = preferenceItems.Trim(',');
+                        preferenceItems = Utility.Utility.RemoveLastCharcter(preferenceItems, ',');
+
+                    preferenceDescription += string.Join(", ", selectedPreferences.Select(i => i.PreferenceDescription));
+
+                    //Remove last comma.
+                    if (!string.IsNullOrWhiteSpace(preferenceDescription))
+                        preferenceDescription = Utility.Utility.RemoveLastCharcter(preferenceDescription, ',');
                 }
 
                 model.PreferenceItems = preferenceItems;
+                ViewBag.SelectedPreferenceDescription = preferenceDescription;
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
                 var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
                 var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
                 var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
-                var preferenceList = preferenceRepository.GetPreferences();
+                var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
                 ViewBag.CountryList = countryList;
-                ViewBag.PreferenceList = preferenceList;
+                ViewBag.PreferenceGroupList = preferenceGroupList;
                 ViewBag.RateTypeList = rateTypeList;
                 ViewBag.RoomTypeList = roomTypeList;
 
@@ -318,6 +367,10 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult List()
         {
+            var reservationCancellationReasonList = reservationCancellationReasonRepository.GetReservationCancellationReasons();
+
+            ViewBag.ReservationCancellationReasonList = reservationCancellationReasonList;
+
             return View();
         }
 
@@ -358,6 +411,42 @@ namespace SuccessHotelierHub.Controllers
                     data = reservations
                 }, JsonRequestBehavior.AllowGet);
 
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CancelReservation(Guid id, Guid cancellationReasonId, string comment)
+        {
+            try
+            {
+                string reservationId = string.Empty;
+
+                //Cancel Reservation.
+                reservationId = reservationRepository.CancelReservation(id, cancellationReasonId, comment, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(reservationId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            ReservationId = id
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Reservation not cancelled successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
             catch (Exception e)
             {

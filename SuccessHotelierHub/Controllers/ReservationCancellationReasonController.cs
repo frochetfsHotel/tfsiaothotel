@@ -9,59 +9,54 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    public class RateController : Controller
+    public class ReservationCancellationReasonController : Controller
     {
         #region Declaration
-        
-        private RateRepository rateRepository = new RateRepository();
-        private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
-        private RateTypeRepository rateTypeRepository = new RateTypeRepository();
+
+        private ReservationCancellationReasonRepository reservationCancellationReasonRepository = new ReservationCancellationReasonRepository();
 
         #endregion
 
         public ActionResult Create()
         {
-            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
-            var ratetypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "ID", "RateTypeCode");
+            ReservationCancellationReasonVM model = new ReservationCancellationReasonVM();
+            model.IsActive = true;
 
-            ViewBag.RoomTypeList = roomTypeList;
-            ViewBag.RateTypeList = ratetypeList;
-            
-            return View();
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(RoomTypeRateTypeMappingVM model)
+        public ActionResult Create(ReservationCancellationReasonVM model)
         {
             try
             {
-                string mappingId = string.Empty;
+                string reasonId = string.Empty;
+                
+                #region Check Cancellation Code Available.
+
+                if (this.CheckReservationCancellationCodeAvailable(model.Id, model.Code) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Cancellation Code : {0} already exist.", model.Code)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
                 model.CreatedBy = LogInManager.LoggedInUserId;
+                reasonId = reservationCancellationReasonRepository.AddReservationCancellationReason(model);
 
-                #region Check Room Type Rate Type Mapping Available.
-
-                if (this.CheckRoomTypeRateTypeMappingAvailable(model.Id, model.RoomTypeId, model.RateTypeId) == false)
-                {
-                    return Json(new
-                    {
-                        IsSuccess = false,
-                        errorMessage = string.Format("Selected mapping already exist.")
-                    }, JsonRequestBehavior.AllowGet);
-                }
-
-                #endregion
-
-                mappingId = rateRepository.AddRoomTypeRateTypeMapping(model);
-
-                if (!string.IsNullOrWhiteSpace(mappingId))
+                if (!string.IsNullOrWhiteSpace(reasonId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            MappingId = model.Id
+                            ReasonId = model.Id
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -70,85 +65,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Rate details not saved successfully."
-                    }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception e)
-            {
-                return Json(new
-                {
-                    IsSuccess = false,
-                    errorMessage = e.Message
-                });
-            }
-        }
-
-        public ActionResult Edit(Guid id)
-        {
-            var mapping = rateRepository.GetRoomTypeRateTypeMappingId(id);
-
-            RoomTypeRateTypeMappingVM model = new RoomTypeRateTypeMappingVM();
-
-            if (mapping != null && mapping.Count > 0)
-            {
-                model = mapping[0];
-
-                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
-                var ratetypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "ID", "RateTypeCode");
-
-                ViewBag.RoomTypeList = roomTypeList;
-                ViewBag.RateTypeList = ratetypeList;
-
-                return View(model);
-            }
-
-            return RedirectToAction("List");
-
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(RoomTypeRateTypeMappingVM model)
-        {
-            try
-            {
-                string mappingId = string.Empty;
-
-                model.UpdatedBy = LogInManager.LoggedInUserId;
-
-                #region Check Room Type Rate Type Mapping Available.
-
-                if (this.CheckRoomTypeRateTypeMappingAvailable(model.Id, model.RoomTypeId, model.RateTypeId) == false)
-                {
-                    return Json(new
-                    {
-                        IsSuccess = false,
-                        errorMessage = string.Format("Selected mapping already exist.")
-                    }, JsonRequestBehavior.AllowGet);
-                }
-
-                #endregion
-
-                mappingId = rateRepository.UpdateRoomTypeRateTypeMapping(model);
-
-                if (!string.IsNullOrWhiteSpace(mappingId))
-                {
-                    return Json(new
-                    {
-                        IsSuccess = true,
-                        data = new
-                        {
-                            RoomTypeId = model.Id
-                        }
-                    }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new
-                    {
-                        IsSuccess = false,
-                        errorMessage = "Rate details not updated successfully."
+                        errorMessage = "Cancellation Reason not saved successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -158,23 +75,54 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public ActionResult Edit(Guid id)
+        {
+            var reason = reservationCancellationReasonRepository.GetReservationCancellationReasonById(id);
+
+            ReservationCancellationReasonVM model = new ReservationCancellationReasonVM();
+
+            if (reason != null && reason.Count > 0)
+            {
+                model = reason[0];
+
+                return View(model);
+            }
+
+            return RedirectToAction("List");
+        }
+
         [HttpPost]
-        public ActionResult Delete(Guid id)
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(ReservationCancellationReasonVM model)
         {
             try
             {
-                string mappingId = string.Empty;
+                string reasonId = string.Empty;
 
-                mappingId = rateRepository.DeleteRoomTypeRateTypeMapping(id, LogInManager.LoggedInUserId);
+                #region Check Cancellation Code Available.
 
-                if (!string.IsNullOrWhiteSpace(mappingId))
+                if (this.CheckReservationCancellationCodeAvailable(model.Id, model.Code) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Cancellation Code : {0} already exist.", model.Code)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+                reasonId = reservationCancellationReasonRepository.UpdateReservationCancellationReason(model);
+
+                if (!string.IsNullOrWhiteSpace(reasonId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            MappingId = id
+                            ReasonId = model.Id
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -183,7 +131,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Rate not deleted successfully."
+                        errorMessage = "Cancellation Reason not updated successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -195,17 +143,46 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult List()
         {
-            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
-            var ratetypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "ID", "RateTypeCode");
-
-            ViewBag.RoomTypeList = roomTypeList;
-            ViewBag.RateTypeList = ratetypeList;
-
             return View();
-        }
+        }   
+
 
         [HttpPost]
-        public ActionResult Search(SearchRoomTypeRateTypeMappingParametersVM model)
+        public ActionResult Delete(Guid id)
+        {
+            try
+            {
+                string reasonId = string.Empty;
+
+                reasonId = reservationCancellationReasonRepository.DeleteReservationCancellationReason(id, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(reasonId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            ReasonId = id
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Cancellation Reason not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+        [HttpPost]
+        public ActionResult Search(SearchReservationCancellationReasonParametersVM model)
         {
             try
             {
@@ -224,11 +201,11 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
-                var mappings = rateRepository.SearchRoomTypeRateTypeMapping(model, 
-                    Convert.ToString(sortColumn),Convert.ToString(sortDirection));
+                var reasons = reservationCancellationReasonRepository.SearchReservationCancellationReason(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                
 
                 int totalRecords = 0;
-                var dbRecords = mappings.Select(m => m.TotalCount).FirstOrDefault();
+                var dbRecords = reasons.Select(m => m.TotalCount).FirstOrDefault();
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
@@ -239,7 +216,7 @@ namespace SuccessHotelierHub.Controllers
                     CurrentPage = model.PageNum,
                     PageSize = Constants.PAGESIZE,
                     TotalRecords = totalRecords,
-                    data = mappings
+                    data = reasons
                 }, JsonRequestBehavior.AllowGet);
 
             }
@@ -249,13 +226,34 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckRoomTypeRateTypeMappingAvailable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId)
+
+        [HttpPost]
+        public ActionResult SearchAdvanceReservationCancellationReasons(SearchAdvanceReservationCancellationReasonParametersVM model)
+        {
+            try
+            {
+                var reasons = reservationCancellationReasonRepository.SearchAdvanceReservationCancellationReasons(model);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = reasons
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        public bool CheckReservationCancellationCodeAvailable(Guid? id, string code)
         {
             bool blnAvailable = true;
 
-            var mapping = rateRepository.CheckRoomTypeRateTypeMappingAvailable(mappingId, roomTypeId, ratetypeId);
+            var reason = reservationCancellationReasonRepository.CheckReservationCancellationCodeAvailable(id, code);
 
-            if (mapping.Any())
+            if (reason.Any())
             {
                 blnAvailable = false;
             }

@@ -7,20 +7,16 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class PreferenceVM
+    public class PreferenceGroupVM
     {
         public Guid Id { get; set; }
+        
 
-        [DisplayName("Preference Group")]
-        [Required(ErrorMessage = "Please select preference group")]
-        public Guid PreferenceGroupId { get; set; }
+        [DisplayName("Preference Group Name")]
+        [Required(ErrorMessage = "Please enter preference group name.")]
+        public string Name { get; set; }
 
-        [DisplayName("Preference Code")]
-        [Required(ErrorMessage = "Please enter code")]
-        public string Code { get; set; }
-
-        [DisplayName("Preference")]
-        [Required(ErrorMessage = "Please enter description")]
+        [DisplayName("Description")]        
         public string Description { get; set; }
 
         public int? CreatedBy { get; set; }

@@ -42,6 +42,7 @@ namespace SuccessHotelierHub.Repository
 
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@PreferenceGroupId", Value = preference.PreferenceGroupId },
                     new SqlParameter { ParameterName = "@Code", Value = preference.Code },
                     new SqlParameter { ParameterName = "@Description", Value = preference.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = preference.IsActive },
@@ -60,6 +61,7 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = preference.Id },
+                    new SqlParameter { ParameterName = "@PreferenceGroupId", Value = preference.PreferenceGroupId },
                     new SqlParameter { ParameterName = "@Code", Value = preference.Code },
                     new SqlParameter { ParameterName = "@Description", Value = preference.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = preference.IsActive },
@@ -102,6 +104,22 @@ namespace SuccessHotelierHub.Repository
 
             var preferences = new List<SearchPreferenceResultVM>();
             preferences = DALHelper.CreateListFromTable<SearchPreferenceResultVM>(dt);
+
+            return preferences;
+        }
+
+        public List<SearchAdvancePreferenceResultVM> SearchAdvancePreference(SearchAdvancePreferenceParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@PreferenceGroupId", Value = model.PreferenceGroupId },
+                    new SqlParameter { ParameterName = "@Preference", Value = model.Preference }                    
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvancePreference", parameters);
+
+            var preferences = new List<SearchAdvancePreferenceResultVM>();
+            preferences = DALHelper.CreateListFromTable<SearchAdvancePreferenceResultVM>(dt);
 
             return preferences;
         }

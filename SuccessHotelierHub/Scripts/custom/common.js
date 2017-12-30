@@ -223,8 +223,7 @@ function ConvertDDMMYYYY_To_MMDDYYYY(inputDate, dateSeparator) {
     return trim(MM + dateSeparator + dd + dateSeparator + yyyy);
 }
 
-function GetDateObject(inputDateString, dateSeparator) {
-    debugger;
+function GetDateObject(inputDateString, dateSeparator) {    
     if (IsNullOrEmpty(inputDateString)) { return null; }
 
     var dateParts = inputDateString.split(dateSeparator)
@@ -284,8 +283,7 @@ function setCurrentMenu(menu, redirectUrl) {
     
 }
 
-function LoadLeftSideMenu() {
-    debugger;
+function LoadLeftSideMenu() {    
     var menu = getCookie('TopMenu');
 
     if (!IsNullOrEmpty(menu)) {

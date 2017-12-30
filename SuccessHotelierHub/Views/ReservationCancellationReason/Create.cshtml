@@ -1,86 +1,74 @@
-﻿@model SuccessHotelierHub.Models.PreferenceVM
+﻿@model SuccessHotelierHub.Models.ReservationCancellationReasonVM
 @{
-    ViewBag.Title = "Create Preference";
+    ViewBag.Title = "Add Reservation Cancellation Reason";
 }
 
 <section class="content-header">
     <h1>
-        Preference <small>Create</small>
+        Reservation Cancellation Reason <small>Create</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Preference</li>
+        <li class="">Reservation Cancellation Reason</li>
         <li class="active">Create</li>
     </ol>
 </section>
 
 <section class="content">
-
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Preference Details</h3>
+            <h3 class="box-title">Reservation Cancellation Reason Details</h3>
         </div>
-        @using (Html.BeginForm("Create", "Preference", FormMethod.Post, new { id = "frmPreference", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Create", "ReservationCancellationReason", FormMethod.Post, new { id = "frmCancellationReason", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
             <div class="box-body">
                 <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.PreferenceGroupId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.PreferenceGroupId,
-                                (IEnumerable<SelectListItem>)ViewBag.PreferenceGroupList, "-- Select Preference Group --",
-                                htmlAttributes: new { @class = "form-control"})
-
-                        @Html.ValidationMessageFor(m => m.PreferenceGroupId, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Code, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Description, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Description, new { @class = "form-control", placeholder = "Preference" })
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
 
-                    <div class="col-md-3 form-group m-t-lg">                        
+                    <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
-                           @Html.CheckBoxFor(m => m.IsActive)
+                            @Html.CheckBoxFor(m => m.IsActive)
                             <span class="checkmark"></span>
                         </label>
                     </div>
                 </div>
             </div>
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success m-r-xs" onclick="return savePreference();">Save</button>
-                <a href="@Url.Action("List", "Preference")" class="btn btn-danger">Cancel</a>
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveReservationCancellationReason();">Save</button>
+                <a href="@Url.Action("List", "ReservationCancellationReason")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
 </section>
 
 <script type="text/javascript">
-    function validatePreference() {
+    function validateReservationCancellationReason() {
         var errorMessage = "";
         var blnValid = true;
 
-        if ($("#frmPreference").valid() == false) {
+        if ($("#frmCancellationReason").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
 
         return blnValid;
-
-        
     }
 
 
-    function savePreference() {
+    function saveReservationCancellationReason() {
 
-        if (validatePreference()) {
+        if (validateReservationCancellationReason()) {
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -91,18 +79,18 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Preference/Create")',
+                url: '@Url.Content("~/ReservationCancellationReason/Create")',
                 type: 'POST',
-                data: $('#frmPreference').serialize(),
+                data: $('#frmCancellationReason').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        showToaster("Preference details saved successfully", ToasterType.SUCCESS);
+                        showToaster("Cancellation Reason saved successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('@Url.Content("~/Preference/List")');
+                            redirectTo('@Url.Content("~/ReservationCancellationReason/List")');
                         }, 1000);
                     }
                 }

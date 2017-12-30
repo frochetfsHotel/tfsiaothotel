@@ -115,6 +115,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@HouseKeepingComments", Value = reservation.HouseKeepingComments },
                     new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
                     new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
+                    new SqlParameter { ParameterName = "@ConfirmationNumber", Value = reservation.ConfirmationNumber },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = reservation.CreatedBy }
                 };
@@ -212,6 +213,23 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
+        public string CancelReservation(Guid reservationId, Guid cancellationReasonId, string comment, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId },
+                    new SqlParameter { ParameterName = "@CancellationReasonId", Value = cancellationReasonId },
+                    new SqlParameter { ParameterName = "@Comment", Value = comment },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("CancelReservation", parameters));
+
+            return id;
+        }
+
         public List<ReservationVM> GetReservationById(Guid reservationId)
         {
             SqlParameter[] parameters =
@@ -246,6 +264,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@MemberNo", Value = model.MemberNo },
                     new SqlParameter { ParameterName = "@ArrivalFrom", Value = model.ArrivalFrom },
                     new SqlParameter { ParameterName = "@ArrivalTo", Value = model.ArrivalTo },
+                    new SqlParameter { ParameterName = "@ConfirmationNo", Value = model.ConfirmationNo },
+                    new SqlParameter { ParameterName = "@IsShowCancelledReservation", Value = model.IsShowCancelledReservation },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -258,6 +278,21 @@ namespace SuccessHotelierHub.Repository
             reservations = DALHelper.CreateListFromTable<SearchReservationResultVM>(dt);
 
             return reservations;
+        }
+
+        public ReservationVM GetLastReservationByDate(DateTime date)
+        {
+            SqlParameter[] parameters =
+            {
+                    new SqlParameter { ParameterName = "@Date", Value = date }
+            };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetLastReservationByDate", parameters);
+
+            var reservation = new ReservationVM();
+            reservation = DALHelper.CreateListFromTable<ReservationVM>(dt).FirstOrDefault();
+
+            return reservation;
         }
 
         #endregion

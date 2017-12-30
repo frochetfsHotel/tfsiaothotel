@@ -94,7 +94,7 @@ namespace SuccessHotelierHub.Repository
             return roomId;
         }
         
-        public List<RoomVM> CheckRoomCodeAvaiable(Guid roomTypeId, Guid? roomId, string code)
+        public List<RoomVM> CheckRoomCodeAvailable(Guid roomTypeId, Guid? roomId, string code)
         {
             SqlParameter[] parameters =
                {
@@ -103,7 +103,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Code", Value = code }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomCodeAvaiable", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomCodeAvailable", parameters);
 
             var room = new List<RoomVM>();
             room = DALHelper.CreateListFromTable<RoomVM>(dt);
@@ -111,7 +111,7 @@ namespace SuccessHotelierHub.Repository
             return room;
         }
 
-        public List<RoomVM> CheckRoomNameAvaiable(Guid roomTypeId, Guid? roomId, string name)
+        public List<RoomVM> CheckRoomNameAvailable(Guid roomTypeId, Guid? roomId, string name)
         {
             SqlParameter[] parameters =
                {
@@ -120,7 +120,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Name", Value = name }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomNameAvaiable", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomNameAvailable", parameters);
 
             var room = new List<RoomVM>();
             room = DALHelper.CreateListFromTable<RoomVM>(dt);

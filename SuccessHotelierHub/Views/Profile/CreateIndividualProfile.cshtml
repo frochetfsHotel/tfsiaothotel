@@ -14,8 +14,8 @@
             btnCancelUrl = Url.Action("RateQuery", "Reservation");
         }
     }
-
-    var preferenceList = (List<PreferenceVM>) ViewBag.PreferenceList;
+    
+    var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 }
 
 <section class="content-header">
@@ -184,7 +184,7 @@
                 </div>
                 <div class="row" style="display:none;" id="divSelectedPreference">
                     <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference</label>
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
                         <div class="col-sm-10">
                             <p id="ListOfSelectedPreferences"></p>
                         </div>
@@ -220,20 +220,21 @@
 
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Preferences</h4>
             </div>
-            <div class="modal-body">
-                @Html.Partial("~/Views/Preference/_Preferences.cshtml", preferenceList)
+            <div class="modal-body">                
+                @Html.Partial("~/Views/Preference/_Preferences.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateProfile" },
+                                    { "PreferenceGroup", preferenceGroupList }
+                                })
             </div>
-            <div class="modal-footer text-right">
-                <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
-                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>                
-            </div>
+            <div class="clearfix"></div>
         </div>
     </div>
 </div>
@@ -241,38 +242,47 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-                
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {
+            debugger;
+            var preferenceIds = "";
+            var html = "";
+
+            $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
+                preferenceIds += $(this).val() + ",";
+
+                html += $(this).attr("data-preference") + ", ";
+            });
+
+            console.log(preferenceIds);
+
+            //Remove last comma.
+            if (!IsNullOrEmpty(preferenceIds)) {
+                var lastChar = preferenceIds.slice(-1);
+                if (lastChar == ',') {
+                    preferenceIds = preferenceIds.slice(0, -1);
+                    html = $.trim(html).slice(0, -1);
+                }
+
+                $('#divSelectedPreference').show();
+                $('#PreferenceItems').val(preferenceIds);
+                $('#ListOfSelectedPreferences').html(html);
+
+                //Close Preference Search Modal.
+                $('#preferenceModal').modal('toggle');
+
+            } else {
+                $('#PreferenceItems').val('');
+                $('#ListOfSelectedPreferences').html('');
+                $('#divSelectedPreference').hide();
+
+                showToaster("Please select at least one preference.", ToasterType.ERROR);
+            }
+        });
     });
 
     function openPreferenceModal() {
         $('#preferenceModal').modal('toggle');
-
-        bindSelectedPreferences();
     }
-
-    function bindSelectedPreferences() {
-
-        //First clear all the checkboxes.
-        clearPreferencesCheckBox();
-
-        var preferenceIds = $('#PreferenceItems').val();
-
-        if (!IsNullOrEmpty(preferenceIds)) {
-
-            var preferenceIdsArr = preferenceIds.split(',');
-
-            $.each(preferenceIdsArr, function (index, value) {
-                console.log(value);
-                $(".chkPreference").each(function () {
-                    if ($(this).val() == value) {
-                        $(this).prop("checked", true);
-                        return false;
-                    }
-                });
-            });
-        }
-    }
-
     function selectPreferences() {
         var preferenceIds = "";
         var html = "";
@@ -305,11 +315,6 @@
          $('#preferenceModal').modal('toggle');
     }
 
-    function clearPreferencesCheckBox() {
-        $(".chkPreference").each(function () {
-            $(this).prop("checked", false);
-        });
-    }
 
     function getState() {        
         var country = $('#ddlCountry').val();
@@ -387,33 +392,11 @@
         }
     }
 
-    function validateIndividualProfile() {        
-        //var firstName = $("#FirstName").val();
-        //var lastName = $("#LastName").val();
-        //var email = $("#Email").val();
+    function validateIndividualProfile() {   
 
         var errorMessage = "";
         var blnValid = true;
 
-        //if (IsNullOrEmpty(lastName)) {
-        //    errorMessage += "Please enter last name." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (IsNullOrEmpty(firstName)) {        
-        //    errorMessage += "Please enter first name." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-       
-        //if (!IsNullOrEmpty(email) && !validateEmail(email)) {
-        //    errorMessage += "Please enter valid email." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (!blnValid) {
-        //    showToaster(errorMessage, ToasterType.ERROR);
-        //    return false;
-        //}
 
         if ($("#frmIndividualProfile").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);

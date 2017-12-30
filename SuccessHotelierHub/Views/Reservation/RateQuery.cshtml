@@ -1,5 +1,6 @@
 ﻿@model SuccessHotelierHub.Models.RateQueryVM
 @using SuccessHotelierHub.Models
+@using SuccessHotelierHub.Repository
 @{
     ViewBag.Title = "RateQuery";
 }
@@ -7,6 +8,24 @@
 @{
     var rateTypeList = (List<RateTypeVM>)ViewBag.RateTypeList;
     var roomTypeList = (List<RoomTypeVM>)ViewBag.RoomTypeList;
+
+    ProfileRepository profileRepository = new ProfileRepository();
+
+
+    var profileId = Convert.ToString(Request.QueryString["profileid"]);
+    string firstName = "", lastName = "";
+
+    if (!string.IsNullOrWhiteSpace(profileId))
+    {
+        var profile = profileRepository.GetIndividualProfileById(Guid.Parse(profileId)).FirstOrDefault();
+
+        if(profile != null)
+        {   
+            profileId = profile.Id.ToString();
+            firstName = profile.FirstName;
+            lastName = profile.LastName;
+        }
+    }
 }
 
 
@@ -37,8 +56,7 @@
                 <div class="tab-pane active" id="tab_1">
                     <form id="frmRateQuery" name="frmRateQuery" enctype="multipart/form-data">
 
-                        <!-- HIDDEN FIELD -->
-                        @*<input type="hidden" id="ProfileId" name="ProfileId"/>*@
+                        <!-- HIDDEN FIELD -->                        
                         @Html.HiddenFor(m => m.ProfileId)
                         @Html.HiddenFor(m => m.LastName)
                         @Html.HiddenFor(m => m.FirstName)
@@ -290,7 +308,6 @@
                 </div>
                 <!-- /.tab-pane -->
                 <div class="tab-pane" id="tab_2">
-                    <!--<p id="reservationInfo">Wednesday, November 01, 2006, 1 Nights, 1 Rooms, 1 Adults, 0 Children</p> -->
                     <p id="reservationInfo"></p>
                     <p id="customerName"></p>
 
@@ -336,6 +353,7 @@
     </div>
 </section>
 
+<!-- Advance Profile Search Modal START -->
 <div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
 
@@ -357,9 +375,16 @@
 
     </div>
 </div>
+<!-- Advance Profile Search Modal END -->
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+        //Show pre-filled profile info if querystring contains profile id.
+        $('#ProfileId').val('@profileId');        
+        $('#FirstName').val('@firstName');
+        $('#LastName').val('@lastName');
+        $('#Name').val('@(Convert.ToString(lastName + ", " + firstName).Trim())');
 
         //Date picker
         $('#ArrivalDate').datepicker({
@@ -428,7 +453,7 @@
 
     function getRateCode(element) {
         if (element) {
-            var rateTypeCode = $(element).find("option:selected").data("ratecode");            
+            var rateTypeCode = $(element).find("option:selected").data("ratecode");
             $('#RateTypeCode').val(rateTypeCode);
         }
     }
@@ -587,12 +612,7 @@
         var noOfNight = 1;
         debugger;
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-            //Convert dd/MM/yyyy to MM/dd/yyyy date.
-            //arrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
-            //departureDate = ConvertDDMMYYYY_To_MMDDYYYY(departureDate, DateSeprator.SLASH);
-
-            //var objArrivalDate = new Date(arrivalDate);
-            //var objDepartureDate = new Date(departureDate);
+          
 
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
             var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
@@ -614,7 +634,7 @@
         var departureDate = '';
         debugger;
         if (!IsNullOrEmpty(arrivalDate)) {
-                        
+
             //Get Date Objects from dd/MM/yyyy date.
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
 
@@ -626,10 +646,6 @@
             }
 
             if (dt != null) {
-                //dd/MM/yyyy
-                //departureDate = GetDate(dt, DateFormat.DDMMYYYY);                 
-
-                //$("#DepartureDate").datepicker("setDate", new Date(departureDate));
                 $("#DepartureDate").datepicker("setDate", dt);
             }
         }

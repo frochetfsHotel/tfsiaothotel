@@ -35,7 +35,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Check Rate Type Code Available.
 
-                if (this.CheckRateTypeCodeAvaiable(model.Id, model.RateTypeCode) == false)
+                if (this.CheckRateTypeCodeAvailable(model.Id, model.RateTypeCode) == false)
                 {
                     return Json(new
                     {
@@ -107,7 +107,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Check Rate Type Code Available.
 
-                if (this.CheckRateTypeCodeAvaiable(model.Id, model.RateTypeCode) == false)
+                if (this.CheckRateTypeCodeAvailable(model.Id, model.RateTypeCode) == false)
                 {
                     return Json(new
                     {
@@ -230,11 +230,11 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckRateTypeCodeAvaiable(Guid? rateTypeId, string rateTypeCode)
+        public bool CheckRateTypeCodeAvailable(Guid? rateTypeId, string rateTypeCode)
         {
             bool blnAvailable = true;
 
-            var rateType = rateTypeRepository.CheckRateTypeCodeAvaiable(rateTypeId, rateTypeCode);
+            var rateType = rateTypeRepository.CheckRateTypeCodeAvailable(rateTypeId, rateTypeCode);
 
             if (rateType.Any())
             {

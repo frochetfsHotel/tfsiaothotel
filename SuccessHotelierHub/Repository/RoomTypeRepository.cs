@@ -116,7 +116,7 @@ namespace SuccessHotelierHub.Repository
             return roomTypes;
         }
 
-        public List<RoomTypeVM> CheckRoomTypeCodeAvaiable(Guid? roomTypeId, string roomTypeCode)
+        public List<RoomTypeVM> CheckRoomTypeCodeAvailable(Guid? roomTypeId, string roomTypeCode)
         {
             SqlParameter[] parameters =
                {
@@ -124,7 +124,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomTypeCode }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomTypeCodeAvaiable", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomTypeCodeAvailable", parameters);
 
             var roomType = new List<RoomTypeVM>();
             roomType = DALHelper.CreateListFromTable<RoomTypeVM>(dt);

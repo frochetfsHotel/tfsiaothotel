@@ -3,21 +3,9 @@
 @{
     ViewBag.Title = "Edit Reservation";
 
-    var preferenceList = (List<PreferenceVM>)ViewBag.PreferenceList;
+    var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 
-    //string arrivalDate = string.Empty;
-    //string departureDate = string.Empty;
     string ETAText = string.Empty;
-
-    //if (Model.ArrivalDate.HasValue && Model.ArrivalDate.Value != null)
-    //{
-    //    arrivalDate = Model.ArrivalDate.Value.ToString("MM/dd/yyyy");
-    //}
-
-    //if (Model.DepartureDate.HasValue && Model.DepartureDate.Value != null)
-    //{
-    //    departureDate = Model.DepartureDate.Value.ToString("MM/dd/yyyy");
-    //}
 
     if (Model.ETA.HasValue && Model.ETA.Value != null)
     {
@@ -30,6 +18,8 @@
     {
         strRate = string.Format("{0:0.00}", Model.Rate.Value);
     }
+
+    var selectedPreferences = (string)ViewBag.SelectedPreferenceDescription;
 
 }
 
@@ -49,6 +39,9 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Reservation Details</h3>
+            <label class="pull-right" for="ConfirmationNumber">
+                <b>Confirmation# : @(!string.IsNullOrWhiteSpace(Model.ConfirmationNumber) ? Model.ConfirmationNumber : "0") </b> 
+            </label>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
@@ -59,6 +52,7 @@
             <!-- HIDDEN FIELD -->
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.ProfileId)
+            @Html.HiddenFor(m => m.ConfirmationNumber);
             @Html.HiddenFor(m => m.PreferenceItems);
             <!-- HIDDEN FIELD -->
 
@@ -392,14 +386,9 @@
                         @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
-                        @Html.LabelFor(m => m.CardExpiryDate)
-                        <div class="input-group">
-                            <input type="text" id="CardExpiryDate" name="CardExpiryDate"
-                                   class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">
-                            <div class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
-                            </div>
-                        </div>
+                        @Html.LabelFor(m => m.CardExpiryDate)                        
+                        <input type="text" id="CardExpiryDate" name="CardExpiryDate"
+                            class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
@@ -511,7 +500,7 @@
                 </div>
                 <div class="row" style="display:none;" id="divSelectedPreference">
                     <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference</label>
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
                         <div class="col-sm-10">
                             <p id="ListOfSelectedPreferences"></p>
                         </div>
@@ -533,7 +522,7 @@
 <!-- This is the add reservation form-->
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -541,12 +530,13 @@
                 <h4 class="modal-title">Preferences</h4>
             </div>
             <div class="modal-body">
-                @Html.Partial("~/Views/Preference/_Preferences.cshtml", preferenceList)
+                @Html.Partial("~/Views/Preference/_Preferences.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateProfile" },
+                                    { "PreferenceGroup", preferenceGroupList }
+                                })
             </div>
-            <div class="modal-footer text-right">
-                <button type="button" class="btn btn-success" onclick="selectPreferences();">Save</button>
-                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
-            </div>
+            <div class="clearfix"></div>
         </div>
     </div>
 </div>
@@ -587,102 +577,61 @@
 
         calculateTotalPrice();
 
-        //Bind Selected Preference Checkboxes
-        bindSelectedPreferences();
-
-        //Show Selected Preference Checkboxes
+        //Show Selected Preferences.
         showSelectedPreferences();
+
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {
+            debugger;
+            var preferenceIds = "";
+            var html = "";
+
+            $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
+                preferenceIds += $(this).val() + ",";
+
+                html += $(this).attr("data-preference") + ", ";
+            });
+
+            console.log(preferenceIds);
+
+            //Remove last comma.
+            if (!IsNullOrEmpty(preferenceIds)) {
+                var lastChar = preferenceIds.slice(-1);
+                if (lastChar == ',') {
+                    preferenceIds = preferenceIds.slice(0, -1);
+                    html = $.trim(html).slice(0, -1);
+                }
+
+                $('#divSelectedPreference').show();
+                $('#PreferenceItems').val(preferenceIds);
+                $('#ListOfSelectedPreferences').html(html);
+
+                //Close Preference Search Modal.
+                $('#preferenceModal').modal('toggle');
+
+            } else {
+                $('#PreferenceItems').val('');
+                $('#ListOfSelectedPreferences').html('');
+                $('#divSelectedPreference').hide();
+
+                showToaster("Please select at least one preference.", ToasterType.ERROR);
+            }
+        });
 
     });
 
     function openPreferenceModal() {
         $('#preferenceModal').modal('toggle');
-
-        bindSelectedPreferences();
     }
 
-    function bindSelectedPreferences() {
-
-        //First clear all the checkboxes.
-        clearPreferencesCheckBox();
-
-        var preferenceIds = $('#PreferenceItems').val();
-
-        if (!IsNullOrEmpty(preferenceIds)) {
-
-            var preferenceIdsArr = preferenceIds.split(',');
-
-            $.each(preferenceIdsArr, function (index, value) {
-                console.log(value);
-                $(".chkPreference").each(function () {
-                    if ($(this).val() == value) {
-                        $(this).prop("checked", true);
-                        return false;
-                    }
-                });
-            });
-        }
-    }
-
-    function selectPreferences() {
-        var preferenceIds = "";
-        var html = "";
-
-        $("input:checkbox[class=chkPreference]:checked").each(function () {
-            preferenceIds += $(this).val() + ",";
-
-            html += $(this).attr("data-preference") + ", ";
-        });
-
-        //Remove last comma.
-        if (!IsNullOrEmpty(preferenceIds)) {
-            var lastChar = preferenceIds.slice(-1);
-            if (lastChar == ',') {
-                preferenceIds = preferenceIds.slice(0, -1);
-                html = $.trim(html).slice(0, -1);
-            }
-
-            $('#PreferenceItems').val(preferenceIds);
-            showSelectedPreferences();
-        } else {
-            $('#PreferenceItems').val('');
-            $('#ListOfSelectedPreferences').html('');
-            $('#divSelectedPreference').hide();
-        }
-
-        console.log(preferenceIds);
-
-        $('#preferenceModal').modal('toggle');
-    }
 
     function showSelectedPreferences() {
-        var html = "";
-
-        $("input:checkbox[class=chkPreference]:checked").each(function () {
-            html += $(this).attr("data-preference") + ", ";
-        });
-
-        //Remove last comma.
-        if (!IsNullOrEmpty(html)) {
-            var lastChar = html.slice(-1);
-            if (lastChar == ',') {
-                html = $.trim(html).slice(0, -1);
-            }
-
+        if (!IsNullOrEmpty('@selectedPreferences')) {
             $('#divSelectedPreference').show();
-            $('#ListOfSelectedPreferences').html(html);
-        } else {
-            $('#ListOfSelectedPreferences').html('');
-            $('#divSelectedPreference').hide();
+            $('#ListOfSelectedPreferences').html('@selectedPreferences');
         }
     }
 
-    function clearPreferencesCheckBox() {
-        $(".chkPreference").each(function () {
-            $(this).prop("checked", false);
-        });
-    }
-
+  
     function validateReservationData() {
         var errorMessage = "";
         var blnValid = true;
@@ -735,12 +684,7 @@
         var noOfNight = 1;
 
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-            //Convert dd/MM/yyyy to MM/dd/yyyy date.
-            //arrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
-            //departureDate = ConvertDDMMYYYY_To_MMDDYYYY(departureDate, DateSeprator.SLASH);
-
-            //var objArrivalDate = new Date(arrivalDate);
-            //var objDepartureDate = new Date(departureDate);
+    
 
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
             var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
@@ -762,10 +706,6 @@
         var departureDate = '';
 
         if (!IsNullOrEmpty(arrivalDate)) {
-            ////Convert dd/MM/yyyy to MM/dd/yyyy date.
-            //arrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);            
-
-            //var objArrivalDate = new Date(arrivalDate);
 
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
 

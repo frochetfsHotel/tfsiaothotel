@@ -62,25 +62,8 @@
 
 <script type="text/javascript">
     function validateRateType() {
-        //var rateTypeCode = $("#RateTypeCode").val();
-        //var amount = $("#Amount").val();
-
         var errorMessage = "";
         var blnValid = true;
-
-        //if (IsNullOrEmpty(rateTypeCode)) {
-        //    errorMessage += "Please enter rate type code." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-        //if (IsNullOrEmpty(amount)) {
-        //    errorMessage += "Please enter amount." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (!blnValid) {
-        //    showToaster(errorMessage, ToasterType.ERROR);
-        //    return false;
-        //}
 
         if ($("#frmRateType").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);

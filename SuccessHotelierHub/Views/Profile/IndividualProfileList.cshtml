@@ -78,9 +78,8 @@
                                     <th>Email</th>
                                     <th>Address</th>
                                     <th>City</th>
-                                    <th>Zip Code</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Zip Code</th>                                    
+                                    <th width="20%">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -208,51 +207,75 @@
             {
                 targets: 3,
                 data: "TelephoneNo",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.TelephoneNo + '</a> ';
+
+                }
             },
             {
                 targets: 4,
                 data: "Email",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.Email + '</a> ';
+
+                }
             },
             {
                 targets: 5,
                 data: "Address",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.Address + '</a> ';
+
+                }
             },
             {
                 targets: 6,
                 data: "City",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.City + '</a> ';
+
+                }
             },
             {
                 targets: 7,
                 data: "ZipCode",
-                orderable: true
-            },
-            {
-                targets: 8,
-                data: "IsActive",
-                orderable: false,
+                orderable: true,
                 render: function (data, type, full, meta) {
-                    var isActive = full.IsActive;
-                    if (isActive == true) {
-                        return "Active";
-                    } else {
-                        return "In Active";
-                    }
+                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ZipCode + '</a> ';
+
                 }
             },
             {
-                targets: 9,
+                targets: 8,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
-                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
-                        + ' <button type="button" class="btn btn-danger btn-xs"'
+
+                    var buttons = "";
+
+                    //Edit
+                    buttons += '<a href="javascript:void(0);" onclick="GotoIndividualProfileEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
+
+                    //Delete
+                    buttons += '<button type="button" class="btn btn-danger btn-xs m-r-xs"'
                         + ' onclick="deleteIndividualProfile(this,event,\'' + full.Id + '\')">Delete</button>';
+
+                    //Create Reservation
+                    buttons += '<a href="javascript:void(0);" onclick="GotoRateQuery(\'' + full.Id + '\')" '
+                        + ' class="btn btn-warning btn-xs">Create Reservation</a> '
+
+                    return buttons;
                 }
             }
             ],
@@ -265,6 +288,11 @@
 
     function GotoIndividualProfileEdit(Id) {
         var url = '@Url.Content("~/Profile/EditIndividualProfile/")' + Id;
+        redirectTo(url);
+    }
+
+    function GotoRateQuery(Id) {
+        var url = '@Url.Content("~/Reservation/RateQuery")' + '?profileid=' + Id;
         redirectTo(url);
     }
 

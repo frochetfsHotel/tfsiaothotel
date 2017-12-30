@@ -29,12 +29,39 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+        public string PreferenceGroupName { get; set; }
         public string Code { get; set; }
         public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }        
         public int TotalCount { get; set; }
     }
+    #endregion
+
+    #region Advance Preference Search
+
+    public class SearchAdvancePreferenceParametersVM
+    {
+        [DisplayName("Preference Group")]
+        public Guid? PreferenceGroupId { get; set; }
+
+        [DisplayName("Preference")]
+        public string Preference { get; set; }
+    }
+
+    public class SearchAdvancePreferenceResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        public string PreferenceGroupName { get; set; }
+        public string PreferenceGroupDescription { get; set; }
+        public string Preference { get; set; }
+        
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+    }
+
     #endregion
 
     #region Search Individual Profile
@@ -144,6 +171,8 @@ namespace SuccessHotelierHub.Models
 
     #endregion
 
+    
+
     #region Search Reservation
 
     public class SearchReservationParametersVM
@@ -196,6 +225,11 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Arrival To")]
         public string ArrivalTo { get; set; }
 
+        [DisplayName("Confirmation#")]
+        public string ConfirmationNo { get; set; }
+
+        public bool IsShowCancelledReservation { get; set; }
+
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
@@ -220,6 +254,7 @@ namespace SuccessHotelierHub.Models
         public int NoOfRoom { get; set; }
         public string RoomTypeCode { get; set; }
         public string RateTypeCode { get; set; }
+        public bool IsReservationCancel { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
@@ -290,7 +325,6 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
-
     #region Search Room Type Rate Type Mapping 
 
     public class SearchRoomTypeRateTypeMappingParametersVM
@@ -325,6 +359,67 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }
+    #endregion
+
+
+    #region Search Reservation Cancellation Reasons 
+
+    public class SearchReservationCancellationReasonParametersVM
+    {
+        public SearchReservationCancellationReasonParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }        
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchReservationCancellationReasonResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        public string Code { get; set; }
+        public string Description { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+
+    #endregion
+
+    #region Advance Search Reservation Cancellation Reasons 
+
+    public class SearchAdvanceReservationCancellationReasonParametersVM
+    {
+        [DisplayName("Find")]
+        public string Reason { get; set; }
+    }
+
+    public class SearchAdvanceReservationCancellationReasonResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        public string Code { get; set; }
+        public string Description { get; set; }        
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+    }
+
     #endregion
 
     #region DataTable Column Info

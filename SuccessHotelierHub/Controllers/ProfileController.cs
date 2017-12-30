@@ -22,6 +22,7 @@ namespace SuccessHotelierHub.Controllers
         private ProfileRepository profileRepository = new ProfileRepository();
         private PreferenceRepository preferenceRepository = new PreferenceRepository();
         private NationalityRepository nationalityRepository = new NationalityRepository();
+        private PreferenceGroupRepository preferenceGroupRepository = new PreferenceGroupRepository();
 
         #endregion
 
@@ -37,8 +38,8 @@ namespace SuccessHotelierHub.Controllers
             var nationalityList = new SelectList(nationalityRepository.GetNationality(), "Id", "Name").ToList();
 
             var profileTypeId = profileTypeRepository.GetProfileType(ProfileTypeName.INDIVIDUAL).FirstOrDefault().Id;
-
-            var preferenceList = preferenceRepository.GetPreferences();
+                        
+            var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
 
             IndividualProfileVM model = new IndividualProfileVM();
             model.ProfileTypeId = profileTypeId;
@@ -47,8 +48,8 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.TitleList = titleList;
             ViewBag.VipList = vipList;
             ViewBag.CountryList = countryList;
-            ViewBag.NationalityList = nationalityList;
-            ViewBag.PreferenceList = preferenceList;
+            ViewBag.NationalityList = nationalityList;            
+            ViewBag.PreferenceGroupList = preferenceGroupList;
 
             return View(model);
         }
@@ -148,28 +149,37 @@ namespace SuccessHotelierHub.Controllers
                 //Get Preference Mapping
                 var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null);
                 string preferenceItems = string.Empty;
+                string preferenceDescription = string.Empty;
 
                 if (selectedPreferences != null && selectedPreferences.Count > 0)
                 {
                     preferenceItems += string.Join(",", selectedPreferences.Select(i => i.PreferenceId));
 
+                    //Remove last comma.
                     if (!string.IsNullOrWhiteSpace(preferenceItems))
-                        preferenceItems = preferenceItems.Trim(',');
+                        preferenceItems = Utility.Utility.RemoveLastCharcter(preferenceItems, ',');
+
+                    preferenceDescription += string.Join(", ", selectedPreferences.Select(i => i.PreferenceDescription));
+
+                    //Remove last comma.
+                    if (!string.IsNullOrWhiteSpace(preferenceDescription))
+                        preferenceDescription = Utility.Utility.RemoveLastCharcter(preferenceDescription, ',');
                 }
 
                 model.PreferenceItems = preferenceItems;
+                ViewBag.SelectedPreferenceDescription = preferenceDescription;
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
                 var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
                 var nationalityList = new SelectList(nationalityRepository.GetNationality(), "Id", "Name").ToList();
-                var preferenceList = preferenceRepository.GetPreferences();
+                var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
                 ViewBag.CountryList = countryList;
                 ViewBag.NationalityList = nationalityList;
-                ViewBag.PreferenceList = preferenceList;
+                ViewBag.PreferenceGroupList = preferenceGroupList;
 
                 //Get State
                 var stateList = new SelectList(new List<StateVM>(), "Id", "Name").ToList();          

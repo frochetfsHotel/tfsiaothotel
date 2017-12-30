@@ -333,6 +333,37 @@ namespace SuccessHotelierHub.Utility
         }
         #endregion
 
+        #region 'Generate Confirmation Number'
+
+        public static string GenerateConfirmationNo(Int64 suffix)
+        {
+            return (DateTime.Now.ToString("ddMMyyyy") + "" + suffix.ToString("000"));
+        }
+
+        #endregion
+
+        #region Remove First & Last Character.
+
+        public static string RemoveLastCharcter(string item, char charcter)
+        {
+            if (!string.IsNullOrWhiteSpace(item))
+            {
+                return item.Trim().TrimEnd(charcter);
+            }
+            return "";
+        }
+
+        public static string RemoveFirstCharcter(string item, char charcter)
+        {
+            if (!string.IsNullOrWhiteSpace(item))
+            {
+                return item.Trim().TrimStart(charcter);
+            }
+            return "";
+        }
+
+        #endregion
+
         public static Guid LanguageId = Guid.Parse("0490AE29-FC46-42EA-BB8A-9674B4E8CCAE");
     }
 

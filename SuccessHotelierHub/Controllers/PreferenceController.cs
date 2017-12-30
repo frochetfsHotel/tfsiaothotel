@@ -11,7 +11,12 @@ namespace SuccessHotelierHub.Controllers
 {
     public class PreferenceController : Controller
     {
-        private PreferenceRepository preferenceRepository = new PreferenceRepository();
+        #region Declaration
+
+        private PreferenceGroupRepository preferenceGroupRepository = new PreferenceGroupRepository();
+        private PreferenceRepository preferenceRepository = new PreferenceRepository();        
+
+        #endregion
 
         // GET: Preference
         public ActionResult Index()
@@ -22,8 +27,13 @@ namespace SuccessHotelierHub.Controllers
         [HttpGet]
         public ActionResult Create()
         {
+            var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
+
             PreferenceVM model = new PreferenceVM();
             model.IsActive = true;
+
+            ViewBag.PreferenceGroupList = preferenceGroupList;
+
             return View(model);
         }
 
@@ -73,6 +83,10 @@ namespace SuccessHotelierHub.Controllers
             if (preference != null && preference.Count > 0)
             {
                 model = preference[0];
+
+                var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
+
+                ViewBag.PreferenceGroupList = preferenceGroupList;
 
                 return View(model);
             }
@@ -179,17 +193,7 @@ namespace SuccessHotelierHub.Controllers
 
                 model.PageSize = Constants.PAGESIZE;
                 var preferences = preferenceRepository.SearchPreferences(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
-
-                //var preferenceList = preferences.Take(Constants.PAGESIZE).Select(m => new PreferenceVM()
-                var preferenceList = preferences.Select(m => new PreferenceVM()
-                {
-                    Id = m.Id,
-                    Code = m.Code,
-                    Description = m.Description,
-                    IsActive = m.IsActive,
-                    CreatedOn = m.CreatedOn
-                }).ToList();
-
+                
                 int totalRecords = 0;
                 var dbRecords = preferences.Select(m => m.TotalCount).FirstOrDefault();
 
@@ -202,7 +206,27 @@ namespace SuccessHotelierHub.Controllers
                     CurrentPage = model.PageNum,
                     PageSize = Constants.PAGESIZE,
                     TotalRecords = totalRecords,
-                    data = preferenceList
+                    data = preferences
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult SearchAdvancePreference(SearchAdvancePreferenceParametersVM model)
+        {
+            try
+            {
+                var preferences = preferenceRepository.SearchAdvancePreference(model);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = preferences
                 }, JsonRequestBehavior.AllowGet);
 
             }

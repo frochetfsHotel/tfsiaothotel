@@ -76,32 +76,8 @@
 
 <script type="text/javascript">
     function validateRate() {
-        //var roomTypeId = $("#RoomTypeId").val();
-        //var rateTypeId = $("#RateTypeId").val();
-        //var amount = $("#Amount").val();
-
         var errorMessage = "";
         var blnValid = true;
-
-        //if (IsNullOrEmpty(roomTypeId)) {
-        //    errorMessage += "Please select room type." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-        //if (IsNullOrEmpty(rateTypeId)) {
-        //    errorMessage += "Please select rate type." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (IsNullOrEmpty(amount)) {
-        //    errorMessage += "Please enter amount." + Delimeter.BREAKLINE + "";
-        //    blnValid = false;
-        //}
-
-        //if (!blnValid) {
-        //    showToaster(errorMessage, ToasterType.ERROR);
-        //    return false;
-        //}
-        //return blnValid;
 
         if ($("#frmRate").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);

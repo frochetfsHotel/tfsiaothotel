@@ -33,7 +33,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Check Room Type Code Available.
 
-                if (this.CheckRoomTypeCodeAvaiable(model.Id, model.RoomTypeCode) == false)
+                if (this.CheckRoomTypeCodeAvailable(model.Id, model.RoomTypeCode) == false)
                 {
                     return Json(new
                     {
@@ -105,7 +105,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Check Room Type Code Available.
 
-                if (this.CheckRoomTypeCodeAvaiable(model.Id, model.RoomTypeCode) == false)
+                if (this.CheckRoomTypeCodeAvailable(model.Id, model.RoomTypeCode) == false)
                 {
                     return Json(new
                     {
@@ -228,11 +228,11 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckRoomTypeCodeAvaiable(Guid? roomTypeId, string roomTypeCode)
+        public bool CheckRoomTypeCodeAvailable(Guid? roomTypeId, string roomTypeCode)
         {
             bool blnAvailable = true;
 
-            var roomType = roomTypeRepository.CheckRoomTypeCodeAvaiable(roomTypeId, roomTypeCode);
+            var roomType = roomTypeRepository.CheckRoomTypeCodeAvailable(roomTypeId, roomTypeCode);
 
             if (roomType.Any())
             {

@@ -87,7 +87,7 @@
 
             <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                 <label class="container1" for="IsShowInActive">
-                    Show Inactive
+                    Show In Active
                     @Html.CheckBoxFor(m => m.IsShowInActive, new { @checked = "checked" })
                     <span class="checkmark"></span>
                 </label>
@@ -131,6 +131,15 @@
 </form>
 
 <script type="text/javascript">
+    $(document).ready(function () {
+        $("form#frmAdvanceProfileSearch input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnAdvanceSearchProfileOk").click();
+            }
+        });
+    });
+
+
     function searchProfile() {
         $.ajax({
             beforeSend: function (xhr) {

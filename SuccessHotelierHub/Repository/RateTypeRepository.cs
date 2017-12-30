@@ -115,7 +115,7 @@ namespace SuccessHotelierHub.Repository
             return rateTypes;
         }
 
-        public List<RateTypeVM> CheckRateTypeCodeAvaiable(Guid? rateTypeId, string rateTypeCode)
+        public List<RateTypeVM> CheckRateTypeCodeAvailable(Guid? rateTypeId, string rateTypeCode)
         {
             SqlParameter[] parameters =
                {
@@ -123,7 +123,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateTypeCode", Value = rateTypeCode }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRateTypeCodeAvaiable", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRateTypeCodeAvailable", parameters);
 
             var rateType = new List<RateTypeVM>();
             rateType = DALHelper.CreateListFromTable<RateTypeVM>(dt);

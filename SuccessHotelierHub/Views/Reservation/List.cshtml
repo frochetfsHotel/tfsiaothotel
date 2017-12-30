@@ -1,6 +1,9 @@
 ﻿@model SuccessHotelierHub.Models.SearchReservationParametersVM
+@using SuccessHotelierHub.Models
 @{
     ViewBag.Title = "Reservation List";
+
+    var reservationCancellationReasonList = (List<ReservationCancellationReasonVM>)ViewBag.ReservationCancellationReasonList;
 }
 
 @section styles{
@@ -30,10 +33,15 @@
             <h3 class="box-title">Search Reservation</h3>
             <div class="pull-right box-tools m-r-md">
                 <a href="@Url.Action("RateQuery","Reservation")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add Reservation</a>
+                   class="btn btn-info btn-sm" style="color: #fff">Create Reservation</a>
             </div>
         </div>
         <form class="frmReservationList" enctype="multipart/form-data" method="post">
+           
+            <!-- HIDDEN FIELD -->                        
+            <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />            
+            <!-- HIDDEN FIELD -->
+
             <div class="box-body">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
@@ -144,6 +152,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ConfirmationNo)                            
+                            @Html.TextBoxFor(m => m.ConfirmationNo, new { @class = "form-control", placeholder = "Confirmation#" })
+                        </div>
+                        <div class="col-md-3 form-group m-t-lg">
+                            <label class="container1" for="IsShowCancelledReservation">
+                                Show Cancelled Reservation
+                                @Html.CheckBoxFor(m => m.IsShowCancelledReservation)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -175,7 +194,7 @@
                                     <th>Rooms</th>
                                     <th>Room Type</th>
                                     <th>Rate Type</th>
-                                    <th>Action</th>
+                                    <th width="15%;">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -193,6 +212,31 @@
         </form>
     </div>
 </section>
+
+
+<!-- Advance Reservation Cancellation Reason Search Modal START -->
+<div id="reservationCancellationReasonSearchModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Cancellation Reasons</h4>
+            </div>
+            <div class="modal-body">                
+                @Html.Partial("~/Views/ReservationCancellationReason/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "RateQuery" },
+                                    { "ReservationCancellationReason" , reservationCancellationReasonList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+<!-- Advance Reservation Cancellation Reason Search Modal END -->
+
 <script type="text/javascript">
 
     var currentPage = 1;
@@ -203,13 +247,71 @@
 
         setTimeout(InitializeReservationGrid, 200);
 
-        $("input[type='text']").keyup(function (event) {
+        $("form#frmReservationList input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
                 $("#btnSearch").click();
             }
         });
 
+        $('form#frmAdvanceCancellationReasonSearch .btnAdvanceSearchCancellationReasonOk').click(function (e) {
+            var selectedReason = $('input[name=rbCancellationReason]:checked', '#frmAdvanceCancellationReasonSearch');            
+            if (!IsNullOrEmpty(selectedReason.val())) {                
+                var reasonId, code, description;
+                debugger;
+                reasonId = $(selectedReason).val();
+                code = $(selectedReason).data('code');
+                description =  $("#Description").val();
+
+                var reservationId = $('#hdnReservationId').val();
+
+                //Close Reservation Cancellation Reason Search Modal.
+                $('#reservationCancellationReasonSearchModal').modal('toggle');
+
+                if(!IsNullOrEmpty(reservationId)){                    
+                    //Ajax call to cancel reservation.
+                    $.ajax({
+                        beforeSend: function (xhr) {
+                            showLoader();
+                        },
+                        error: function (result) {
+                            showToaster(result.responseText, ToasterType.ERROR);
+                        },
+                        complete: function () {
+                            hideLoader();
+                        },
+                        url: '@Url.Content("~/Reservation/CancelReservation")',
+                        type: 'POST',
+                        data: { id: reservationId, cancellationReasonId : reasonId, comment : description },
+                        success: function (response) {                            
+                            if (response.IsSuccess == true) {
+
+                                //Remove row from the table.
+                                var tr = $('#tblReservation  tbody tr#' + reservationId)
+                                var row = grdReservation.row(tr);
+                                var rowNode = row.node();
+                                row.remove();
+                                grdReservation.draw();
+
+                                showToaster("Reservation cancelled successfully.", ToasterType.SUCCESS);
+                            }
+                            else {
+                                showToaster(response.errorMessage, ToasterType.ERROR);
+                            }
+                        }
+                    });
+                }
+
+            } else {
+                showToaster("Please select any one reason.", ToasterType.ERROR);
+            }
+        });
     });
+
+    function openCancellationReasonSearchModal() {
+        //Open Reservation Cancellation Reason Search Modal.
+        $('#reservationCancellationReasonSearchModal').modal('toggle');
+    }
+
 
     function SearchReservationParameters(d) {
         var lastName = $('#LastName').val();
@@ -226,6 +328,8 @@
         var memberNo = $('#MemberNo').val();
         var arrivalFrom = $('#ArrivalFrom').val();
         var arrivalTo = $('#ArrivalTo').val();
+        var confirmationNo = $('#ConfirmationNo').val();
+        var isShowCancelledReservation = $('#IsShowCancelledReservation').prop('checked'); 
 
         d.PageNum = currentPage;
         d.LastName = lastName;
@@ -242,6 +346,8 @@
         d.MemberNo = memberNo;
         d.ArrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
         d.ArrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
+        d.confirmationNo = confirmationNo;
+        d.IsShowCancelledReservation = isShowCancelledReservation;
     }
 
     function ReservationGridDataBound(response) {
@@ -372,10 +478,20 @@
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
-                        + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deleteReservation(this,event,\'' + full.Id + '\')">Delete</button>';
+                    var isReservationCancel = full.IsReservationCancel
+                    var buttons = "";
+
+                    buttons += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                                + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
+
+                    if (isReservationCancel == false) {
+                        buttons += ' <button type="button" class="btn btn-danger btn-xs"'
+                                    + ' onclick="cancelReservation(this,event,\'' + full.Id + '\')">Cancel</button>';
+                    } else {
+                        buttons += ' <button type="button" class="btn bg-maroon btn-xs m-n">Cancelled</button>';
+                    }
+
+                    return buttons;
                 }
             }
             ],
@@ -399,13 +515,6 @@
         var blnValid = true;
 
         if (!IsNullOrEmpty(arrivalFrom) && !IsNullOrEmpty(arrivalTo)) {
-            ////Convert dd/MM/yyyy to MM/dd/yyyy date.
-            //arrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
-            //arrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
-
-            //var objArrivalFrom = new Date(arrivalFrom);
-            //var objArrivalTo = new Date(arrivalTo);
-
             var objArrivalFrom = GetDateObject(arrivalFrom, DateSeprator.SLASH);
             var objArrivalTo = GetDateObject(arrivalTo, DateSeprator.SLASH);
 
@@ -446,6 +555,16 @@
         $('#ArrivalTo').val('');
 
         searchReservation();
+    }
+
+    function cancelReservation(item, e, id) {
+        $('#hdnReservationId').val('');        
+        if (confirm("Are you sure do you want to cancel reservation ?")) {            
+            $('#hdnReservationId').val(id);
+            openCancellationReasonSearchModal();
+            $('form#frmAdvanceCancellationReasonSearch #Reason').val('');
+            $('form#frmAdvanceCancellationReasonSearch #btnSearch').click();
+        }
     }
 
     function deleteReservation(item, e, id) {

@@ -12,7 +12,7 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
 
         [DisplayName("Room Type Code")]
-        [Required(ErrorMessage = "Please enter rrom type code.")]
+        [Required(ErrorMessage = "Please enter room type code.")]
         public string RoomTypeCode { get; set; }
 
         public string Description { get; set; }

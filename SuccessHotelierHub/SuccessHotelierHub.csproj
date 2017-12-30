@@ -210,6 +210,7 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\RateController.cs" />
     <Compile Include="Controllers\RateTypeController.cs" />
+    <Compile Include="Controllers\ReservationCancellationReasonController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\NationalityVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
+    <Compile Include="Models\PreferenceGroupVM.cs" />
     <Compile Include="Models\PreferenceVM.cs" />
     <Compile Include="Models\IndividualProfile.cs" />
     <Compile Include="Models\ProfilePreferenceMappingVM.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Models\RateQueryVM.cs" />
     <Compile Include="Models\RateSheetResultVM.cs" />
     <Compile Include="Models\RateTypeVM.cs" />
+    <Compile Include="Models\ReservationCancellationReasonVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
     <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />
@@ -244,11 +247,13 @@
     <Compile Include="Repository\CityRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
+    <Compile Include="Repository\PreferenceGroupRepository.cs" />
     <Compile Include="Repository\PreferenceRepository.cs" />
     <Compile Include="Repository\ProfileRepository.cs" />
     <Compile Include="Repository\ProfileTypeRepository.cs" />
     <Compile Include="Repository\RateRepository.cs" />
     <Compile Include="Repository\RateTypeRepository.cs" />
+    <Compile Include="Repository\ReservationCancellationReasonRepository.cs" />
     <Compile Include="Repository\ReservationRepository.cs" />
     <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomTypeRepository.cs" />
@@ -1875,6 +1880,10 @@
     <Content Include="Views\Rate\List.cshtml" />
     <Content Include="Views\Room\Index.cshtml" />
     <Content Include="Views\Room\_RoomList.cshtml" />
+    <Content Include="Views\ReservationCancellationReason\_AdvanceSearch.cshtml" />
+    <Content Include="Views\ReservationCancellationReason\Create.cshtml" />
+    <Content Include="Views\ReservationCancellationReason\Edit.cshtml" />
+    <Content Include="Views\ReservationCancellationReason\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
