@@ -13,17 +13,22 @@
 
 
     var profileId = Convert.ToString(Request.QueryString["profileid"]);
-    string firstName = "", lastName = "";
+    string firstName = "", lastName = "", name = "";
 
     if (!string.IsNullOrWhiteSpace(profileId))
     {
         var profile = profileRepository.GetIndividualProfileById(Guid.Parse(profileId)).FirstOrDefault();
 
         if(profile != null)
-        {   
+        {
             profileId = profile.Id.ToString();
             firstName = profile.FirstName;
             lastName = profile.LastName;
+
+            if (!string.IsNullOrWhiteSpace(lastName) && !string.IsNullOrWhiteSpace(firstName))
+            {
+                name = (lastName + ", " + firstName);
+            }
         }
     }
 }
@@ -384,7 +389,7 @@
         $('#ProfileId').val('@profileId');        
         $('#FirstName').val('@firstName');
         $('#LastName').val('@lastName');
-        $('#Name').val('@(Convert.ToString(lastName + ", " + firstName).Trim())');
+        $('#Name').val('@name');
 
         //Date picker
         $('#ArrivalDate').datepicker({

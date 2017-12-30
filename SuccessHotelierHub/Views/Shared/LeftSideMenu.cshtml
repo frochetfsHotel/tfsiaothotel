@@ -30,7 +30,7 @@
             </li>
         </ul>
 
-        <ul class="sidebar-menu tree leftsidemenu" id="MenusProfile" data-widget="tree" style="display:none;">
+        @*<ul class="sidebar-menu tree leftsidemenu" id="MenusProfile" data-widget="tree" style="display:none;">
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-user"></i> Individual Profile
@@ -48,9 +48,37 @@
                 </ul>
             </li>
             <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-building"></i>Company (Design)</a></li>
-        </ul>
+        </ul>*@
 
-        <ul class="sidebar-menu tree leftsidemenu" id="MenusReservation" data-widget="tree" style="display:none;">
+        <ul class="sidebar-menu tree leftsidemenu" id="MenusReservation" data-widget="tree" style="display:none;">            
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-user"></i> Profile 
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-circle-o"></i> Individual Profile
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a href="@Url.Action("CreateIndividualProfile","Profile")"><i class="fa fa-circle-o"></i> Create </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("IndividualProfileList","Profile")"><i class="fa fa-circle-o"></i> Search </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-building"></i>Company (Design)</a></li>
+                </ul>
+            </li>
+            
             <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-circle-o"></i>Rate Query</a></li>
             <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-search" aria-hidden="true"></i>Search Reservation</a></li>
         </ul>

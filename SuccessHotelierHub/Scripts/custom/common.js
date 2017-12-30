@@ -293,10 +293,11 @@ function LoadLeftSideMenu() {
         if (menu == "Dashboard") {
             $('#MenusDashboard').show();
             $('#menuDashboard').addClass('active');
-        } else if (menu == "Profile") {
-            $('#MenusProfile').show();
-            $('#menuProfile').addClass('active');
         }
+        //else if (menu == "Profile") {
+        //    $('#MenusProfile').show();
+        //    $('#menuProfile').addClass('active');
+        //}
         else if (menu == "Reservation") {
             $('#MenusReservation').show();
             $('#menuReservation').addClass('active');
