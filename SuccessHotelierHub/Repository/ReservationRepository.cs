@@ -280,7 +280,7 @@ namespace SuccessHotelierHub.Repository
             return reservations;
         }
 
-        public ReservationVM GetLastReservationByDate(DateTime date)
+        public ReservationVM GetLastReservationByDate(DateTime? date)
         {
             SqlParameter[] parameters =
             {

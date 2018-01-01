@@ -50,11 +50,11 @@ namespace SuccessHotelierHub.Controllers
                     profile = profileRepository.GetIndividualProfileById(rateQuery.ProfileId.Value).FirstOrDefault();
 
                 model.ArrivalDate = rateQuery.ArrivalDate;
-                model.NoOfNight = rateQuery.NoOfNight;
+                model.NoOfNight = rateQuery.NoOfNight.HasValue ? rateQuery.NoOfNight.Value : 0;
                 model.DepartureDate = rateQuery.DepartureDate;
-                model.NoOfAdult = rateQuery.NoOfAdult;
-                model.NoOfChildren = rateQuery.NoOfChildren;
-                model.NoOfRoom = rateQuery.NoOfRoom;
+                model.NoOfAdult = rateQuery.NoOfAdult.HasValue ? rateQuery.NoOfAdult.Value : 0;
+                model.NoOfChildren = rateQuery.NoOfChildren.HasValue ? rateQuery.NoOfChildren.Value : 0;
+                model.NoOfRoom = rateQuery.NoOfRoom.HasValue ? rateQuery.NoOfRoom.Value : 0;
 
                 model.LastName = rateQuery.LastName;
                 model.FirstName = rateQuery.FirstName;
@@ -68,13 +68,43 @@ namespace SuccessHotelierHub.Controllers
                 model.BlockCodeId = rateQuery.BlockCodeId;
 
                 model.MemberNo = rateQuery.MemberNo;
-                model.RateCodeId = rateQuery.RateTypeId; //RateTypeCode
-                model.RoomTypeId = rateQuery.RoomTypeId; //RoomTypeCode
+                model.RateCodeId = rateQuery.RateTypeId; //RateTypeId
+                model.RateTypeCode = rateQuery.RateTypeCode; //RateTypeCode
+                model.RoomTypeId = rateQuery.RoomTypeId; //RoomTypeId
+                model.RoomTypeCode = rateQuery.RoomTypeCode; //RoomTypeCode
                 model.Rate = rateQuery.Amount; //Rate
 
                 model.PackageId= rateQuery.PackageId;
-
             }
+
+            #region Profile Info From Edit Profile Page
+                        
+            var profileId = (string)TempData["ProfileId"];
+            var firstName = (string)TempData["FirstName"];
+            var lastName = (string)TempData["LastName"];
+            var titleId = (Guid?)TempData["TitleId"];
+
+            if (!string.IsNullOrWhiteSpace(profileId))
+            {
+                model.ProfileId = Guid.Parse(profileId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(firstName))
+            {
+                model.FirstName = firstName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                model.LastName = lastName;
+            }
+
+            if (titleId.HasValue)
+            {
+                model.TitleId = titleId;
+            }
+
+            #endregion
 
             ViewBag.TitleList = titleList;
             ViewBag.VipList = vipList;
@@ -112,19 +142,15 @@ namespace SuccessHotelierHub.Controllers
                 string confirmationNo = string.Empty;
                 Int64 confirmationSuffix = 1;
 
-                var lastReservation = reservationRepository.GetLastReservationByDate(DateTime.Now);
+                var lastReservation = reservationRepository.GetLastReservationByDate(null);
                 
                 if (lastReservation != null)
                 {
-                    string confirmationPrefix = DateTime.Now.ToString("ddMMyyyy");
-
                     string lastConfirmationNo = lastReservation.ConfirmationNumber;
                     
 
                     if (!string.IsNullOrWhiteSpace(lastConfirmationNo))
                     {
-                        lastConfirmationNo = lastConfirmationNo.Replace(confirmationPrefix, "");
-
                         confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : 1;
 
                         confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
@@ -207,6 +233,21 @@ namespace SuccessHotelierHub.Controllers
             {
                 model = reservation[0];
 
+                #region Room Type
+                //Get Room Type Details.
+                if(model.RoomTypeId.HasValue)
+                {
+                    var roomType = roomTypeRepository.GetRoomTypeById(model.RoomTypeId.Value).FirstOrDefault();
+
+                    if (roomType != null)
+                    {
+                        model.RoomTypeCode = roomType.RoomTypeCode;
+                    }
+                }
+                #endregion
+
+                #region Preference Mapping
+
                 //Get Preference Mapping
                 var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);
                 string preferenceItems = string.Empty;
@@ -229,6 +270,36 @@ namespace SuccessHotelierHub.Controllers
 
                 model.PreferenceItems = preferenceItems;
                 ViewBag.SelectedPreferenceDescription = preferenceDescription;
+                #endregion
+
+                #region Profile Info From Edit Profile Page
+
+                var profileId = (string)TempData["ProfileId"];
+                var firstName = (string)TempData["FirstName"];
+                var lastName = (string)TempData["LastName"];
+                var titleId = (Guid?)TempData["TitleId"];
+
+                if (!string.IsNullOrWhiteSpace(profileId))
+                {
+                    model.ProfileId = Guid.Parse(profileId);
+                }
+
+                if (!string.IsNullOrWhiteSpace(firstName))
+                {
+                    model.FirstName = firstName;
+                }
+
+                if (!string.IsNullOrWhiteSpace(lastName))
+                {
+                    model.LastName = lastName;
+                }
+
+                if (titleId.HasValue)
+                {
+                    model.TitleId = titleId;
+                }
+
+                #endregion
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
                 var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();

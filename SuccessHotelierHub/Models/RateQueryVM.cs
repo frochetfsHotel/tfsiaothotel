@@ -15,8 +15,8 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please select arrival date.")]
         public DateTime? ArrivalDate { get; set; }
 
-        [DisplayName("No Of Night")]
-        public int NoOfNight { get; set; }
+        [DisplayName("Nights")]
+        public int? NoOfNight { get; set; }
 
         [DisplayName("Departure Date")]
         [DataType(DataType.Date)]
@@ -24,18 +24,18 @@ namespace SuccessHotelierHub.Models
         public DateTime? DepartureDate { get; set; }
 
         [DisplayName("Adults")]
-        public int NoOfAdult { get; set; }
+        public int? NoOfAdult { get; set; }
 
-        [DisplayName("Childrens")]
-        public int NoOfChildren { get; set; }
+        [DisplayName("Children")]
+        public int? NoOfChildren { get; set; }
 
-        [DisplayName("No Of Room")]
-        public int NoOfRoom { get; set; }
+        [DisplayName("Rooms")]
+        public int? NoOfRoom { get; set; }
                 
         public Guid? ProfileId { get; set; }
 
         [DisplayName("Name")]
-        [Required(ErrorMessage = "Please search and select client name.")]
+        //[Required(ErrorMessage = "Please search and select client name.")]
         public string Name { get; set; }
 
         public string LastName { get; set; }

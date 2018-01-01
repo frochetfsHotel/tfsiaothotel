@@ -34,43 +34,54 @@
         <form class="frmRoomTypeList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="col-xs-12 padding-zero">
-                    <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
-                        <label for="RoomTypeCode" class="">Room Type Code</label>
-                        @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                    <div class="searchbox_padding searchBox_Border">
+                        <div class="col-md-3 col-sm-3 col-xs-12 padding_left padding-right-media form-group ">
+                            <label for="RoomTypeCode" class="">Room Type Code</label>
+                            @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 padding_left padding-right-media form-group ">
+                            <label for="NoOfRooms" class="">No Of Rooms</label>
+                            @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 padding_left padding-right-media form-group ">
+                            <label for="RoomCapacity" class="">Room Capacity</label>
+                            @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity" })
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
-                    <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
-                        <label for="NoOfRooms" class="">No Of Rooms</label>
-                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms" })
-                    </div>
-
-                    <div class="col-md-4 col-sm-4 col-xs-12 mt-23 mt-23-media padding_left padding-right-media form-group">
-                        <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRoomType()">Search</button>
-                        <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRoomType()">Clear</button>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="col-xs-12 padding-zero m-t-sm">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped" id="tblRoomTypes">
-                            <thead>
-                                <tr>
-                                    <th>CreatedOn</th>
-                                    <th>Room Type Code</th>
-                                    <th>Description</th>
-                                    <th>No Of Rooms</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="text-left">
-                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RoomTypeGridPageChange" })
+                    <div class="col-xs-12 padding-zero">
+                        <div class="pull-right m-t">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRoomType()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRoomType()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
                 </div>
-            </div>
+                  
+
+
+                    <div class="col-xs-12 padding-zero m-t-sm">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped" id="tblRoomTypes">
+                                <thead>
+                                    <tr>
+                                        <th>CreatedOn</th>
+                                        <th>Room Type Code</th>
+                                        <th>Description</th>
+                                        <th>No Of Rooms</th>
+                                        <th>Room Capacity</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="text-left">
+                            @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RoomTypeGridPageChange" })
+                        </div>
+                    </div>
+                </div>
         </form>
     </div>
 </section>
@@ -173,6 +184,11 @@
             },
             {
                 targets: 4,
+                data: "RoomCapacity",
+                orderable: true
+            },
+            {
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -185,7 +201,7 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -197,7 +213,7 @@
                 }
             }
             ],
-            order: [[ 1, "asc" ]],
+            order: [[1, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }

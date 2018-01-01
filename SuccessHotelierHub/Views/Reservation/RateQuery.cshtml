@@ -84,11 +84,12 @@
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                         </div>
+                                        <span class="text-danger m-l-md" id="ArrivalDayOfWeek"></span>
                                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfNight)
-                                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();" })
+                                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", value = "" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.DepartureDate)
@@ -98,6 +99,7 @@
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                         </div>
+                                        <span class="text-danger m-l-md" id="DepartureDayOfWeek"></span>
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfAdult)
@@ -115,13 +117,13 @@
                                 <div class="row">
                                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.Name, new { @class = "required-label" })
-                                        <div class="input-group date">
+                                        <div class="input-group">
                                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                                             <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
                                                 <i class="fa fa-search"></i>
                                             </div>
                                         </div>
-                                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                                        @*@Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })*@
 
                                     </div>
                                     <div class="col-md-4 col-sm-4 col-xs-12 form-group">
@@ -342,7 +344,7 @@
                     <div class="col-xs-12 col-md-12 col-sm-12 text-right m-b-md">
                         <hr />
                         <button type="button" class="btn btn-info m-r-xs" onclick="showTab('tab_1')">Prev</button>
-                        <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">Ok</button>
+                        <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">OK</button>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -396,14 +398,22 @@
             startDate: new Date(),
             autoclose: true,
             format: 'dd/mm/yyyy'
-        })
+        })    
+        .change(arrivalDateChanged)
+        .on('changeDate', arrivalDateChanged);
 
         $('#DepartureDate').datepicker({
             startDate: new Date(),
             autoclose: true,
             format: 'dd/mm/yyyy'
         })
+        .change(departureDateChanged)
+        .on('changeDate', departureDateChanged);
 
+
+        $("#ArrivalDate").datepicker("setDate", new Date()); //Set today's date.
+
+        //Profile
         $('.btnAdvanceSearchProfileOk').click(function (e) {
             var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');
             if (!IsNullOrEmpty(selectedProfile.val())) {
@@ -425,6 +435,40 @@
             }
         });
     });
+
+    function arrivalDateChanged(e) {
+        var selectedDate = $(this).val();
+        console.log("arrivalDateChanged : " + selectedDate);
+
+        var dayOfWeek = "";
+        if (!IsNullOrEmpty(selectedDate)) {
+            var objSelectedArrivalDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            if (!IsNullOrEmpty(objSelectedArrivalDate)) {
+                var weekDay = objSelectedArrivalDate.getDay();
+                dayOfWeek = GetDayOfWeek(weekDay);
+            }
+        }
+        console.log("dayOfWeek : " + dayOfWeek);
+        $('#ArrivalDayOfWeek').html(dayOfWeek);
+    }
+
+    function departureDateChanged(e) {
+        var selectedDate = $(this).val();
+        console.log("departureDateChanged : " + selectedDate);
+
+        var dayOfWeek = "";
+        if (!IsNullOrEmpty(selectedDate)) {
+            var objSelectedDepartureDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            if (!IsNullOrEmpty(objSelectedDepartureDate)) {
+                var weekDay = objSelectedDepartureDate.getDay();
+                dayOfWeek = GetDayOfWeek(weekDay);
+            }
+        }
+        console.log("dayOfWeek : " + dayOfWeek);
+        $('#DepartureDayOfWeek').html(dayOfWeek);
+    }
 
     function openProfileSearchModal() {
         var name = $("#Name").val();
@@ -502,12 +546,12 @@
         if (validateRateQueryInfo()) {
             var customerName = $('#Name').val();
             var arrivalDate = $('#ArrivalDate').val();
-            var noOfNights = $('#NoOfNights').val();
+            var noOfNights = $('#NoOfNight').val();
             var departureDate = $('#DepartureDate').val();
-            var noOfAdults = $('#NoOfAdults').val();
+            var noOfAdults = $('#NoOfAdult').val();
             var noOfChildren = $('#NoOfChildren').val();
             var noOfRooms = $('#NoOfRoom').val();
-
+            var arrivalDayOfWeek = $('#ArrivalDayOfWeek').html();
             $('#RateTypeCode').val('');
             var rateCodeId = $('#RateCodeId').find("option:selected").data("ratecode");
 
@@ -516,15 +560,37 @@
             }
 
             var reservationInfo = '';
+
+            //Arrival Date.
             if (!IsNullOrEmpty(arrivalDate))
-                reservationInfo += arrivalDate + Delimeter.COMMA + Delimeter.SPACE;
-            if (!IsNullOrEmpty(noOfNights))
+                reservationInfo += arrivalDayOfWeek + Delimeter.SPACE + arrivalDate + Delimeter.COMMA + Delimeter.SPACE;
+
+            //Nights
+            noOfNights = (!IsNullOrEmpty(noOfNights)) ? noOfNights : 0;            
+            if(noOfNights > 1)
                 reservationInfo += noOfNights + " Nights" + Delimeter.COMMA + Delimeter.SPACE;
-            if (!IsNullOrEmpty(noOfRooms))
+            else
+                reservationInfo += noOfNights + " Night" + Delimeter.COMMA + Delimeter.SPACE;
+            
+            //Rooms
+            noOfRooms = (!IsNullOrEmpty(noOfRooms)) ? noOfRooms : 0;
+            if (noOfRooms > 1)
                 reservationInfo += noOfRooms + " Rooms" + Delimeter.COMMA + Delimeter.SPACE;
-            if (!IsNullOrEmpty(noOfAdults))
+            else
+                reservationInfo += noOfRooms + " Room" + Delimeter.COMMA + Delimeter.SPACE;
+
+            //Adults
+            noOfAdults = (!IsNullOrEmpty(noOfAdults)) ? noOfAdults : 0;
+            if (noOfAdults > 1)
                 reservationInfo += noOfAdults + " Adults" + Delimeter.COMMA + Delimeter.SPACE;
-            if (!IsNullOrEmpty(noOfChildren))
+            else
+                reservationInfo += noOfAdults + " Adult" + Delimeter.COMMA + Delimeter.SPACE;
+
+            //Children
+            noOfChildren = (!IsNullOrEmpty(noOfChildren)) ? noOfChildren : 0;
+            if (noOfChildren > 1)
+                reservationInfo += noOfChildren + " Childrens" + Delimeter.SPACE;
+            else
                 reservationInfo += noOfChildren + " Children" + Delimeter.SPACE;
 
             $('#reservationInfo').html(reservationInfo);
@@ -614,8 +680,7 @@
     function calculateNoOfNights() {
         var arrivalDate = $('#ArrivalDate').val();
         var departureDate = $('#DepartureDate').val();
-        var noOfNight = 1;
-        debugger;
+        var noOfNight = 1;        
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
           
 
@@ -636,8 +701,7 @@
     function calculateDepartureDate() {
         var arrivalDate = $('#ArrivalDate').val();
         var noOfNight = $('#NoOfNight').val();
-        var departureDate = '';
-        debugger;
+        var departureDate = '';        
         if (!IsNullOrEmpty(arrivalDate)) {
 
             //Get Date Objects from dd/MM/yyyy date.

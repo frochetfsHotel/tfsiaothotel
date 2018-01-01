@@ -241,5 +241,25 @@ namespace SuccessHotelierHub.Controllers
 
             return blnAvailable;
         }
+
+        [HttpPost]
+        public ActionResult SearchAdvanceRoomType(SearchAdvanceRoomTypeParametersVM model)
+        {
+            try
+            {
+                var roomTypes = roomTypeRepository.SearchAdvanceRoomType(model);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = roomTypes
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
     }
 }

@@ -9,24 +9,26 @@
 }
 
 <form id="frmAdvancePreferenceSearch" name="frmAdvancePreferenceSearch" enctype="multipart/form-data" method="post">
-    <div class="row">
-        @*<div class="pt_10 pl_10 pr_10 searchBox_Border">*@
+    <div class="pt_10 pl_10 pr_10 searchBox_Border">
+        <div class="row">
             <div class="col-md-4 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.PreferenceGroupId)
                 @Html.DropDownListFor(m => m.PreferenceGroupId,
-                                (IEnumerable<SelectListItem>)preferenceGroupList, "-- Select Preference Group --",
-                                htmlAttributes: new { @class = "form-control" })
+                            (IEnumerable<SelectListItem>)preferenceGroupList, "-- Select Preference Group --",
+                            htmlAttributes: new { @class = "form-control" })
             </div>
             <div class="col-md-4 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.Preference)
                 @Html.TextBoxFor(m => m.Preference, new { @class = "form-control" })
             </div>
-        @*</div>*@
-        <div class="col-md-4 m-b-md text-left m-t-md">            
+        </div>
+    </div>
+    <div class="col-xs-12 m-b-md padding-zero">
+        <div class="pull-right m-t-sm">
             <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchPreference()">Search</button>
             <button type="button" class="btn btn-danger" id="btnClear" onclick="clearPreferenceSearch()">Clear</button>
         </div>
-
+        <div class="clearfix"></div>
     </div>
 
 

@@ -32,32 +32,45 @@
             </div>
         </div>
         <form class="frmPreferenceList" enctype="multipart/form-data" method="post">
-            <div class="box-body">                
+            <div class="box-body">
+
                 <div class="col-xs-12 padding-zero">
-                    <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
-                        @Html.LabelFor(m => m.Code)
-                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })                        
-                    </div>
-                    <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
-                        @Html.LabelFor(m => m.Description)
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+
+                    <div class="searchbox_padding searchBox_Border">
+                        <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                            @Html.LabelFor(m => m.Code)
+                            @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                            @Html.LabelFor(m => m.Description)
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4 col-xs-12 mt-23 mt-23-media padding_left padding-right-media form-group">
-                        <button type="button" id="btnSearch" class="btn btn-success m-r-xs" 
-                                onclick="searchReservationCancellationReason()">Search</button>
-                        <button type="button" id="btnClear" class="btn btn-danger" 
-                                onclick="clearReservationCancellationReason()">Clear</button>
+                    <div class="col-xs-12 padding-zero">
+                        <div class="pull-right m-t">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs"
+                                    onclick="searchReservationCancellationReason()">
+                                Search
+                            </button>
+                            <button type="button" id="btnClear" class="btn btn-danger"
+                                    onclick="clearReservationCancellationReason()">
+                                Clear
+                            </button>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
-                    <div class="clearfix"></div>
                 </div>
+
+
 
                 <div class="col-xs-12 padding-zero m-t-sm">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblReservationCancellationReason">
                             <thead>
                                 <tr>
-                                    <th>CreatedOn</th>                                    
+                                    <th>CreatedOn</th>
                                     <th>Code</th>
                                     <th>Description</th>
                                     <th>Status</th>
@@ -94,7 +107,7 @@
 
 
     function SearchReservationCancellationReasonParameters(d) {
-        var code =$('#Code').val();
+        var code = $('#Code').val();
         var description = $('#Description').val();
 
         d.PageNum = currentPage;
@@ -157,7 +170,7 @@
                 data: "CreatedOn",
                 orderable: true,
                 "visible": false
-            },            
+            },
             {
                 targets: 1,
                 data: "Code",
@@ -243,7 +256,7 @@
                         var rowNode = row.node();
                         row.remove();
                         grdReservationCancellationReason.draw();
-                        
+
                         showToaster("Record deleted successfully", ToasterType.SUCCESS);
                     }
                     else {

@@ -72,6 +72,9 @@ textarea {
 .p-md {
   padding: 25px !important;
 }
+.p-22{
+    padding: 22px !important;
+}
 .p-lg {
   padding: 30px !important;
 }
@@ -574,4 +577,15 @@ label{
 .pb_20 {
     padding-bottom:20px !important;
 }
-
+.datepicker.datepicker-dropdown.dropdown-menu.datepicker-orient-left.datepicker-orient-top {
+    z-index: 9999 !important;
+}
+.searchbox_padding{
+        padding: 10px 10px 0;
+}
+.modal-xl {
+    width: 1100px;
+}
+.skin-blue .main-header .navbar .sidebar-toggle {
+    display: none;
+}

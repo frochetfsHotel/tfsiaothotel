@@ -172,7 +172,7 @@
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
-                            markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbProfile_" + result[i].Id + "\' name=\'rbProfile\' value=\'" + result[i].Id + "\'  data-firstname=\'" + result[i].FirstName + "\'  data-lastname=\'" + result[i].LastName + "\'/></td>";
+                            markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbProfile_" + result[i].Id + "\' name=\'rbProfile\' value=\'" + result[i].Id + "\'  data-firstname=\'" + result[i].FirstName + "\'  data-lastname=\'" + result[i].LastName + "\' data-titleid=\'" + result[i].TitleId + "\' data-title=\'" + result[i].Title + "\' /></td>";
                             markup += "<td>" + result[i].LastName + "</td>";
                             markup += "<td>" + result[i].FirstName + "</td>";
                             markup += "<td>" + result[i].Address + "</td>";

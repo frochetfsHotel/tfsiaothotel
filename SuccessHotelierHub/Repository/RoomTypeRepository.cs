@@ -53,6 +53,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomType.RoomTypeCode },
                     new SqlParameter { ParameterName = "@Description", Value = roomType.Description },
                     new SqlParameter { ParameterName = "@NoOfRooms", Value = roomType.NoOfRooms },
+                    new SqlParameter { ParameterName = "@RoomCapacity", Value = roomType.RoomCapacity },
                     new SqlParameter { ParameterName = "@IsActive", Value = roomType.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = roomType.CreatedBy }
                 };
@@ -72,6 +73,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomType.RoomTypeCode },
                     new SqlParameter { ParameterName = "@Description", Value = roomType.Description },
                     new SqlParameter { ParameterName = "@NoOfRooms", Value = roomType.NoOfRooms },
+                    new SqlParameter { ParameterName = "@RoomCapacity", Value = roomType.RoomCapacity },
                     new SqlParameter { ParameterName = "@IsActive", Value = roomType.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = roomType.UpdatedBy }
                 };
@@ -102,6 +104,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = model.RoomTypeCode },
                     new SqlParameter { ParameterName = "@NoOfRooms", Value = model.NoOfRooms },
+                    new SqlParameter { ParameterName = "@RoomCapacity", Value = model.RoomCapacity },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -114,6 +117,29 @@ namespace SuccessHotelierHub.Repository
             roomTypes = DALHelper.CreateListFromTable<SearchRoomTypeResultVM>(dt);
 
             return roomTypes;
+        }
+
+
+        public List<SearchAdvanceRoomTypeResultVM> SearchAdvanceRoomType(SearchAdvanceRoomTypeParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@RateTypeId", Value = model.RateTypeId },
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = model.ArrivalDate },
+                    new SqlParameter { ParameterName = "@NoOfNight", Value = model.NoOfNight },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = model.DepartureDate },
+                    new SqlParameter { ParameterName = "@RoomTypeCode", Value = model.RoomTypeCode },
+                    new SqlParameter { ParameterName = "@Description", Value = model.Description },
+                    new SqlParameter { ParameterName = "@AvailableRooms", Value = model.AvailableRooms },
+                    new SqlParameter { ParameterName = "@RoomCapacity", Value = model.RoomCapacity }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceRoomType", parameters);
+
+            var results = new List<SearchAdvanceRoomTypeResultVM>();
+            results = DALHelper.CreateListFromTable<SearchAdvanceRoomTypeResultVM>(dt);
+
+            return results;
         }
 
         public List<RoomTypeVM> CheckRoomTypeCodeAvailable(Guid? roomTypeId, string roomTypeCode)

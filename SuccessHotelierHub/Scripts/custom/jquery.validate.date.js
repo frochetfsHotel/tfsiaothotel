@@ -1,6 +1,5 @@
 ﻿//$(function () {
 //    $.validator.methods.date = function (value, element) {
-//        debugger;
 
 //        //Here update given date format dd/MM/yyyy to MM/dd/yyyy.
 //        value = ConvertDDMMYYYY_To_MMDDYYYY(value, DateSeprator.SLASH);

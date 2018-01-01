@@ -9,42 +9,59 @@
 }
 
 <form id="frmAdvanceRoomTypeSearch" name="frmAdvanceRoomTypeSearch" enctype="multipart/form-data" method="post">
-    <div class="row">
-        @*<div class="pt_10 pl_10 pr_10 searchBox_Border">*@
-        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-            @Html.LabelFor(m => m.RateTypeId)
-            @Html.DropDownListFor(m => m.RateTypeId,
+    <div class="pt_10 pl_10 pr_10 searchBox_Border">
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                @Html.LabelFor(m => m.RateTypeId)
+                @Html.DropDownListFor(m => m.RateTypeId,
                                 (IEnumerable<SelectListItem>)rateTypeList, "-- Select Rate Type --",
                                 htmlAttributes: new { @class = "form-control" })
-        </div>
-        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-            @Html.LabelFor(m => m.ArrivalDate)
-            <div class="input-group date">
-                @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
-                <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
+            </div>
+            <div class="col-md-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.ArrivalDate)
+                <div class="input-group date">
+                    @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-12 form-group">
+                @Html.LabelFor(m => m.NoOfNight)
+                @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+            </div>
+            <div class="col-md-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.DepartureDate)
+                <div class="input-group date">
+                    @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-2 col-sm-2 col-xs-12 form-group">
-            @Html.LabelFor(m => m.NoOfNight)
-            @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
-        </div>
-        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-            @Html.LabelFor(m => m.DepartureDate)
-            <div class="input-group date">
-                @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
-                <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
-                </div>
+        <div class="row">
+            <div class="col-md-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.RoomTypeCode)
+                @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code"})
+            </div>
+            <div class="col-md-5 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Description)
+                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "1"})
+            </div>
+            <div class="col-md-2 col-xs-12 form-group">
+                @Html.LabelFor(m => m.AvailableRooms)
+                @Html.TextBoxFor(m => m.AvailableRooms, new { @class = "form-control", placeholder = "Available Rooms", onkeydown = "onlyDigits(event)" })
+            </div>
+            <div class="col-md-2 col-xs-12 form-group">
+                @Html.LabelFor(m => m.RoomCapacity)
+                @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity", onkeydown = "onlyDigits(event)" })
             </div>
         </div>
-
-        @*</div>*@        
     </div>
 
     <div class="row">
-        <div class="col-md-4 m-b-md text-center m-t-md">
+        <div class="col-md-12 m-b-md text-right m-t-md">
             <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoomType()">Search</button>
             <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomTypeSearch()">Clear</button>
         </div>
@@ -69,7 +86,7 @@
 
     <div class="col-xs-12 text-right m-b-md padding-zero">
         <hr class="hr_margin" />
-        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomTypeOk">Ok</button>                    
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomTypeOk">Ok</button>
         <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
     </div>
 </form>
@@ -111,7 +128,7 @@
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
-                            markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbRoomType_" + result[i].Id + "\' name=\'rbRoomType\' value=\'" + result[i].Id + "\'  data-roomtype=\'" + result[i].RoomTypeCode + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/></td>";
+                            markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbRoomType_" + result[i].Id + "\' name=\'rbRoomType\' value=\'" + result[i].RoomTypeId + "\'  data-roomtype=\'" + result[i].RoomTypeCode + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/></td>";
                             markup += "<td>" + result[i].RoomTypeCode + "</td>";
                             markup += "<td>" + result[i].AvailableRooms + "</td>";
                             markup += "<td>" + result[i].RoomTypeDescription + "</td>";
@@ -134,11 +151,12 @@
         $('form#frmAdvanceRoomTypeSearch #ArrivalDate').val('');
         $('form#frmAdvanceRoomTypeSearch #NoOfNight').val('');
         $('form#frmAdvanceRoomTypeSearch #DepartureDate').val('');
+        $('form#frmAdvanceRoomTypeSearch #RoomTypeCode').val('');
+        $('form#frmAdvanceRoomTypeSearch #Description').val('');
+        $('form#frmAdvanceRoomTypeSearch #AvailableRooms').val('');
+        $('form#frmAdvanceRoomTypeSearch #RoomCapacity').val('');
 
         $("form#frmAdvanceRoomTypeSearch #tblRoomType tbody").empty();
     }
-
-
-   
 
 </script>

@@ -17,7 +17,12 @@
     .hr_margin {
         margin: 20px 0 15px;
     }
-
+    .modal-xl {
+        width: 90%;
+    }
+    .skin-blue .main-header .navbar .sidebar-toggle {
+        display: block;
+    }
 }
 
 @media (max-width: 992px){
@@ -31,6 +36,12 @@
         padding-right: 0;
     }
     .modal-dialog {
-    width: 80%;
+        width: 80%;
+    }
 }
+
+@media (max-width: 1200px) {
+    .modal-xl {
+        width: 80%;
+    }
 }

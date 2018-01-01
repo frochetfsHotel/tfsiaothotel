@@ -96,20 +96,46 @@ namespace SuccessHotelierHub.Controllers
                     if (Request.Form["Source"] != null)
                     {
                         string source = string.Empty;
+                        string url = string.Empty;
+                        string qid = string.Empty;
+
                         source = Convert.ToString(Request.Form["Source"]);
+                        
                         if (source == "RateQuery")
                         {
                             TempData["ProfileId"] = profileId;
                             TempData["FirstName"] = model.FirstName;
                             TempData["LastName"] = model.LastName;
 
-                            return Json(new
-                            {
-                                IsSuccess = true,
-                                IsExternalUrl = true,
-                                data = Url.Action("RateQuery", "Reservation")
-                            }, JsonRequestBehavior.AllowGet);
+                            url = Url.Action("RateQuery", "Reservation");                            
                         }
+                        else if (source == "CreateReservation")
+                        {
+                            TempData["TitleId"] = model.TitleId;
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            url = Url.Action("Create", "Reservation");
+                        }
+                        else if (source == "EditReservation")
+                        {
+                            qid = Convert.ToString(Request.Form["Qid"]);
+
+                            TempData["TitleId"] = model.TitleId;
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            url = Url.Action("Edit", "Reservation", new { Id = qid });
+                        }
+
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            IsExternalUrl = true,
+                            data = url
+                        }, JsonRequestBehavior.AllowGet);
                     }
                     #endregion
 
@@ -246,20 +272,46 @@ namespace SuccessHotelierHub.Controllers
                     if (Request.Form["Source"] != null)
                     {
                         string source = string.Empty;
+                        string url = string.Empty;
+                        string qid = string.Empty;
+
                         source = Convert.ToString(Request.Form["Source"]);
+
                         if (source == "RateQuery")
-                        {
+                        {   
                             TempData["ProfileId"] = profileId;
                             TempData["FirstName"] = model.FirstName;
                             TempData["LastName"] = model.LastName;
 
-                            return Json(new
-                            {
-                                IsSuccess = true,
-                                IsExternalUrl = true,
-                                data = Url.Action("RateQuery", "Reservation")
-                            }, JsonRequestBehavior.AllowGet);
+                            url = Url.Action("RateQuery", "Reservation");
                         }
+                        else if (source == "CreateReservation")
+                        {
+                            TempData["TitleId"] = model.TitleId;
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            url = Url.Action("Create", "Reservation");
+                        }
+                        else if (source == "EditReservation")
+                        {
+                            qid = Convert.ToString(Request.Form["Qid"]);
+
+                            TempData["TitleId"] = model.TitleId;
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            url = Url.Action("Edit", "Reservation", new { Id = qid });
+                        }
+
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            IsExternalUrl = true,
+                            data = url
+                        }, JsonRequestBehavior.AllowGet);
                     }
                     #endregion
 

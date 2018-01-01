@@ -15,7 +15,7 @@ namespace SuccessHotelierHub.Models
         public Guid? TitleId { get; set; }
 
         [DisplayName("Last Name")]
-        [Required(ErrorMessage = "Please enter last name.")]
+        [Required(ErrorMessage = "Please search and select last name.")]
         public string LastName { get; set; }
 
         [DisplayName("First Name")]        
@@ -88,6 +88,10 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please select room type.")]
         public Guid? RoomTypeId { get; set; }
 
+        [DisplayName("Room Type")]
+        [Required(ErrorMessage = "Please search and select room type.")]
+        public string RoomTypeCode { get; set; }
+
         [DisplayName("RTC")]
         public Guid? RtcId { get; set; }
 
@@ -100,6 +104,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Rate Code")]
         [Required(ErrorMessage = "Please select rate code.")]
         public Guid? RateCodeId { get; set; }
+        
+        public string RateTypeCode { get; set; }
 
         [DisplayName("Fixed Rate")]
         public bool IsFixedRate { get; set; }

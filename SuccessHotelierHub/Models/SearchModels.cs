@@ -155,6 +155,7 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+        public Guid? TitleId { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -305,8 +306,9 @@ namespace SuccessHotelierHub.Models
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
-        public string RoomTypeCode { get; set; }
+        public string RoomTypeCode { get; set; }        
         public int NoOfRooms { get; set; }
+        public int RoomCapacity { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -318,10 +320,75 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string RoomTypeCode { get; set; }
         public int NoOfRooms { get; set; }
+        public int RoomCapacity { get; set; }
         public string Description { get; set; }        
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search Advance Room Type
+
+    public class SearchAdvanceRoomTypeParametersVM
+    {
+        public SearchAdvanceRoomTypeParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Rate Type")]
+        public Guid? RateTypeId { get; set; }
+
+        [DisplayName("Arrival Date")]
+        public DateTime? ArrivalDate { get; set; }
+
+        [DisplayName("Nights")]
+        public int NoOfNight { get; set; }
+
+        [DisplayName("Departure Date")]
+        public DateTime? DepartureDate { get; set; }
+
+        [DisplayName("Room Type")]
+        public string RoomTypeCode { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        [DisplayName("Available Rooms")]
+        public int AvailableRooms { get; set; }
+
+        [DisplayName("Room Capacity")]
+        public int RoomCapacity { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchAdvanceRoomTypeResultVM
+    {
+        public int RowNum { get; set; }
+
+        //Room Type
+        public Guid RoomTypeId { get; set; }
+        public string RoomTypeCode { get; set; }
+        public int AvailableRooms { get; set; }    
+        public int RoomCapacity { get; set; }
+        public string RoomTypeDescription { get; set; }
+
+        //Rate Type
+        public Guid RateTypeId { get; set; }
+        public string RateTypeCode { get; set; }        
+        public string RateTypeDescription { get; set; }
+
+        //Room Type Rate Type Mapping
+        public Guid RoomTypeRateTypeMappingId { get; set; }
+        public double Amount { get; set; }        
+        public string RoomTypeRateTypeMappingDescription { get; set; }        
     }
     #endregion
 

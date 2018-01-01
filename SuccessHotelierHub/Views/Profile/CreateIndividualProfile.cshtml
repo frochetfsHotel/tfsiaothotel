@@ -6,15 +6,26 @@
 
 @{ 
     var sourceParam =  Convert.ToString(Request.QueryString["source"]);
+    var qid = string.Empty;
     var btnCancelUrl = Url.Action("IndividualProfileList", "Profile");
+
     if (!string.IsNullOrWhiteSpace(sourceParam))
     {
         if (sourceParam == "RateQuery")
         {
             btnCancelUrl = Url.Action("RateQuery", "Reservation");
         }
+        else if (sourceParam == "CreateReservation")
+        {
+            btnCancelUrl = Url.Action("Create", "Reservation");
+        }
+        else if (sourceParam == "EditReservation")
+        {
+            qid = Convert.ToString(Request.QueryString["rid"]);
+            btnCancelUrl = Url.Action("Edit", "Reservation", new { Id = qid });
+        }
     }
-    
+
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 }
 
@@ -57,6 +68,7 @@
             @Html.HiddenFor(m => m.ProfileTypeId)
             @Html.HiddenFor(m => m.PreferenceItems);
             <input type="hidden" id="Source" name="Source" value="@sourceParam" />
+            <input type="hidden" id="Qid" name="Qid" value="@qid" />
             <!-- HIDDEN FIELD -->
 
             <div class="box-body box-body-list">
@@ -211,7 +223,7 @@
             <!-- /.box-body -->
 
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success" onclick="return saveIndividualProfile();">Save</button>
+                <button type="button" class="btn btn-success" onclick="return saveIndividualProfile();">OK</button>
                 <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>  
             </div>
         }
@@ -242,8 +254,7 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        $('.btnAdvanceSearchPreferenceOk').click(function (e) {
-            debugger;
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {            
             var preferenceIds = "";
             var html = "";
 

@@ -21,6 +21,9 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please enter no of rooms.")]        
         public int NoOfRooms { get; set; }
 
+        [DisplayName("Room Capacity")]
+        public int RoomCapacity { get; set; }
+
         public bool IsActive { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

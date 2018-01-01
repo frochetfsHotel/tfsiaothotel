@@ -256,8 +256,7 @@
         $('form#frmAdvanceCancellationReasonSearch .btnAdvanceSearchCancellationReasonOk').click(function (e) {
             var selectedReason = $('input[name=rbCancellationReason]:checked', '#frmAdvanceCancellationReasonSearch');            
             if (!IsNullOrEmpty(selectedReason.val())) {                
-                var reasonId, code, description;
-                debugger;
+                var reasonId, code, description;                
                 reasonId = $(selectedReason).val();
                 code = $(selectedReason).data('code');
                 description =  $("#Description").val();

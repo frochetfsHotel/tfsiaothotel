@@ -337,7 +337,8 @@ namespace SuccessHotelierHub.Utility
 
         public static string GenerateConfirmationNo(Int64 suffix)
         {
-            return (DateTime.Now.ToString("ddMMyyyy") + "" + suffix.ToString("000"));
+            //return (DateTime.Now.ToString("ddMMyyyy") + "" + suffix.ToString("000"));
+            return (suffix.ToString("00000"));
         }
 
         #endregion
@@ -363,6 +364,36 @@ namespace SuccessHotelierHub.Utility
         }
 
         #endregion
+
+        public static string WeekdayName(int dayOfWeek)
+        {
+            string weekDay = string.Empty;
+            switch (dayOfWeek)
+            {
+                case 0:
+                    weekDay = "Sunday";
+                    break;
+                case 1:
+                    weekDay = "Monday";
+                    break;
+                case 2:
+                    weekDay = "Tuesday";
+                    break;
+                case 3:
+                    weekDay = "Wednesday";
+                    break;
+                case 4:
+                    weekDay = "Thursday";
+                    break;
+                case 5:
+                    weekDay = "Friday";
+                    break;
+                case 6:
+                    weekDay = "Saturday";
+                    break;
+            }
+            return weekDay;
+        }
 
         public static Guid LanguageId = Guid.Parse("0490AE29-FC46-42EA-BB8A-9674B4E8CCAE");
     }

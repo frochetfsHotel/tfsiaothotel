@@ -12,6 +12,7 @@
 {
     var firstHeaderRow = string.Empty;
     var secondRow = string.Empty;
+    var thirdRow = string.Empty;
     var nextRowHtml = string.Empty;
 
     firstHeaderRow = "<th colspan='3'>Room Types</th>";
@@ -26,6 +27,12 @@
         secondRow += (string.Format("<td>{0}</td>", roomType.NoOfRooms));
     }
 
+    thirdRow = "<td colspan='3'><b>Types Of Rate</b></td>";
+    foreach (var roomType in roomTypeList)
+    {
+        thirdRow += (string.Format("<td>{0}</td>", ""));
+    }
+
     foreach (var rateType in rateTypeList)
     {
         nextRowHtml += "<tr>";
@@ -38,8 +45,8 @@
             var rateSheetDetail = reservationRepository.GetRateSheetDetail(rateType.Id, roomType.Id).FirstOrDefault();
 
             nextRowHtml += (string.Format("<td class=\"cursor-P text-green\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\">{0}</td>",
-                rateSheetDetail.Amount, rateType.Id, roomType.Id, 
-                rateSheetDetail.Description, 
+                rateSheetDetail.Amount, rateType.Id, roomType.Id,
+                rateSheetDetail.Description,
                 rateSheetDetail.Id,
                 rateSheetDetail.Amount,
                 rateType.RateTypeCode,
@@ -56,11 +63,15 @@
             <tr>
                 @Html.Raw(firstHeaderRow)
             </tr>
+
         </thead>
         <tbody>
             <tr>
                 @Html.Raw(secondRow)
             </tr>  
+            <tr>
+                @Html.Raw(thirdRow)
+            </tr>
 
             @Html.Raw(nextRowHtml)     
 

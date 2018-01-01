@@ -51,9 +51,12 @@
         </ul>*@
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusReservation" data-widget="tree" style="display:none;">            
+            <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-circle-o"></i>New Reservation</a></li>
+            <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-search" aria-hidden="true"></i>Update Reservation</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Groups *</a></li>
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-user"></i> Profile 
+                    <i class="fa fa-user"></i> Profiles 
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
@@ -77,14 +80,19 @@
                     </li>
                     <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-building"></i>Company (Design)</a></li>
                 </ul>
-            </li>
+            </li>                        
+            <li><a href="#"><i class="fa fa-circle-o"></i>Calendar *</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Floor Plan *</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Room Plan *</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Conference Allotments *</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Conference Plan *</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Guest History *</a></li>
             
-            <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-circle-o"></i>Rate Query</a></li>
-            <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-search" aria-hidden="true"></i>Search Reservation</a></li>
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusFrontDesk" data-widget="tree" style="display:none;">
             <li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-check-square-o" aria-hidden="true"></i>Check In (Design)</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>Arrivals *</a></li>
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusMasterScreens" data-widget="tree" style="display:none;">

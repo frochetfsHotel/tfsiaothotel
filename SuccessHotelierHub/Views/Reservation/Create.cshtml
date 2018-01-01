@@ -5,6 +5,19 @@
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 
+    var arrivalDayOfWeek = string.Empty;
+    var departureDayOfWeek = string.Empty;
+
+    if (Model.ArrivalDate != null && Model.ArrivalDate.HasValue)
+    {
+        arrivalDayOfWeek = SuccessHotelierHub.Utility.Utility.WeekdayName((int)Model.ArrivalDate.Value.DayOfWeek);
+    }
+
+    if (Model.DepartureDate != null && Model.DepartureDate.HasValue)
+    {
+        departureDayOfWeek = SuccessHotelierHub.Utility.Utility.WeekdayName((int)Model.DepartureDate.Value.DayOfWeek);
+    }
+
 }
 
 
@@ -23,6 +36,9 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Reservation Details</h3>
+            <div class="pull-right" style="margin-right:450px;">
+                <a href="javascript:void(0);" class="btn btn-warning btn-xs" onclick="GotoProfileEditPage();">Profile</a>
+            </div>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
@@ -46,8 +62,13 @@
                     </div>
                     
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        @Html.LabelFor(m => m.LastName, new { @class = "required-label" })                        
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                            <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
                         @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
                     </div>
                   
@@ -162,11 +183,12 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                         <div class="input-group date">
-                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol mydatepicker", placeholder = "dd/MM/yyyy" })
+                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", placeholder = "dd/MM/yyyy" })
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
+                        <span class="text-danger m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -176,11 +198,12 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" }) 
                         <div class="input-group date">
-                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol mydatepicker", @placeholder = "dd/MM/yyyy" })
+                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
+                        <span class="text-danger m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -193,12 +216,22 @@
                     </div>
 
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
+                        @Html.LabelFor(m => m.RoomTypeCode, new { @class = "required-label" })
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                            <div class="input-group-addon cursor-P" onclick="openRoomTypeSearchModal();">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>                                                
+                        @Html.ValidationMessageFor(m => m.RoomTypeCode, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.RoomTypeId)
+
+                        @*@Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RoomTypeId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
                                 "Select Room Type",
                                 new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })*@
                     </div>
                 </div>
 
@@ -500,6 +533,7 @@
 </section>
 
 <!-- This is the add reservation form-->
+
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -522,12 +556,72 @@
 </div>
 <!-- Preference Modal Popup END -->
 
+<!-- Advance Profile Search Modal START -->
+<div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Profile Search</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("~/Views/Profile/_ProfileSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateReservation" }
+                                })
+            </div>
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+</div>
+<!-- Advance Profile Search Modal END -->
+
+<!-- RoomType Modal Popup START -->
+<div class="modal fade" id="roomTypeModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Types</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("~/Views/RoomType/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateReservation" },
+                                    { "RateType", ViewBag.RateTypeList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- RoomType Modal Popup END -->
+
 <script type="text/javascript">
     $(document).ready(function () {
 
         //CardExpiryDate mm/yyyy
         $('#CardExpiryDate').inputmask('mm/yyyy', { 'placeholder': 'mm/yyyy' });
 
+
+        //Date picker
+        $('#ArrivalDate').datepicker({            
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(arrivalDateChanged)
+        .on('changeDate', arrivalDateChanged);
+
+        $('#DepartureDate').datepicker({            
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(departureDateChanged)
+        .on('changeDate', departureDateChanged);
 
         //Timepicker
         $('#ETAText').timepicker({
@@ -547,8 +641,8 @@
             }
         });
 
-        $('.btnAdvanceSearchPreferenceOk').click(function (e) {
-            debugger;
+        //Preference
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {            
             var preferenceIds = "";
             var html = "";
 
@@ -584,6 +678,49 @@
             }
         });
 
+        //Profile        
+        $('.btnAdvanceSearchProfileOk').click(function (e) {
+            var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');
+            if (!IsNullOrEmpty(selectedProfile.val())) {
+                var profileId, firstName, lastName, titleId, title;
+                profileId = $(selectedProfile).val();
+                firstName = $(selectedProfile).data('firstname');
+                lastName = $(selectedProfile).data('lastname');
+                titleId = $(selectedProfile).data('titleid');
+                title = $(selectedProfile).data('title');
+
+                $('#ProfileId').val(profileId);
+
+                $('#FirstName').val(firstName);
+                $('#LastName').val(lastName);
+                $('#TitleId').val(titleId);
+
+                //Close Profile Search Modal.
+                $('#profileSearchModal').modal('toggle');
+            } else {
+                showToaster("Please select any one profile.", ToasterType.ERROR);
+            }
+        });
+
+        //Room Type
+        $('.btnAdvanceSearchRoomTypeOk').click(function (e) {
+            var selectedRoomType = $('input[name=rbRoomType]:checked', '#frmAdvanceRoomTypeSearch');
+            if (!IsNullOrEmpty(selectedRoomType.val())) {
+                var roomTypeId, roomTypeCode
+                roomTypeCode = $(selectedRoomType).data('roomtype');
+                roomTypeId = $(selectedRoomType).data('roomtypeid');
+
+                $('#RoomTypeId').val(roomTypeId);
+                $('#RoomTypeCode').val(roomTypeCode);
+
+                //Close Room Type Search Modal.
+                $('#roomTypeModal').modal('toggle');
+
+            } else {
+                showToaster("Please select any room type.", ToasterType.ERROR);
+            }
+        });
+
         calculateTotalPrice();
 
         //Change border color to green which has prefilled auto complete.
@@ -591,8 +728,41 @@
             $('#LastName').parent("form-group").addClass("has-success");
         }*@
 
-
     });
+
+    function arrivalDateChanged(e) {
+        var selectedDate = $(this).val();
+        console.log("arrivalDateChanged : " + selectedDate);
+
+        var dayOfWeek = "";
+        if (!IsNullOrEmpty(selectedDate)) {
+            var objSelectedArrivalDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            if (!IsNullOrEmpty(objSelectedArrivalDate)) {
+                var weekDay = objSelectedArrivalDate.getDay();
+                dayOfWeek = GetDayOfWeek(weekDay);
+            }
+        }
+        console.log("dayOfWeek : " + dayOfWeek);
+        $('#ArrivalDayOfWeek').html(dayOfWeek);
+    }
+
+    function departureDateChanged(e) {
+        var selectedDate = $(this).val();
+        console.log("departureDateChanged : " + selectedDate);
+
+        var dayOfWeek = "";
+        if (!IsNullOrEmpty(selectedDate)) {
+            var objSelectedDepartureDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            if (!IsNullOrEmpty(objSelectedDepartureDate)) {
+                var weekDay = objSelectedDepartureDate.getDay();
+                dayOfWeek = GetDayOfWeek(weekDay);
+            }
+        }
+        console.log("dayOfWeek : " + dayOfWeek);
+        $('#DepartureDayOfWeek').html(dayOfWeek);
+    }
 
     function openPreferenceModal() {
         $('#preferenceModal').modal('toggle');
@@ -701,6 +871,39 @@
         totalPrice = parseInt(noOfNights) * parseFloat(rate);
 
         $('#totalPrice').html("&euro; " + totalPrice);
+    }
+
+    function openRoomTypeSearchModal() {
+        clearRoomTypeSearch();
+
+        $("form#frmAdvanceRoomTypeSearch #RoomTypeCode").val($('#RoomTypeCode').val());
+
+        $("form#frmAdvanceRoomTypeSearch #btnSearch").click();
+
+        $('#roomTypeModal').modal('toggle');
+    }
+
+    function GotoProfileEditPage() {        
+        var profileId = $('#ProfileId').val();        
+        if (!IsNullOrEmpty(profileId)) {
+            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=CreateReservation";
+            redirectTo(url);
+        } else {
+            showToaster("Selected profile may be invalid or not exist.", ToasterType.ERROR);
+            return false;
+        }
+    }
+
+    //Advance Profile Search
+    function openProfileSearchModal() {
+        var lastName = $("#LastName").val();
+
+        if (!IsNullOrEmpty(lastName)) {
+            //Show search results based on entered last name.
+            $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));            
+            $("form#frmAdvanceProfileSearch #btnSearch").click();
+        }
+        $('#profileSearchModal').modal('toggle');     
     }
 
 </script>
