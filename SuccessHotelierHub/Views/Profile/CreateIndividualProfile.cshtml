@@ -197,8 +197,7 @@
                 <div class="row" style="display:none;" id="divSelectedPreference">
                     <div class="col-md-12 form-group">
                         <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
-                        <div class="col-sm-10">
-                            <p id="ListOfSelectedPreferences"></p>
+                        <div class="col-sm-10" id="ListOfSelectedPreferences">                            
                         </div>
                     </div>
                 </div>
@@ -271,7 +270,6 @@
                 $('#preferenceModal').modal('toggle');
 
             } else {
-
                 showToaster("Please select preference.", ToasterType.ERROR);
             }
         });
@@ -279,7 +277,18 @@
 
     function openPreferenceModal() {
         clearPreferenceSearch();
+
+        //var selectedPreferenceCount = 0;
+        //selectedPreferenceCount = $('#ListOfSelectedPreferences span').length
+
+        //if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+        //    var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
+        //    $("form#frmAdvancePreferenceSearch #selectedPreferences").html(selectedPreferenceElement)
+        //    $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        //}
+
         $("form#frmAdvancePreferenceSearch #btnSearch").click();
+
         $('#preferenceModal').modal('toggle');
     }
 

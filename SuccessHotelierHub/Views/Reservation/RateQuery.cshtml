@@ -89,7 +89,7 @@
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfNight)
-                                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", value = "" })
+                                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", value = "" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.DepartureDate)
@@ -103,15 +103,15 @@
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfAdult)
-                                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfChildren)
-                                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control",  onkeydown = "onlyDigits(event)" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfRoom)
-                                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                                     </div>
                                 </div>
                                 <div class="row">
@@ -619,6 +619,7 @@
                         $('#divRateSheet').html(response);
 
                         showTab('tab_2');
+                        $("html, body").animate({ scrollTop: 30 }, 500);
                     }
                 }
             });

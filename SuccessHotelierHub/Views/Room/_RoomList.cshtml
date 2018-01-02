@@ -1,16 +1,118 @@
 ﻿@using SuccessHotelierHub.Models
-@{ 
+@{
     var roomList = (List<RoomVM>)ViewBag.RoomList;
+    var roomStatusList = (List<RoomStatusVM>)ViewBag.RoomStatusList;
     var noOfRooms = (int)ViewBag.NoOfRooms;
-
+    var index = 0;
 }
 
-<table class="table table-bordered table-hover table-striped" id="tblRoom">
-    <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-</table>
+@if (noOfRooms > 0)
+{
+    <input type="hidden" id="hdnTotalRooms" name="hdnTotalRooms" value="@roomList.Count" />
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped" id="tblRoom">
+            <thead>
+                <tr>
+                    <th width="10%">Room#</th>
+                    <th width="10%">Type</th>
+                    <th width="15%">Status</th>
+                    <th width="25%">Description</th>
+                    <th width="10%">Is Occupied</th>
+                    <th width="10%">Is Active</th>
+                    <th width="10%">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var room in roomList)
+                {
+                    <tr>
+                        <td>
+                            <input type="text" id="@("txtRoomNo_" + index)" name="@("txtRoomNo_" + index)" class="form-control" value="@room.RoomNo" />
+                        </td>
+                        <td>
+                            <input type="text" id="@("txtRoomType_" + index)" name="@("txtRoomType_" + index)" class="form-control" value="@room.Type" />
+                        </td>
+                        <td>
+                            <select id="@("ddlStatus_" + index)" name="@("ddlStatus_" + index) " class='form-control'>
+                                <option value="">--Select Status--</option>
+                                @foreach (var roomStatus in roomStatusList)
+                                {
+                                    if (room.StatusId == roomStatus.Id)
+                                    {
+                                        <option value="@roomStatus.Id" selected>@roomStatus.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@roomStatus.Id">@roomStatus.Name</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <textarea id="@("txtDescription_" + index)" name="@("txtDescription_" + index)" class="form-control" rows="1">@room.Description</textarea>
+                        </td>
+                        <td>
+                            <label class="container1" for="@("chkIsOccupied_" + index)">
+                                <input type="checkbox" id="@("chkIsOccupied_" + index)" name="@("chkIsOccupied_" + index)"
+                                       @(room.IsOccupied ? "checked" : "") />
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <label class="container1" for="@("chkIsActive_" + index)">
+                                <input type="checkbox" id="@("chkIsActive_" + index)" name="@("chkIsActive_" + index)"
+                                       @(room.IsActive ? "checked" : "") />
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="hidden" id="@("hdnRoomId_" + index)" name="@("hdnRoomId_" + index)" value="@room.Id" />
+                            <button type="button" class="btn btn-danger btn-xs" onclick="DeleteRoom(this,'@room.Id')">Delete</button>
+                        </td>
+                    </tr>
+
+                    index++;
+                }
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+    </div>
+
+}
+else
+{
+    <h2>No rooms available.</h2>
+}
+
+<script type="text/javascript">
+    function DeleteRoom(element, id) {
+        if (confirm("Are you sure do you want to delete ?")) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Room/Delete")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.IsSuccess == true) {
+                        debugger;
+                        $(element).closest("tr").remove();
+                        showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            });
+        }
+    }
+
+</script>

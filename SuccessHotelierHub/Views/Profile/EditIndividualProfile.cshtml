@@ -299,6 +299,15 @@
 
     function openPreferenceModal() {
         clearPreferenceSearch();
+        //var selectedPreferenceCount = 0;
+        //selectedPreferenceCount = $('#ListOfSelectedPreferences span').length
+
+        //if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+        //    var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
+        //    $("form#frmAdvancePreferenceSearch #selectedPreferences").append(selectedPreferenceElement)
+        //    $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        //}
+
         $("form#frmAdvancePreferenceSearch #btnSearch").click();
         $('#preferenceModal').modal('toggle');
     }

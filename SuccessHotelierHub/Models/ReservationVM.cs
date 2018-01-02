@@ -15,7 +15,7 @@ namespace SuccessHotelierHub.Models
         public Guid? TitleId { get; set; }
 
         [DisplayName("Last Name")]
-        [Required(ErrorMessage = "Please search and select last name.")]
+        [Required(ErrorMessage = "Please search and select profile.")]
         public string LastName { get; set; }
 
         [DisplayName("First Name")]        
@@ -151,7 +151,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Credit Card #")]
         public string CreditCardNo { get; set; }
 
-        [DisplayName("Exp. Date")]
+        [DisplayName("Exp. Date (MM/YY)")]
         public string CardExpiryDate { get; set; }
 
         [DisplayName("CVV #")]

@@ -14,7 +14,7 @@
         <li class="active">Create</li>
     </ol>
 </section>
-<section class="content">    
+<section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Rate Details</h3>
@@ -24,59 +24,48 @@
             @Html.AntiForgeryToken()
 
             <div class="box-body">
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="RoomTypeId" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Room Type *</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">                        
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RoomTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
                                             "Select Room Type",
                                             new { @class = "form-control form-group" })
-
+                        @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
-                </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="RateTypeId" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Rate Type *</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.RateTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RateTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
                                             "Select Rate Type",
                                             new { @class = "form-control form-group" })
-
+                        @Html.ValidationMessageFor(m => m.RateTypeId, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="Amount" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Amount *</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
-                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-group form-control", placeholder = "Amount" })
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-group form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
+                        @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
                     </div>
-                </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero">
-                    <label for="Description" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Description</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.Description)
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-group form-control", placeholder = "Description", rows = "3" })
                     </div>
                 </div>
-                <div class="clearfix"></div>
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero ">
-                    <label for="IsActive" class="col-lg-3 col-md-4 col-sm-3 col-xs-12 text-right text-left-media-lbl padding_left">Is Active</label>
-                    <div class="col-md-6 col-sm-4 col-xs-12 padding-zero">
-                        <label class="col-md-4 col-sm-4 col-xs-6 container1">
-                            @Html.CheckBoxFor(m => m.IsActive)
+                <div class="row">
+                    <div class="col-md-6 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
                             <span class="checkmark"></span>
                         </label>
                     </div>
                 </div>
-                <div class="clearfix"></div>
-                <hr class="hr_margin" />
-                <div class="col-md-6 col-sm-12 col-xs-12 padding-zero m-b-sm">
-                    <div class="col-lg-offset-3 col-lg-9 col-md-offset-4 col-md-8 col-sm-offset-3 col-sm-9 col-xs-12 padding-zero">
-                        <button type="button" class="btn btn-success m-r-xs" onclick="return saveRate();">Save</button>
-                        <a href="@Url.Action("List", "Rate")" c class="btn btn-danger">Cancel</a>
-                    </div>
-                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveRate();">Save</button>
+                <a href="@Url.Action("List", "Rate")" c class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
@@ -87,31 +76,14 @@
 
 <script type="text/javascript">
     function validateRate() {
-        var roomTypeId = $("#RoomTypeId").val();
-        var rateTypeId = $("#RateTypeId").val();
-        var amount = $("#Amount").val();
-
         var errorMessage = "";
         var blnValid = true;
 
-        if (IsNullOrEmpty(roomTypeId)) {
-            errorMessage += "Please select room type." + Delimeter.BREAKLINE + "";
-            blnValid = false;
-        }
-        if (IsNullOrEmpty(rateTypeId)) {
-            errorMessage += "Please select rate type." + Delimeter.BREAKLINE + "";
+        if ($("#frmRate").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
 
-        if (IsNullOrEmpty(amount)) {
-            errorMessage += "Please enter amount." + Delimeter.BREAKLINE + "";
-            blnValid = false;
-        }
-
-        if (!blnValid) {
-            showToaster(errorMessage, ToasterType.ERROR);
-            return false;
-        }
         return blnValid;
     }
 
@@ -140,7 +112,8 @@
                         showToaster("Rate details saved successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('/Rate/List');
+                            //redirectTo('/Rate/List');
+                            redirectTo('@Url.Content("~/Rate/List")');
                         }, 1000);
                     }
                 }

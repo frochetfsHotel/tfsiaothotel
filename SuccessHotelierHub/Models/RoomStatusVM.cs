@@ -5,16 +5,13 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class RoomVM
+    public class RoomStatusVM
     {
-        public Guid Id { get; set; }
-        public Guid RoomTypeId { get; set; }
-        public string RoomNo { get; set; }
-        public string Type { get; set; }
-        public string Description { get; set; }
-        public Guid? StatusId { get; set; }
-        public bool IsOccupied { get; set; }
-
+        public Guid Id { get; set; }        
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string ColorCode { get; set; }
+        
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }
@@ -22,5 +19,4 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
     }
-
 }

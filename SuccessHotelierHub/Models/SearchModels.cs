@@ -118,7 +118,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Last Name")]
         public string LastName { get; set; }
 
-        [DisplayName("Fist Name")]
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
 
         [DisplayName("View By")]
@@ -187,7 +187,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Last Name")]
         public string LastName { get; set; }
 
-        [DisplayName("Fist Name")]
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
 
         [DisplayName("CVV #")]

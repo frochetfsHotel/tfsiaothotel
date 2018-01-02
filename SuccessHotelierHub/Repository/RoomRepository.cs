@@ -49,8 +49,11 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@RoomTypeId", Value = room.RoomTypeId },                    
-                    new SqlParameter { ParameterName = "@Code", Value = room.Code },
-                    new SqlParameter { ParameterName = "@Name", Value = room.Name },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = room.RoomNo },
+                    new SqlParameter { ParameterName = "@Type", Value = room.Type },
+                    new SqlParameter { ParameterName = "@Description", Value = room.Description },
+                    new SqlParameter { ParameterName = "@StatusId", Value = room.StatusId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = room.IsOccupied },
                     new SqlParameter { ParameterName = "@IsActive", Value = room.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = room.CreatedBy }
                 };
@@ -68,8 +71,11 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Id", Value = room.Id },
                     new SqlParameter { ParameterName = "@RoomTypeId", Value = room.RoomTypeId },
-                    new SqlParameter { ParameterName = "@Code", Value = room.Code },
-                    new SqlParameter { ParameterName = "@Name", Value = room.Name },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = room.RoomNo },
+                    new SqlParameter { ParameterName = "@Type", Value = room.Type },
+                    new SqlParameter { ParameterName = "@Description", Value = room.Description },
+                    new SqlParameter { ParameterName = "@StatusId", Value = room.StatusId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = room.IsOccupied },
                     new SqlParameter { ParameterName = "@IsActive", Value = room.IsActive },                    
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = room.UpdatedBy }
                 };
@@ -94,39 +100,23 @@ namespace SuccessHotelierHub.Repository
             return roomId;
         }
         
-        public List<RoomVM> CheckRoomCodeAvailable(Guid roomTypeId, Guid? roomId, string code)
+        public List<RoomVM> CheckRoomNoAvailable(Guid roomTypeId, Guid? roomId, string roomNo)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
                     new SqlParameter { ParameterName = "@Id", Value = roomId },
-                    new SqlParameter { ParameterName = "@Code", Value = code }
+                    new SqlParameter { ParameterName = "@RoomNo", Value = roomNo }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomCodeAvailable", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomNoAvailable", parameters);
 
             var room = new List<RoomVM>();
             room = DALHelper.CreateListFromTable<RoomVM>(dt);
 
             return room;
         }
-
-        public List<RoomVM> CheckRoomNameAvailable(Guid roomTypeId, Guid? roomId, string name)
-        {
-            SqlParameter[] parameters =
-               {
-                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
-                    new SqlParameter { ParameterName = "@Id", Value = roomId },
-                    new SqlParameter { ParameterName = "@Name", Value = name }
-                };
-
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomNameAvailable", parameters);
-
-            var room = new List<RoomVM>();
-            room = DALHelper.CreateListFromTable<RoomVM>(dt);
-
-            return room;
-        }
+        
 
         #endregion
     }

@@ -13,6 +13,8 @@ namespace SuccessHotelierHub.Controllers
     {
         #region Declaration
 
+        private const Int64 DefaultConfirmationNo = 100001;
+
         private ProfileRepository profileRepository = new ProfileRepository();
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
@@ -145,22 +147,21 @@ namespace SuccessHotelierHub.Controllers
                 if (lastReservation != null)
                 {
                     string lastConfirmationNo = lastReservation.ConfirmationNumber;
-                    
-
                     if (!string.IsNullOrWhiteSpace(lastConfirmationNo))
                     {
-                        confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : 1;
+                        confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : DefaultConfirmationNo;
 
-                        confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
+                        confirmationNo = confirmationSuffix.ToString();
                     }
                     else
                     {
-                        confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
+                        confirmationNo = DefaultConfirmationNo.ToString();
                     }
                 }
                 else
                 {
-                    confirmationNo = Utility.Utility.GenerateConfirmationNo(confirmationSuffix);
+                    //Default confirmation no.
+                    confirmationNo = DefaultConfirmationNo.ToString();
                 }
 
                 model.ConfirmationNumber = confirmationNo;
@@ -539,7 +540,12 @@ namespace SuccessHotelierHub.Controllers
             {
                 model.Name = (lastName + " " + firstName);
             }
-            
+
+            //Default Values.
+            model.NoOfAdult = 1;
+            model.NoOfNight = 1;
+            model.NoOfRoom = 1;
+
 
             return View(model);
         }

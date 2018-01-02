@@ -467,9 +467,12 @@ label{
     font-weight: bold !important;
 }
 
+.text-danger {
+    color: #FF0000 !important;
+}
 
 .searchBox_Border{
-    border:1px solid #cec410 !important;
+    border:1px solid #3C8DBC !important;
 }
 
 /** Custom Margin **/

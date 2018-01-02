@@ -12,6 +12,11 @@
 
 
 <form id="frmAdvanceCancellationReasonSearch" name="frmAdvanceCancellationReasonSearch" enctype="multipart/form-data" method="post">
+    <div class="col-xs-12 text-right m-b-md padding-zero">        
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchCancellationReasonOk">OK</button>
+        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
+    </div>
+
     <div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">
         <div class="row">
             <div class="col-md-8 col-sm-3 col-xs-12 form-group">
@@ -34,7 +39,7 @@
 
 
     <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
-        <table class="table table-bordered table-hover table-striped" id="tblReason">
+        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReason">
             <thead>
                 <tr>
                     <th></th>
@@ -47,9 +52,9 @@
                 {
                     foreach (var reason in reservationCancellationReasonList)
                     {
-                        <tr>
+                        <tr onclick="onSelectReason('@("rbCancellationReason_" + reason.Id)');">
                             <td>
-                                <input type="radio" class="rbCancellationReason cursor-P" id="@("rbCancellationReason" + reason.Id)"
+                                <input type="radio" class="rbCancellationReason cursor-P" id="@("rbCancellationReason_" + reason.Id)"
                                        name="rbCancellationReason" value="@reason.Id"
                                        data-code="@reason.Code"
                                        data-description="@reason.Description" onchange="showReason(this);" />
@@ -75,8 +80,6 @@
 
     <div class="col-xs-12 text-right m-b-md padding-zero">
         <hr class="hr_margin" />
-        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchCancellationReasonOk">Ok</button>
-        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
     </div>
 </form>
 
@@ -84,6 +87,16 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript">
+
+    $(document).ready(function () {
+        $("form#frmAdvanceCancellationReasonSearch select").change(function () {
+            searchReason();
+        });
+
+        $("form#frmAdvanceCancellationReasonSearch input").blur(function () {
+            searchReason();
+        });
+    });
 
     function showReason(element) {
 
@@ -110,6 +123,10 @@
             //    $('#divDescription').hide();
             //}
         }
+    }
+
+    function onSelectReason(element) {
+        $('#' + element).prop("checked", true);
     }
 
     function searchReason() {
@@ -148,8 +165,8 @@
                             markup += "<tr>";
 
                             markup += "<td><input type=\'radio\' class=\'rbCancellationReason cursor-P\' id=\'rbCancellationReason_" + result[i].Id + "\' name=\'rbCancellationReason\' value=\'" + result[i].Id + "\'  data-code=\'" + result[i].Code + "\'  data-description=\'" + result[i].Description + "\' onchange=\'showReason(this);\'/></td>";
-                            markup += "<td>" + result[i].Code + "</td>";
-                            markup += "<td>" + result[i].Description + "</td>";
+                            markup += "<td onclick=\"onSelectReason('rbCancellationReason_" + result[i].Id + "');\">" + result[i].Code + "</td>";
+                            markup += "<td onclick=\"onSelectReason('rbCancellationReason_" + result[i].Id + "');\">" + result[i].Description + "</td>";
 
                             markup += "</tr>";
                         }

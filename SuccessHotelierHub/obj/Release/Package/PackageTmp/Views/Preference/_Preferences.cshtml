@@ -61,6 +61,20 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("form#frmAdvancePreferenceSearch select").change(function () {
+            //console.log("Change event called for select element.")
+            searchPreference();
+        });
+
+        $("form#frmAdvancePreferenceSearch input").blur(function () {
+            //console.log("Blur event called for input element.")
+            searchPreference();
+        });
+    });
+
     function searchPreference() {
         $.ajax({
             beforeSend: function (xhr) {

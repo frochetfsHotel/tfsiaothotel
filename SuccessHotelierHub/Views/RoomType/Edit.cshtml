@@ -37,7 +37,7 @@
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.NoOfRooms, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms", onkeydown = "onlyDigits(event)", @readonly = "readonly" })
                         @Html.ValidationMessageFor(m => m.NoOfRooms, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">

@@ -20,6 +20,10 @@
 
 }
 
+@section styles{    
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
+}
+
 
 <section class="content-header">
     <h1>
@@ -36,7 +40,7 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Reservation Details</h3>
-            <div class="pull-right" style="margin-right:450px;">
+            <div class="pull-right">
                 <a href="javascript:void(0);" class="btn btn-warning btn-xs" onclick="GotoProfileEditPage();">Profile</a>
             </div>
         </div>
@@ -54,14 +58,6 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.TitleId)
-                        @Html.DropDownListFor(m => m.TitleId,
-                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
-                                                "Select Title",
-                                                new { @class = "form-control" })
-                    </div>
-                    
-                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.LastName, new { @class = "required-label" })                        
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
@@ -75,6 +71,13 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.FirstName)
                         @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.TitleId)
+                        @Html.DropDownListFor(m => m.TitleId,
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
+                                                "Select Title",
+                                                new { @class = "form-control" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.MemberTypeId)
@@ -193,7 +196,7 @@
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfNight)
-                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "calculateTotalPrice();" })
+                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control",  onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "calculateTotalPrice();" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" }) 
@@ -208,11 +211,11 @@
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfAdult)
-                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control",  onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfChildren)
-                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                     </div>
 
                     <div class="col-md-3 form-group">
@@ -231,7 +234,7 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.NoOfRoom)
-                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.RtcId)
@@ -272,9 +275,8 @@
                         @Html.LabelFor(m => m.Rate)
                         @Html.TextBoxFor(m => m.Rate, new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "calculateTotalPrice();" })
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">
-                        <label>Total Price : <span id="totalPrice">&euro; 0.00</span></label>                        
-                        <label class="container1 pull-right" for="IsFixedRate">
+                    <div class="col-md-3 form-group m-t-lg">                                             
+                        <label class="container1" for="IsFixedRate">
                             Fixed Rate
                             @Html.CheckBoxFor(m => m.IsFixedRate)
                             <span class="checkmark"></span>
@@ -391,9 +393,10 @@
                         @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
-                        @Html.LabelFor(m => m.CardExpiryDate)                        
-                        <input type="text" id="CardExpiryDate" name="CardExpiryDate"
-                                class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">                        
+                        @Html.LabelFor(m => m.CardExpiryDate)                  
+                        @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
+                                class="form-control" data-inputmask="'alias': 'mm/yy'" data-mask placeholder="mm/yy">*@                        
+                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" data-valid-example="12/21" />
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
@@ -449,6 +452,12 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Reason 2</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Reason 3</option>
                         </select>
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label>
+                            Total Price : <span id="totalPrice">&euro; 0.00</span>
+                            <small class="m-l-sm">(Per Night)</small>
+                        </label>
                     </div>
                 </div>
 
@@ -598,7 +607,7 @@
     $(document).ready(function () {
 
         //CardExpiryDate mm/yyyy
-        $('#CardExpiryDate').inputmask('mm/yyyy', { 'placeholder': 'mm/yyyy' });
+        //$('#CardExpiryDate').inputmask('mm/yy', { 'placeholder': 'mm/yy' });
 
 
         //Date picker
@@ -770,6 +779,13 @@
         var errorMessage = "";
         var blnValid = true;
         
+        var profileId = $('#ProfileId').val();
+
+        if (IsNullOrEmpty(profileId)) {
+            showToaster("Please search and select profile again.", ToasterType.ERROR);
+            blnValid = false;
+        }
+
         if ($("#frmReservation").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
@@ -886,7 +902,7 @@
     }
 
     function GotoProfileEditPage() {        
-        var profileId = $('#ProfileId').val();        
+        var profileId = $('#ProfileId').val();
         if (!IsNullOrEmpty(profileId)) {
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=CreateReservation";
             redirectTo(url);
@@ -899,10 +915,12 @@
     //Advance Profile Search
     function openProfileSearchModal() {
         var lastName = $("#LastName").val();
+        var firstName = $("#FirstName").val();
 
         if (!IsNullOrEmpty(lastName)) {
-            //Show search results based on entered last name.
-            $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));            
+            //Show search results based on entered name.
+            $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));
+            $("form#frmAdvanceProfileSearch #FirstName").val(trim(firstName));
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
         $('#profileSearchModal').modal('toggle');     
@@ -911,7 +929,8 @@
 </script>
 
 @section scripts {
-    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
-    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
-    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
+    <script type="text/javascript"  src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
+    <script type="text/javascript"  src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
+    <script type="text/javascript"  src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
+    <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
 }

@@ -551,6 +551,12 @@ namespace SuccessHotelierHub.Utility
         public const string GROUP = "Group";  
     }
 
+    public static class RoomStatusType
+    {
+        public const string CLEAN = "B7063C63-EB3F-47AB-8383-BBAE17A8F407";
+        public const string DIRTY = "28B74F64-569D-4EB8-A044-74BE6DC131AD";
+    }
+
     public static class Constants
     {
         public const int PAGESIZE = 10;

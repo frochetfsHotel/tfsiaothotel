@@ -42,13 +42,13 @@
                 </div>
                 <div class="clearfix"></div>
                 <div class="clearfix"></div>
-                
-                <div class="col-xs-12 padding-zero m-t-lg">
-                    <div class="table-responsive" id="divRoomList">
 
-                    </div>
-                    <div class="clearfix"></div>
+                <div class="col-xs-12 padding-zero m-t-lg" id="divRoomList">
                 </div>
+                <div class="col-xs12 text-right m-t-lg" style="display:none;" id="divButtons">
+                    <button type="button" class="btn btn-success" id="btnSave" onclick="updateRooms();">Save</button>
+                </div>
+
             </div>
         </form>
     </div>
@@ -60,7 +60,93 @@
 
         if (!IsNullOrEmpty(roomType)) {
             //Ajax request to get room details.
-        }
 
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Room/ShowRoomList")',
+                type: 'GET',
+                data: { roomTypeId: roomType },
+                success: function (response) {                    
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        $('#divRoomList').html();
+                        $('#divRoomList').html(response);
+                        $('#divButtons').show();
+                    }
+                }
+            });
+        }
     }
-</script>
+
+    function updateRooms() {
+        var models = [];
+
+        var totalRooms = 0;
+        totalRooms = $('#hdnTotalRooms').val();
+        totalRooms = parseInt(totalRooms);
+
+        var roomTypeId = $('#ddlRoomType').val();
+
+        if (!IsNullOrEmpty(totalRooms) && totalRooms > 0) {
+            debugger;
+            for (i = 0; i < totalRooms; i++)
+            {
+                var roomObj = {};
+                roomObj.RoomTypeId = roomTypeId;
+                roomObj.Id = $('#hdnRoomId_' + i).val();
+                roomObj.RoomNo = $('#txtRoomNo_' + i).val();
+                roomObj.Type = $('#txtRoomType_' + i).val();
+                roomObj.Description = $('#txtDescription_' + i).val();
+                roomObj.StatusId = $('#ddlStatus_' + i).val();
+                roomObj.IsOccupied = $('#chkIsOccupied_' + i).prop("checked");
+                roomObj.IsActive = $('#chkIsActive_' + i).prop("checked");
+
+                models.push(roomObj);
+            }
+
+            debugger;
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: '@Url.Content("~/Room/UpdateRooms")',
+                type: 'POST',
+                data: JSON.stringify({ 'models': models }),
+                success: function (response) {
+                    debugger;
+                    if (response.IsSuccess == false)
+                    {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else
+                    {
+                        showToaster("Room details updated successfully", ToasterType.SUCCESS);
+                    }
+                }
+            });
+        }
+        else
+        {
+            showToaster("Room details not found.", ToasterType.ERROR);
+        }
+    }
+
+</script>;
