@@ -135,9 +135,7 @@ namespace SuccessHotelierHub.Controllers
 
                     model.ETA = time.TimeOfDay;
                 }
-
-
-
+                
                 #region Generate Confirmation No
                 string confirmationNo = string.Empty;
                 Int64 confirmationSuffix = 1;
@@ -182,6 +180,9 @@ namespace SuccessHotelierHub.Controllers
 
                         if (preferenceItemsArr != null)
                         {
+                            //Remove Duplication.
+                            preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+
                             foreach (var item in preferenceItemsArr)
                             {
                                 //Save Reservation Preference Mapping.
@@ -249,27 +250,9 @@ namespace SuccessHotelierHub.Controllers
                 #region Preference Mapping
 
                 //Get Preference Mapping
-                var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);
-                string preferenceItems = string.Empty;
-                string preferenceDescription = string.Empty;
+                var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);                
 
-                if (selectedPreferences != null && selectedPreferences.Count > 0)
-                {
-                    preferenceItems += string.Join(",", selectedPreferences.Select(i => i.PreferenceId));
-
-                    //Remove last comma.
-                    if (!string.IsNullOrWhiteSpace(preferenceItems))
-                        preferenceItems = Utility.Utility.RemoveLastCharcter(preferenceItems, ',');
-
-                    preferenceDescription += string.Join(", ", selectedPreferences.Select(i => i.PreferenceDescription));
-
-                    //Remove last comma.
-                    if (!string.IsNullOrWhiteSpace(preferenceDescription))
-                        preferenceDescription = Utility.Utility.RemoveLastCharcter(preferenceDescription, ',');
-                }
-
-                model.PreferenceItems = preferenceItems;
-                ViewBag.SelectedPreferenceDescription = preferenceDescription;
+                ViewBag.SelectedPreferences = selectedPreferences;
                 #endregion
 
                 #region Profile Info From Edit Profile Page
@@ -359,6 +342,9 @@ namespace SuccessHotelierHub.Controllers
 
                         if (preferenceItemsArr != null)
                         {
+                            //Remove Duplication.
+                            preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+
                             foreach (var item in preferenceItemsArr)
                             {
                                 //Save Reservation Preference Mapping.

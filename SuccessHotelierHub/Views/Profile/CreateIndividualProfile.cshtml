@@ -253,77 +253,52 @@
 <!-- Preference Modal Popup END -->
 
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
+
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {            
-            var preferenceIds = "";
             var html = "";
 
             $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                preferenceIds += $(this).val() + ",";
-
-                html += $(this).attr("data-preference") + ", ";
+                html += "<span class='btn btn-xs bg-maroon m-r-xs'>" + $(this).attr("data-preference") + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='" + $(this).val() + "'></i></span>";
             });
 
-            console.log(preferenceIds);
-
             //Remove last comma.
-            if (!IsNullOrEmpty(preferenceIds)) {
-                var lastChar = preferenceIds.slice(-1);
-                if (lastChar == ',') {
-                    preferenceIds = preferenceIds.slice(0, -1);
-                    html = $.trim(html).slice(0, -1);
-                }
-
+            if (!IsNullOrEmpty(html)) {
                 $('#divSelectedPreference').show();
-                $('#PreferenceItems').val(preferenceIds);
-                $('#ListOfSelectedPreferences').html(html);
+                $('#ListOfSelectedPreferences').append(html);
 
                 //Close Preference Search Modal.
                 $('#preferenceModal').modal('toggle');
 
             } else {
-                $('#PreferenceItems').val('');
-                $('#ListOfSelectedPreferences').html('');
-                $('#divSelectedPreference').hide();
 
-                showToaster("Please select at least one preference.", ToasterType.ERROR);
+                showToaster("Please select preference.", ToasterType.ERROR);
             }
         });
     });
 
     function openPreferenceModal() {
+        clearPreferenceSearch();
+        $("form#frmAdvancePreferenceSearch #btnSearch").click();
         $('#preferenceModal').modal('toggle');
     }
-    function selectPreferences() {
+
+    function removePreferenceItem(element) {
+        if (element) {
+            var preferenceId = $(element).data("preferenceid");
+            $(element).parent("span").remove();
+        }
+    }
+
+    function getSelectedPreferenceItemIds() {
         var preferenceIds = "";
-        var html = "";
+        $("#ListOfSelectedPreferences span i").each(function () {
+            console.log($(this).data("preferenceid"));
+            preferenceIds += $(this).data("preferenceid") + ",";
+        });
 
-         $("input:checkbox[class=chkPreference]:checked").each(function () {
-             preferenceIds += $(this).val() + ",";
-
-             html += $(this).attr("data-preference") + ", ";
-         });
-
-        //Remove last comma.
-         if (!IsNullOrEmpty(preferenceIds)) {
-             var lastChar = preferenceIds.slice(-1);
-             if (lastChar == ',') {
-                 preferenceIds = preferenceIds.slice(0, -1);
-                 html = $.trim(html).slice(0, -1);
-             }
-
-             $('#divSelectedPreference').show();
-             $('#PreferenceItems').val(preferenceIds);
-             $('#ListOfSelectedPreferences').html(html);
-         } else {
-             $('#PreferenceItems').val('');
-             $('#ListOfSelectedPreferences').html('');
-             $('#divSelectedPreference').hide();
-         }
-
-         console.log(preferenceIds);
-
-         $('#preferenceModal').modal('toggle');
+        preferenceIds = RemoveLastCharacter(preferenceIds, Delimeter.COMMA);
+        return preferenceIds;
     }
 
 
@@ -421,6 +396,11 @@
     function saveIndividualProfile() {
 
         if (validateIndividualProfile()) {
+
+            //Get Selected Preference Items.
+            var preferenceIds = getSelectedPreferenceItemIds();
+            $('#PreferenceItems').val(preferenceIds);
+
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();

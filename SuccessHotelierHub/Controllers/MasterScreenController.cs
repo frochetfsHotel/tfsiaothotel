@@ -14,38 +14,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
-        public ActionResult CreatePreference()
-        {
-            return View();
-        }
-        public ActionResult ListingPreference()
-        {
-            return View();
-        }
-        public ActionResult CreateRoomType()
-        {
-            return View();
-        }
-        public ActionResult ListingRoomType()
-        {
-            return View();
-        }
-        public ActionResult CreateRateType()
-        {
-            return View();
-        }
-        public ActionResult ListingRateType()
-        {
-            return View();
-        }
-        public ActionResult CreateRate()
-        {
-            return View();
-        }
-        public ActionResult ListingRate()
-        {
-            return View();
-        }
+       
         public ActionResult CreateTitle()
         {
             return View();

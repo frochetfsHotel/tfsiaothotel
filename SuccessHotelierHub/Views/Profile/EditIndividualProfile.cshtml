@@ -1,5 +1,6 @@
 ﻿@model SuccessHotelierHub.Models.IndividualProfileVM
 @using SuccessHotelierHub.Models
+@using SuccessHotelierHub.Utility
 @{
     ViewBag.Title = "Edit Individual Profile";
 }
@@ -28,7 +29,26 @@
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 
-    var selectedPreferences = (string)ViewBag.SelectedPreferenceDescription;
+
+    var selectedPreferences = (List<ProfilePreferenceMappingVM>)ViewBag.SelectedPreferences;
+    var preferenceItems = string.Empty;
+    var selectedPreferencesHtml = string.Empty;
+
+    if (selectedPreferences != null && selectedPreferences.Count > 0)
+    {
+        foreach (var preference in selectedPreferences)
+        {
+            preferenceItems += string.Format("{0},", preference.PreferenceId);
+
+            selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(preferenceItems))
+        {
+            //Remove Last Comma.
+            preferenceItems = Utility.RemoveLastCharcter(preferenceItems, ',');
+        }
+    }
 }
 
 <section class="content-header">
@@ -57,7 +77,8 @@
             <!-- HIDDEN FIELD -->
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.ProfileTypeId)
-            @Html.HiddenFor(m => m.PreferenceItems);
+            @*@Html.HiddenFor(m => m.PreferenceItems);*@
+            <input type="hidden" id="PreferenceItems" name="PreferenceItems" value="@preferenceItems" />
             <input type="hidden" id="Source" name="Source" value="@sourceParam" />
             <input type="hidden" id="Qid" name="Qid" value="@qid" />
             <!-- HIDDEN FIELD -->
@@ -196,8 +217,7 @@
                 <div class="row" style="display:none;" id="divSelectedPreference">
                     <div class="col-md-12 form-group">
                         <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl">Selected Preference : </label>
-                        <div class="col-sm-10">
-                            <p id="ListOfSelectedPreferences"></p>
+                        <div class="col-sm-10" id="ListOfSelectedPreferences">
                         </div>
                     </div>
                 </div>
@@ -251,74 +271,69 @@
 <!-- Preference Modal Popup END -->
 
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
 
         //Show Selected Preference Checkboxes
         showSelectedPreferences();
 
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {            
-            var preferenceIds = "";
             var html = "";
 
             $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                preferenceIds += $(this).val() + ",";
-
-                html += $(this).attr("data-preference") + ", ";
+                html += "<span class='btn btn-xs bg-maroon m-r-xs'>" + $(this).attr("data-preference") + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='" + $(this).val() + "'></i></span>";
             });
 
-            console.log(preferenceIds);
-
-            //Remove last comma.
-            if (!IsNullOrEmpty(preferenceIds)) {
-                var lastChar = preferenceIds.slice(-1);
-                if (lastChar == ',') {
-                    preferenceIds = preferenceIds.slice(0, -1);
-                    html = $.trim(html).slice(0, -1);
-                }
-
-                $('#divSelectedPreference').show();
-                $('#PreferenceItems').val(preferenceIds);
-                $('#ListOfSelectedPreferences').html(html);
+            if (!IsNullOrEmpty(html)) {                
+                $('#divSelectedPreference').show();                
+                $('#ListOfSelectedPreferences').append(html);
 
                 //Close Preference Search Modal.
                 $('#preferenceModal').modal('toggle');
 
-            } else {
-                $('#PreferenceItems').val('');
-                $('#ListOfSelectedPreferences').html('');
-                $('#divSelectedPreference').hide();
-
-                showToaster("Please select at least one preference.", ToasterType.ERROR);
+            } else {                
+                showToaster("Please select preference.", ToasterType.ERROR);
             }
         });
-
-        
 
     });
 
     function openPreferenceModal() {
+        clearPreferenceSearch();
+        $("form#frmAdvancePreferenceSearch #btnSearch").click();
         $('#preferenceModal').modal('toggle');
     }
 
 
     function showSelectedPreferences() {
-        if (!IsNullOrEmpty('@selectedPreferences')) {
-            $('#divSelectedPreference').show();            
-            $('#ListOfSelectedPreferences').html('@selectedPreferences');
+        var selectedPreferencesHtml = "@Html.Raw(selectedPreferencesHtml)";
+        if (!IsNullOrEmpty(selectedPreferencesHtml)) {            
+            $('#divSelectedPreference').show();
+            $('#ListOfSelectedPreferences').html(selectedPreferencesHtml);
         }
     }
 
-    function clearPreferencesCheckBox() {
-        $(".chkPreference").each(function () {
-            $(this).prop("checked", false);
+    function removePreferenceItem(element) {
+        if (element) {            
+            var preferenceId = $(element).data("preferenceid");
+            $(element).parent("span").remove();
+        }
+    }
+
+    function getSelectedPreferenceItemIds() {
+        var preferenceIds = "";
+        $("#ListOfSelectedPreferences span i").each(function () {
+            console.log($(this).data("preferenceid"));
+            preferenceIds += $(this).data("preferenceid") + ",";
         });
+
+        preferenceIds = RemoveLastCharacter(preferenceIds, Delimeter.COMMA);
+        return preferenceIds;
     }
 
     function getState() {
         var country = $('#ddlCountry').val();
 
-        if (!IsNullOrEmpty(country) && country != "0")
-        {
+        if (!IsNullOrEmpty(country) && country != "0") {
             //Get State
             showLoader();
             $.ajax({
@@ -391,7 +406,7 @@
     }
 
     function validateIndividualProfile() {
-        
+
         var errorMessage = "";
         var blnValid = true;
 
@@ -407,6 +422,11 @@
     function updateIndividualProfile() {
 
         if (validateIndividualProfile()) {
+
+            //Get Selected Preference Items.
+            var preferenceIds = getSelectedPreferenceItemIds();
+            $('#PreferenceItems').val(preferenceIds);
+
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -440,5 +460,6 @@
         }
     }
 
+    
 
 </script>

@@ -273,6 +273,7 @@ function GetDayOfWeek(day) {
 }
 
 /*** Date Utility Functions END ****/
+
 function trim(item) {
     if (!IsNullOrEmpty(item)) {
         return item.trim();
@@ -280,6 +281,16 @@ function trim(item) {
     return item;
 }
 
+function RemoveLastCharacter(item, char) {
+    if (!IsNullOrEmpty(item)) {
+        var lastChar = item.slice(-1);
+        if (lastChar == char) {
+            item = trim(item).slice(0, -1);            
+        }
+    }
+
+    return item;
+}
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();

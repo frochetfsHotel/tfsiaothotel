@@ -76,6 +76,9 @@ namespace SuccessHotelierHub.Controllers
 
                         if (preferenceItemsArr != null)
                         {
+                            //Remove Duplication.
+                            preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+
                             foreach (var item in preferenceItemsArr)
                             {
                                 //Save Profile Preference Mapping.
@@ -93,7 +96,7 @@ namespace SuccessHotelierHub.Controllers
 
 
                     #region  Check Source Parameters
-                    if (Request.Form["Source"] != null)
+                    if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
                     {
                         string source = string.Empty;
                         string url = string.Empty;
@@ -130,12 +133,15 @@ namespace SuccessHotelierHub.Controllers
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
 
-                        return Json(new
+                        if (!string.IsNullOrWhiteSpace(url))
                         {
-                            IsSuccess = true,
-                            IsExternalUrl = true,
-                            data = url
-                        }, JsonRequestBehavior.AllowGet);
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = url
+                            }, JsonRequestBehavior.AllowGet);
+                        }
                     }
                     #endregion
 
@@ -172,28 +178,12 @@ namespace SuccessHotelierHub.Controllers
             {
                 model = profile[0];
 
+                #region Preference Mapping
                 //Get Preference Mapping
                 var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null);
-                string preferenceItems = string.Empty;
-                string preferenceDescription = string.Empty;
-
-                if (selectedPreferences != null && selectedPreferences.Count > 0)
-                {
-                    preferenceItems += string.Join(",", selectedPreferences.Select(i => i.PreferenceId));
-
-                    //Remove last comma.
-                    if (!string.IsNullOrWhiteSpace(preferenceItems))
-                        preferenceItems = Utility.Utility.RemoveLastCharcter(preferenceItems, ',');
-
-                    preferenceDescription += string.Join(", ", selectedPreferences.Select(i => i.PreferenceDescription));
-
-                    //Remove last comma.
-                    if (!string.IsNullOrWhiteSpace(preferenceDescription))
-                        preferenceDescription = Utility.Utility.RemoveLastCharcter(preferenceDescription, ',');
-                }
-
-                model.PreferenceItems = preferenceItems;
-                ViewBag.SelectedPreferenceDescription = preferenceDescription;
+                
+                ViewBag.SelectedPreferences = selectedPreferences;
+                #endregion
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
                 var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
@@ -253,6 +243,9 @@ namespace SuccessHotelierHub.Controllers
 
                         if (preferenceItemsArr != null)
                         {
+                            //Remove Duplication.
+                            preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+
                             foreach (var item in preferenceItemsArr)
                             {
                                 //Save Profile Preference Mapping.
@@ -269,7 +262,7 @@ namespace SuccessHotelierHub.Controllers
                     #endregion
 
                     #region  Check Source Parameters
-                    if (Request.Form["Source"] != null)
+                    if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
                     {
                         string source = string.Empty;
                         string url = string.Empty;
@@ -306,12 +299,15 @@ namespace SuccessHotelierHub.Controllers
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
 
-                        return Json(new
+                        if (!string.IsNullOrWhiteSpace(url))
                         {
-                            IsSuccess = true,
-                            IsExternalUrl = true,
-                            data = url
-                        }, JsonRequestBehavior.AllowGet);
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = url
+                            }, JsonRequestBehavior.AllowGet);
+                        }
                     }
                     #endregion
 
