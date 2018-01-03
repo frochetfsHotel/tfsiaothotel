@@ -18,6 +18,7 @@ namespace SuccessHotelierHub.Controllers
         private ProfileRepository profileRepository = new ProfileRepository();
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
+        private RoomRepository roomRepository = new RoomRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
         private CountryRepository countryRepository = new CountryRepository();
         private TitleRepository titleRepository = new TitleRepository();
@@ -172,6 +173,33 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
+                    #region Save Reservation Room Mapping
+                    var roomIds = model.RoomIds;
+
+                    if (!string.IsNullOrWhiteSpace(roomIds))
+                    {
+                        var roomIdsArr = roomIds.Split(',');
+
+                        if (roomIdsArr != null)
+                        {
+                            //Remove Duplication.
+                            roomIdsArr = roomIdsArr.Distinct().ToArray();
+
+                            foreach (var item in roomIdsArr)
+                            {
+                                //Save Reservation Room Mapping.
+                                ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
+                                reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
+                                reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
+                                reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
+                                reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+                            }
+                        }
+                    }
+                    #endregion
+
                     #region Save Reservation Preference Mapping
                     var preferenceItems = model.PreferenceItems;
 
@@ -197,7 +225,7 @@ namespace SuccessHotelierHub.Controllers
                         }
                     }
                     #endregion
-
+                    
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
 
@@ -248,12 +276,22 @@ namespace SuccessHotelierHub.Controllers
                 }
                 #endregion
 
+                #region Room Mapping
+                
+                //Get Room Mapping
+                var selectedRooms = roomRepository.GetReservationRoomMapping(model.Id, null);
+
+                ViewBag.SelectedRooms = selectedRooms;
+
+                #endregion
+
                 #region Preference Mapping
 
                 //Get Preference Mapping
                 var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);
 
                 ViewBag.SelectedPreferences = selectedPreferences;
+
                 #endregion
 
                 #region Profile Info From Edit Profile Page
@@ -330,6 +368,36 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
+                    #region Save Reservation Room Mapping
+                    var roomIds = model.RoomIds;
+
+                    //Delete Existing Reservation Room Mapping.
+                    roomRepository.DeleteReservationRoomMappingByReservation(model.Id, LogInManager.LoggedInUserId);
+
+                    if (!string.IsNullOrWhiteSpace(roomIds))
+                    {
+                        var roomIdsArr = roomIds.Split(',');
+
+                        if (roomIdsArr != null)
+                        {
+                            //Remove Duplication.
+                            roomIdsArr = roomIdsArr.Distinct().ToArray();
+
+                            foreach (var item in roomIdsArr)
+                            {
+                                //Save Reservation Room Mapping.
+                                ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
+                                reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
+                                reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
+                                reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
+                                reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+                            }
+                        }
+                    }
+                    #endregion
+
                     #region Save Reservation Preference Mapping
 
                     var preferenceItems = model.PreferenceItems;

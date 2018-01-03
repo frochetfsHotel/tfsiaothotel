@@ -235,6 +235,7 @@
     <Compile Include="Models\RateTypeVM.cs" />
     <Compile Include="Models\ReservationCancellationReasonVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
+    <Compile Include="Models\ReservationRoomMappingVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
     <Compile Include="Models\RoomStatusVM.cs" />
     <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />

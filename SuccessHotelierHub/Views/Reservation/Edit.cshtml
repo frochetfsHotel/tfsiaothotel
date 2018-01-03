@@ -33,6 +33,7 @@
         strRate = string.Format("{0:0.00}", Model.Rate.Value);
     }
 
+    #region Preference Mapping
     var selectedPreferences = (List<ReservationPreferenceMappingVM>)ViewBag.SelectedPreferences;
     var preferenceItems = string.Empty;
     var selectedPreferencesHtml = string.Empty;
@@ -52,6 +53,36 @@
             preferenceItems = Utility.RemoveLastCharcter(preferenceItems, ',');
         }
     }
+    #endregion
+
+    #region Room Mapping
+
+    var selectedRooms = (List<ReservationRoomMappingVM>)ViewBag.SelectedRooms;
+    var roomIds = string.Empty;
+    var roomNumbers = string.Empty;
+
+    if (selectedRooms != null && selectedRooms.Count > 0)
+    {
+        foreach (var room in selectedRooms)
+        {
+            roomIds += string.Format("{0},", room.RoomId);
+            roomNumbers += string.Format("{0}, ", room.RoomNo);
+        }
+
+        if (!string.IsNullOrWhiteSpace(roomIds))
+        {
+            //Remove Last Comma.
+            roomIds = Utility.RemoveLastCharcter(roomIds, ',');
+        }
+
+        if (!string.IsNullOrWhiteSpace(roomNumbers))
+        {
+            //Remove Last Comma.
+            roomNumbers = Utility.RemoveLastCharcter(roomNumbers, ',');
+        }
+    }
+
+    #endregion
 
 }
 
@@ -241,7 +272,7 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" })
                         <div class="input-group date">
-                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
@@ -286,12 +317,28 @@
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.RoomId)
+                        @*@Html.LabelFor(m => m.RoomId)
                         <select class="form-control" id="RoomId" name="RoomId">
                             <option value="">--Select Room--</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">101</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">102</option>
-                        </select>
+                        </select>*@
+
+                        @Html.LabelFor(m => m.RoomNumbers, new { @class = "required-label" })
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.RoomNumbers, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Room #",
+                                @readonly = "readonly"
+                            })
+                            <div class="input-group-addon cursor-P" onclick="openRoomSearchModal();">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.RoomIds)
+
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ExtnId)
@@ -435,7 +482,7 @@
                         @Html.LabelFor(m => m.CreditCardNo)
                         @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
                     </div>
-                    <div class="col-md-3 form-group divCreditCardFields">
+                    <div class="col-md-3 form-group divCreditCardFields divCardExpirtyDate">
                         @Html.LabelFor(m => m.CardExpiryDate)
                         @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
                             class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">*@
@@ -499,7 +546,12 @@
                     <div class="col-md-3 form-group m-t-lg">
                         <label>
                             Total Price : <span id="totalPrice">&euro; 0.00</span>
-                            <small class="m-l-sm">(Per Night)</small>
+                            <br />
+                            @*<small class="m-l-sm">(Per Night)</small>*@
+                            <span>
+                                [No. Of Nights <span class="text-danger" id="spnNoOfNight"
+                                data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-danger" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
+                            </span>
                         </label>
                     </div>
                 </div>
@@ -644,6 +696,28 @@
 </div>
 <!-- RoomType Modal Popup END -->
 
+<!-- Room Modal Popup START -->
+<div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Types</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateReservation" },
+                                    { "RoomType", ViewBag.RoomTypeList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Room Modal Popup END -->
+
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -695,17 +769,21 @@
 
         calculateTotalPrice();
 
+        //Show Selected Rooms
+        showSelectedRooms();
+
         //Show Selected Preferences.
         showSelectedPreferences();
 
+
         //Preference
-        $('.btnAdvanceSearchPreferenceOk').click(function (e) {            
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {
             var html = "";
 
             $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
                 html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
             });
-            
+
             //Remove last comma.
             if (!IsNullOrEmpty(html)) {
                 $('#divSelectedPreference').show();
@@ -740,7 +818,7 @@
                 $('#profileSearchModal').modal('toggle');
 
 
-                //Get Preferences                
+                //Get Preferences
                 $.ajax({
                     beforeSend: function (xhr) {
                         showLoader();
@@ -798,6 +876,41 @@
             }
         });
 
+        //Room
+        $('.btnAdvanceSearchRoomOk').click(function (e) {
+            var roomNumbers = "";
+            var roomIds = "";
+
+            var selectedNoOfRooms = $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").length;
+            var noOfRoom = $('#NoOfRoom').val();
+
+            if (!IsNullOrEmpty(selectedNoOfRooms)) {
+
+                if (noOfRoom != selectedNoOfRooms) {
+                    showToaster("Please select only " + noOfRoom + " room details.", ToasterType.ERROR);
+                    return false;
+                }
+
+                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {
+                    //get selected room.
+                    roomNumbers += $(this).data("roomno") + Delimeter.COMMA + Delimeter.SPACE;
+                    roomIds += $(this).val() + Delimeter.COMMA;
+                });
+
+                if (!IsNullOrEmpty(roomNumbers)) {
+
+                    roomNumbers = RemoveLastCharacter(roomNumbers, Delimeter.COMMA);
+                    roomIds = RemoveLastCharacter(roomIds, Delimeter.COMMA);
+
+                    $('#RoomNumbers').val(roomNumbers);
+                    $('#RoomIds').val(roomIds);
+
+                    //Close Room Type Search Modal.
+                    $('#roomModal').modal('toggle');
+                }
+            }
+        });
+
     });
 
     function arrivalDateChanged(e) {
@@ -841,7 +954,7 @@
     }
 
 
-   function showSelectedPreferences() {
+    function showSelectedPreferences() {
         var selectedPreferencesHtml = "@Html.Raw(selectedPreferencesHtml)";
         if (!IsNullOrEmpty(selectedPreferencesHtml)) {
             $('#divSelectedPreference').show();
@@ -947,6 +1060,8 @@
                 noOfNight = diffDays > 0 ? diffDays : 1;
             }
 
+           
+
             $('#NoOfNight').val(noOfNight);
         }
     }
@@ -986,6 +1101,14 @@
 
         totalPrice = parseInt(noOfNights) * parseFloat(rate);
 
+        //Set No. Of Nights
+        $('#spnNoOfNight').html("(" + parseInt(noOfNights) + ")");
+        $('#spnNoOfNight').attr("data-nights", parseInt(noOfNights));
+
+        //Set Rate
+        $('#spnRate').html("(&euro; " + parseFloat(rate) + ")");
+        $('#spnRate').attr("data-rate", parseFloat(rate));
+
         $('#totalPrice').html("&euro; " + totalPrice);
     }
 
@@ -1023,6 +1146,43 @@
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
         $('#profileSearchModal').modal('toggle');
+    }
+
+    function openRoomSearchModal() {
+
+        var noOfRoom = $('#NoOfRoom').val();
+        if (IsNullOrEmpty(noOfRoom) || noOfRoom == "0") {
+            showToaster("Please first enter No. Of Rooms", ToasterType.ERROR);
+            return false;
+        }
+
+        clearRoomSearch();
+
+        $("form#frmAdvanceRoomSearch #RoomTypeId").val($('#RoomTypeId').val());
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('#RoomIds').val());
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('#RoomNumbers').val());
+        $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val($('#NoOfRoom').val());
+
+        $("form#frmAdvanceRoomSearch #btnSearch").click();
+
+        $('#roomModal').modal('toggle');
+    }
+
+
+    function showSelectedRooms() {
+        var roomIds = "@roomIds";
+        var roomNumbers = "@roomNumbers";
+
+        $('#RoomIds').val('');
+        $('#RoomNumbers').val('');
+
+        if (!IsNullOrEmpty(roomIds)) {
+            $('#RoomIds').val(roomIds);
+        }
+
+        if (!IsNullOrEmpty(roomNumbers)) {
+            $('#RoomNumbers').val(roomNumbers);
+        }
     }
 
 </script>

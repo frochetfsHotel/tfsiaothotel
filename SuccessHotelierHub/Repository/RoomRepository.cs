@@ -138,5 +138,57 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
+
+        #region Reservation Room Mapping 
+
+        public string AddUpdateReservationRoomMapping(ReservationRoomMappingVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = model.ReservationId },
+                    new SqlParameter { ParameterName = "@RoomId", Value = model.RoomId } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUpdateReservationRoomMapping", parameters));
+
+            return id;
+        }
+
+        public string DeleteReservationRoomMappingByReservation(Guid reservationId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationRoomMappingByReservation", parameters));
+
+            return id;
+        }
+
+        public List<ReservationRoomMappingVM> GetReservationRoomMapping(Guid? reservationId, Guid? roomId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@RoomId", Value = (object) roomId ?? DBNull.Value }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRoomMapping", parameters);
+
+            var reservationRoomMapping = new List<ReservationRoomMappingVM>();
+            reservationRoomMapping = DALHelper.CreateListFromTable<ReservationRoomMappingVM>(dt);
+
+            return reservationRoomMapping;
+        }
+
+        #endregion
     }
 }

@@ -1,8 +1,4 @@
 
-.divCardExpirtyDate input {
-    font-family: monospace;
-}
-
 .divCardExpirtyDate label {
     display: block;
 }
@@ -25,8 +21,7 @@
         z-index: -1;
     }
 
-.divCardExpirtyDate .shell span i {
-    font-style: normal;
+.divCardExpirtyDate .shell span i {    
     /* any of these 3 will work */
     color: transparent;
     opacity: 0;
@@ -34,9 +29,7 @@
 }
 
 .divCardExpirtyDate input.masked,
-.divCardExpirtyDate .shell span {
-    font-size: 16px;
-    font-family: monospace;
+.divCardExpirtyDate .shell span {        
     padding-right: 10px;
     background-color: transparent;
     text-transform: uppercase;

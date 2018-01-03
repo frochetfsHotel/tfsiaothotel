@@ -9,6 +9,13 @@
 }
 
 <form id="frmAdvanceRoomSearch" name="frmAdvanceRoomSearch" enctype="multipart/form-data" method="post">
+
+    <!-- Hidden Field -->
+    <input type="hidden" id="hdnNoOfRoomsUptoSelect" name="hdnNoOfRoomsUptoSelect" />
+    <input type="hidden" id="hdnSelectedRoomIds" name="hdnSelectedRoomIds" value="" />
+    <input type="hidden" id="hdnSelectedRoomNumbers" name="hdnSelectedRoomNumbers" value="" />
+    <!-- Hidden Field-->
+
     <div class="col-xs-12 text-right m-b-md padding-zero">
         <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomOk">OK</button>
         <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
@@ -74,7 +81,7 @@
                     <th>Room#</th>
                     <th>Type</th>
                     <th>Room Type</th>
-                    <th>Status</th>
+                    <th width="10%">Status</th>
                     <th>Description</th>
                 </tr>
             </thead>
@@ -105,11 +112,21 @@
         });
     });
 
-    function onSelectRoomType(element) {
-        $(element).parent("tr").find("td:first").find("input[type='radio']").prop("checked", true);
+    
+    function onSelectRoom(element) {
+        var isChecked = $('#' + element).prop("checked");
+
+        $('#' + element).prop("checked", !isChecked);
     }
 
     function searchRoom() {
+
+        var selectedRoomIds = $('#hdnSelectedRoomIds').val();
+        var selectedRoomIdsArr = [];
+        if (!IsNullOrEmpty(selectedRoomIds)) {
+            selectedRoomIdsArr = selectedRoomIds.split(Delimeter.COMMA);
+        }
+
         $.ajax({
             beforeSend: function (xhr) {
                 showLoader();
@@ -137,20 +154,38 @@
                     var markup = "";
 
                     if (result.length > 0) {
-                        //Add the data rows.
+                        //Add the data rows.                        
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
-                            markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbRoomType_" + result[i].Id + "\' name=\'rbRoomType\' value=\'" + result[i].RoomTypeId + "\'  data-roomtype=\'" + result[i].RoomTypeCode + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/></td>";
-                            markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].RoomTypeCode + "</td>";
-                            markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].AvailableRooms + "</td>";
-                            markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].RoomTypeDescription + "</td>";
-                            markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].RoomCapacity + "</td>";
+                            var checked = "";
+                            var statusColor = "#079438"
+
+                            if (!IsNullOrEmpty(result[i].RoomStatusColor)) {
+                                statusColor = result[i].RoomStatusColor;
+                            }
+
+                            if (selectedRoomIdsArr != null && selectedRoomIdsArr.length > 0) {                                
+                                if (arrayContains(result[i].RoomId, selectedRoomIdsArr) == true) {
+                                    checked = "checked";
+                                }
+                            }
+
+                            markup += "<td><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + "/></td>";
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomNo + "</td>";
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Type + "</td>";
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomTypeCode + "</td>";
+
+                            //<span>Clean <i class="m-l-sm fa fa-circle" style="color: #ff0000;"> </i></span>
+
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\"><span>" + result[i].RoomStatusName + "<i class=\'m-l-sm fa fa-circle\' style=\'color:" + statusColor + "\'> </i></span></td>";
+
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Description + "</td>";
 
                             markup += "</tr>";
                         }
                     } else {
-                        markup += "<tr><td colspan =\'5\' class=\'text-center\'>No data available.</td></tr>";
+                        markup += "<tr><td colspan =\'6\' class=\'text-center\'>No data available.</td></tr>";
                     }
 
                     tbody.append(markup);

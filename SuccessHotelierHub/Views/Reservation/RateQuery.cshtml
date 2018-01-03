@@ -347,20 +347,24 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-12 padding-zero">
+                    <div class="col-xs-12 padding-zero" id="divRateInfo">
                         <div class="col-xs-12 col-sm-12 col-md-8 mt-10 padding-zero m-b-md">
                             <label class="col-md-3 col-sm-3 col-xs-12">Room Description</label>
                             <div class="col-md-9 col-sm-9 col-xs-12 padding-zero">
                                 <textarea class="form-control" readonly="readonly" id="txtRateInfo" name="txtRateInfo"></textarea>
                             </div>
                         </div>
+                        <div class="col-xs-12 col-md-4 col-sm-4 text-right m-b-md m-t-sm">                            
+                            <button type="button" class="btn btn-info m-r-xs" onclick="showTab('tab_1')">Prev</button>
+                            <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">OK</button>
+                        </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="col-xs-12 col-md-12 col-sm-12 text-right m-b-md">
+                    @*<div class="col-xs-12 col-md-12 col-sm-12 text-right m-b-md">
                         <hr />
                         <button type="button" class="btn btn-info m-r-xs" onclick="showTab('tab_1')">Prev</button>
                         <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">OK</button>
-                    </div>
+                    </div>*@
                     <div class="clearfix"></div>
                 </div>
                 <!-- /.tab-pane -->
@@ -590,6 +594,8 @@
             $('#Amount').val(amount);
             $('#RateTypeCode').val(ratetypecode);
             $('#RoomTypeCode').val(roomtypecode);
+
+            goToByScroll("divRateInfo");
         }
     }
 

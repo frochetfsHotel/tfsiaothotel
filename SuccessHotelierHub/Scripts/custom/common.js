@@ -283,7 +283,7 @@ function trim(item) {
 
 function RemoveLastCharacter(item, char) {
     if (!IsNullOrEmpty(item)) {
-        var lastChar = item.slice(-1);
+        var lastChar = trim(item).slice(-1);
         if (lastChar == char) {
             item = trim(item).slice(0, -1);            
         }
@@ -366,4 +366,8 @@ function goToByScroll(id) {
     $('html,body').animate({
         scrollTop: $("#" + id).offset().top
     }, 'slow');
+}
+
+function arrayContains(searchItem, array) {
+    return (array.indexOf(searchItem) > -1) ? true : false;
 }
