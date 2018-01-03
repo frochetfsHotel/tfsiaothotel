@@ -94,7 +94,9 @@
         });
 
         $("form#frmAdvanceCancellationReasonSearch input").blur(function () {
-            searchReason();
+            if (!IsNullOrEmpty($(this).val())) {
+                searchReason();
+            }
         });
     });
 

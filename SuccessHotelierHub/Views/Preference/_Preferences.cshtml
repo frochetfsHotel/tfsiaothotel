@@ -77,8 +77,10 @@
             searchPreference();
         });
 
-        $("form#frmAdvancePreferenceSearch input").blur(function () {            
-            searchPreference();
+        $("form#frmAdvancePreferenceSearch input").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                searchPreference();
+            }
         });
     });
 
@@ -157,8 +159,8 @@
     }
 
     function clearPreferenceSearch() {
-        $('form#frmAdvancePreferenceSearch #LastName').val('');
-        $('form#frmAdvancePreferenceSearch #FirstName').val('');
+        $('form#frmAdvancePreferenceSearch #PreferenceGroupId').val('');
+        $('form#frmAdvancePreferenceSearch #Preference').val('');        
 
         $("form#frmAdvancePreferenceSearch #tblPreference tbody").empty();
     }

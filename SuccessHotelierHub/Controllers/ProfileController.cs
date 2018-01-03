@@ -440,6 +440,37 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+
+        [HttpGet]
+        public ActionResult GetPreferencesByProfile(Guid profileId)
+        {
+            
+            try
+            {
+                var profile = profileRepository.GetIndividualProfileById(profileId).FirstOrDefault();
+
+                if (profile != null)
+                {
+                    //Get Preference Mapping
+                    var preferences = preferenceRepository.GetProfilePreferenceMapping(profile.ProfileTypeId, profileId, null);
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = preferences
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { IsSuccess = false, errorMessage = "Profile and preferences not exist."});
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         #endregion
 
 

@@ -283,5 +283,22 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+
+        public ActionResult RoomStatus(Guid roomTypeId)
+        {
+            try
+            {
+                var roomType = roomTypeRepository.GetRoomTypeById(roomTypeId).FirstOrDefault();
+
+                ViewData["RoomTypeInfo"] = roomType;
+
+                return PartialView("_RoomTypeStatus");
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+            
+        }
     }
 }

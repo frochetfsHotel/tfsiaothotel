@@ -42,7 +42,7 @@
         <div class="row">
             <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.PostalCode)
-                @Html.TextBoxFor(m => m.City, new { @class = "form-control", placeholder = "Postal Code" })
+                @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", placeholder = "Postal Code" })
             </div>
             <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.MemberTypeId)
@@ -142,7 +142,9 @@
         });
 
         $("form#frmAdvanceProfileSearch input").blur(function () {
-            searchProfile();
+            if (!IsNullOrEmpty($(this).val())) {
+                searchProfile();
+            }
         });
     });
 
@@ -223,7 +225,25 @@
 
 
     function addNewProfile() {
+        debugger;
+        var firstName = $("form#frmAdvanceProfileSearch #FirstName").val();
+        var lastName = $("form#frmAdvanceProfileSearch #LastName").val();
+        var postalCode = $("form#frmAdvanceProfileSearch #PostalCode").val();
+
         var url = '@Url.Content("~/Profile/CreateIndividualProfile")' + "?source=@sourceRedirectionParam";
+
+        if (!IsNullOrEmpty(firstName)) {
+            url += "&firstName=" + firstName + "";
+        }
+
+        if (!IsNullOrEmpty(lastName)) {
+            url += "&lastName=" + lastName + "";
+        }
+
+        if (!IsNullOrEmpty(postalCode)) {
+            url += "&zipCode=" + postalCode + "";
+        }
+
         redirectTo(url);
     }
 

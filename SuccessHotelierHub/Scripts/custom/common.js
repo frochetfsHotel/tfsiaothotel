@@ -360,3 +360,10 @@ function LoadLeftSideMenu() {
 function hideAllLeftSideMenu() {
     $('.leftsidemenu').hide();
 }
+
+function goToByScroll(id) {
+    // Scroll
+    $('html,body').animate({
+        scrollTop: $("#" + id).offset().top
+    }, 'slow');
+}

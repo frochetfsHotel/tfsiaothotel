@@ -1882,6 +1882,8 @@
     <Content Include="Views\ReservationCancellationReason\List.cshtml" />
     <Content Include="Views\RoomType\_AdvanceSearch.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
+    <Content Include="Views\RoomType\_RoomTypeStatus.cshtml" />
+    <Content Include="Views\Room\_AdvanceSearch.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

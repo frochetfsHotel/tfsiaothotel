@@ -144,6 +144,27 @@ namespace SuccessHotelierHub.Controllers
             }
 
         }
+
+        [HttpPost]
+        public ActionResult SearchAdvanceRoom(SearchAdvanceRoomParametersVM model)
+        {
+            try
+            {
+                var rooms = roomRepository.SearchAdvanceRoom(model);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = rooms
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         #endregion
     }
 }

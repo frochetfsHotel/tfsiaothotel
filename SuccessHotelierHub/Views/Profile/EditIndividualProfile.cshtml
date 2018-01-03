@@ -84,14 +84,7 @@
             <!-- HIDDEN FIELD -->
 
             <div class="box-body">
-                <div class="row">
-                    <div class="col-md-4 form-group">
-                        <label for="TitleId">Title</label>
-                        @Html.DropDownListFor(m => m.TitleId,
-                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
-                                                "Select Title",
-                                                new { @class = "form-control" })
-                    </div>
+                <div class="row">                 
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
@@ -101,6 +94,13 @@
                         @Html.LabelFor(m => m.FirstName, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })     
                         @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })                   
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="TitleId">Title</label>
+                        @Html.DropDownListFor(m => m.TitleId,
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
+                                                "Select Title",
+                                                new { @class = "form-control" })
                     </div>
                 </div>
 
@@ -280,7 +280,7 @@
             var html = "";
 
             $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                html += "<span class='btn btn-xs bg-maroon m-r-xs'>" + $(this).attr("data-preference") + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='" + $(this).val() + "'></i></span>";
+                html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
             });
 
             if (!IsNullOrEmpty(html)) {                
@@ -308,7 +308,7 @@
         //    $("form#frmAdvancePreferenceSearch #divPreferences").show();
         //}
 
-        $("form#frmAdvancePreferenceSearch #btnSearch").click();
+        //$("form#frmAdvancePreferenceSearch #btnSearch").click();
         $('#preferenceModal').modal('toggle');
     }
 
@@ -337,6 +337,10 @@
 
         preferenceIds = RemoveLastCharacter(preferenceIds, Delimeter.COMMA);
         return preferenceIds;
+    }
+
+    function generatePreferenceButton(preferenceId, preference) {
+        return "<span class='btn btn-xs bg-maroon m-r-xs'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
     }
 
     function getState() {

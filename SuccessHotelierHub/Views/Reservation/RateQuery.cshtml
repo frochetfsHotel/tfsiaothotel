@@ -19,7 +19,7 @@
     {
         var profile = profileRepository.GetIndividualProfileById(Guid.Parse(profileId)).FirstOrDefault();
 
-        if(profile != null)
+        if (profile != null)
         {
             profileId = profile.Id.ToString();
             firstName = profile.FirstName;
@@ -61,7 +61,7 @@
                 <div class="tab-pane active" id="tab_1">
                     <form id="frmRateQuery" name="frmRateQuery" enctype="multipart/form-data">
 
-                        <!-- HIDDEN FIELD -->                        
+                        <!-- HIDDEN FIELD -->
                         @Html.HiddenFor(m => m.ProfileId)
                         @Html.HiddenFor(m => m.LastName)
                         @Html.HiddenFor(m => m.FirstName)
@@ -79,12 +79,12 @@
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                                         <div class="input-group date">
-                                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy" })
+                                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                         </div>
-                                        <span class="text-danger m-l-md" id="ArrivalDayOfWeek"></span>
+                                        <span class="text-red m-l-md" id="ArrivalDayOfWeek"></span>
                                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
@@ -99,7 +99,7 @@
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                         </div>
-                                        <span class="text-danger m-l-md" id="DepartureDayOfWeek"></span>
+                                        <span class="text-red m-l-md" id="DepartureDayOfWeek"></span>
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfAdult)
@@ -107,7 +107,7 @@
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfChildren)
-                                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control",  onkeydown = "onlyDigits(event)" })
+                                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfRoom)
@@ -194,7 +194,7 @@
                                     </div>
                                 </div>
                             </div>
-                           
+
 
                             <div class="row">
                                 <div class="box-header with-border">
@@ -318,11 +318,26 @@
                     <p id="reservationInfo"></p>
                     <p id="customerName"></p>
 
+                    <div class="col-xs-12 padding-zero">
+                        <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy", @id = "txtArrivalDate", name = "txtArrivalDate" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
                     <div class="table-responsive" id="divRateSheet">
                         @Html.Partial("_RateSheet",
                                 new ViewDataDictionary {
                                     { "RateType", rateTypeList },
-                                    { "RoomType", roomTypeList }
+                                    { "RoomType", roomTypeList },
+                                    { "IsShowWeekEndPrice", false }
                                 })
                     </div>
 
@@ -384,11 +399,32 @@
 </div>
 <!-- Advance Profile Search Modal END -->
 
+<!-- Room Type Status Modal START -->
+<div id="roomTypeStatusModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Type Status</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="divRoomTypeStatus">
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+</div>
+<!-- Room Type Status Modal END -->
+
 <script type="text/javascript">
     $(document).ready(function () {
 
         //Show pre-filled profile info if querystring contains profile id.
-        $('#ProfileId').val('@profileId');        
+        $('#ProfileId').val('@profileId');
         $('#FirstName').val('@firstName');
         $('#LastName').val('@lastName');
         $('#Name').val('@name');
@@ -398,9 +434,17 @@
             startDate: new Date(),
             autoclose: true,
             format: 'dd/mm/yyyy'
-        })    
+        })
         .change(arrivalDateChanged)
         .on('changeDate', arrivalDateChanged);
+
+        $('#txtArrivalDate').datepicker({
+            startDate: new Date(),
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(txtArrivalDateChanged)
+        .on('changeDate', txtArrivalDateChanged);
 
         $('#DepartureDate').datepicker({
             startDate: new Date(),
@@ -438,7 +482,12 @@
 
     function arrivalDateChanged(e) {
         var selectedDate = $(this).val();
-        console.log("arrivalDateChanged : " + selectedDate);
+        showArrivalWeekDay(this);
+    }
+
+    function showArrivalWeekDay(element) {
+        var selectedDate = $(element).val();
+        console.log("showArrivalWeekDay : " + selectedDate);
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -448,10 +497,25 @@
                 var weekDay = objSelectedArrivalDate.getDay();
                 dayOfWeek = GetDayOfWeek(weekDay);
             }
+
+            $('#txtArrivalDate').val(selectedDate);
+            $('#ArrivalDate').val(selectedDate);
         }
         console.log("dayOfWeek : " + dayOfWeek);
         $('#ArrivalDayOfWeek').html(dayOfWeek);
     }
+
+    function txtArrivalDateChanged(e) {
+        var selectedDate = $(this).val();
+        showArrivalWeekDay(this);
+
+        //Get Departure date.
+        calculateDepartureDate();
+
+        //Ajax request to show price.
+        showRateSheetByDate();
+    }
+
 
     function departureDateChanged(e) {
         var selectedDate = $(this).val();
@@ -566,12 +630,12 @@
                 reservationInfo += arrivalDayOfWeek + Delimeter.SPACE + arrivalDate + Delimeter.COMMA + Delimeter.SPACE;
 
             //Nights
-            noOfNights = (!IsNullOrEmpty(noOfNights)) ? noOfNights : 0;            
-            if(noOfNights > 1)
+            noOfNights = (!IsNullOrEmpty(noOfNights)) ? noOfNights : 0;
+            if (noOfNights > 1)
                 reservationInfo += noOfNights + " Nights" + Delimeter.COMMA + Delimeter.SPACE;
             else
                 reservationInfo += noOfNights + " Night" + Delimeter.COMMA + Delimeter.SPACE;
-            
+
             //Rooms
             noOfRooms = (!IsNullOrEmpty(noOfRooms)) ? noOfRooms : 0;
             if (noOfRooms > 1)
@@ -624,6 +688,44 @@
                 }
             });
         }
+        return false;
+    }
+
+    function showRateSheetByDate() {
+        $('#RateTypeCode').val('');
+        var rateCodeId = $('#RateCodeId').find("option:selected").data("ratecode");
+
+        if (!IsNullOrEmpty(rateCodeId)) {
+            $('#RateTypeCode').val(rateCodeId);
+        }
+
+        //Ajax Request to fetch Rate Sheet.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (result) {
+                showToaster(result.responseText, ToasterType.ERROR);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Reservation/ViewRateSheet")',
+            type: 'POST',
+            data: $('#frmRateQuery').serialize(),
+            success: function (response) {                
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    $('#divRateSheet').html('');
+                    $('#divRateSheet').html(response);
+
+                    $("html, body").animate({ scrollTop: 30 }, 500);
+                }
+            }
+        });
+
         return false;
     }
 
@@ -681,9 +783,9 @@
     function calculateNoOfNights() {
         var arrivalDate = $('#ArrivalDate').val();
         var departureDate = $('#DepartureDate').val();
-        var noOfNight = 1;        
+        var noOfNight = 1;
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-          
+
 
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
             var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
@@ -702,7 +804,7 @@
     function calculateDepartureDate() {
         var arrivalDate = $('#ArrivalDate').val();
         var noOfNight = $('#NoOfNight').val();
-        var departureDate = '';        
+        var departureDate = '';
         if (!IsNullOrEmpty(arrivalDate)) {
 
             //Get Date Objects from dd/MM/yyyy date.
@@ -718,6 +820,38 @@
             if (dt != null) {
                 $("#DepartureDate").datepicker("setDate", dt);
             }
+        }
+    }
+
+    function openRoomTypeStatusModal(roomTypeId) {        
+
+        if (!IsNullOrEmpty(roomTypeId)) {
+            //Ajax request to fetch room type status.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RoomType/RoomStatus")',
+                type: 'GET',
+                data: { roomTypeId: roomTypeId },
+                success: function (response) {                    
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        $('#divRoomTypeStatus').html('');
+                        $('#divRoomTypeStatus').html(response);
+
+                        $('#roomTypeStatusModal').modal('toggle');
+                    }
+                }
+            });            
         }
     }
 

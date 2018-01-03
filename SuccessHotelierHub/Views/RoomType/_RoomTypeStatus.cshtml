@@ -1,0 +1,150 @@
+﻿@using SuccessHotelierHub.Models
+@{
+
+    var roomTypeInfo = (RoomTypeVM)ViewData["RoomTypeInfo"];
+
+
+}
+
+@if (roomTypeInfo != null)
+{
+    <form id="frmRoomTypeInfo" name="frmRoomTypeInfo" enctype="multipart/form-data">
+        <div class="box-body">
+            <div class="row m-t-n-md">
+                <div class="col-md-4 form-group">
+                    <label for="RoomTypeCode">Room Type</label>
+                    <input type="text" class="form-control" id="RoomTypeCode" name="RoomTypeCode" readonly="readonly"
+                           value="@roomTypeInfo.RoomTypeCode">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="Description">Description</label>
+                    <input type="text" class="form-control" id="Description" name="Description" readonly="readonly"
+                           value="@roomTypeInfo.Description">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="NoOfRooms">Total</label>
+                    <input type="text" class="form-control" id="NoOfRooms" name="NoOfRooms" readonly="readonly"
+                           value="@roomTypeInfo.NoOfRooms">
+                </div>
+            </div>
+
+            <div class="row m-b-n-lg">
+                <div class="box-header with-border">
+                    <h3 class="box-title mt-10 mb-10 text-red">Housekeeping Status</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Vacant</th>
+                                        <th></th>
+                                        <th>Occupied</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Total</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantTotal"
+                                                   name="VacantTotal" readonly="readonly" value="@roomTypeInfo.NoOfRooms">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedTotal"
+                                                   name="OccupiedTotal" readonly="readonly" value="0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Inspected</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantInspected"
+                                                   name="VacantInspected" readonly="readonly"  value="0">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedInspected"
+                                                   name="OccupiedInspected" readonly="readonly"  value="0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Clean</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantClean"
+                                                   name="VacantClean" readonly="readonly"  value="0">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedClean"
+                                                   name="OccupiedClean" readonly="readonly"  value="0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dirty</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantDirty"
+                                                   name="VacantDirty" readonly="readonly"  value="0">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedDirty"
+                                                   name="OccupiedDirty" readonly="readonly"  value="0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>OOO</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantOOO"
+                                                   name="VacantOOO" readonly="readonly"  value="0">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedOOO"
+                                                   name="OccupiedOOO" readonly="readonly"  value="0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>OOS</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantOOS"
+                                                   name="VacantOOS" readonly="readonly"  value="0">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedOOS"
+                                                   name="OccupiedOOS" readonly="readonly"  value="0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pickup</td>
+                                        <td>
+                                            <input type="text" class="form-control" id="VacantPickup"
+                                                   name="VacantPickup" readonly="readonly"  value="0">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" class="form-control" id="OccupiedPickup"
+                                                   name="OccupiedPickup" readonly="readonly"  value="0">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer text-right">
+            <button type="button" data-dismiss="modal" class="btn btn-danger pull-right">Close</button>
+        </div>
+        <!-- /.box-footer -->
+    </form>
+
+}
+else
+{
+    <h2 class="text-red">Room Type Status Not Available.</h2>
+}

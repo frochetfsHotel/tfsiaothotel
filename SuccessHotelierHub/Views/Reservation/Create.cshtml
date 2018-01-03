@@ -191,7 +191,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-danger m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
+                        <span class="text-red m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -206,7 +206,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-danger m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
+                        <span class="text-red m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -245,12 +245,22 @@
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.RoomId)
+                        @*@Html.LabelFor(m => m.RoomId)
                         <select class="form-control" id="RoomId" name="RoomId">
                             <option value="">--Select Room--</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">101</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">102</option>
-                        </select>
+                        </select>*@
+
+                        @Html.LabelFor(m => m.RoomNumbers, new { @class = "required-label" })
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.RoomNumbers, new { @class = "form-control", placeholder = "Room #" })
+                            <div class="input-group-addon cursor-P" onclick="openRoomSearchModal();">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.RoomIds)
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ExtnId)
@@ -392,7 +402,7 @@
                         @Html.LabelFor(m => m.CreditCardNo)
                         @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
                     </div>
-                    <div class="col-md-3 form-group divCreditCardFields">
+                    <div class="col-md-3 form-group divCreditCardFields divCardExpirtyDate">
                         @Html.LabelFor(m => m.CardExpiryDate)                  
                         @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
                                 class="form-control" data-inputmask="'alias': 'mm/yy'" data-mask placeholder="mm/yy">*@                        
@@ -603,6 +613,28 @@
 </div>
 <!-- RoomType Modal Popup END -->
 
+<!-- Room Modal Popup START -->
+<div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Types</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateReservation" },
+                                    { "RoomType", ViewBag.RoomTypeList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Room Modal Popup END -->
+
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -648,10 +680,9 @@
             var html = "";
 
             $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                html += "<span class='btn btn-xs bg-maroon m-r-xs'>" + $(this).attr("data-preference") + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='" + $(this).val() + "'></i></span>";
+                html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
             });
 
-            //Remove last comma.
             if (!IsNullOrEmpty(html)) {
                 $('#divSelectedPreference').show();
                 $('#ListOfSelectedPreferences').append(html);
@@ -683,6 +714,41 @@
 
                 //Close Profile Search Modal.
                 $('#profileSearchModal').modal('toggle');
+
+                //Get Preferences                
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (result) {
+                        showToaster(result.responseText, ToasterType.ERROR);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/Profile/GetPreferencesByProfile")',
+                    type: 'GET',
+                    data: { profileId: profileId },
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var html = "";
+                            if (response.data.length > 0) {
+                                for (i = 0; i < response.data.length; i++) {
+                                    html += generatePreferenceButton(response.data[i].PreferenceId, response.data[i].PreferenceDescription);
+                                }
+
+                                if (!IsNullOrEmpty(html)) {
+                                    $('#divSelectedPreference').show();
+                                    $('#ListOfSelectedPreferences').html(html);
+                                }
+                            }
+                        }
+                    }
+                });
+
             } else {
                 showToaster("Please select any one profile.", ToasterType.ERROR);
             }
@@ -704,6 +770,29 @@
 
             } else {
                 showToaster("Please select any room type.", ToasterType.ERROR);
+            }
+        });
+
+        //Room
+        $('.btnAdvanceSearchRoomOk').click(function (e) {
+            $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {
+                //get selected room.
+            });
+
+            var selectedRoomType = $('input[name=chkRoom]:checked', '#frmAdvanceRoomSearch');
+            if (!IsNullOrEmpty(selectedRoomType.val())) {
+                var roomTypeId, roomTypeCode
+                roomTypeCode = $(selectedRoomType).data('roomtype');
+                roomTypeId = $(selectedRoomType).data('roomtypeid');
+
+                $('#RoomId').val(roomTypeId);
+                $('#RoomNo').val(roomTypeCode);
+
+                //Close Room Type Search Modal.
+                $('#roomModal').modal('toggle');
+
+            } else {
+                showToaster("Please select any room.", ToasterType.ERROR);
             }
         });
 
@@ -752,7 +841,7 @@
 
     function openPreferenceModal() {
         clearPreferenceSearch();
-        $("form#frmAdvancePreferenceSearch #btnSearch").click();
+        //$("form#frmAdvancePreferenceSearch #btnSearch").click();
         $('#preferenceModal').modal('toggle');
     }
 
@@ -772,6 +861,10 @@
 
         preferenceIds = RemoveLastCharacter(preferenceIds, Delimeter.COMMA);
         return preferenceIds;
+    }
+
+    function generatePreferenceButton(preferenceId, preference) {
+        return "<span class='btn btn-xs bg-maroon m-r-xs'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
     }
 
     function validateReservationData() {
@@ -899,6 +992,16 @@
         $("form#frmAdvanceRoomTypeSearch #btnSearch").click();
 
         $('#roomTypeModal').modal('toggle');
+    }
+
+    function openRoomSearchModal() {
+        clearRoomSearch();
+
+        $("form#frmAdvanceRoomSearch #RoomTypeId").val($('#RoomTypeId').val());
+
+        $("form#frmAdvanceRoomSearch #btnSearch").click();
+
+        $('#roomModal').modal('toggle');
     }
 
     function GotoProfileEditPage() {        

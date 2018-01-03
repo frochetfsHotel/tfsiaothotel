@@ -116,7 +116,26 @@ namespace SuccessHotelierHub.Repository
 
             return room;
         }
-        
+
+        public List<SearchAdvanceRoomResultVM> SearchAdvanceRoom(SearchAdvanceRoomParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = model.RoomTypeId },
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = model.ArrivalDate },
+                    new SqlParameter { ParameterName = "@NoOfNight", Value = model.NoOfNight },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = model.DepartureDate },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = model.RoomNo },
+                    new SqlParameter { ParameterName = "@Type", Value = model.Type }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceRoom", parameters);
+
+            var results = new List<SearchAdvanceRoomResultVM>();
+            results = DALHelper.CreateListFromTable<SearchAdvanceRoomResultVM>(dt);
+
+            return results;
+        }
 
         #endregion
     }

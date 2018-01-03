@@ -9,6 +9,23 @@
     var qid = string.Empty;
     var btnCancelUrl = Url.Action("IndividualProfileList", "Profile");
 
+    #region Set value added from Advance Profile Search Popup
+    if (Request.QueryString["firstName"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["firstName"])))
+    {
+        Model.FirstName = Convert.ToString(Request.QueryString["firstName"]);
+    }
+
+    if (Request.QueryString["lastName"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["lastName"])))
+    {
+        Model.LastName = Convert.ToString(Request.QueryString["lastName"]);
+    }
+
+    if (Request.QueryString["zipCode"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["zipCode"])))
+    {
+        Model.ZipCode = Convert.ToString(Request.QueryString["zipCode"]);
+    }
+    #endregion
+
     if (!string.IsNullOrWhiteSpace(sourceParam))
     {
         if (sourceParam == "RateQuery")
@@ -74,13 +91,6 @@
             <div class="box-body box-body-list">
                 <div class="row">
                     <div class="col-md-4 form-group">
-                        <label for="TitleId">Title</label>
-                        @Html.DropDownListFor(m => m.TitleId,
-                             new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
-                             "Select Title",
-                             new { @class = "form-control" })
-                    </div>
-                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
                         @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
@@ -89,6 +99,13 @@
                         @Html.LabelFor(m => m.FirstName, new { @class = "required-label" })  
                         @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
                         @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="TitleId">Title</label>
+                        @Html.DropDownListFor(m => m.TitleId,
+                             new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
+                             "Select Title",
+                             new { @class = "form-control" })
                     </div>
                 </div>
 
@@ -258,7 +275,7 @@
             var html = "";
 
             $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                html += "<span class='btn btn-xs bg-maroon m-r-xs'>" + $(this).attr("data-preference") + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='" + $(this).val() + "'></i></span>";
+                html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
             });
 
             //Remove last comma.
@@ -287,7 +304,7 @@
         //    $("form#frmAdvancePreferenceSearch #divPreferences").show();
         //}
 
-        $("form#frmAdvancePreferenceSearch #btnSearch").click();
+        //$("form#frmAdvancePreferenceSearch #btnSearch").click();
 
         $('#preferenceModal').modal('toggle');
     }
@@ -308,6 +325,10 @@
 
         preferenceIds = RemoveLastCharacter(preferenceIds, Delimeter.COMMA);
         return preferenceIds;
+    }
+
+    function generatePreferenceButton(preferenceId, preference) {
+        return "<span class='btn btn-xs bg-maroon m-r-xs'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
     }
 
 

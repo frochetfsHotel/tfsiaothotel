@@ -98,6 +98,12 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Room")]
         public Guid? RoomId { get; set; }
 
+        public string RoomIds { get; set; }
+
+        [DisplayName("Room #")]
+        [Required(ErrorMessage = "Please search and select room.")]
+        public string RoomNumbers { get; set; }
+
         [DisplayName("Extn")]
         public Guid? ExtnId { get; set; }
 

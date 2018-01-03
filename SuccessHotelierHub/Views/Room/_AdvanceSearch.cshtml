@@ -1,25 +1,25 @@
-﻿@model SuccessHotelierHub.Models.SearchAdvanceRoomTypeParametersVM
+﻿@model SuccessHotelierHub.Models.SearchAdvanceRoomParametersVM
 @using SuccessHotelierHub.Models
-@{
+@{ 
     var sourceRedirectionParam = "";
 
     sourceRedirectionParam = (string)ViewData["Source"];
 
-    var rateTypeList = (List<SelectListItem>)ViewData["RateType"];
+    var roomTypeList = (List<SelectListItem>)ViewData["RoomType"];
 }
 
-<form id="frmAdvanceRoomTypeSearch" name="frmAdvanceRoomTypeSearch" enctype="multipart/form-data" method="post">
+<form id="frmAdvanceRoomSearch" name="frmAdvanceRoomSearch" enctype="multipart/form-data" method="post">
     <div class="col-xs-12 text-right m-b-md padding-zero">
-        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomTypeOk">OK</button>
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomOk">OK</button>
         <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
     </div>
-    
-     <div class="pt_10 pl_10 pr_10 searchBox_Border">
+
+    <div class="pt_10 pl_10 pr_10 searchBox_Border">
         <div class="row">
             <div class="col-md-4 col-sm-4 col-xs-12 form-group">
-                @Html.LabelFor(m => m.RateTypeId)
-                @Html.DropDownListFor(m => m.RateTypeId,
-                                (IEnumerable<SelectListItem>)rateTypeList, "-- Select Rate Type --",
+                @Html.LabelFor(m => m.RoomTypeId)
+                @Html.DropDownListFor(m => m.RoomTypeId,
+                                (IEnumerable<SelectListItem>)roomTypeList, "-- Select Room Type --",
                                 htmlAttributes: new { @class = "form-control" })
             </div>
             <div class="col-md-3 col-xs-12 form-group">
@@ -46,43 +46,36 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3 col-xs-12 form-group">
-                @Html.LabelFor(m => m.RoomTypeCode)
-                @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code"})
+            <div class="col-md-4 col-xs-12 form-group">
+                @Html.LabelFor(m => m.RoomNo)
+                @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
             </div>
-            <div class="col-md-5 col-xs-12 form-group">
-                @Html.LabelFor(m => m.Description)
-                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "1"})
-            </div>
-            <div class="col-md-2 col-xs-12 form-group">
-                @Html.LabelFor(m => m.AvailableRooms)
-                @Html.TextBoxFor(m => m.AvailableRooms, new { @class = "form-control", placeholder = "Available Rooms", onkeydown = "onlyDigits(event)" })
-            </div>
-            <div class="col-md-2 col-xs-12 form-group">
-                @Html.LabelFor(m => m.RoomCapacity)
-                @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity", onkeydown = "onlyDigits(event)" })
+            <div class="col-md-4 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Type)
+                @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Type" })
             </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12 m-b-md text-right m-t-md">
-            <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoomType()">Search</button>
-            <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomTypeSearch()">Clear</button>
+            <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoom()">Search</button>
+            <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomSearch()">Clear</button>
         </div>
     </div>
 
 
 
     <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
-        <table class="table table-bordered table-hover table-striped cursor-P" id="tblRoomType">
+        <table class="table table-bordered table-hover table-striped cursor-P" id="tblRoom">
             <thead>
                 <tr>
                     <th></th>
+                    <th>Room#</th>
+                    <th>Type</th>
                     <th>Room Type</th>
-                    <th>Available Rooms</th>
+                    <th>Status</th>
                     <th>Description</th>
-                    <th>Room Capacity</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -101,13 +94,13 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $("form#frmAdvanceRoomTypeSearch select").change(function () {
-            searchRoomType();
+        $("form#frmAdvanceRoomSearch select").change(function () {
+            searchRoom();
         });
 
-        $("form#frmAdvanceRoomTypeSearch input").blur(function () {
+        $("form#frmAdvanceRoomSearch input").blur(function () {
             if (!IsNullOrEmpty($(this).val())) {
-                searchRoomType();
+                searchRoom();
             }
         });
     });
@@ -116,7 +109,7 @@
         $(element).parent("tr").find("td:first").find("input[type='radio']").prop("checked", true);
     }
 
-    function searchRoomType() {
+    function searchRoom() {
         $.ajax({
             beforeSend: function (xhr) {
                 showLoader();
@@ -127,9 +120,9 @@
             complete: function () {
                 hideLoader();
             },
-            url: '@Url.Content("~/RoomType/SearchAdvanceRoomType")',
+            url: '@Url.Content("~/Room/SearchAdvanceRoom")',
             type: 'POST',
-            data: $('#frmAdvanceRoomTypeSearch').serialize(),
+            data: $('#frmAdvanceRoomSearch').serialize(),
             success: function (response) {
                 if (response.IsSuccess == false) {
                     showToaster(response.errorMessage, ToasterType.ERROR);
@@ -138,8 +131,8 @@
                     //Show data in table.
                     var result = response.data;
 
-                    $("form#frmAdvanceRoomTypeSearch #tblRoomType tbody").empty();
-                    var tbody = $("form#frmAdvanceRoomTypeSearch #tblRoomType tbody");
+                    $("form#frmAdvanceRoomSearch #tblRoom tbody").empty();
+                    var tbody = $("form#frmAdvanceRoomSearch #tblRoom tbody");
 
                     var markup = "";
 
@@ -166,17 +159,16 @@
         });
     }
 
-    function clearRoomTypeSearch() {
-        $('form#frmAdvanceRoomTypeSearch #RateTypeId').val('');
-        $('form#frmAdvanceRoomTypeSearch #ArrivalDate').val('');
-        $('form#frmAdvanceRoomTypeSearch #NoOfNight').val('');
-        $('form#frmAdvanceRoomTypeSearch #DepartureDate').val('');
-        $('form#frmAdvanceRoomTypeSearch #RoomTypeCode').val('');
-        $('form#frmAdvanceRoomTypeSearch #Description').val('');
-        $('form#frmAdvanceRoomTypeSearch #AvailableRooms').val('');
-        $('form#frmAdvanceRoomTypeSearch #RoomCapacity').val('');
+    function clearRoomSearch() {
+        $('form#frmAdvanceRoomSearch #RoomTypeId').val('');
+        $('form#frmAdvanceRoomSearch #ArrivalDate').val('');
+        $('form#frmAdvanceRoomSearch #NoOfNight').val('');
+        $('form#frmAdvanceRoomSearch #DepartureDate').val('');
+        $('form#frmAdvanceRoomSearch #RoomNo').val('');
+        $('form#frmAdvanceRoomSearch #Type').val('');
 
-        $("form#frmAdvanceRoomTypeSearch #tblRoomType tbody").empty();
+        $("form#frmAdvanceRoomSearch #tblRoom tbody").empty();
     }
 
 </script>
+

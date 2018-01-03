@@ -178,7 +178,7 @@
                 </div>
 
                 <div class="col-xs-12 padding-zero m-t-sm">
-                    <div class="table-responsive">
+                    <div class="table-responsive" id="divReservationList">
                         <table class="table table-bordered table-hover table-striped" id="tblReservation">
                             <thead>
                                 <tr>
@@ -247,8 +247,9 @@
 
         setTimeout(InitializeReservationGrid, 200);
 
-        $("form#frmReservationList input[type='text']").keyup(function (event) {
-            if (event.keyCode === 13) {
+        $("#frmReservationList input[type=text]").keyup(function (event) {
+            debugger;
+            if (event.keyCode === 13) {                
                 $("#btnSearch").click();
             }
         });
@@ -349,9 +350,21 @@
         d.IsShowCancelledReservation = isShowCancelledReservation;
     }
 
-    function ReservationGridDataBound(response) {
+    function ReservationGridDataBound(response) {        
         if (response.IsSuccess == true) {
+            var confirmationNo = $('#ConfirmationNo').val();
+
+            //If search by confirmation no. then redirect to edit page.
+            if (!IsNullOrEmpty(confirmationNo))
+            {
+                var id = response.data[0].Id;
+                GotoReservationEdit(id);
+            }
+
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            goToByScroll("divReservationList");
+
             return response.data;
         }
         else {
@@ -380,7 +393,7 @@
                 error: function (result) {
                     showToaster(result.responseText, ToasterType.ERROR);
                 },
-                complete: function () {
+                complete: function () {                    
                     hideLoader();
                 },
                 url: '@Url.Content("~/Reservation/SearchReservation")',
@@ -429,47 +442,92 @@
             {
                 targets: 3,
                 data: "PhoneNo",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.PhoneNo + '</a> ';
+
+                }
             },
             {
                 targets: 4,
                 data: "ArrivalDate",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
+                }
             },
             {
                 targets: 5,
                 data: "NoOfNight",
-                orderable: false
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfNight + '</a> ';
+
+                }
             },
             {
                 targets: 6,
                 data: "DepartureDate",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
+                }
             },
             {
                 targets: 7,
                 data: "NoOfAdult",
-                orderable: false
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfAdult + '</a> ';
+
+                }
             },
             {
                 targets: 8,
                 data: "NoOfChildren",
-                orderable: false
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfChildren + '</a> ';
+
+                }
             },
             {
                 targets: 9,
                 data: "NoOfRoom",
-                orderable: false
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfRoom + '</a> ';
+
+                }
             },
             {
                 targets: 10,
                 data: "RoomTypeCode",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomTypeCode + '</a> ';
+
+                }
             },
             {
                 targets: 11,
                 data: "RateTypeCode",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RateTypeCode + '</a> ';
+
+                }
             },
             {
                 targets: 12,

@@ -392,6 +392,65 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Advance Room
+
+    public class SearchAdvanceRoomParametersVM
+    {
+        public SearchAdvanceRoomParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Room Type")]
+        public Guid? RoomTypeId { get; set; }
+
+        [DisplayName("Arrival Date")]
+        public DateTime? ArrivalDate { get; set; }
+
+        [DisplayName("Nights")]
+        public int NoOfNight { get; set; }
+
+        [DisplayName("Departure Date")]
+        public DateTime? DepartureDate { get; set; }
+
+        [DisplayName("Room#")]
+        public string RoomNo { get; set; }
+
+        [DisplayName("Type")]
+        public string Type { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchAdvanceRoomResultVM
+    {
+        public int RowNum { get; set; }
+
+        //Room
+        public Guid RoomId { get; set; }
+        public string RoomNo { get; set; }
+        public string Type { get; set; }
+        public string Description { get; set; }
+
+        //Room Status
+        public Guid? RoomStatusId { get; set; }
+        public string RoomStatusName { get; set; }
+        public string RoomStatusColor { get; set; }
+
+        //Room Type
+        public Guid RoomTypeId { get; set; }
+        public string RoomTypeCode { get; set; }
+        public string RoomTypeDescription { get; set; }
+
+
+    }
+    #endregion
+
     #region Search Room Type Rate Type Mapping 
 
     public class SearchRoomTypeRateTypeMappingParametersVM

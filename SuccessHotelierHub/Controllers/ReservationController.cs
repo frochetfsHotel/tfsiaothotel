@@ -19,7 +19,7 @@ namespace SuccessHotelierHub.Controllers
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
-        private CountryRepository countryRepository = new CountryRepository();        
+        private CountryRepository countryRepository = new CountryRepository();
         private TitleRepository titleRepository = new TitleRepository();
         private VipRepository vipRepository = new VipRepository();
         private PreferenceRepository preferenceRepository = new PreferenceRepository();
@@ -35,20 +35,20 @@ namespace SuccessHotelierHub.Controllers
         {
             var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
             var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
-            var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();            
+            var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
             var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
 
             ReservationVM model = new ReservationVM();
-            RateQueryVM rateQuery = new RateQueryVM();                        
+            RateQueryVM rateQuery = new RateQueryVM();
             if (Session["RateQueryVM"] != null)
             {
                 //rateQuery = (RateQueryVM)TempData["RateQueryVM"];
                 rateQuery = (RateQueryVM)Session["RateQueryVM"];
 
                 var profile = new IndividualProfileVM();
-                if(rateQuery.ProfileId.HasValue)
+                if (rateQuery.ProfileId.HasValue)
                     profile = profileRepository.GetIndividualProfileById(rateQuery.ProfileId.Value).FirstOrDefault();
 
                 model.ArrivalDate = rateQuery.ArrivalDate;
@@ -76,11 +76,11 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomTypeCode = rateQuery.RoomTypeCode; //RoomTypeCode
                 model.Rate = rateQuery.Amount; //Rate
 
-                model.PackageId= rateQuery.PackageId;
+                model.PackageId = rateQuery.PackageId;
             }
 
             #region Profile Info From Edit Profile Page
-                        
+
             var profileId = (string)TempData["ProfileId"];
             var firstName = (string)TempData["FirstName"];
             var lastName = (string)TempData["LastName"];
@@ -137,13 +137,13 @@ namespace SuccessHotelierHub.Controllers
 
                     model.ETA = time.TimeOfDay;
                 }
-                
+
                 #region Generate Confirmation No
                 string confirmationNo = string.Empty;
                 Int64 confirmationSuffix = 1;
 
                 var lastReservation = reservationRepository.GetLastReservationByDate(null);
-                
+
                 if (lastReservation != null)
                 {
                     string lastConfirmationNo = lastReservation.ConfirmationNumber;
@@ -237,7 +237,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Room Type
                 //Get Room Type Details.
-                if(model.RoomTypeId.HasValue)
+                if (model.RoomTypeId.HasValue)
                 {
                     var roomType = roomTypeRepository.GetRoomTypeById(model.RoomTypeId.Value).FirstOrDefault();
 
@@ -251,7 +251,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Preference Mapping
 
                 //Get Preference Mapping
-                var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);                
+                var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);
 
                 ViewBag.SelectedPreferences = selectedPreferences;
                 #endregion
@@ -316,7 +316,7 @@ namespace SuccessHotelierHub.Controllers
                 model.UpdatedBy = LogInManager.LoggedInUserId;
 
                 string ETAText = model.ETAText;
-                if(!string.IsNullOrWhiteSpace(ETAText))
+                if (!string.IsNullOrWhiteSpace(ETAText))
                 {
                     string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
                     string date = (todayDate + " " + ETAText);
@@ -529,9 +529,9 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
 
-            RateQueryVM model = new RateQueryVM();            
+            RateQueryVM model = new RateQueryVM();
 
-            if(!string.IsNullOrWhiteSpace(profileId))
+            if (!string.IsNullOrWhiteSpace(profileId))
             {
                 model.ProfileId = Guid.Parse(profileId);
             }
@@ -555,15 +555,26 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                bool blnShowWeekEndPrice = false;
+
+                if (model.ArrivalDate.HasValue)
+                {
+                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Friday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        blnShowWeekEndPrice = true;
+                    }
+                }
+
                 var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
                 var rateTypeList = rateTypeRepository.GetRateType(model.RateTypeCode);
-
+                
                 ViewData["RateType"] = rateTypeList;
                 ViewData["RoomType"] = roomTypeList;
+                ViewData["IsShowWeekEndPrice"] = blnShowWeekEndPrice;
 
                 return PartialView("_RateSheet");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
@@ -579,7 +590,7 @@ namespace SuccessHotelierHub.Controllers
 
                 return Json(new
                 {
-                    IsSuccess = true,                    
+                    IsSuccess = true,
                     data = Url.Action("Create", "Reservation")
                 }, JsonRequestBehavior.AllowGet);
             }

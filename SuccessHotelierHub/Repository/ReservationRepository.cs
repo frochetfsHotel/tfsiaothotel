@@ -12,12 +12,13 @@ namespace SuccessHotelierHub.Repository
     {
         #region Rate Sheet
 
-        public List<RateSheetResultVM> GetRateSheetDetail(Guid? rateTypeId, Guid? roomTypeId)
+        public List<RateSheetResultVM> GetRateSheetDetail(Guid? rateTypeId, Guid? roomTypeId, bool isShowWeekEndPrice = false)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@RateTypeId", Value = rateTypeId},
-                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId}
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId},
+                    new SqlParameter { ParameterName = "@IsShowWeekEndPrice", Value = isShowWeekEndPrice}
                 };
 
 
