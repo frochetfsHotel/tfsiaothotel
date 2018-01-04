@@ -482,7 +482,7 @@
                         @Html.LabelFor(m => m.CreditCardNo)
                         @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
                     </div>
-                    <div class="col-md-3 form-group divCreditCardFields divCardExpirtyDate">
+                    <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
                         @Html.LabelFor(m => m.CardExpiryDate)
                         @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
                             class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">*@
@@ -724,6 +724,7 @@
 
         //CardExpiryDate mm/yyyy
         //$('#CardExpiryDate').inputmask('mm/yyyy', { 'placeholder': 'mm/yyyy' });
+        $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
         //Date picker
         $('#ArrivalDate').datepicker({

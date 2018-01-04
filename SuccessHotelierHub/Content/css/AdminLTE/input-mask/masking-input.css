@@ -1,18 +1,18 @@
 
-.divCardExpirtyDate label {
+.divCardExpiryDate label {
     display: block;
 }
 
-.divCardExpirtyDate div {
+.divCardExpiryDate div {
     margin: 0 0 1rem 0;
 }
 
-.divCardExpirtyDate .shell {
+.divCardExpiryDate .shell {
     position: relative;
     line-height: 1;
 }
 
-    .divCardExpirtyDate .shell span {
+    .divCardExpiryDate .shell span {
         position: absolute;
         left: 3px;
         top: 1px;
@@ -21,15 +21,15 @@
         z-index: -1;
     }
 
-.divCardExpirtyDate .shell span i {    
+.divCardExpiryDate .shell span i {    
     /* any of these 3 will work */
     color: transparent;
     opacity: 0;
     visibility: hidden;
 }
 
-.divCardExpirtyDate input.masked,
-.divCardExpirtyDate .shell span {        
+.divCardExpiryDate input.masked,
+.divCardExpiryDate .shell span {        
     padding-right: 10px;
     background-color: transparent;
     text-transform: uppercase;
