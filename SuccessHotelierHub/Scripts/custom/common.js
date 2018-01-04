@@ -6,8 +6,8 @@
         autoclose: true,
         format: 'dd/mm/yyyy'
     })
-    //.change(changeColorOfDatePickerLabel)
-    //.on('changeDate', changeColorOfDatePickerLabel);;
+    .change(changeColorOfDatePickerLabel)
+    .on('changeDate', changeColorOfDatePickerLabel);;
 });
 
 var RootPath = ""; //Store Site Root Location.

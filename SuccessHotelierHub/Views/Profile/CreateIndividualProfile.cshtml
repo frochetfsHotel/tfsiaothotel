@@ -150,7 +150,7 @@
                         <label for="ddlCountry">Country</label>
                         @Html.DropDownListFor(m => m.CountryId, 
                                 (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState()" })
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState();" })
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="ddlState">State</label>
@@ -270,30 +270,22 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        
+        $("#frmIndividualProfile input[type='text'], textarea").blur(function () {         
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");                
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
 
-
-        //$("#frmIndividualProfile input[type='text'],  textarea").keyup(function () {
-        //    console.log("Id : " + $(this).attr("id"));
-        //    console.log("Value : " + $(this).val());
-        //    console.log("Type : " + $(this).attr("type"));
-
-        //    if (!IsNullOrEmpty($(this).val())) {
-        //        $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");                
-        //    } else {
-        //        $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
-        //    }
-        //});
-
-        //$("#frmIndividualProfile select").change(function () {
-        //    console.log("Id : " + $(this).attr("id"));
-        //    console.log("Value : " + $(this).val());
-
-        //    if (!IsNullOrEmpty($(this).val())) {
-        //        $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
-        //    } else {
-        //        $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
-        //    }
-        //});
+        $("#frmIndividualProfile select").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
 
 
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {            

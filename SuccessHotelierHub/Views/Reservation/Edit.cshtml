@@ -163,10 +163,10 @@
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CountryId)
+                        <label for="ddlCountry">Country</label>
                         @Html.DropDownListFor(m => m.CountryId,
                                 (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState()" })
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.LanguageId)
@@ -324,7 +324,7 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">102</option>
                         </select>*@
 
-                        @Html.LabelFor(m => m.RoomNumbers, new { @class = "required-label" })
+                        @Html.LabelFor(m => m.RoomNumbers)
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.RoomNumbers, new
                             {
@@ -523,7 +523,7 @@
                         @Html.TextBoxFor(m => m.GuestBalance, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-3 form-group">
-                        <label for="" class="col-xs-12 padding-zero">Disc. Amt</label>
+                        <label for="DiscountAmount" class="col-xs-12 padding-zero">Disc. Amt</label>
                         <div class="col-md-5 col-sm-5 padding-zero">
                             @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
                         </div>
@@ -726,6 +726,22 @@
         //$('#CardExpiryDate').inputmask('mm/yyyy', { 'placeholder': 'mm/yyyy' });
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
+        $("#frmReservation input[type='text'], textarea").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
+
+        $("#frmReservation select").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
+
         //Date picker
         $('#ArrivalDate').datepicker({
             autoclose: true,
@@ -775,6 +791,9 @@
 
         //Show Selected Preferences.
         showSelectedPreferences();
+
+        //Label Bold
+        SetLabelBold();
 
 
         //Preference
@@ -1070,7 +1089,7 @@
                 noOfNight = diffDays > 0 ? diffDays : 1;
             }
 
-           
+
 
             $('#NoOfNight').val(noOfNight);
         }
@@ -1194,6 +1213,189 @@
         if (!IsNullOrEmpty(roomNumbers)) {
             $('#RoomNumbers').val(roomNumbers);
         }
+    }
+
+    function SetLabelBold() {
+        //FirstName
+        if (!IsNullOrEmpty('@Model.FirstName'))
+            $('label[for="FirstName"]').addClass("label-bold");
+
+        //Title
+        if (!IsNullOrEmpty('@Model.TitleId'))
+            $('label[for="TitleId"]').addClass("label-bold");
+
+        //MemberType
+        if (!IsNullOrEmpty('@Model.MemberTypeId'))
+            $('label[for="MemberTypeId"]').addClass("label-bold");
+
+        //Country
+        if (!IsNullOrEmpty('@Model.CountryId'))
+            $('label[for="ddlCountry"]').addClass("label-bold");
+
+        //Language
+        if (!IsNullOrEmpty('@Model.LanguageId'))
+            $('label[for="LanguageId"]').addClass("label-bold");
+
+        //Vip
+        if (!IsNullOrEmpty('@Model.VipId'))
+            $('label[for="VipId"]').addClass("label-bold");
+
+        //PhoneNo
+        if (!IsNullOrEmpty('@Model.PhoneNo'))
+            $('label[for="PhoneNo"]').addClass("label-bold");
+
+        //MemberNo
+        if (!IsNullOrEmpty('@Model.MemberNo'))
+            $('label[for="MemberNo"]').addClass("label-bold");
+
+        //MemberLvt
+        if (!IsNullOrEmpty('@Model.MemberLvt'))
+            $('label[for="MemberLvt"]').addClass("label-bold");
+
+        //Agent
+        if (!IsNullOrEmpty('@Model.AgentId'))
+            $('label[for="AgentId"]').addClass("label-bold");
+
+        //Vip
+        if (!IsNullOrEmpty('@Model.VipId'))
+            $('label[for="VipId"]').addClass("label-bold");
+
+        //Company
+        if (!IsNullOrEmpty('@Model.CompanyId'))
+            $('label[for="CompanyId"]').addClass("label-bold");
+
+        //Group
+        if (!IsNullOrEmpty('@Model.GroupId'))
+            $('label[for="GroupId"]').addClass("label-bold");
+
+        //Source
+        if (!IsNullOrEmpty('@Model.SourceId'))
+            $('label[for="SourceId"]').addClass("label-bold");
+
+        //Contact
+        if (!IsNullOrEmpty('@Model.ContactId'))
+            $('label[for="ContactId"]').addClass("label-bold");
+
+        //NoOfNight
+        if (!IsNullOrEmpty('@Model.NoOfNight'))
+            $('label[for="NoOfNight"]').addClass("label-bold");
+
+        //NoOfAdult
+        if (!IsNullOrEmpty('@Model.NoOfAdult'))
+            $('label[for="NoOfAdult"]').addClass("label-bold");
+
+        //NoOfChildren
+        if (!IsNullOrEmpty('@Model.NoOfChildren'))
+            $('label[for="NoOfChildren"]').addClass("label-bold");
+
+        //NoOfRoom
+        if (!IsNullOrEmpty('@Model.NoOfRoom'))
+            $('label[for="NoOfRoom"]').addClass("label-bold");
+
+        //Rtc
+        if (!IsNullOrEmpty('@Model.RtcId'))
+            $('label[for="RtcId"]').addClass("label-bold");
+
+        //RoomNumbers
+        if (!IsNullOrEmpty('@roomNumbers'))
+            $('label[for="RoomNumbers"]').addClass("label-bold");
+
+        //Extn
+        if (!IsNullOrEmpty('@Model.ExtnId'))
+            $('label[for="ExtnId"]').addClass("label-bold");
+
+        //Rate
+        if (!IsNullOrEmpty('@Model.Rate'))
+            $('label[for="Rate"]').addClass("label-bold");
+
+        //Currency
+        if (!IsNullOrEmpty('@Model.CurrencyId'))
+            $('label[for="CurrencyId"]').addClass("label-bold");
+
+        //Package
+        if (!IsNullOrEmpty('@Model.PackageId'))
+            $('label[for="PackageId"]').addClass("label-bold");
+
+        //BlockCode
+        if (!IsNullOrEmpty('@Model.BlockCodeId'))
+            $('label[for="BlockCodeId"]').addClass("label-bold");
+
+        //ETAText
+        if (!IsNullOrEmpty('@ETAText'))
+            $('label[for="ETAText"]').addClass("label-bold");
+
+        //Origin
+        if (!IsNullOrEmpty('@Model.OriginId'))
+            $('label[for="OriginId"]').addClass("label-bold");
+
+        //CreditCardNo
+        if (!IsNullOrEmpty('@Model.CreditCardNo'))
+            $('label[for="CreditCardNo"]').addClass("label-bold");
+
+        //CardExpiryDate
+        if (!IsNullOrEmpty('@Model.CardExpiryDate'))
+            $('label[for="CardExpiryDate"]').addClass("label-bold");
+
+        //CVVNo
+        if (!IsNullOrEmpty('@Model.CVVNo'))
+            $('label[for="CVVNo"]').addClass("label-bold");
+
+        //ApprovalCode
+        if (!IsNullOrEmpty('@Model.ApprovalCode'))
+            $('label[for="ApprovalCode"]').addClass("label-bold");
+
+        //ApprovalAmount
+        if (!IsNullOrEmpty('@Model.ApprovalAmount'))
+            $('label[for="ApprovalAmount"]').addClass("label-bold");
+
+        //SuitWith
+        if (!IsNullOrEmpty('@Model.SuitWith'))
+            $('label[for="SuitWith"]').addClass("label-bold");
+
+        //GuestBalance
+        if (!IsNullOrEmpty('@Model.GuestBalance'))
+            $('label[for="GuestBalance"]').addClass("label-bold");
+
+        //DiscountAmount
+        if (!IsNullOrEmpty('@Model.DiscountAmount'))
+            $('label[for="DiscountAmount"]').addClass("label-bold");
+
+        //DiscountReasonId
+        if (!IsNullOrEmpty('@Model.DiscountReasonId'))
+            $('label[for="DiscountReasonId"]').addClass("label-bold");
+
+        //TARecordLocator
+        if (!IsNullOrEmpty('@Model.TARecordLocator'))
+            $('label[for="TARecordLocator"]').addClass("label-bold");
+
+        //SpecialsId
+        if (!IsNullOrEmpty('@Model.SpecialsId'))
+            $('label[for="SpecialsId"]').addClass("label-bold");
+
+        //ItemInventoryId
+        if (!IsNullOrEmpty('@Model.ItemInventoryId'))
+            $('label[for="ItemInventoryId"]').addClass("label-bold");
+
+        //ReservationComments
+        if (!IsNullOrEmpty('@Model.ReservationComments'))
+            $('label[for="ReservationComments"]').addClass("label-bold");
+
+        //InHouseComments
+        if (!IsNullOrEmpty('@Model.InHouseComments'))
+            $('label[for="InHouseComments"]').addClass("label-bold");
+
+        //CashieringComments
+        if (!IsNullOrEmpty('@Model.CashieringComments'))
+            $('label[for="CashieringComments"]').addClass("label-bold");
+
+        //HouseKeepingComments
+        if (!IsNullOrEmpty('@Model.HouseKeepingComments'))
+            $('label[for="HouseKeepingComments"]').addClass("label-bold");
+
+        //Remarks
+        if (!IsNullOrEmpty('@Model.Remarks'))
+            $('label[for="Remarks"]').addClass("label-bold");
+
     }
 
 </script>

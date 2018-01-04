@@ -29,38 +29,36 @@
             @Html.HiddenFor(m => m.RateTypeId)
             <!--HIDDEN FIELD-->
 
-            <div class="box-body">
+            <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RoomTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
                                             "Select Room Type",
-                                            new { @class = "form-control form-group" })
+                                            new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.RateTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RateTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
                                             "Select Rate Type",
-                                            new { @class = "form-control form-group" })
+                                            new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.RateTypeId, "", new { @class = "text-danger" })
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-group form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
+                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-6 form-group">
-                        @Html.LabelFor(m => m.Description)
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-group form-control", placeholder = "Description", rows = "3" })
-                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 form-group m-t-lg">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Description)
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                    </div>
+                    <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)

@@ -92,10 +92,10 @@
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CountryId)
+                        <label for="ddlCountry">Country</label>
                         @Html.DropDownListFor(m => m.CountryId,
                                 (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState()" })
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.LanguageId)
@@ -252,7 +252,7 @@
                                 <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">102</option>
                             </select>*@
 
-                        @Html.LabelFor(m => m.RoomNumbers, new { @class = "required-label" })
+                        @Html.LabelFor(m => m.RoomNumbers)
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.RoomNumbers, new
                        {
@@ -648,6 +648,23 @@
         //CardExpiryDate mm/yyyy
         //$('#CardExpiryDate').inputmask('mm/yy', { 'placeholder': 'mm/yy' });
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
+
+
+        $("#frmReservation input[type='text'], textarea").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
+
+        $("#frmReservation select").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
 
         //Date picker
         $('#ArrivalDate').datepicker({
@@ -1091,6 +1108,8 @@
 
         $('#roomModal').modal('toggle');
     }
+
+
 
 </script>
 
