@@ -44,7 +44,7 @@
         {
             preferenceItems += string.Format("{0},", preference.PreferenceId);
 
-            selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
+            selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
         }
 
         if (!string.IsNullOrWhiteSpace(preferenceItems))
@@ -127,7 +127,7 @@
             <input type="hidden" id="PreferenceItems" name="PreferenceItems" value="@preferenceItems" />
             <!-- HIDDEN FIELD -->
 
-            <div class="box-body">
+            <div class="box-body pt_10 pb-0">
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
@@ -251,7 +251,7 @@
                     </div>
                 </div>
 
-                <div class="clearfix"><hr /></div>
+                <div class="clearfix"><hr class="mt_5 mb_10" /></div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
@@ -262,7 +262,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-red m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
+                        <span class="text-blue m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -277,7 +277,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-red m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
+                        <span class="text-blue m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -336,7 +336,7 @@
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
-                        @Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })
+                        @*@Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })*@
                         @Html.HiddenFor(m => m.RoomIds)
 
                     </div>
@@ -486,7 +486,7 @@
                         @Html.LabelFor(m => m.CardExpiryDate)
                         @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
                             class="form-control" data-inputmask="'alias': 'mm/yyyy'" data-mask placeholder="mm/yyyy">*@
-                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" data-valid-example="12/21" value="@Model.CardExpiryDate"/>
+                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate"/>
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
@@ -543,14 +543,14 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Reason 3</option>
                         </select>
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">
+                    <div class="col-md-3 form-group m-t">
                         <label>
                             Total Price : <span id="totalPrice">&euro; 0.00</span>
                             <br />
                             @*<small class="m-l-sm">(Per Night)</small>*@
                             <span>
-                                [No. Of Nights <span class="text-danger" id="spnNoOfNight"
-                                data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-danger" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
+                                [No. Of Nights <span class="text-blue" id="spnNoOfNight"
+                                data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-blue" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
                             </span>
                         </label>
                     </div>
@@ -608,9 +608,9 @@
                     </div>
                 </div>
                 <div class="row" style="display:none;" id="divSelectedPreference">
-                    <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
-                        <div class="col-sm-10" id="ListOfSelectedPreferences">
+                    <div class="col-md-9 form-group">
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
+                        <div class="col-sm-9" id="ListOfSelectedPreferences">
                                                         
                         </div>
                     </div>
@@ -638,7 +638,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Preferences</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Preference/_Preferences.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateProfile" },
@@ -660,7 +660,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Profile Search</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Profile/_ProfileSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "EditReservation" }
@@ -683,7 +683,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Room Types</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/RoomType/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateReservation" },
@@ -705,7 +705,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Room Types</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateReservation" },
@@ -778,22 +778,17 @@
 
         //Preference
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {
-            var html = "";
+            var selectedPreferenceCount = 0;
+            selectedPreferenceCount = $('form#frmAdvancePreferenceSearch #selectedPreferences span').length;
 
-            $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
-            });
+            if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+                var selectedPreferenceElement = $('form#frmAdvancePreferenceSearch #selectedPreferences').html();
+                $("#ListOfSelectedPreferences").html(selectedPreferenceElement);
 
-            //Remove last comma.
-            if (!IsNullOrEmpty(html)) {
                 $('#divSelectedPreference').show();
-                $('#ListOfSelectedPreferences').append(html);
 
                 //Close Preference Search Modal.
                 $('#preferenceModal').modal('toggle');
-
-            } else {
-                showToaster("Please select preference.", ToasterType.ERROR);
             }
         });
 
@@ -949,8 +944,16 @@
 
     function openPreferenceModal() {
         clearPreferenceSearch();
-        //$("form#frmAdvancePreferenceSearch #btnSearch").click();
-        $('#preferenceModal').modal('toggle')
+        var selectedPreferenceCount = 0;
+        selectedPreferenceCount = $('#ListOfSelectedPreferences span').length
+
+        if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+            var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
+            $("form#frmAdvancePreferenceSearch #selectedPreferences").html(selectedPreferenceElement)
+            $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        }
+
+        $('#preferenceModal').modal('toggle');
     }
 
 
@@ -966,6 +969,12 @@
         if (element) {
             var preferenceId = $(element).data("preferenceid");
             $(element).parent("span").remove();
+
+            //Check Preference Modal Is Open.
+            if ($('#preferenceModal').hasClass('in')) {
+                //Uncheck preference after remove.
+                $('form#frmAdvancePreferenceSearch #chkPreference_' + preferenceId).prop("checked", false);
+            }
         }
     }
 
@@ -981,7 +990,7 @@
     }
 
     function generatePreferenceButton(preferenceId, preference) {
-        return "<span class='btn btn-xs bg-maroon m-r-xs'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
+        return "<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_" + preferenceId + "'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
     }
 
 
@@ -1128,10 +1137,11 @@
         if (!IsNullOrEmpty(profileId)) {
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=EditReservation&rid=" + reservationId;
             redirectTo(url);
-        } else {
-            showToaster("Selected profile may be invalid or not exist.", ToasterType.ERROR);
-            return false;
         }
+        //else {
+        //    showToaster("Selected profile may be invalid or not exist.", ToasterType.ERROR);
+        //    return false;
+        //}
     }
 
     //Advance Profile Search

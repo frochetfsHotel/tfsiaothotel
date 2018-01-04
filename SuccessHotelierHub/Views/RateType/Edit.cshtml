@@ -28,25 +28,23 @@
             @Html.HiddenFor(m => m.Id)
             <!--HIDDEN FIELD-->
 
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-6 form-group">
+            <div class="box-body pt_10 pb-0">
+                <div class="row"> 
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.RateTypeCode, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
                         @Html.ValidationMessageFor(m => m.RateTypeCode, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Description)
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
-                    <div class="col-md-6 form-group m-t-lg">
+                    <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)

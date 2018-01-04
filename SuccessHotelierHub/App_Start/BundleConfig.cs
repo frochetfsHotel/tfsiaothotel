@@ -33,7 +33,8 @@ namespace SuccessHotelierHub
                       "~/Content/css/responsive.css",
                       "~/Content/css/AdminLTE/bootstrap-datepicker.min.css",
                       "~/Content/css/AdminLTE/bootstrap-timepicker.min.css",
-                      "~/Content/css/AdminLTE/toastr.min.css"
+                      "~/Content/css/AdminLTE/toastr.min.css",
+                      "~/Content/css/AdminLTE/sweetalert2/sweetalert2.css"
                       ));
 
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
@@ -41,8 +42,9 @@ namespace SuccessHotelierHub
                       "~/Scripts/AdminLTE/bootstrap-timepicker.min.js",
                       "~/Scripts/AdminLTE/adminlte.min.js",
                       "~/Scripts/AdminLTE/toastr.min.js",
-                      "~/Scripts/AdminLTE/demo.js",
-                      "~/Scripts/Custom/jquery.validate.date.js",
+                      "~/Scripts/AdminLTE/sweetalert2/sweetalert2.min.js",
+                      "~/Scripts/AdminLTE/demo.js",                      
+                      "~/Scripts/Custom/jquery.validate.date.js",                      
                       "~/Scripts/Custom/common.js"
                       ));
 

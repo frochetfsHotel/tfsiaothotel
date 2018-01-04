@@ -23,7 +23,7 @@
         @using (Html.BeginForm("Create", "Preference", FormMethod.Post, new { id = "frmPreference", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
-            <div class="box-body">
+            <div class="box-body pt_10 pb-0">
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.PreferenceGroupId, new { @class = "required-label" })

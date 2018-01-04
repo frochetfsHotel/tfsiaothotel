@@ -191,7 +191,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-red m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
+                        <span class="text-blue m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -206,7 +206,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-red m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
+                        <span class="text-blue m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -255,16 +255,16 @@
                         @Html.LabelFor(m => m.RoomNumbers, new { @class = "required-label" })
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.RoomNumbers, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Room #",
-                                @readonly = "readonly"
-                            })
+                       {
+                           @class = "form-control",
+                           placeholder = "Room #",
+                           @readonly = "readonly"
+                       })
                             <div class="input-group-addon cursor-P" onclick="openRoomSearchModal();">
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
-                        @Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })
+                        @*@Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })*@
                         @Html.HiddenFor(m => m.RoomIds)
                     </div>
                     <div class="col-md-3 form-group">
@@ -411,7 +411,8 @@
                         @Html.LabelFor(m => m.CardExpiryDate)
                         @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
                             class="form-control" data-inputmask="'alias': 'mm/yy'" data-mask placeholder="mm/yy">*@
-                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" data-valid-example="12/21" />
+                        @*<input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" onkeydown="onlyDigits(event);" maxlength="5" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />*@
+                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
@@ -471,78 +472,79 @@
                     <div class="col-md-3 form-group">
                         <label>
                             Total Price : <span id="totalPrice">&euro; @(Model.NoOfNight * Model.Rate)</span>
-                             <br/>
+                            <br />
                             @*<small class="m-l-sm">(Per Night)</small>*@
-                            <span>[No. Of Nights <span class="text-danger" id="spnNoOfNight" 
-                                data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-danger" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
-                            </span>
-                        </label>
-                    </div>
-                </div>
+                            <span>
+                                [No. Of Nights <span class="text-blue" id="spnNoOfNight"
+                                                     data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-blue" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
 
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.TARecordLocator)
-                        @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Loc" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.SpecialsId)
-                        <select class="form-control" id="SpecialsId" name="SpecialsId">
-                            <option value="">--Select Specials--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Early Check in</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Down pillow</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ItemInventoryId)
-                        <select class="form-control" id="ItemInventoryId" name="ItemInventoryId">
-                            <option value="">--Select Item Inv.--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Rollaway Bed</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Crib</option>
-                        </select>
-                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.TARecordLocator)
+                                            @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Loc" })
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.SpecialsId)
+                                            <select class="form-control" id="SpecialsId" name="SpecialsId">
+                                                <option value="">--Select Specials--</option>
+                                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Early Check in</option>
+                                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Down pillow</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.ItemInventoryId)
+                                            <select class="form-control" id="ItemInventoryId" name="ItemInventoryId">
+                                                <option value="">--Select Item Inv.--</option>
+                                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Rollaway Bed</option>
+                                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Crib</option>
+                                            </select>
+                                        </div>
 
-                </div>
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ReservationComments)
-                        @Html.TextAreaFor(m => m.ReservationComments, new { @class = "form-control", placeholder = "Reservation Comments", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.InHouseComments)
-                        @Html.TextAreaFor(m => m.InHouseComments, new { @class = "form-control", placeholder = "In-House Comments", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CashieringComments)
-                        @Html.TextAreaFor(m => m.CashieringComments, new { @class = "form-control", placeholder = "Cashiering Comments", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.HouseKeepingComments)
-                        @Html.TextAreaFor(m => m.HouseKeepingComments, new { @class = "form-control", placeholder = "House Keeping Comments", rows = "3" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-9 form-group">
-                        @Html.LabelFor(m => m.Remarks)
-                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
-                    </div>
-                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
-                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
-                            Preference
-                        </button>
-                    </div>
-                </div>
-                <div class="row" style="display:none;" id="divSelectedPreference">
-                    <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
-                        <div class="col-sm-10" id="ListOfSelectedPreferences">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.ReservationComments)
+                                            @Html.TextAreaFor(m => m.ReservationComments, new { @class = "form-control", placeholder = "Reservation Comments", rows = "3" })
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.InHouseComments)
+                                            @Html.TextAreaFor(m => m.InHouseComments, new { @class = "form-control", placeholder = "In-House Comments", rows = "3" })
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.CashieringComments)
+                                            @Html.TextAreaFor(m => m.CashieringComments, new { @class = "form-control", placeholder = "Cashiering Comments", rows = "3" })
+                                        </div>
+                                        <div class="col-md-3 form-group">
+                                            @Html.LabelFor(m => m.HouseKeepingComments)
+                                            @Html.TextAreaFor(m => m.HouseKeepingComments, new { @class = "form-control", placeholder = "House Keeping Comments", rows = "3" })
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-9 form-group">
+                                            @Html.LabelFor(m => m.Remarks)
+                                            @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                                        </div>
+                                        <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                                            <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
+                                                Preference
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="display:none;" id="divSelectedPreference">
+                                        <div class="col-md-9 form-group">
+                                            <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
+                                            <div class="col-sm-9" id="ListOfSelectedPreferences">
 
-                        </div>
-                    </div>
-                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
 
-            </div>
+                                </div>
             <!-- /.box-body -->
             <div class="box-footer text-right">
                 <button type="button" class="btn btn-success" onclick="saveReservation();">Save</button>
@@ -563,7 +565,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Preferences</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Preference/_Preferences.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateProfile" },
@@ -584,7 +586,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Profile Search</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Profile/_ProfileSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateReservation" }
@@ -606,7 +608,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Room Types</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/RoomType/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateReservation" },
@@ -628,7 +630,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Room Types</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateReservation" },
@@ -643,7 +645,6 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-
         //CardExpiryDate mm/yyyy
         //$('#CardExpiryDate').inputmask('mm/yy', { 'placeholder': 'mm/yy' });
 
@@ -683,21 +684,17 @@
 
         //Preference
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {
-            var html = "";
+            var selectedPreferenceCount = 0;
+            selectedPreferenceCount = $('form#frmAdvancePreferenceSearch #selectedPreferences span').length;
 
-            $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
-            });
+            if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+                var selectedPreferenceElement = $('form#frmAdvancePreferenceSearch #selectedPreferences').html();
+                $("#ListOfSelectedPreferences").html(selectedPreferenceElement);
 
-            if (!IsNullOrEmpty(html)) {
                 $('#divSelectedPreference').show();
-                $('#ListOfSelectedPreferences').append(html);
 
                 //Close Preference Search Modal.
                 $('#preferenceModal').modal('toggle');
-
-            } else {
-                showToaster("Please select preference.", ToasterType.ERROR);
             }
         });
 
@@ -721,39 +718,7 @@
                 //Close Profile Search Modal.
                 $('#profileSearchModal').modal('toggle');
 
-                //Get Preferences
-                $.ajax({
-                    beforeSend: function (xhr) {
-                        showLoader();
-                    },
-                    error: function (result) {
-                        showToaster(result.responseText, ToasterType.ERROR);
-                    },
-                    complete: function () {
-                        hideLoader();
-                    },
-                    url: '@Url.Content("~/Profile/GetPreferencesByProfile")',
-                    type: 'GET',
-                    data: { profileId: profileId },
-                    success: function (response) {
-                        if (response.IsSuccess == false) {
-                            showToaster(response.errorMessage, ToasterType.ERROR);
-                        }
-                        else {
-                            var html = "";
-                            if (response.data.length > 0) {
-                                for (i = 0; i < response.data.length; i++) {
-                                    html += generatePreferenceButton(response.data[i].PreferenceId, response.data[i].PreferenceDescription);
-                                }
-
-                                if (!IsNullOrEmpty(html)) {
-                                    $('#divSelectedPreference').show();
-                                    $('#ListOfSelectedPreferences').html(html);
-                                }
-                            }
-                        }
-                    }
-                });
+                showPreferencesByProfile(profileId);
 
             } else {
                 showToaster("Please select any one profile.", ToasterType.ERROR);
@@ -817,11 +782,10 @@
 
         calculateTotalPrice();
 
-        //Change border color to green which has prefilled auto complete.
-        @*if (!IsNullOrEmpty('@Model.LastName')) {
-            $('#LastName').parent("form-group").addClass("has-success");
-        }*@
-
+        //Get Preferences By Profile.
+        if (!IsNullOrEmpty('@Model.ProfileId')) {
+            showPreferencesByProfile('@Model.ProfileId');
+        }
     });
 
     function arrivalDateChanged(e) {
@@ -860,7 +824,16 @@
 
     function openPreferenceModal() {
         clearPreferenceSearch();
-        //$("form#frmAdvancePreferenceSearch #btnSearch").click();
+
+        var selectedPreferenceCount = 0;
+        selectedPreferenceCount = $('#ListOfSelectedPreferences span').length
+
+        if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+            var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
+            $("form#frmAdvancePreferenceSearch #selectedPreferences").html(selectedPreferenceElement)
+            $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        }
+
         $('#preferenceModal').modal('toggle');
     }
 
@@ -868,7 +841,49 @@
         if (element) {
             var preferenceId = $(element).data("preferenceid");
             $(element).parent("span").remove();
+
+            //Check Preference Modal Is Open.
+            if ($('#preferenceModal').hasClass('in')) {
+                //Uncheck preference after remove.
+                $('form#frmAdvancePreferenceSearch #chkPreference_' + preferenceId).prop("checked", false);
+            }
         }
+    }
+
+    function showPreferencesByProfile(profileId) {
+        //Get Preferences
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (result) {
+                showToaster(result.responseText, ToasterType.ERROR);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Profile/GetPreferencesByProfile")',
+            type: 'GET',
+            data: { profileId: profileId },
+            success: function (response) {
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    var html = "";
+                    if (response.data.length > 0) {
+                        for (i = 0; i < response.data.length; i++) {
+                            html += generatePreferenceButton(response.data[i].PreferenceId, response.data[i].PreferenceDescription);
+                        }
+
+                        if (!IsNullOrEmpty(html)) {
+                            $('#divSelectedPreference').show();
+                            $('#ListOfSelectedPreferences').html(html);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     function getSelectedPreferenceItemIds() {
@@ -883,7 +898,7 @@
     }
 
     function generatePreferenceButton(preferenceId, preference) {
-        return "<span class='btn btn-xs bg-maroon m-r-xs'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
+        return "<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_" + preferenceId + "'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
     }
 
     function validateReservationData() {
@@ -933,11 +948,21 @@
                     }
                     else {
 
-                        alert("Reservation details saved successfully. Confirmation No : " + response.data.ConfirmationNo);
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/Reservation/List")');
-                        }, 1000);
-
+                        //alert("Reservation details saved successfully. Confirmation No : " + response.data.ConfirmationNo);
+                        swal({
+                            title: 'Confirmation# : <span class="text-blue">'+ response.data.ConfirmationNo + '</span>',
+                            type: 'success',
+                            html:'Reservation details saved successfully.',
+                            showCloseButton: true,
+                            showCancelButton: false,
+                            focusConfirm: false,
+                            confirmButtonText: 'OK',
+                        }).then((result) => {
+                            debugger;
+                            if (result.value) {
+                                redirectTo('@Url.Content("~/Reservation/List")');
+                            }
+                        })
                     }
                 }
             });
@@ -1026,10 +1051,11 @@
         if (!IsNullOrEmpty(profileId)) {
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=CreateReservation";
             redirectTo(url);
-        } else {
-            showToaster("Selected profile may be invalid or not exist.", ToasterType.ERROR);
-            return false;
         }
+        //else {
+        //    showToaster("Selected profile may be invalid or not exist.", ToasterType.ERROR);
+        //    return false;
+        //}
     }
 
     //Advance Profile Search

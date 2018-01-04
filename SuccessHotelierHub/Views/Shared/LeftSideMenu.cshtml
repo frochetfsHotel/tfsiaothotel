@@ -51,8 +51,8 @@
         </ul>*@
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusReservation" data-widget="tree" style="display:none;">            
-            <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-circle-o"></i>New Reservation</a></li>
-            <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-search" aria-hidden="true"></i>Update Reservation</a></li>            
+            <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-ticket "></i>New Reservation</a></li>
+            <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-pencil-square-o " aria-hidden="true"></i>Update Reservation</a></li>            
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-user"></i> Profiles 
@@ -63,39 +63,51 @@
                 <ul class="treeview-menu">
                     <li class="treeview">
                         <a href="#">
-                            <i class="fa fa-circle-o"></i> Individual Profile
+                            <i class="fa fa-user"></i> Individual Profile
                             <span class="pull-right-container">
                                 <i class="fa fa-angle-left pull-right"></i>
                             </span>
                         </a>
                         <ul class="treeview-menu">
                             <li>
-                                <a href="@Url.Action("CreateIndividualProfile","Profile")"><i class="fa fa-circle-o"></i> Create </a>
+                                <a href="@Url.Action("CreateIndividualProfile","Profile")"><i class="fa fa-pencil-square-o"></i> Create </a>
                             </li>
                             <li>
-                                <a href="@Url.Action("IndividualProfileList","Profile")"><i class="fa fa-circle-o"></i> Search </a>
+                                <a href="@Url.Action("IndividualProfileList","Profile")"><i class="fa fa-search"></i> Search </a>
                             </li>
                         </ul>
                     </li>
                     <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-building"></i>Company (Design)</a></li>
                 </ul>
             </li>                        
-            <li><a href="#"><i class="fa fa-circle-o"></i>Groups *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Calendar *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Floor Plan *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Room Plan *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Conference Allotments *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Conference Plan *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Guest History *</a></li>
+            <li><a href="#"><i class="fa fa-group"></i>Groups *</a></li>
+            <li><a href="#"><i class="fa fa-calendar"></i>Calendar *</a></li>
+            <li><a href="#"><i class="fa fa-building-o"></i>Floor Plan *</a></li>
+            <li><a href="#"><i class="fa fa-bed"></i>Room Plan *</a></li>
+            <li><a href="#"><i class="fa fa-users"></i>Conference Allotments *</a></li>
+            <li><a href="#"><i class="fa fa-calendar"></i>Conference Plan *</a></li>
+            <li><a href="#"><i class="fa fa-user-md"></i>Guest History *</a></li>
             
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusFrontDesk" data-widget="tree" style="display:none;">
             <li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-check-square-o" aria-hidden="true"></i>Check In (Design) *</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i>Arrivals *</a></li>
+            <li><a href="#"><i class="fa fa-fighter-jet"></i>Arrivals *</a></li>
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusMasterScreens" data-widget="tree" style="display:none;">
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-group" aria-hidden="true"></i> Preference Group
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("Create","PreferenceGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","PreferenceGroup")"><i class="fa fa-search"></i> Search </a></li>
+                </ul>
+            </li>
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-cog" aria-hidden="true"></i> Preference
@@ -104,8 +116,8 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","Preference")"><i class="fa fa-circle-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","Preference")"><i class="fa fa-circle-o"></i> Search </a></li>
+                    <li><a href="@Url.Action("Create","Preference")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","Preference")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
 
@@ -117,8 +129,8 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","RateType")"><i class="fa fa-circle-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","RateType")"><i class="fa fa-circle-o"></i> Search</a></li>
+                    <li><a href="@Url.Action("Create","RateType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","RateType")"><i class="fa fa-search"></i> Search</a></li>
                 </ul>
             </li>
 
@@ -130,8 +142,8 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","RoomType")"><i class="fa fa-circle-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","RoomType")"><i class="fa fa-circle-o"></i> Search </a></li>
+                    <li><a href="@Url.Action("Create","RoomType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","RoomType")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
             <li>
@@ -147,20 +159,20 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","Rate")"><i class="fa fa-circle-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","Rate")"><i class="fa fa-circle-o"></i> Search </a></li>
+                    <li><a href="@Url.Action("Create","Rate")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","Rate")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-star-half-o" aria-hidden="true"></i> Cancellation Reason
+                    <i class="fa fa-times-circle-o" aria-hidden="true"></i> Cancellation Reason
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","ReservationCancellationReason")"><i class="fa fa-circle-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","ReservationCancellationReason")"><i class="fa fa-circle-o"></i> Search </a></li>
+                    <li><a href="@Url.Action("Create","ReservationCancellationReason")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","ReservationCancellationReason")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
         </ul>

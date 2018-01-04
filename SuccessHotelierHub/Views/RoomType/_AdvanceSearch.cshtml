@@ -9,7 +9,7 @@
 }
 
 <form id="frmAdvanceRoomTypeSearch" name="frmAdvanceRoomTypeSearch" enctype="multipart/form-data" method="post">
-    <div class="col-xs-12 text-right m-b-md padding-zero">
+    <div class="col-xs-12 text-right m-b-sm padding-zero">
         <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomTypeOk">OK</button>
         <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
     </div>
@@ -63,18 +63,20 @@
                 @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity", onkeydown = "onlyDigits(event)" })
             </div>
         </div>
+
+         <div class="row">
+             <div class="col-md-12 m-b-sm text-right m-t-xs">
+                 <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoomType()">Search</button>
+                 <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomTypeSearch()">Clear</button>
+             </div>
+         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12 m-b-md text-right m-t-md">
-            <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoomType()">Search</button>
-            <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomTypeSearch()">Clear</button>
-        </div>
-    </div>
+    
 
 
 
-    <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
+    <div class="table-responsive m-t-md table_maxheight">
         <table class="table table-bordered table-hover table-striped cursor-P" id="tblRoomType">
             <thead>
                 <tr>
@@ -89,9 +91,6 @@
         </table>
     </div>
 
-    <div class="col-xs-12 text-right m-b-md padding-zero">
-        <hr class="hr_margin" />
-    </div>
 </form>
 
 
@@ -148,7 +147,7 @@
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
-                            markup += "<td><input type=\'radio\' class=\'cursor-P\' id=\'rbRoomType_" + result[i].Id + "\' name=\'rbRoomType\' value=\'" + result[i].RoomTypeId + "\'  data-roomtype=\'" + result[i].RoomTypeCode + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/></td>";
+                            markup += "<td class=\'text-center\'><label class=\'container_radio\'><input type=\'radio\' class=\'cursor-P\' id=\'rbRoomType_" + result[i].Id + "\' name=\'rbRoomType\' value=\'" + result[i].RoomTypeId + "\'  data-roomtype=\'" + result[i].RoomTypeCode + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/> <span class=\'checkmark_radio\'></span></label></td>";
                             markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].RoomTypeCode + "</td>";
                             markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].AvailableRooms + "</td>";
                             markup += "<td onclick=\"onSelectRoomType(this);\">" + result[i].RoomTypeDescription + "</td>";

@@ -1,15 +1,15 @@
-﻿@model SuccessHotelierHub.Models.ReservationCancellationReasonVM
+﻿@model SuccessHotelierHub.Models.PreferenceGroupVM
 @{
-    ViewBag.Title = "Edit Reservation Cancellation Reason";
+    ViewBag.Title = "Edit Preference Group";
 }
 
 <section class="content-header">
     <h1>
-        Reservation Cancellation Reason <small>Edit</small>
+        Preference Group <small>Edit</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Reservation Cancellation Reason</li>
+        <li class="">Preference Group</li>
         <li class="active">Edit</li>
     </ol>
 </section>
@@ -17,9 +17,9 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Reservation Cancellation Reason Details</h3>
+            <h3 class="box-title">Preference Group Details</h3>
         </div>
-        @using (Html.BeginForm("Edit", "ReservationCancellationReason", FormMethod.Post, new { id = "frmCancellationReason", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Edit", "PreferenceGroup", FormMethod.Post, new { id = "frmPreferenceGroup", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
 
@@ -29,18 +29,18 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.Code, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
-                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Description, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Description, new { @class = "form-control", placeholder = "Description" })
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description" , rows = "3"})
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
 
-                    <div class="col-md-4 form-group m-t-lg">
+                    <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
@@ -50,19 +50,21 @@
                 </div>
             </div>
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success m-r-xs" onclick="return updateReservationCancellationReason();">Update</button>
-                <a href="@Url.Action("List", "ReservationCancellationReason")" class="btn btn-danger">Cancel</a>
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updatePreferenceGroup();">Update</button>
+                <a href="@Url.Action("List", "PreferenceGroup")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
 </section>
 
 <script type="text/javascript">
-    function validateReservationCancellationReason() {
+    function validatePreferenceGroup() {
+
         var errorMessage = "";
         var blnValid = true;
 
-        if ($("#frmCancellationReason").valid() == false) {
+
+        if ($("#frmPreferenceGroup").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
@@ -71,9 +73,9 @@
     }
 
 
-    function updateReservationCancellationReason() {
+    function updatePreferenceGroup() {
 
-        if (validateReservationCancellationReason()) {
+        if (validatePreferenceGroup()) {
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -84,17 +86,18 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/ReservationCancellationReason/Edit")',
+                url: '@Url.Content("~/PreferenceGroup/Edit")',
                 type: 'POST',
-                data: $('#frmCancellationReason').serialize(),
+                data: $('#frmPreferenceGroup').serialize(),
                 success: function (response) {
-                    if (response.IsSuccess == false) {                        
+                    if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
-                    else {                        
-                        showToaster("Cancellation Reason updated successfully", ToasterType.SUCCESS);
+                    else {
+
+                        showToaster("Preference Group details updated successfully", ToasterType.SUCCESS);
                         setTimeout(function () {
-                            redirectTo('@Url.Content("~/ReservationCancellationReason/List")');
+                            redirectTo('@Url.Content("~/PreferenceGroup/List")');
                         }, 1000);
                     }
                 }

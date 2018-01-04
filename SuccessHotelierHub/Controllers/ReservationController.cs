@@ -80,7 +80,7 @@ namespace SuccessHotelierHub.Controllers
                 model.PackageId = rateQuery.PackageId;
             }
 
-            #region Profile Info From Edit Profile Page
+            #region Profile Info From Profile Page
 
             var profileId = (string)TempData["ProfileId"];
             var firstName = (string)TempData["FirstName"];

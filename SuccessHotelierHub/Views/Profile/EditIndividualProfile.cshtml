@@ -40,7 +40,7 @@
         {
             preferenceItems += string.Format("{0},", preference.PreferenceId);
 
-            selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
+            selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
         }
 
         if (!string.IsNullOrWhiteSpace(preferenceItems))
@@ -83,7 +83,7 @@
             <input type="hidden" id="Qid" name="Qid" value="@qid" />
             <!-- HIDDEN FIELD -->
 
-            <div class="box-body">
+            <div class="box-body pt_10 pb-0">
                 <div class="row">                 
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
@@ -229,7 +229,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 form-group m-t-sm m-r-n-lg">
+                    <div class="col-md-2 m-b-xs m-r-n-lg">
                         <label for="IsActive" class="container1">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
@@ -257,7 +257,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Preferences</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Preference/_Preferences.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateProfile" },
@@ -276,22 +276,18 @@
         //Show Selected Preference Checkboxes
         showSelectedPreferences();
 
-        $('.btnAdvanceSearchPreferenceOk').click(function (e) {            
-            var html = "";
+        $('.btnAdvanceSearchPreferenceOk').click(function (e) {         
+            var selectedPreferenceCount = 0;
+            selectedPreferenceCount = $('form#frmAdvancePreferenceSearch #selectedPreferences span').length;
 
-            $("form#frmAdvancePreferenceSearch input:checkbox[name='chkPreference']:checked").each(function () {
-                html += generatePreferenceButton($(this).val(), $(this).attr("data-preference"));
-            });
+            if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+                var selectedPreferenceElement = $('form#frmAdvancePreferenceSearch #selectedPreferences').html();
+                $("#ListOfSelectedPreferences").html(selectedPreferenceElement);
 
-            if (!IsNullOrEmpty(html)) {                
-                $('#divSelectedPreference').show();                
-                $('#ListOfSelectedPreferences').append(html);
+                $('#divSelectedPreference').show();
 
                 //Close Preference Search Modal.
                 $('#preferenceModal').modal('toggle');
-
-            } else {                
-                showToaster("Please select preference.", ToasterType.ERROR);
             }
         });
 
@@ -299,16 +295,15 @@
 
     function openPreferenceModal() {
         clearPreferenceSearch();
-        //var selectedPreferenceCount = 0;
-        //selectedPreferenceCount = $('#ListOfSelectedPreferences span').length
+        var selectedPreferenceCount = 0;
+        selectedPreferenceCount = $('#ListOfSelectedPreferences span').length
 
-        //if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
-        //    var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
-        //    $("form#frmAdvancePreferenceSearch #selectedPreferences").append(selectedPreferenceElement)
-        //    $("form#frmAdvancePreferenceSearch #divPreferences").show();
-        //}
+        if (!IsNullOrEmpty(selectedPreferenceCount) && selectedPreferenceCount > 0) {
+            var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
+            $("form#frmAdvancePreferenceSearch #selectedPreferences").html(selectedPreferenceElement)
+            $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        }
 
-        //$("form#frmAdvancePreferenceSearch #btnSearch").click();
         $('#preferenceModal').modal('toggle');
     }
 
@@ -325,6 +320,12 @@
         if (element) {            
             var preferenceId = $(element).data("preferenceid");
             $(element).parent("span").remove();
+
+            //Check Preference Modal Is Open.
+            if ($('#preferenceModal').hasClass('in')) {
+                //Uncheck preference after remove.
+                $('form#frmAdvancePreferenceSearch #chkPreference_' + preferenceId).prop("checked", false);
+            }
         }
     }
 
@@ -340,7 +341,7 @@
     }
 
     function generatePreferenceButton(preferenceId, preference) {
-        return "<span class='btn btn-xs bg-maroon m-r-xs'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
+        return "<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_" + preferenceId + "'>" + preference + " <i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this);' data-preferenceid='" + preferenceId + "'></i></span>";
     }
 
     function getState() {

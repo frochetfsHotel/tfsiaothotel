@@ -207,6 +207,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\PreferenceController.cs" />
+    <Compile Include="Controllers\PreferenceGroupController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\RateController.cs" />
     <Compile Include="Controllers\RateTypeController.cs" />
@@ -315,6 +316,9 @@
     <Content Include="Content\css\AdminLTE\skins\skin-yellow.min.css" />
     <Content Include="Content\css\AdminLTE\skins\_all-skins.css" />
     <Content Include="Content\css\AdminLTE\skins\_all-skins.min.css" />
+    <Content Include="Content\css\AdminLTE\sweetalert2\sweetalert2.css" />
+    <Content Include="Content\css\AdminLTE\sweetalert2\sweetalert2.min.css" />
+    <Content Include="Content\css\AdminLTE\sweetalert\sweetalert.css" />
     <Content Include="Content\css\AdminLTE\toastr.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
@@ -1663,6 +1667,7 @@
     <Content Include="Content\css\Ionicons\src\xbox.svg" />
     <Content Include="Content\css\responsive.css" />
     <Content Include="Content\css\Site.css" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\avatar.png" />
     <Content Include="Content\img\avatar04.png" />
@@ -1713,6 +1718,9 @@
     <Content Include="Scripts\AdminLTE\jquery.dataTables.min.js" />
     <Content Include="Scripts\AdminLTE\pages\dashboard.js" />
     <Content Include="Scripts\AdminLTE\pages\dashboard2.js" />
+    <Content Include="Scripts\AdminLTE\sweetalert2\sweetalert2.js" />
+    <Content Include="Scripts\AdminLTE\sweetalert2\sweetalert2.min.js" />
+    <Content Include="Scripts\AdminLTE\sweetalert\sweetalert.min.js" />
     <Content Include="Scripts\AdminLTE\toastr.min.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
@@ -1785,6 +1793,10 @@
     <Content Include="Content\css\AdminLTE\datatables.net-bs\.bower.json" />
     <Content Include="Content\css\AdminLTE\datatables.net-bs\bower.json" />
     <Content Include="Content\css\AdminLTE\datatables.net-bs\Readme.md" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\LocalSuccessHotelierHub.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom\common.js" />
@@ -1885,6 +1897,9 @@
     <Content Include="Views\Home\Default.cshtml" />
     <Content Include="Views\RoomType\_RoomTypeStatus.cshtml" />
     <Content Include="Views\Room\_AdvanceSearch.cshtml" />
+    <Content Include="Views\PreferenceGroup\Create.cshtml" />
+    <Content Include="Views\PreferenceGroup\Edit.cshtml" />
+    <Content Include="Views\PreferenceGroup\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

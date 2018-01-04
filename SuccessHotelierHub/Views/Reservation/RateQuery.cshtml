@@ -73,7 +73,7 @@
                         <input type="hidden" id="hdnRoomTypeRateTypeMappingId" name="hdnRoomTypeRateTypeMappingId" value="" />
                         <!-- HIDDEN FIELD -->
 
-                        <div class="box-body">
+                        <div class="box-body pb-0">
                             <div class="pt_10 pl_10 pr_10 searchBox_Border">
                                 <div class="row">
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
@@ -84,7 +84,7 @@
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                         </div>
-                                        <span class="text-red m-l-md" id="ArrivalDayOfWeek"></span>
+                                        <span class="text-blue m-l-md" id="ArrivalDayOfWeek"></span>
                                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
@@ -99,7 +99,7 @@
                                                 <i class="fa fa-calendar"></i>
                                             </div>
                                         </div>
-                                        <span class="text-red m-l-md" id="DepartureDayOfWeek"></span>
+                                        <span class="text-blue m-l-md" id="DepartureDayOfWeek"></span>
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfAdult)
@@ -196,11 +196,11 @@
                             </div>
 
 
-                            <div class="row">
+                            <div class="row m-t">
                                 <div class="box-header with-border">
                                     <h3 class="box-title mt-10 mb-10">Show Rates</h3>
                                 </div>
-                                <div class="box-body">
+                                <div class="box-body pb-0">
                                     <div class="row">
                                         <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                             <label class="container1" for="IsClosed">
@@ -304,8 +304,8 @@
                             </div>
                         </div>
 
-                        <div class="col-xs-12 m-b-md text-right">
-                            <hr />
+                        <div class="col-xs-12 m-b-xs text-right">
+                            <hr class="mt_10 mb_15" />
                             @*<button type="button" class="btn btn-info m-r-xs" onclick="showRateSheet();">Next</button>*@
                             <a class="btn btn-info m-r-xs" onclick="showRateSheet();">Search</a>
                             @*<button type="submit" class="btn btn-danger">Cancel</button>*@
@@ -318,8 +318,8 @@
                     <p id="reservationInfo"></p>
                     <p id="customerName"></p>
 
-                    <div class="col-xs-12 padding-zero">
-                        <div class="col-md-3 col-sm-12 col-xs-12 form-group">
+                    <div class="col-xs-12">
+                        <div class="col-md-3 col-sm-12 col-xs-12 padding-zero form-group">
                             @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                             <div class="input-group date">
                                 @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy", @id = "txtArrivalDate", name = "txtArrivalDate" })
@@ -330,7 +330,7 @@
                             @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                         </div>
                         <div class="clearfix"></div>
-                    </div>
+                    
 
                     <div class="table-responsive" id="divRateSheet">
                         @Html.Partial("_RateSheet",
@@ -340,6 +340,7 @@
                                     { "IsShowWeekEndPrice", false }
                                 })
                     </div>
+                  </div>
 
                     <div class="col-xs-12 padding-zero">
                         <div class="col-md-offset-2 col-md-8 col-sm-offset-1 col-sm-10 col-xs-12 padding-zero">

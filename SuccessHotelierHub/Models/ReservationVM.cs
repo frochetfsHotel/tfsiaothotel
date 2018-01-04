@@ -101,7 +101,7 @@ namespace SuccessHotelierHub.Models
         public string RoomIds { get; set; }
 
         [DisplayName("Room #")]
-        [Required(ErrorMessage = "Please search and select room.")]
+        //[Required(ErrorMessage = "Please search and select room.")]
         public string RoomNumbers { get; set; }
 
         [DisplayName("Extn")]

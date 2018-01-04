@@ -5,7 +5,9 @@
     $('.mydatepicker').datepicker({
         autoclose: true,
         format: 'dd/mm/yyyy'
-    });
+    })
+    //.change(changeColorOfDatePickerLabel)
+    //.on('changeDate', changeColorOfDatePickerLabel);;
 });
 
 var RootPath = ""; //Store Site Root Location.
@@ -370,4 +372,14 @@ function goToByScroll(id) {
 
 function arrayContains(searchItem, array) {
     return (array.indexOf(searchItem) > -1) ? true : false;
+}
+
+function changeColorOfDatePickerLabel(element) {
+    if (element) {
+        if (!IsNullOrEmpty($(element)[0].target.value)) {
+            $('label[for="' + $(element)[0].target.id + '"]').addClass("label-bold");
+        } else {
+            $('label[for="' + $(element)[0].target.id + '"]').removeClass("label-bold");
+        }
+    }
 }

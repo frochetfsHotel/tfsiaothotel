@@ -26,54 +26,51 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Search Rate Type &nbsp; &nbsp;<small>(Week End Price)</small></h3>
-            <div class="pull-right box-tools m-r-md">
+            <div class="pull-right box-tools">
                 <a href="@Url.Action("Create","RateType")"
                    class="btn btn-info btn-sm" style="color: #fff">Add Rate Type</a>
             </div>
         </div>
         <form class="frmRateTypeList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
-                <div class="col-xs-12 padding-zero">
-                    <div class="searchbox_padding searchBox_Border">
-                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                <div class="searchbox_padding searchBox_Border">
+                    <div class="col-xs-12 padding-zero">
+                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
                             <label for="RateTypeCode" class="">Rate Type Code</label>
                             @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
                         </div>
-                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group ">
+                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
                             <label for="Amount" class="">Amount</label>
                             @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount" })
                         </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="col-xs-12 padding-zero">
-                        <div class="pull-right m-t">
+                        <div class="col-md-3 col-sm-4 col-xs-12 mt_25 form-group">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRateType()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRateType()">Clear</button>
                         </div>
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                    <div class="col-xs-12 padding-zero m-t-sm">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped" id="tblRateTypes">
-                                <thead>
-                                    <tr>
-                                        <th>CreatedOn</th>
-                                        <th>Rate Type Code</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                        <div class="clearfix"></div>
-                        <div class="text-left">
-                            @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RateTypeGridPageChange" })
-                        </div>
+                <div class="col-xs-12 padding-zero m-t">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblRateTypes">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Rate Type Code</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RateTypeGridPageChange" })
                     </div>
                 </div>
+            </div>
         </form>
     </div>
 </section>
@@ -226,38 +223,48 @@
 
     function deleteRateType(item, e, id) {
 
-        if (confirm("Are you sure do you want to delete ?")) {
+        swal({
+            title: 'Are you sure do you want to delete?',
+            type: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (result) {
+                        showToaster(result.responseText, ToasterType.ERROR);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/RateType/Delete")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.IsSuccess == true) {
 
-            $.ajax({
-                beforeSend: function (xhr) {
-                    showLoader();
-                },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
-                },
-                complete: function () {
-                    hideLoader();
-                },
-                url: '@Url.Content("~/RateType/Delete")',
-                type: 'POST',
-                data: { id: id },
-                success: function (response) {
-                    if (response.IsSuccess == true) {
+                            var tr = $('#tblRateTypes  tbody tr#' + id)
+                            var row = grdRateType.row(tr);
+                            var rowNode = row.node();
+                            row.remove();
+                            grdRateType.draw();
 
-                        var tr = $('#tblRateTypes  tbody tr#' + id)
-                        var row = grdRateType.row(tr);
-                        var rowNode = row.node();
-                        row.remove();
-                        grdRateType.draw();
-
-                        showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                            showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                        }
+                        else {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
                     }
-                    else {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                }
-            });
-        }
+                });
+            }
+        })
+
 
     }
 </script>

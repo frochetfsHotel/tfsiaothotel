@@ -12,8 +12,8 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         
 
-        [DisplayName("Preference Group Name")]
-        [Required(ErrorMessage = "Please enter preference group name.")]
+        [DisplayName("Name")]
+        [Required(ErrorMessage = "Please enter name.")]
         public string Name { get; set; }
 
         [DisplayName("Description")]        

@@ -12,7 +12,7 @@
 
 
 <form id="frmAdvanceCancellationReasonSearch" name="frmAdvanceCancellationReasonSearch" enctype="multipart/form-data" method="post">
-    <div class="col-xs-12 text-right m-b-md padding-zero">        
+    <div class="col-xs-12 text-right m-b-sm padding-zero">        
         <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchCancellationReasonOk">OK</button>
         <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
     </div>
@@ -23,7 +23,7 @@
                 @Html.LabelFor(m => m.Reason)
                 @Html.TextBoxFor(m => m.Reason, new { @class = "form-control" })
             </div>
-            <div class="col-md-4 m-b-md text-left m-t-md">
+            <div class="col-md-4 m-b-sm text-left m-t-md">
                 <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchReason()">Search</button>
                 <button type="button" class="btn btn-danger" id="btnClear" onclick="clearSearch()">Clear</button>
             </div>
@@ -39,7 +39,7 @@
 
 
     <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
-        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReason">
+        <table class="table table-bordered table-hover table-striped cursor-P table_maxheight" id="tblReason">
             <thead>
                 <tr>
                     <th></th>
@@ -76,10 +76,6 @@
                 }
             </tbody>
         </table>
-    </div>
-
-    <div class="col-xs-12 text-right m-b-md padding-zero">
-        <hr class="hr_margin" />
     </div>
 </form>
 
@@ -166,7 +162,7 @@
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
-                            markup += "<td><input type=\'radio\' class=\'rbCancellationReason cursor-P\' id=\'rbCancellationReason_" + result[i].Id + "\' name=\'rbCancellationReason\' value=\'" + result[i].Id + "\'  data-code=\'" + result[i].Code + "\'  data-description=\'" + result[i].Description + "\' onchange=\'showReason(this);\'/></td>";
+                            markup += "<td class=\'text-center\'><label class=\'container_radio\'><input type=\'radio\' class=\'rbCancellationReason cursor-P\' id=\'rbCancellationReason_" + result[i].Id + "\' name=\'rbCancellationReason\' value=\'" + result[i].Id + "\'  data-code=\'" + result[i].Code + "\'  data-description=\'" + result[i].Description + "\' onchange=\'showReason(this);\'/><span class=\'checkmark_radio\'></span></label></td>";
                             markup += "<td onclick=\"onSelectReason('rbCancellationReason_" + result[i].Id + "');\">" + result[i].Code + "</td>";
                             markup += "<td onclick=\"onSelectReason('rbCancellationReason_" + result[i].Id + "');\">" + result[i].Description + "</td>";
 

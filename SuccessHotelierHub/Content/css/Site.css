@@ -306,7 +306,7 @@ textarea {
     padding-left: 30px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -362,7 +362,7 @@ textarea {
     padding: 20px 15px;
 }
 .box-body-list{
-     padding: 10px 15px 20px;
+     padding: 15px 15px 20px;
 }
 .padding_left{
     padding-left: 0;
@@ -400,7 +400,7 @@ textarea {
 /*Pagging*/
 
 .pageNumTextBox {
-    height: 23px;
+    height: 25px;
     padding: 5px;
     font-size: 12px;
     width: 35%;
@@ -466,8 +466,22 @@ label{
 .required-label {
     font-weight: bold !important;
 }
+.label-bold {
+    font-weight: bold !important;
+}
 
 .text-danger {
+    /*color: #0000FF !important;*/
+    color: #FF0000 !important;
+}
+
+.text-red {
+    /*color: #0000FF !important;*/
+    color: #FF0000 !important;
+}
+
+.text-blue {
+    /*color: #0000FF !important;*/
     color: #0000FF !important;
 }
 
@@ -488,6 +502,9 @@ label{
 .mt_20 {
     margin-top:20px !important;
 }
+.mt_25 {
+    margin-top:25px !important;
+}
 
 .ml_5 {
     margin-left:5px !important;
@@ -500,6 +517,9 @@ label{
 }
 .ml_20 {
     margin-left:20px !important;
+}
+.ml_25 {
+    margin-left:25px !important;
 }
 
 .mr_5 {
@@ -514,6 +534,9 @@ label{
 .mr_20 {
     margin-right:20px !important;
 }
+.mr_25 {
+    margin-right:25px !important;
+}
 
 .mb_5 {
     margin-bottom:5px !important;
@@ -526,6 +549,9 @@ label{
 }
 .mb_20 {
     margin-bottom:20px !important;
+}
+.mb_25 {
+    margin-bottom:25px !important;
 }
 
 /** Custom Padding **/
@@ -541,6 +567,9 @@ label{
 .pt_20 {
     padding-top:20px !important;
 }
+.pt_25 {
+    padding-top:25px !important;
+}
 
 .pl_5 {
     padding-left:5px !important;
@@ -553,6 +582,9 @@ label{
 }
 .pl_20 {
     padding-left:20px !important;
+}
+.pl_25 {
+    padding-left:25px !important;
 }
 
 .pr_5 {
@@ -567,6 +599,9 @@ label{
 .pr_20 {
     padding-right:20px !important;
 }
+.pr_25 {
+    padding-right:25px !important;
+}
 
 .pb_5 {
     padding-bottom:5px !important;
@@ -580,6 +615,10 @@ label{
 .pb_20 {
     padding-bottom:20px !important;
 }
+.pb_25 {
+    padding-bottom:25px !important;
+}
+
 .datepicker.datepicker-dropdown.dropdown-menu.datepicker-orient-left.datepicker-orient-top {
     z-index: 9999 !important;
 }
@@ -591,4 +630,84 @@ label{
 }
 .skin-blue .main-header .navbar .sidebar-toggle {
     display: none;
+}
+.table_maxheight{
+    max-height: 200px;
+    overflow: auto;
+}
+.modal-body_padding {
+    padding: 10px 20px 20px;
+}
+.container_radio {
+    display: block;
+    position: relative; 
+    padding-left:2px;   
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.container_radio input {
+    position: absolute;
+    opacity: 0;
+}
+
+/* Create a custom radio button */
+.checkmark_radio {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container_radio:hover input ~ .checkmark_radio {
+    background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.container_radio input:checked ~ .checkmark_radio{
+    background-color: #2196F3;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark_radio:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container_radio input:checked ~ .checkmark_radio:after {
+    display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container_radio .checkmark_radio:after {
+ 	top: 5px;
+	left: 5px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: white;
+}
+.glyphicon-triangle-right:before {
+    content: "\e250";
+}
+.glyphicon-triangle-left:before {
+    content: "\e251";
+}
+.navbar-nav > .user-menu > .dropdown-menu {
+    width: 119px;
+}
+.dropdown-menu {
+    min-width: auto;
 }
