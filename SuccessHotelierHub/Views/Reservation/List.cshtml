@@ -39,7 +39,7 @@
         <form class="frmReservationList" enctype="multipart/form-data" method="post">
            
             <!-- HIDDEN FIELD -->                        
-            <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />            
+            <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />
             <!-- HIDDEN FIELD -->
 
             <div class="box-body">
@@ -359,8 +359,7 @@
             if (!IsNullOrEmpty(confirmationNo)) {
                 var id = response.data[0].Id;
                 GotoReservationEdit(id);
-            }
-          
+            }          
 
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
 

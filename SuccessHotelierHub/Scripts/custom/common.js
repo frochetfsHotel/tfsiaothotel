@@ -108,8 +108,7 @@ function closeAlert() {
 }
 
 // Fuction for scroll body at given element
-function scrollToControl(control) {
-    // alert($('#' + control).offset().top);
+function scrollToControl(control) {    
     $('html,body').animate({ scrollTop: $('#' + control).offset().top }, 500);
 }
 
@@ -146,18 +145,13 @@ function redirectTo(url) {
 
 
 function onlyDigits(e) {
-
-    //if (e.shiftKey || e.ctrlKey || e.altKey) {
-    //    e.preventDefault();        
-    //} else {        
     var key = e.keyCode;
 
     //key = 9; TAB Key. (Allow Tab Key)
 
     if (!((key == 9) || (key == 8) || (key == 46) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
         e.preventDefault();
-    }
-    //}
+    }  
 }
 
 function onlyNumeric(event) {
@@ -340,10 +334,6 @@ function LoadLeftSideMenu() {
             $('#MenusDashboard').show();
             $('#menuDashboard').addClass('active');
         }
-        //else if (menu == "Profile") {
-        //    $('#MenusProfile').show();
-        //    $('#menuProfile').addClass('active');
-        //}
         else if (menu == "Reservation") {
             $('#MenusReservation').show();
             $('#menuReservation').addClass('active');

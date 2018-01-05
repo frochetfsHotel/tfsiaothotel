@@ -45,7 +45,6 @@ namespace SuccessHotelierHub.Controllers
             RateQueryVM rateQuery = new RateQueryVM();
             if (Session["RateQueryVM"] != null)
             {
-                //rateQuery = (RateQueryVM)TempData["RateQueryVM"];
                 rateQuery = (RateQueryVM)Session["RateQueryVM"];
 
                 var profile = new IndividualProfileVM();
@@ -592,7 +591,6 @@ namespace SuccessHotelierHub.Controllers
 
             var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
             var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
-            //var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
 
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
@@ -653,7 +651,6 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                //TempData["RateQueryVM"] = model;
                 Session["RateQueryVM"] = model;
 
                 return Json(new

@@ -245,13 +245,6 @@
                         </select>
                     </div>
                     <div class="col-md-3 form-group">
-                        @*@Html.LabelFor(m => m.RoomId)
-                            <select class="form-control" id="RoomId" name="RoomId">
-                                <option value="">--Select Room--</option>
-                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">101</option>
-                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">102</option>
-                            </select>*@
-
                         @Html.LabelFor(m => m.RoomNumbers)
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.RoomNumbers, new
@@ -264,7 +257,6 @@
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
-                        @*@Html.ValidationMessageFor(m => m.RoomNumbers, "", new { @class = "text-danger" })*@
                         @Html.HiddenFor(m => m.RoomIds)
                     </div>
                     <div class="col-md-3 form-group">
@@ -370,7 +362,7 @@
                         @Html.LabelFor(m => m.ReservationSourceId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.ReservationSourceId, new List<SelectListItem>
                             {
-                                new SelectListItem{ Text = "--Select Market--", Value = "" },
+                                new SelectListItem{ Text = "--Select Source--", Value = "" },
                                 new SelectListItem{ Text = "Guest Direct", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
                                 new SelectListItem{ Text = "CRS", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
                                 new SelectListItem{ Text = "Internet", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
@@ -409,9 +401,6 @@
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
                         @Html.LabelFor(m => m.CardExpiryDate)
-                        @*<input type="text" id="CardExpiryDate" name="CardExpiryDate"
-                            class="form-control" data-inputmask="'alias': 'mm/yy'" data-mask placeholder="mm/yy">*@
-                        @*<input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" onkeydown="onlyDigits(event);" maxlength="5" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />*@
                         <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
@@ -473,7 +462,6 @@
                         <label>
                             Total Price : <span id="totalPrice">&euro; @(Model.NoOfNight * Model.Rate)</span>
                             <br />
-                            @*<small class="m-l-sm">(Per Night)</small>*@
                             <span>
                                 [No. Of Nights <span class="text-blue" id="spnNoOfNight"
                                                      data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-blue" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
@@ -556,6 +544,7 @@
 </section>
 
 <!-- This is the add reservation form-->
+
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -577,6 +566,7 @@
     </div>
 </div>
 <!-- Preference Modal Popup END -->
+
 <!-- Advance Profile Search Modal START -->
 <div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -599,6 +589,7 @@
     </div>
 </div>
 <!-- Advance Profile Search Modal END -->
+
 <!-- RoomType Modal Popup START -->
 <div class="modal fade" id="roomTypeModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -645,8 +636,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //CardExpiryDate mm/yyyy
-        //$('#CardExpiryDate').inputmask('mm/yy', { 'placeholder': 'mm/yy' });
+
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
 
@@ -964,8 +954,6 @@
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-
-                        //alert("Reservation details saved successfully. Confirmation No : " + response.data.ConfirmationNo);
                         swal({
                             title: 'Confirmation# : <span class="text-blue">'+ response.data.ConfirmationNo + '</span>',
                             type: 'success',
@@ -1068,11 +1056,7 @@
         if (!IsNullOrEmpty(profileId)) {
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=CreateReservation";
             redirectTo(url);
-        }
-        //else {
-        //    showToaster("Selected profile may be invalid or not exist.", ToasterType.ERROR);
-        //    return false;
-        //}
+        }       
     }
 
     //Advance Profile Search

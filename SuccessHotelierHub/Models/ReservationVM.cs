@@ -61,8 +61,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Arrival Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        //[RegularExpression("(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$", ErrorMessage = "Please enter valid arrival date.")]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
         [Required(ErrorMessage = "Please select arrival date.")]
         public DateTime? ArrivalDate { get; set; }
 
@@ -101,7 +100,6 @@ namespace SuccessHotelierHub.Models
         public string RoomIds { get; set; }
 
         [DisplayName("Room #")]
-        //[Required(ErrorMessage = "Please search and select room.")]
         public string RoomNumbers { get; set; }
 
         [DisplayName("Extn")]

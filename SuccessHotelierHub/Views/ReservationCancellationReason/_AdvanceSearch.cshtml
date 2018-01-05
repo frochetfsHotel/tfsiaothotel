@@ -101,25 +101,20 @@
         if (element) {            
             var reasonId = $(element).val();
 
-            if (!IsNullOrEmpty(reasonId)) {
-                //$('#divDescription').show();
+            if (!IsNullOrEmpty(reasonId)) {                
                 $("#Description").attr("readonly", true);
 
                 var code = $(element).data("code");
                 var description = $(element).data("description");
 
-                $("#Description").val(description);
-                //$('#divDescription').hide();
+                $("#Description").val(description);                
 
-                if (!IsNullOrEmpty(code) && trim(code).toLowerCase() == "other") {
-                   // $('#divDescription').show();
+                if (!IsNullOrEmpty(code) && trim(code).toLowerCase() == "other") { 
                     $("#Description").attr("readonly", false);
                 }
 
             }
-            //else {
-            //    $('#divDescription').hide();
-            //}
+
         }
     }
 

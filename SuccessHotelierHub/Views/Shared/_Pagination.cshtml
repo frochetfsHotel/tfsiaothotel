@@ -37,34 +37,29 @@
     <div class="visible-xs pull-right">
         <ul class="pagination pagination-sm" style="margin:0;">
             <li id="liFirst" class="page-item">
-                <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "FirstButtonClick")(this, event)">
-                    @*<span>First</span>*@
+                <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "FirstButtonClick")(this, event)">                    
                     <span class="glyphicon glyphicon-step-backward"></span>
                 </a>
             </li>
 
             <li id="liPrevious" class="page-item">
-                <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "PreviousButtonClick")(this, event)">
-                    @*<span>Previous</span>*@
+                <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "PreviousButtonClick")(this, event)">                    
                     <span class="glyphicon glyphicon-triangle-left"></span>
                 </a>
             </li>
 
             <li class="page-item pull-left liPageNum">
-                <input id="txtPageNumber" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event)" onblur="return PaginationGoToSpecificPage(this, event)" />
-                @*<span class="pull-right spanPageNum hovered">of <span id="spanTotalPages"></span> Pages.</span>*@
+                <input id="txtPageNumber" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event)" onblur="return PaginationGoToSpecificPage(this, event)" />                
             </li>
 
             <li id="liNext" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Next" onclick="return @(Model.TokenForEnableDisableButtons + "NextButtonClick")(this, event)">
-                    @*<span>Next</span>*@
                     <span class="glyphicon glyphicon-triangle-right"></span>
                 </a>
             </li>
 
             <li id="liLast" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Last" onclick="return @(Model.TokenForEnableDisableButtons + "LastButtonClick")(this, event)">
-                    @*<span>Last</span>*@
                     <span class="glyphicon glyphicon-step-forward"></span>
                 </a>
             </li>

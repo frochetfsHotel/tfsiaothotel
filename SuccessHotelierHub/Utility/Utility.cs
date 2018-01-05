@@ -135,15 +135,6 @@ namespace SuccessHotelierHub.Utility
         /// <param name="ex"></param>
         public static void LogError(Exception ex)
         {
-            //ErrorLogVM log = new ErrorLogVM();
-            //log.CreatedDate = DateTime.Now;
-            //log.InnerException = ex.InnerException != null ? ex.InnerException.ToString() : "";
-            //log.Message = ex.Message != null ? ex.Message.ToString() : "";
-            //log.StackTrace = ex.StackTrace != null ? ex.StackTrace.ToString() : "";
-            //log.TargetSite = ex.TargetSite != null ? ex.TargetSite.ToString() : "";
-            //log.Source = ex.Source != null ? ex.Source : "";
-
-
             SqlParameter[] parameters = {
                                     new SqlParameter { ParameterName = "@InnerException",  Value = ex.InnerException != null ? ex.InnerException.ToString() : "" },
                                     new SqlParameter { ParameterName = "@Message",  Value = ex.Message != null ? ex.Message.ToString() : ""},
@@ -158,42 +149,6 @@ namespace SuccessHotelierHub.Utility
 
         #endregion
 
-        #region 'EMAIL'        
-        /// <summary>
-        /// Method to send SMTP emails via stored procedure.
-        /// </summary>
-        /// <param name="To"></param>
-        /// <param name="From"></param>
-        /// <param name="Subject"></param>
-        /// <param name="Body"></param>
-        public static void SendEmailViaSP(string To, string From, string Subject, string Body)
-        {
-            try
-            {
-                //    SqlParameter[] parameters1 = {
-                //                        new SqlParameter { ParameterName = "@ebody", Value = Body},
-                //                        new SqlParameter { ParameterName = "@to", Value = To },
-                //                        new SqlParameter { ParameterName = "@eSubject", Value = Subject },
-                //                        new SqlParameter { ParameterName = "@profile", Value = From },
-                //                    };
-
-                //    DataTable dt = DALHelper.GetRecordSetT("SendSMTPEmail", parameters1);
-                //    if (dt != null)
-                //    {
-
-                //        //db.Database.Connection.ConnectionString = SessionManager.ConnectionString;
-
-                //        //Add message detail for db backup
-                //    }
-
-            }
-            catch (Exception Ex)
-            {
-                Utility.LogError(Ex);
-            }
-        }
-        #endregion
-        
 
         #region 'Get List Object from DataTable'
         public static List<T> CreateListFromTable<T>(DataTable tbl) where T : new()
@@ -337,7 +292,6 @@ namespace SuccessHotelierHub.Utility
 
         public static string GenerateConfirmationNo(Int64 suffix)
         {
-            //return (DateTime.Now.ToString("ddMMyyyy") + "" + suffix.ToString("000"));
             return (suffix.ToString("00000"));
         }
 
@@ -402,73 +356,6 @@ namespace SuccessHotelierHub.Utility
     #region 'LOGIN-SESSION'
     public class LogInManager
     {
-        //public static aspnet_Users LogInUser
-        //{
-        //    get
-        //    {
-        //        if (HttpContext.Current.Session["LogInUser"] != null)
-        //        {
-        //            return (aspnet_Users)HttpContext.Current.Session["LogInUser"];
-        //        }
-        //        else
-        //        {
-        //            return null;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        HttpContext.Current.Session["LogInUser"] = value;
-        //    }
-
-        //}
-
-        //public static Int32 DataLineID
-        //{
-        //    get
-        //    {
-        //        if (HttpContext.Current.Session["GlobalDataLineID"] != null)
-        //        {
-        //            return (Int32)HttpContext.Current.Session["GlobalDataLineID"];
-        //        }
-        //        else
-        //        {
-        //            return 0;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        HttpContext.Current.Session["GlobalDataLineID"] = value;
-        //    }
-
-        //}
-
-        //public static bool IsUserInRole(string roles)
-        //{
-
-        //    if (Utility.LogInManager.LogInUser != null)
-        //    {
-        //        if (String.IsNullOrEmpty(roles))
-        //        {
-        //            return false;
-        //        }
-
-        //        string[] split = roles.Split(',');
-
-        //        foreach (var item in split)
-        //        {
-        //            if (Utility.LogInManager.LogInUser.RoleName.Contains(item.ToString()))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
-
         public static int LoggedInUserId
         {
             get

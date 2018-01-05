@@ -35,7 +35,6 @@ namespace SuccessHotelierHub.Models
         public Guid? ProfileId { get; set; }
 
         [DisplayName("Name")]
-        //[Required(ErrorMessage = "Please search and select client name.")]
         public string Name { get; set; }
 
         public string LastName { get; set; }
