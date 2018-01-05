@@ -604,7 +604,7 @@ namespace SuccessHotelierHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(lastName) || !string.IsNullOrWhiteSpace(firstName))
             {
-                model.Name = (lastName + " " + firstName);
+                model.Name = (lastName + ", " + firstName);
             }
 
             //Default Values.

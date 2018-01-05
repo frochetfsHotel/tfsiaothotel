@@ -19,7 +19,10 @@
     {
         Model.LastName = Convert.ToString(Request.QueryString["lastName"]);
     }
-
+    if (Request.QueryString["titleId"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["titleId"])))
+    {
+        Model.TitleId = Guid.Parse(Convert.ToString(Request.QueryString["titleId"]));
+    }
     if (Request.QueryString["zipCode"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["zipCode"])))
     {
         Model.ZipCode = Convert.ToString(Request.QueryString["zipCode"]);

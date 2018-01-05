@@ -418,10 +418,12 @@
     $(document).ready(function () {
 
         //Show pre-filled profile info if querystring contains profile id.
-        $('#ProfileId').val('@profileId');
-        $('#FirstName').val('@firstName');
-        $('#LastName').val('@lastName');
-        $('#Name').val('@name');
+        if (!IsNullOrEmpty('@profileId')) {
+            $('#ProfileId').val('@profileId');
+            $('#FirstName').val('@firstName');
+            $('#LastName').val('@lastName');
+            $('#Name').val('@name');
+        }
 
         //Date picker
         $('#ArrivalDate').datepicker({
@@ -448,8 +450,11 @@
         .change(departureDateChanged)
         .on('changeDate', departureDateChanged);
 
+        //Default Arrival Date. (Set today's date).
+        $("#ArrivalDate").datepicker("setDate", new Date()); 
 
-        $("#ArrivalDate").datepicker("setDate", new Date()); //Set today's date.
+        //Calculate Default Departure Date.
+        calculateDepartureDate();
 
         //Profile
         $('.btnAdvanceSearchProfileOk').click(function (e) {
@@ -529,6 +534,8 @@
     }
 
     function openProfileSearchModal() {
+        clearProfileSearch();
+
         var name = $("#Name").val();
 
         if (!IsNullOrEmpty(name)) {
@@ -545,7 +552,7 @@
 
             //Show search results based on entered name.
             $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));
-            $("form#frmAdvanceProfileSearch #FirstName").val(trim(firstName));
+            $("form#frmAdvanceProfileSearch #FirstName").val(trim(firstName));            
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
 

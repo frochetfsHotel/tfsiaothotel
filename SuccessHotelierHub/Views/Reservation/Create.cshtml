@@ -418,11 +418,6 @@
                         @Html.LabelFor(m => m.ApprovalAmount)
                         @Html.TextBoxFor(m => m.ApprovalAmount, new { @class = "form-control", placeholder = "Approval Amt." })
                     </div>
-
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.SuitWith)
-                        @Html.TextBoxFor(m => m.SuitWith, new { @class = "form-control", placeholder = "Suit With" })
-                    </div>
                     <div class="col-md-3 form-group m-t-lg m-r-n-lg">
                         <label class="container1" for="IsEmailConfirmation">
                             Email Confirmation
@@ -1061,13 +1056,17 @@
 
     //Advance Profile Search
     function openProfileSearchModal() {
+        clearProfileSearch();
+
         var lastName = $("#LastName").val();
         var firstName = $("#FirstName").val();
+        var titleId = $("#TitleId").val();
 
         if (!IsNullOrEmpty(lastName)) {
             //Show search results based on entered name.
             $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));
             $("form#frmAdvanceProfileSearch #FirstName").val(trim(firstName));
+            $("form#frmAdvanceProfileSearch #hdnTitleId").val(trim(titleId));
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
         $('#profileSearchModal').modal('toggle');

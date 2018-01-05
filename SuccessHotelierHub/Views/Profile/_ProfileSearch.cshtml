@@ -9,6 +9,10 @@
 
 <form id="frmAdvanceProfileSearch" name="frmAdvanceProfileSearch" enctype="multipart/form-data" method="post">
 
+    <!--  Hidden Field -->
+    <input type="hidden" id="hdnTitleId" name="hdnTitleId" value=""/>
+    <!-- Hidden Field -->
+
     <div class="col-xs-12 text-right m-b-sm padding-zero">        
         <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchProfileOk">OK</button>
         <button type="button" class="btn btn-success m-r-xs" onclick="addNewProfile()">New</button>
@@ -215,7 +219,7 @@
         $('form#frmAdvanceProfileSearch #CorpNo').val('');
         $('form#frmAdvanceProfileSearch #IsNegRates').prop("checked", false);
         $('form#frmAdvanceProfileSearch #IsShowInActive').prop("checked", true);
-
+        $('form#frmAdvanceProfileSearch #hdnTitleId').val('');
         $("form#frmAdvanceProfileSearch #tblProfile tbody").empty();
     }
 
@@ -225,19 +229,21 @@
         var firstName = $("form#frmAdvanceProfileSearch #FirstName").val();
         var lastName = $("form#frmAdvanceProfileSearch #LastName").val();
         var postalCode = $("form#frmAdvanceProfileSearch #PostalCode").val();
+        var titleId = $("form#frmAdvanceProfileSearch #hdnTitleId").val();
 
         var url = '@Url.Content("~/Profile/CreateIndividualProfile")' + "?source=@sourceRedirectionParam";
 
         if (!IsNullOrEmpty(firstName)) {
             url += "&firstName=" + firstName + "";
         }
-
         if (!IsNullOrEmpty(lastName)) {
             url += "&lastName=" + lastName + "";
         }
-
         if (!IsNullOrEmpty(postalCode)) {
             url += "&zipCode=" + postalCode + "";
+        }
+        if (!IsNullOrEmpty(titleId)) {
+            url += "&titleId=" + titleId + "";
         }
 
         redirectTo(url);
