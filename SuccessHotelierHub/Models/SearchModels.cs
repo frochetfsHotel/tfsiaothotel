@@ -229,6 +229,9 @@ namespace SuccessHotelierHub.Models
 
         public bool IsShowCancelledReservation { get; set; }
 
+        [DisplayName("Show Checked In")]
+        public bool IsShowCheckedInReservation { get; set; }
+
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
@@ -254,6 +257,7 @@ namespace SuccessHotelierHub.Models
         public string RoomTypeCode { get; set; }
         public string RateTypeCode { get; set; }
         public bool IsReservationCancel { get; set; }
+        public bool IsCheckIn { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
@@ -485,7 +489,6 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
-
     #region Search Reservation Cancellation Reasons 
 
     public class SearchReservationCancellationReasonParametersVM
@@ -546,7 +549,6 @@ namespace SuccessHotelierHub.Models
 
     #endregion
 
-
     #region Search Preference Group
 
     public class SearchPreferenceGroupParametersVM
@@ -576,6 +578,92 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }
+    #endregion
+
+    #region Search Reservation
+
+    public class SearchArrivalsParametersVM
+    {
+        public SearchArrivalsParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }        
+
+        [DisplayName("TA Record Locator")]
+        public string TARecordLocator { get; set; }
+
+        [DisplayName("Company")]
+        public Guid? CompanyId { get; set; }
+
+        [DisplayName("Contact")]
+        public Guid? ContactId { get; set; }
+
+        [DisplayName("Group")]
+        public Guid? GroupId { get; set; }
+
+        [DisplayName("Group Code")]
+        public Guid? BlockCodeId { get; set; }
+
+        [DisplayName("Agent")]
+        public Guid? AgentId { get; set; }
+
+        [DisplayName("Member Type")]
+        public Guid? MemberTypeId { get; set; }
+
+        [DisplayName("Member #")]
+        public string MemberNo { get; set; }
+
+        [DisplayName("Arrival From")]
+        public string ArrivalFrom { get; set; }
+
+        [DisplayName("Arrival To")]
+        public string ArrivalTo { get; set; }
+
+        [DisplayName("Confirmation#")]
+        public string ConfirmationNo { get; set; }
+
+        [DisplayName("Postal Code")]
+        public string PostalCode { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchArrivalsResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        [DisplayName("Phone #")]
+        public string PhoneNo { get; set; }
+        public string ArrivalDate { get; set; }
+        public int NoOfNight { get; set; }
+        public string DepartureDate { get; set; }
+        public int NoOfAdult { get; set; }
+        public int NoOfChildren { get; set; }
+        public int NoOfRoom { get; set; }
+        public string RoomNumbers { get; set; }
+        public string RoomTypeCode { get; set; }
+        public string RateTypeCode { get; set; }
+        public bool IsReservationCancel { get; set; }
+        public bool IsCheckIn { get; set; }
+        public bool IsCheckOut { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public int TotalCount { get; set; }
+    }
+
     #endregion
 
     #region DataTable Column Info

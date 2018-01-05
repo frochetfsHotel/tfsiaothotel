@@ -212,6 +212,10 @@ namespace SuccessHotelierHub.Models
         public string CancellationReasonComment { get; set; }
         public bool IsReservationCancel { get; set; }
 
+        //CheckIn-CheckOut
+        public bool IsCheckIn { get; set; }
+        public bool IsCheckOut { get; set; }
+
         public string Remarks { get; set; }
         public string PreferenceItems { get; set; }
 

@@ -37,8 +37,8 @@
             </div>
         </div>
         <form class="frmReservationList" enctype="multipart/form-data" method="post">
-           
-            <!-- HIDDEN FIELD -->                        
+
+            <!-- HIDDEN FIELD -->
             <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />
             <!-- HIDDEN FIELD -->
 
@@ -153,20 +153,30 @@
                             </div>
                         </div>
                         <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.ConfirmationNo)                            
+                            @Html.LabelFor(m => m.ConfirmationNo)
                             @Html.TextBoxFor(m => m.ConfirmationNo, new { @class = "form-control", placeholder = "Confirmation#" })
                         </div>
                         <div class="col-md-3 form-group m-t-lg">
+                           
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 form-group m-t-sm">
                             <label class="container1" for="IsShowCancelledReservation">
                                 Show Cancelled Reservation
                                 @Html.CheckBoxFor(m => m.IsShowCancelledReservation)
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                    </div>
-
-                    <div class="row text-right">                        
-                        <div class="col-md-12 form-group">
+                        <div class="col-md-3 form-group m-t-sm">
+                            <label class="container1" for="IsShowCheckedInReservation">
+                                Show Checked In
+                                @Html.CheckBoxFor(m => m.IsShowCheckedInReservation)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-6 form-group text-right">
                             <button type="button" id="btnSearch"
                                     class="btn btn-success m-r-xs" onclick="searchReservation()">
                                 Search
@@ -177,7 +187,7 @@
                     </div>
                 </div>
 
-                
+
 
                 <div class="col-xs-12 padding-zero m-t">
                     <div class="table-responsive" id="divReservationList">
@@ -204,10 +214,10 @@
                     <div class="clearfix"></div>
                     <div class="text-left">
                         @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
-                       {
-                           TokenForEnableDisableButtons = PagerName,
-                           PageChangeMethod = "ReservationGridPageChange"
-                       })
+                   {
+                       TokenForEnableDisableButtons = PagerName,
+                       PageChangeMethod = "ReservationGridPageChange"
+                   })
                     </div>
                 </div>
             </div>
@@ -225,7 +235,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Cancellation Reasons</h4>
             </div>
-            <div class="modal-body modal-body_padding">                
+            <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/ReservationCancellationReason/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "RateQuery" },
@@ -251,25 +261,25 @@
 
         $("#frmReservationList input[type=text]").keyup(function (event) {
             debugger;
-            if (event.keyCode === 13) {                
+            if (event.keyCode === 13) {
                 $("#btnSearch").click();
             }
         });
 
         $('form#frmAdvanceCancellationReasonSearch .btnAdvanceSearchCancellationReasonOk').click(function (e) {
-            var selectedReason = $('input[name=rbCancellationReason]:checked', '#frmAdvanceCancellationReasonSearch');            
-            if (!IsNullOrEmpty(selectedReason.val())) {                
-                var reasonId, code, description;                
+            var selectedReason = $('input[name=rbCancellationReason]:checked', '#frmAdvanceCancellationReasonSearch');
+            if (!IsNullOrEmpty(selectedReason.val())) {
+                var reasonId, code, description;
                 reasonId = $(selectedReason).val();
                 code = $(selectedReason).data('code');
-                description =  $("#Description").val();
+                description = $("#Description").val();
 
                 var reservationId = $('#hdnReservationId').val();
 
                 //Close Reservation Cancellation Reason Search Modal.
                 $('#reservationCancellationReasonSearchModal').modal('toggle');
 
-                if(!IsNullOrEmpty(reservationId)){                    
+                if (!IsNullOrEmpty(reservationId)) {
                     //Ajax call to cancel reservation.
                     $.ajax({
                         beforeSend: function (xhr) {
@@ -283,8 +293,8 @@
                         },
                         url: '@Url.Content("~/Reservation/CancelReservation")',
                         type: 'POST',
-                        data: { id: reservationId, cancellationReasonId : reasonId, comment : description },
-                        success: function (response) {                            
+                        data: { id: reservationId, cancellationReasonId: reasonId, comment: description },
+                        success: function (response) {
                             if (response.IsSuccess == true) {
 
                                 //Remove row from the table.
@@ -331,7 +341,8 @@
         var arrivalFrom = $('#ArrivalFrom').val();
         var arrivalTo = $('#ArrivalTo').val();
         var confirmationNo = $('#ConfirmationNo').val();
-        var isShowCancelledReservation = $('#IsShowCancelledReservation').prop('checked'); 
+        var isShowCancelledReservation = $('#IsShowCancelledReservation').prop('checked');
+        var isShowCheckedInReservation = $('#IsShowCheckedInReservation').prop('checked');
 
         d.PageNum = currentPage;
         d.LastName = lastName;
@@ -348,18 +359,19 @@
         d.MemberNo = memberNo;
         d.ArrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
         d.ArrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
-        d.confirmationNo = confirmationNo;
+        d.ConfirmationNo = confirmationNo;
         d.IsShowCancelledReservation = isShowCancelledReservation;
+        d.IsShowCheckedInReservation = isShowCheckedInReservation;
     }
 
-    function ReservationGridDataBound(response) {        
+    function ReservationGridDataBound(response) {
         if (response.IsSuccess == true) {
             var confirmationNo = $('#ConfirmationNo').val();
             //If search by confirmation no. then redirect to edit page.
             if (!IsNullOrEmpty(confirmationNo)) {
                 var id = response.data[0].Id;
                 GotoReservationEdit(id);
-            }          
+            }
 
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
 
@@ -394,7 +406,7 @@
                 error: function (result) {
                     showToaster(result.responseText, ToasterType.ERROR);
                 },
-                complete: function () {                    
+                complete: function () {
                     hideLoader();
                 },
                 url: '@Url.Content("~/Reservation/SearchReservation")',
@@ -536,17 +548,22 @@
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    var isReservationCancel = full.IsReservationCancel
+                    var isReservationCancel = full.IsReservationCancel;
+                    var isCheckIn = full.IsCheckIn;
                     var buttons = "";
 
                     buttons += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                                 + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
 
-                    if (isReservationCancel == false) {
+                    if (isReservationCancel == true) {
+                        buttons += ' <button type="button" class="btn bg-maroon btn-xs m-n">Cancelled</button>';
+                    }
+                    else if (isCheckIn == true) {
+                        buttons += ' <button type="button" class="btn bg-navy btn-xs m-n">Checked In</button>';
+                    }
+                    else {
                         buttons += ' <button type="button" class="btn btn-danger btn-xs"'
                                     + ' onclick="cancelReservation(this,event,\'' + full.Id + '\')">Cancel</button>';
-                    } else {
-                        buttons += ' <button type="button" class="btn bg-maroon btn-xs m-n">Cancelled</button>';
                     }
 
                     return buttons;
@@ -590,7 +607,7 @@
     }
 
     function searchReservation() {
-        if (validateReservationSearchData()) {            
+        if (validateReservationSearchData()) {
             IsSearchButtonClicked = true;
             currentPage = 1;
             ReloadReservationGrid();
@@ -612,6 +629,8 @@
         $('#MemberNo').val('');
         $('#ArrivalFrom').val('');
         $('#ArrivalTo').val('');
+        $('#IsShowCancelledReservation').prop("checked", false);
+        $('#IsShowCheckedInReservation').prop("checked", false);
 
         searchReservation();
     }

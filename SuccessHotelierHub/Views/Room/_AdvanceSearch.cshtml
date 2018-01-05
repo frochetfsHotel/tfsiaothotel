@@ -23,7 +23,7 @@
 
     <div class="pt_10 pl_10 pr_10 searchBox_Border">
         <div class="row">
-            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+            <div class="col-md-4 col-sm-4 col-xs-12 form-group" id="divRoomType">
                 @Html.LabelFor(m => m.RoomTypeId)
                 @Html.DropDownListFor(m => m.RoomTypeId,
                                 (IEnumerable<SelectListItem>)roomTypeList, "-- Select Room Type --",

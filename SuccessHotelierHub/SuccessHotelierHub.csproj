@@ -219,6 +219,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\CheckInCheckOutVM.cs" />
+    <Compile Include="Models\CheckInPaymentMethodVM.cs" />
     <Compile Include="Models\CityVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -247,6 +249,7 @@
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\VipVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\CheckInCheckOutRepository.cs" />
     <Compile Include="Repository\CityRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
@@ -1900,6 +1903,8 @@
     <Content Include="Views\PreferenceGroup\Create.cshtml" />
     <Content Include="Views\PreferenceGroup\Edit.cshtml" />
     <Content Include="Views\PreferenceGroup\List.cshtml" />
+    <Content Include="Views\FrontDesk\Arrivals.cshtml" />
+    <Content Include="Views\FrontDesk\_PaymentMethod.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

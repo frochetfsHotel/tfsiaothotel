@@ -189,6 +189,22 @@ namespace SuccessHotelierHub.Repository
             return reservationRoomMapping;
         }
 
+        public string UpdateRoomOccupiedFlag(Guid roomId, bool isOccupied, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = roomId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomOccupiedFlag", parameters));
+
+            return id;
+        }
+
         #endregion
     }
 }

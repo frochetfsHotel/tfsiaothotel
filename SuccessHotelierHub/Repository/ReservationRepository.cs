@@ -265,6 +265,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ArrivalTo", Value = model.ArrivalTo },
                     new SqlParameter { ParameterName = "@ConfirmationNo", Value = model.ConfirmationNo },
                     new SqlParameter { ParameterName = "@IsShowCancelledReservation", Value = model.IsShowCancelledReservation },
+                    new SqlParameter { ParameterName = "@IsShowCheckedInReservation", Value = model.IsShowCheckedInReservation },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -292,6 +293,22 @@ namespace SuccessHotelierHub.Repository
             reservation = DALHelper.CreateListFromTable<ReservationVM>(dt).FirstOrDefault();
 
             return reservation;
+        }
+
+        public string UpdateReservationCheckInFlag(Guid reservationId, bool isCheckIn, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId },
+                    new SqlParameter { ParameterName = "@IsCheckIn", Value = isCheckIn },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationCheckInFlag", parameters));
+
+            return id;
         }
 
         #endregion

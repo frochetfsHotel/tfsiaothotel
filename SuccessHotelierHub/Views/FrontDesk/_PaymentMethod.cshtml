@@ -1,0 +1,184 @@
+﻿@model SuccessHotelierHub.Models.CheckInPaymentMethodVM
+@using SuccessHotelierHub.Utility
+@using SuccessHotelierHub.Models
+
+@{
+    var sourceRedirectionParam = "";
+    sourceRedirectionParam = (string)ViewData["Source"];
+}
+
+<link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
+
+<form id="frmCheckInPayment" name="frmCheckInPayment" enctype="multipart/form-data" method="post">
+
+    <!-- HIDDEN FIELD -->
+    @Html.HiddenFor(m => m.ReservationId)
+    @Html.HiddenFor(m => m.ProfileId)
+    @Html.HiddenFor(m => m.RoomIds)
+    @Html.HiddenFor(m => m.NoOfRoom)
+    @Html.HiddenFor(m => m.RoomTypeId)
+    <!-- HIDDEN FIELD -->
+    @*<div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">*@
+    <div class="row">
+        <div class="col-md-6 col-sm-3 col-xs-12 form-group">
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+        </div>
+        <div class="col-md-6 col-sm-3 col-xs-12 form-group">
+            @Html.LabelFor(m => m.RoomNumbers)
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.RoomNumbers, new
+               {
+                   @class = "form-control",
+                   placeholder = "Room #",
+                   @readonly = "readonly"
+               })
+                <div class="input-group-addon cursor-P" onclick="openRoomSearchModal();">
+                    <i class="fa fa-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-3 col-xs-12 form-group">
+            @Html.LabelFor(m => m.CheckInDate, new { @class = "required-label" })
+            <div class="input-group date">
+                @Html.TextBoxFor(m => m.CheckInDate, "{0:dd/MM/yyyy}", new { @class = "form-control", placeholder = "dd/MM/yyyy" })
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(m => m.CheckInDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-6 col-sm-3 col-xs-12 form-group">
+            <div class="bootstrap-timepicker">
+                @Html.LabelFor(m => m.CheckInTimeText)
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.CheckInTimeText, new { @class = "form-control", placeholder = "hh:mm tt" })
+                    <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            @Html.LabelFor(m => m.PaymentMethodId)
+            @Html.DropDownListFor(m => m.PaymentMethodId, new List<SelectListItem>
+                    {
+                        new SelectListItem{ Text = "--Select Pmt. Method--", Value = "" },
+                        new SelectListItem{ Text = "Cash", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F946" },
+                        new SelectListItem{ Text = "Visa", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
+                        new SelectListItem{ Text = "American Express", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
+                        new SelectListItem{ Text = "Discover", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
+                        new SelectListItem{ Text = "Master Card", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F939" },
+                    }, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
+
+        </div>
+        <div class="col-md-4">
+            @Html.LabelFor(m => m.CreditCardNo)
+            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
+        </div>
+        <div class="col-md-4 divCardExpiryDate">
+            @Html.LabelFor(m => m.CardExpiryDate)
+            <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-xs-12 form-group mt_25 text-right">
+            <button type="button" class="btn btn-success m-r-xs btnCheckInOk" id="btnCheckInOk">OK</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnClose">Close</button>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    @*</div>*@
+</form>
+<div class="clearfix"></div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('form#frmCheckInPayment #CardExpiryDate').attr("placeholder", "MM/YY");
+
+        //Timepicker
+        $('form#frmCheckInPayment #CheckInTimeText').timepicker({
+            showInputs: false
+        });
+                
+        //Date picker
+        $('#CheckInDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+
+        //CheckIn
+        $('form#frmCheckInPayment .btnCheckInOk').click(function (e) {
+            debugger;
+            if (validateCheckIn()) {
+
+                //Ajax request to check in.
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (result) {
+                        showToaster(result.responseText, ToasterType.ERROR);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/FrontDesk/CheckIn")',
+                    type: 'POST',
+                    data: $('form#frmCheckInPayment').serialize(),
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+
+                            swal({
+                                title: '' + response.data.Name + ' Checked in successfully.',
+                                type: 'success',
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                focusConfirm: false,
+                                confirmButtonText: 'OK',
+                            }).then((result) => {
+                                //Close the modal.
+                                $('#checkInPaymentModal').modal('toggle');
+                            });
+
+                            searchArrival();
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+    });
+
+    //Check In
+    function validateCheckIn() {
+        var selectedRoomNumbers = $('form#frmCheckInPayment #RoomNumbers').val();
+        var selectedRoomIds = $('form#frmCheckInPayment #RoomIds').val();
+
+        if (IsNullOrEmpty(selectedRoomNumbers) || IsNullOrEmpty(selectedRoomIds)) {
+            showToaster("Please select room number", ToasterType.ERROR);
+            return false;
+        }
+
+        if ($("form#frmCheckInPayment").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+</script>
+
+
+<script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
