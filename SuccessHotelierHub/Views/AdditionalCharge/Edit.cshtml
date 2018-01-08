@@ -1,0 +1,117 @@
+﻿@model SuccessHotelierHub.Models.AdditionalChargeVM
+
+@{
+    ViewBag.Title = "Edit Additional Charge";
+}
+
+<section class="content-header">
+    <h1>
+        Additional Charge <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Additional Charge</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<section class="content">
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Additional Charge Details</h3>
+        </div>
+        @using (Html.BeginForm("Create", "AdditionalCharge", FormMethod.Post, new { id = "frmAdditionalCharge", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Code, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
+                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Description, new { @class = "required-label" })
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Price, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
+                        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateAdditionalCharge();">Save</button>
+                <a href="@Url.Action("List", "AdditionalCharge")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateAdditionalCharge() {
+        var errorMessage = "";
+        var blnValid = true;
+
+        if ($("#frmAdditionalCharge").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function updateAdditionalCharge() {
+
+        if (validateAdditionalCharge()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/AdditionalCharge/Edit")',
+                type: 'POST',
+                data: $('#frmAdditionalCharge').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Additional Charge details updated successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/AdditionalCharge/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>
+
+
+

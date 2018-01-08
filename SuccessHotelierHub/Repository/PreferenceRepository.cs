@@ -65,7 +65,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Code", Value = preference.Code },
                     new SqlParameter { ParameterName = "@Description", Value = preference.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = preference.IsActive },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = preference.CreatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = preference.UpdatedBy }
                 };
 
             preferenceId = Convert.ToString(DALHelper.ExecuteScalar("UpdatePreferences", parameters));

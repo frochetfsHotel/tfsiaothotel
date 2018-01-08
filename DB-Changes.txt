@@ -1524,3 +1524,358 @@ BEGIN
 	-- PAGING COMPLETED
 
 END
+
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+Name : Nilesh
+Date : 08-JAN-2018
+
+/*********************	 Create Table AdditionalCharges **************/
+
+
+/****** Object:  Table [dbo].[AdditionalCharges]    Script Date: 1/8/2018 1:13:48 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[AdditionalCharges](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Code] [nvarchar](25) NOT NULL,
+	[Description] [nvarchar](1000) NOT NULL,
+	[Price] [decimal](18, 2) NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+ CONSTRAINT [PK_AdditionalCharges] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddAdditionalCharges
+	Comment : Create SP : AddAdditionalCharges
+	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddAdditionalCharges]    Script Date: 1/8/2018 1:17:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddAdditionalCharges]	
+	@Code				NVARCHAR(25),
+	@Description		NVARCHAR(1000),
+	@Price				DECIMAL(18,2),
+	@IsActive			BIT,	
+	@CreatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[AdditionalCharges]
+           ([Id]		   
+           ,[Code]
+           ,[Description]
+		   ,[Price]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Code
+			   ,@Description
+			   ,@Price
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateAdditionalCharges
+	Comment : Create SP : UpdateAdditionalCharges
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateAdditionalCharges]    Script Date: 1/8/2018 1:19:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateAdditionalCharges]
+	@Id					UNIQUEIDENTIFIER,
+	@Code				NVARCHAR(25),
+	@Description		NVARCHAR(1000),
+	@Price				DECIMAL(18,2),
+	@IsActive			BIT,
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[AdditionalCharges] 
+		SET	[Code]			=	@Code
+           ,[Description]	=	@Description
+		   ,[Price]			=	@Price
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[IsActive]		=	@IsActive
+		   ,[UpdatedOn]		=	GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+/*******************************************************************************************************************
+	SP Name : DeleteAdditionalCharges
+	Comment : Create SP : DeleteAdditionalCharges
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteAdditionalCharges]    Script Date: 1/8/2018 1:20:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteAdditionalCharges]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[AdditionalCharges] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetAdditionalChargesById
+	Comment : Create SP : GetAdditionalChargesById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetAdditionalChargesById]    Script Date: 1/8/2018 1:21:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetAdditionalChargesById]
+	@Id UNIQUEIDENTIFIER NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[AdditionalCharges]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Description]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetAdditionalCharges
+	Comment : Create SP : GetAdditionalCharges
+	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetAdditionalCharges]    Script Date: 1/8/2018 1:22:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetAdditionalCharges]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[AdditionalCharges]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Description]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchAdditionalCharges
+	Comment : Create SP : SearchAdditionalCharges
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdditionalCharges]    Script Date: 1/8/2018 1:22:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdditionalCharges] '', '', 0, 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchAdditionalCharges]		
+	@Code			NVARCHAR(25)	=	NULL,
+	@Description	NVARCHAR(1000)	=	NULL,
+	@Price			DECIMAL(10,2)	=	NULL,
+	@PageNum		INT = 1,
+	@PageSize		INT = 10,
+	@SortColumn		NVARCHAR(255)	=	NULL,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempAdditionalCharges
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL		
+		,   [Code]					NVARCHAR(25)		NULL
+		,   [Description]			NVARCHAR(1000)		NOT NULL
+		,	[Price]					DECIMAL(18,2)		NULL
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[AdditionalCharges] AC							
+						WHERE	ISNULL(AC.IsDeleted,0) = 0
+								AND (ISNULL(@Code,'') = '' OR AC.Code LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Description,'') = '' OR AC.[Description] LIKE '%'+ @Description +'%')	
+								AND (ISNULL(@Price,0) = 0 OR AC.Price = @Price)  
+						)
+
+
+		INSERT INTO #tempAdditionalCharges ([RowNum], [Id], [Code], [Description], [Price], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN AC.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN AC.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN AC.[Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN AC.[Code] END DESC,
+
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+							THEN AC.[Description] END ASC,
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+							THEN AC.[Description] END DESC,
+
+						CASE WHEN @SortColumn = 'Price' and @SortDirection = 'asc'
+							THEN AC.[Price] END ASC,
+						CASE WHEN @SortColumn = 'Price' and @SortDirection = 'desc'
+							THEN AC.[Price] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN AC.[Description] END ASC
+
+				) AS RowNum,
+				AC.[ID],				
+				AC.[Code],
+				AC.[Description],
+				AC.[Price],
+				AC.[CreatedOn],
+				AC.[IsActive]
+			FROM [dbo].[AdditionalCharges] AC							
+			WHERE	ISNULL(AC.IsDeleted,0) = 0
+					AND (ISNULL(@Code,'') = '' OR AC.Code LIKE '%'+ @Code +'%')  
+					AND (ISNULL(@Description,'') = '' OR AC.[Description] LIKE '%'+ @Description +'%')	
+					AND (ISNULL(@Price,0) = 0 OR AC.Price = @Price) 	
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],			
+			temp.[Code],
+			temp.[Description],
+			temp.[Price],
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempAdditionalCharges AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : CheckAdditionalChargeCodeAvailable
+	Comment : Create SP : CheckAdditionalChargeCodeAvailable
+	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[CheckAdditionalChargeCodeAvailable]    Script Date: 1/8/2018 4:01:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckAdditionalChargeCodeAvailable] 
+		@Id = NULL,
+		@Code = 'COMP'
+*/
+
+CREATE PROCEDURE [dbo].[CheckAdditionalChargeCodeAvailable]
+	@Id		UNIQUEIDENTIFIER	=	NULL,
+	@Code	NVARCHAR(25)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[AdditionalCharges] 
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND Code = @Code
+		ORDER BY Code 
+END
+
+
+

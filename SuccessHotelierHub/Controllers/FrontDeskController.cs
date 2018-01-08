@@ -118,6 +118,43 @@ namespace SuccessHotelierHub.Controllers
                         roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
                     }
                 }
+                else
+                {
+                    SearchAdvanceRoomParametersVM searchRoomModel = new SearchAdvanceRoomParametersVM();
+                    searchRoomModel.RoomTypeId = reservation.RoomTypeId;
+                    searchRoomModel.ArrivalDate = reservation.ArrivalDate;
+                    searchRoomModel.NoOfNight = reservation.NoOfNight;
+                    searchRoomModel.DepartureDate = reservation.DepartureDate;
+                    searchRoomModel.RoomNo = string.Empty;
+                    searchRoomModel.Type = string.Empty;
+
+                    var availableRoomList = roomRepository.SearchAdvanceRoom(searchRoomModel);
+
+                    if(availableRoomList != null && availableRoomList.Count > 0)
+                    {
+                        //Get default available rooms by top.
+                        availableRoomList = availableRoomList.Take(reservation.NoOfRoom).ToList();
+
+                        foreach (var room in availableRoomList)
+                        {
+                            roomIds += string.Format("{0},", room.RoomId);
+                            roomNumbers += string.Format("{0}, ", room.RoomNo);
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(roomIds))
+                        {
+                            //Remove Last Comma.
+                            roomIds = Utility.Utility.RemoveLastCharcter(roomIds, ',');
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(roomNumbers))
+                        {
+                            //Remove Last Comma.
+                            roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                        }
+                    }
+                }
+
                 #endregion
                 
                 CheckInPaymentMethodVM model = new CheckInPaymentMethodVM();

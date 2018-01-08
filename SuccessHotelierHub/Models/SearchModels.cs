@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -664,6 +665,42 @@ namespace SuccessHotelierHub.Models
         public int TotalCount { get; set; }
     }
 
+    #endregion
+
+    #region Search Additional Charge
+
+    public class SearchAdditionalChargeParametersVM
+    {
+        public SearchAdditionalChargeParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+        public string Code { get; set; }
+        public string Description { get; set; }
+
+        [DataType(DataType.Currency, ErrorMessage = "Please enter valid price.")]
+        public double Price { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchAdditionalChargeResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }        
+        public string Code { get; set; }
+        public string Description { get; set; }
+        public double? Price { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
     #endregion
 
     #region DataTable Column Info

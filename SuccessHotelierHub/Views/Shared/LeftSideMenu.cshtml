@@ -58,7 +58,7 @@
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusFrontDesk" data-widget="tree" style="display:none;">
             @*<li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-check-square-o" aria-hidden="true"></i>Check In (Design) *</a></li>*@
-            <li><a href="@Url.Action("Arrivals","FrontDesk")"><i class="fa fa-fighter-jet"></i>Arrivals *</a></li>
+            <li><a href="@Url.Action("Arrivals","FrontDesk")"><i class="fa fa-group"></i>Arrivals *</a></li>
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusMasterScreens" data-widget="tree" style="display:none;">
@@ -139,6 +139,18 @@
                 <ul class="treeview-menu">
                     <li><a href="@Url.Action("Create","ReservationCancellationReason")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
                     <li><a href="@Url.Action("List","ReservationCancellationReason")"><i class="fa fa-search"></i> Search </a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Additional Charges
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("Create","AdditionalCharge")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","AdditionalCharge")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
         </ul>

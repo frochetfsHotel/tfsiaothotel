@@ -238,6 +238,12 @@
 
         //setTimeout(InitializeArrivalGrid, 200);
 
+        //Default Arrival Date. (Set today's date).
+        $("#ArrivalFrom").datepicker("setDate", new Date());
+        $("#ArrivalTo").datepicker("setDate", new Date());
+        
+        
+
         //Room
         $('form#frmAdvanceRoomSearch .btnAdvanceSearchRoomOk').click(function (e) {
             var roomNumbers = "";
