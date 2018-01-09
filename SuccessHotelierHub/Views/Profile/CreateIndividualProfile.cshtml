@@ -44,6 +44,10 @@
             qid = Convert.ToString(Request.QueryString["rid"]);
             btnCancelUrl = Url.Action("Edit", "Reservation", new { Id = qid });
         }
+        else if (sourceParam == "SearchArrivals")
+        {
+            btnCancelUrl = Url.Action("Arrivals", "FrontDesk");
+        }
     }
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;

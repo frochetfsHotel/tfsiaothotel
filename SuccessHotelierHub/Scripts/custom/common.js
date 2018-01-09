@@ -268,6 +268,15 @@ function GetDayOfWeek(day) {
     return weekDay;
 }
 
+function ParseJsonDate(date) {
+    if (!IsNullOrEmpty(date)) {
+        var dt = new Date(parseInt(date.substr(6)));
+
+       return GetDate(dt, DateFormat.DDMMYYYY);
+    }
+    return "";
+}
+
 /*** Date Utility Functions END ****/
 
 function trim(item) {
@@ -342,6 +351,10 @@ function LoadLeftSideMenu() {
             $('#MenusFrontDesk').show();
             $('#menuFrontDesk').addClass('active');
         }
+        else if (menu == "Cashiering") {
+            $('#MenusCashiering').show();
+            $('#menuCashiering').addClass('active');
+        }
         else if (menu == "MasterScreen") {
             $('#MenusMasterScreens').show();
             $('#menuMasterScreen').addClass('active');
@@ -372,4 +385,11 @@ function changeColorOfDatePickerLabel(element) {
             $('label[for="' + $(element)[0].target.id + '"]').removeClass("label-bold");
         }
     }
+}
+
+function RemoveLineBreak(data) {
+    if (data != null && data != undefined && data != "") {
+        return data.replace(/(\r\n|\n|\r)/gm, "");
+    }
+    return "";
 }

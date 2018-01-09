@@ -116,6 +116,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
                     new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
                     new SqlParameter { ParameterName = "@ConfirmationNumber", Value = reservation.ConfirmationNumber },
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
+                    new SqlParameter { ParameterName = "@TotalBalance", Value = reservation.TotalBalance },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = reservation.CreatedBy }
                 };
@@ -188,6 +190,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@HouseKeepingComments", Value = reservation.HouseKeepingComments },
                     new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
                     new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
+                    new SqlParameter { ParameterName = "@TotalBalance", Value = reservation.TotalBalance },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = reservation.UpdatedBy }
                 };
@@ -266,6 +270,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ConfirmationNo", Value = model.ConfirmationNo },
                     new SqlParameter { ParameterName = "@IsShowCancelledReservation", Value = model.IsShowCancelledReservation },
                     new SqlParameter { ParameterName = "@IsShowCheckedInReservation", Value = model.IsShowCheckedInReservation },
+                    new SqlParameter { ParameterName = "@IsShowCheckedOutReservation", Value = model.IsShowCheckedOutReservation },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -309,6 +314,38 @@ namespace SuccessHotelierHub.Repository
             id = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationCheckInFlag", parameters));
 
             return id;
+        }
+
+        public string UpdateReservationCheckOutFlag(Guid reservationId, bool isCheckOut, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId },
+                    new SqlParameter { ParameterName = "@IsCheckOut", Value = isCheckOut },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationCheckOutFlag", parameters));
+
+            return id;
+        }
+
+        public string UpdateReservationTotalBalance(Guid id, double totalBalance, int updatedBy)
+        {
+            string reservationId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },                   
+                    new SqlParameter { ParameterName = "@TotalBalance", Value = totalBalance },                    
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationTotalBalance", parameters));
+
+            return reservationId;
         }
 
         #endregion

@@ -62,6 +62,73 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
+        public List<CheckInCheckOutVM> GetCheckInDetails(Guid reservationId, Guid profileId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@ProfileId", Value = profileId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetCheckInDetails", parameters);
+
+            var checkInDetails = new List<CheckInCheckOutVM>();
+            checkInDetails = DALHelper.CreateListFromTable<CheckInCheckOutVM>(dt);
+
+            return checkInDetails;
+        }
+
+
         #endregion
+
+        #region Check Out
+
+        public List<SearchGuestResultVM> SearchGuest(SearchGuestParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
+                    new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = model.RoomNo },
+                    new SqlParameter { ParameterName = "@CompanyId", Value = model.CompanyId },                    
+                    new SqlParameter { ParameterName = "@GroupId", Value = model.GroupId },
+                    new SqlParameter { ParameterName = "@BlockCodeId", Value = model.BlockCodeId },                    
+                    new SqlParameter { ParameterName = "@ConfirmationNo", Value = model.ConfirmationNo },                    
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchGuest", parameters);
+
+            var reservations = new List<SearchGuestResultVM>();
+            reservations = DALHelper.CreateListFromTable<SearchGuestResultVM>(dt);
+
+            return reservations;
+        }
+
+        public string UpdateCheckOutDetail(CheckInCheckOutVM checkInCheckOut)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = checkInCheckOut.Id },
+                    new SqlParameter { ParameterName = "@ReservationId", Value = checkInCheckOut.ReservationId },
+                    new SqlParameter { ParameterName = "@ProfileId", Value = checkInCheckOut.ProfileId },
+                    new SqlParameter { ParameterName = "@CheckOutDate", Value = checkInCheckOut.CheckOutDate },
+                    new SqlParameter { ParameterName = "@CheckOutTime", Value = checkInCheckOut.CheckOutTime },
+                    new SqlParameter { ParameterName = "@CheckOutReference", Value = checkInCheckOut.CheckOutReference },
+                    new SqlParameter { ParameterName = "@IsActive", Value = checkInCheckOut.IsActive },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = checkInCheckOut.UpdatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateCheckOutDetail", parameters));
+
+            return id;
+        }
+
+        #endregion Check Out
     }
 }

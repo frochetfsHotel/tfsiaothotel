@@ -132,6 +132,15 @@ namespace SuccessHotelierHub.Controllers
 
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
+                        else if (source == "SearchArrivals")
+                        {
+                            TempData["TitleId"] = model.TitleId;
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            url = Url.Action("Arrivals", "FrontDesk");
+                        }
 
                         if (!string.IsNullOrWhiteSpace(url))
                         {
@@ -297,6 +306,15 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
 
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
+                        }
+                        else if (source == "SearchArrivals")
+                        {
+                            TempData["TitleId"] = model.TitleId;
+                            TempData["ProfileId"] = profileId;
+                            TempData["FirstName"] = model.FirstName;
+                            TempData["LastName"] = model.LastName;
+
+                            url = Url.Action("Arrivals", "FrontDesk");
                         }
 
                         if (!string.IsNullOrWhiteSpace(url))

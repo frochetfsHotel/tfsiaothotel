@@ -33,6 +33,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Check Out Time")]
         public string CheckOutTimeText { get; set; }
 
+        public string CheckOutReference { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

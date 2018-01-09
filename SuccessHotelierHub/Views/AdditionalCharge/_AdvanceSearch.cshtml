@@ -1,0 +1,153 @@
+﻿@model SuccessHotelierHub.Models.SearchAdvanceAdditionalChargeParametersVM
+@using SuccessHotelierHub.Models
+
+@{
+    var sourceRedirectionParam = "";
+
+    sourceRedirectionParam = (string)ViewData["Source"];
+
+    var additionalChargeList = (List<AdditionalChargeVM>)ViewData["AdditionalCharge"];
+}
+
+<form id="frmAdvanceAdditionalChargeSearch" name="frmAdvanceAdditionalChargeSearch" enctype="multipart/form-data" method="post">
+    <div class="col-xs-12 text-right m-b-sm padding-zero">
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchAdditionalChargeOk">OK</button>
+        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
+    </div>
+
+    <div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">
+        <div class="row">
+            <div class="col-md-8 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Code)
+                @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Find Code, Description..." })
+            </div>
+            <div class="col-md-4 m-b-sm text-left m-t-md">
+                <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchAdditionalCharge()">Search</button>
+                <button type="button" class="btn btn-danger" id="btnClear" onclick="clearAdditionalCharge()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
+        <table class="table table-bordered table-hover table-striped cursor-P table_maxheight" id="tblAdditionalCharge">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @*@if (additionalChargeList != null && additionalChargeList.Count > 0)
+                {
+                    foreach (var charge in additionalChargeList)
+                    {
+                        <tr onclick="onSelectAdditionalCharge('@("rbAdditionalCharge_" + charge.Id)');">
+                            <td>
+                                <input type="radio" class="rbAdditionalCharge cursor-P" id="@("rbAdditionalCharge_" + charge.Id)"
+                                       name="rbAdditionalCharge" value="@charge.Id"
+                                       data-code="@charge.Code"
+                                       data-divReservationChargeModal="@charge.Description"
+                                       data-price="@charge.Price"  />
+                            </td>
+
+                            <td>@charge.Code</td>
+                            <td>@charge.Description</td>
+                            <td>@charge.Price</td>
+                        </tr>
+
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" lass="text-center">
+                            No data available.
+                        </td>
+                    </tr>
+                }*@
+            </tbody>
+        </table>
+    </div>
+</form>
+
+
+<div class="clearfix"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("form#frmAdvanceAdditionalChargeSearch select").change(function () {
+            searchAdditionalCharge();
+        });
+
+        $("form#frmAdvanceAdditionalChargeSearch input").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                searchAdditionalCharge();
+            }
+        });
+    });
+
+    function onSelectAdditionalCharge(element) {
+        $('#' + element).prop("checked", true);
+    }
+
+    function searchAdditionalCharge() {
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (result) {
+                showToaster(result.responseText, ToasterType.ERROR);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/AdditionalCharge/SearchAdvanceAdditionalCharge")',
+            type: 'POST',
+            data: $('#frmAdvanceAdditionalChargeSearch').serialize(),
+            success: function (response) {
+
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    //Show data in table.
+                    var result = response.data;
+
+                    $("form#frmAdvanceAdditionalChargeSearch #tblAdditionalCharge tbody").empty();
+                    var tbody = $("form#frmAdvanceAdditionalChargeSearch #tblAdditionalCharge tbody");
+
+                    var markup = "";
+
+                    if (result.length > 0) {
+                        //Add the data rows.
+                        for (var i = 0; i < result.length; i++) {
+                            markup += "<tr>";
+
+                            markup += "<td class=\'text-center\'><label class=\'container_radio\'><input type=\'radio\' class=\'rbAdditionalCharge cursor-P\' id=\'rbAdditionalCharge_" + result[i].Id + "\' name=\'rbAdditionalCharge\' value=\'" + result[i].Id + "\'  data-code=\'" + result[i].Code + "\'  data-description=\'" + result[i].Description + "\' data-price=\'" + result[i].Price + "\' /><span class=\'checkmark_radio\'></span></label></td>";
+                            markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + result[i].Code + "</td>";
+                            markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + result[i].Description + "</td>";
+                            markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + result[i].Price + "</td>";
+
+                            markup += "</tr>";
+                        }
+                    } else {
+                        markup += "<tr><td colspan =\'4\' class=\'text-center\'>No data available.</td></tr>";
+                    }
+
+                    tbody.append(markup);
+                }
+            }
+        });
+    }
+
+    function clearAdditionalCharge() {
+        $('form#frmAdvanceAdditionalChargeSearch #Code').val('');
+        searchAdditionalCharge();
+    }
+
+
+</script>

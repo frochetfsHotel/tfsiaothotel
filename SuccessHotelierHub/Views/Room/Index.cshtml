@@ -94,8 +94,7 @@
 
         var roomTypeId = $('#ddlRoomType').val();
 
-        if (!IsNullOrEmpty(totalRooms) && totalRooms > 0) {
-            debugger;
+        if (!IsNullOrEmpty(totalRooms) && totalRooms > 0) {            
             for (i = 0; i < totalRooms; i++)
             {
                 var roomObj = {};
@@ -111,7 +110,6 @@
                 models.push(roomObj);
             }
 
-            debugger;
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -127,8 +125,7 @@
                 url: '@Url.Content("~/Room/UpdateRooms")',
                 type: 'POST',
                 data: JSON.stringify({ 'models': models }),
-                success: function (response) {
-                    debugger;
+                success: function (response) {                    
                     if (response.IsSuccess == false)
                     {
                         showToaster(response.errorMessage, ToasterType.ERROR);

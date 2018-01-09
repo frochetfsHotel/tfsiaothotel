@@ -83,7 +83,7 @@
         </div>
         <div class="col-md-4 divCardExpiryDate">
             @Html.LabelFor(m => m.CardExpiryDate)
-            <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
+            <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate"/>
         </div>
     </div>
     <div class="row">
@@ -115,8 +115,7 @@
         });
 
         //CheckIn
-        $('form#frmCheckInPayment .btnCheckInOk').click(function (e) {
-            debugger;
+        $('form#frmCheckInPayment .btnCheckInOk').click(function (e) {            
             if (validateCheckIn()) {
 
                 //Ajax request to check in.
@@ -140,7 +139,7 @@
                         else {
 
                             swal({
-                                title: '' + response.data.Name + ' Checked in successfully.',
+                                title: '' + response.data.Name + ' checked in successfully.',
                                 type: 'success',
                                 showCloseButton: true,
                                 showCancelButton: false,

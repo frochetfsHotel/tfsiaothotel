@@ -328,6 +328,7 @@ textarea {
     height: 20px;
     width: 20px;
     background-color: #eee;
+    border: 1px solid #3C8DBC;
 }
 .modal-footer {
     margin-top: 0;
@@ -662,10 +663,11 @@ label{
     position: absolute;
     top: 0;
     left: 0;
-    height: 16px;
-    width: 16px;
+    height: 18px;
+    width: 18px;
     background-color: #eee;
     border-radius: 50%;
+    border: 1px solid #3C8DBC;
 }
 
 /* On mouse-over, add a grey background color */

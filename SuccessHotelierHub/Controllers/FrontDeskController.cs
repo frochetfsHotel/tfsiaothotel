@@ -17,7 +17,9 @@ namespace SuccessHotelierHub.Controllers
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();  
         private CheckInCheckOutRepository checkInCheckOutRepository = new CheckInCheckOutRepository();
         private RoomRepository roomRepository = new RoomRepository();
-        private ReservationRepository reservationRepository = new ReservationRepository();       
+        private ReservationRepository reservationRepository = new ReservationRepository();
+        private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
+        private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
 
         #endregion
 
@@ -219,6 +221,27 @@ namespace SuccessHotelierHub.Controllers
 
                     reservation.UpdatedBy = LogInManager.LoggedInUserId;
                     reservationRepository.UpdateReservation(reservation);
+
+                    #region Save Room Rent Charges 
+
+                    double totalPrice = (double)(reservation.Rate * reservation.NoOfNight);
+
+                    var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
+
+                    ReservationChargeVM reservationCharge = new ReservationChargeVM();
+                    reservationCharge.ReservationId = reservation.Id;
+                    reservationCharge.AdditionalChargeId = roomRentCharge.Id;
+                    reservationCharge.Code = roomRentCharge.Code;
+                    reservationCharge.Description = roomRentCharge.Description;
+                    reservationCharge.TransactionDate = reservation.ArrivalDate;
+                    reservationCharge.Amount = totalPrice;
+                    reservationCharge.Qty = 1;
+                    reservationCharge.IsActive = true;
+                    reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
+
+                    reservationChargeRepository.AddReservationCharges(reservationCharge);
+
+                    #endregion
 
                     #region Save Reservation Room Mapping & Update Room Occupied Flag
                     var roomIds = model.RoomIds;

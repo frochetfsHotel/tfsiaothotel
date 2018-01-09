@@ -200,10 +200,16 @@
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoAdditionalChargeEdit(\'' + full.Id + '\')" '
-                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
-                        + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deleteAdditionalCharge(this,event,\'' + full.Id + '\')">Delete</button>';
+                    var buttons = '';
+                    //Room Rent
+                    if (full.Code != '1000' && full.Code != '9004')
+                    {
+                        buttons += '<a href="javascript:void(0);" onclick="GotoAdditionalChargeEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
+                        buttons += '<button type="button" class="btn btn-danger btn-xs"'
+                                + ' onclick="deleteAdditionalCharge(this,event,\'' + full.Id + '\')">Delete</button>';
+                    }
+                    return buttons;
                 }
             }
             ],

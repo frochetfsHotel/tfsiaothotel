@@ -25,6 +25,10 @@
             qid = Convert.ToString(Request.QueryString["rid"]);
             btnCancelUrl = Url.Action("Edit", "Reservation", new { Id = qid });
         }
+        else if (sourceParam == "SearchArrivals")
+        {
+            btnCancelUrl = Url.Action("Arrivals", "FrontDesk");
+        }
     }
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
@@ -498,11 +502,11 @@
             $('label[for="BusinessTelephoneNo"]').addClass("label-bold");
 
         //Address
-        if (!IsNullOrEmpty('@Model.Address'))
+        if (!IsNullOrEmpty(RemoveLineBreak('@Model.Address')))
             $('label[for="Address"]').addClass("label-bold");
 
         //HomeAddress
-        if (!IsNullOrEmpty('@Model.HomeAddress'))
+        if (!IsNullOrEmpty(RemoveLineBreak('@Model.HomeAddress')))
             $('label[for="HomeAddress"]').addClass("label-bold");
 
         //Country

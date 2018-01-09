@@ -1,0 +1,741 @@
+﻿@model SuccessHotelierHub.Models.SearchGuestParametersVM
+@using SuccessHotelierHub.Models
+
+@{
+    ViewBag.Title = "Search Guest";
+}
+
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "GuestGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Search Guests <small>Search</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Guests</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Guests</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="frmReservationList" enctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.RoomNo)
+                            @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.LastName)
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.FirstName)
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.ConfirmationNo)
+                            @Html.TextBoxFor(m => m.ConfirmationNo, new { @class = "form-control", placeholder = "Confirmation #" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.CompanyId)
+                            <select class="form-control" id="CompanyId" name="CompanyId">
+                                <option value="">--Select Company--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.GroupId)
+                            <select class="form-control" id="GroupId" name="GroupId">
+                                <option value="">--Select Group--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Group 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Group 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
+                            </select>
+                        </div>
+                         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.BlockCodeId)
+                            <select class="form-control" id="BlockCodeId" name="BlockCodeId">
+                                <option value="">--Select Group Code--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group Code 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row text-right">
+                        <div class="col-md-12 form-group">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchGuest()">
+                                Search
+                            </button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearGuest()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+
+                <div class="col-xs-12 padding-zero m-t" id="divReservationList" style="display:none;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblReservation">
+                            <thead>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>                                                                        
+                                    <th>Arrival</th>
+                                    <th>Departure</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <th>Company</th>
+                                    <th>Group</th>
+                                    <th width="10%;">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
+                   {
+                       TokenForEnableDisableButtons = PagerName,
+                       PageChangeMethod = "ReservationGridPageChange"
+                   })
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+
+
+<!-- Billing Info Modal START -->
+<div id="billingInfoModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Billing - [<span class="spnGuestName"></span> - <span class="spnRoomNumbers"></span>]
+                &nbsp; <span class="spnCheckedOutLabel text-blue" style="display:none;">Checked Out</span></h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divBillingInfo">
+                <form id="frmBillingInfo" name="frmBillingInfo" enctype="multipart/form-data">
+                    <!-- HIDDEN FIELD-->
+                    <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />
+                    <!-- HIDDEN FIELD-->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="Balance">Balance</label>
+                            <input type="text" id="Balance" name="Balance" class="form-control" readonly="readonly" 
+                                   value=""/>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="ArrivalDate">Arrival</label>
+                            <input type="text" id="ArrivalDate" name="ArrivalDate"  class="form-control" readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="Company">Company</label>
+                            <input type="text" id="Company" name="Company" class="form-control"  readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="RateCode">Rate Code</label>
+                            <input type="text" id="RateCode" name="RateCode"  class="form-control" readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="NoOfRooms">Prs</label>
+                            <input type="text" id="NoOfRooms" name="NoOfRooms" class="form-control"  readonly="readonly" 
+                                   value="" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="Status">Status</label>
+                            <input type="text" id="Status" name="Status"  class="form-control" readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="DepartureDate">Depart</label>
+                            <input type="text" id="DepartureDate" name="DepartureDate"  class="form-control" readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="Group">Group</label>
+                            <input type="text" id="Group" name="Group"  class="form-control" readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="RoomRent">Rate</label>
+                            <input type="text" id="RoomRent" name="RoomRent"  class="form-control" readonly="readonly" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="RoomTypeCode">Room Type</label>
+                            <input type="text" id="RoomTypeCode" name="RoomTypeCode"  class="form-control" readonly="readonly" 
+                                   value="" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6 padding-zero">
+                                <h4><span class="spnGuestName"></span></h4>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                VA
+                                <span class="spnTotalBalance"></span>
+                                <button class="m-l-md btn btn-sm btn-info" type="button" id="btnAddCharge" onclick="openReservationChargeModal();">Add Charges</button>
+                            </div>
+                            <hr/>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="table-responsive m-t-md table_maxheight" id="divReservationCharges">
+                                <table class="table table-bordered table-hover table-striped cursor-P m-b-none">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Supplement</th>
+                                            <th>Reference</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <input type="button" class="btn btn-sm btn-success" id="btnCheckOut" onclick="CheckOut();" 
+                                   value="Check Out" />
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+<!--  Billing Info  Modal END -->
+
+<!-- Check Out Payment Method Modal START -->
+<div id="checkOutPaymentModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Check Out - Payment Method</h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divCheckOutPaymentMethod">
+
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+<!--  Check Out Payment Method Modal END -->
+
+<!-- Reservation Charges Modal START -->
+<div id="reservationChargeModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Charge</h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divReservationChargeModal">
+                @Html.Partial("~/Views/ReservationCharge/_AddReservationCharges.cshtml",
+                            new ViewDataDictionary {
+                                    { "Source", "SearchGuest" }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Reservation Charges Modal END -->
+
+<!-- Additional Charges Modal START -->
+<div id="additionalChargeModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Search Additional Charges</h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divAdditionalChargeModal">                
+                @Html.Partial("~/Views/AdditionalCharge/_AdvanceSearch.cshtml",
+                            new ViewDataDictionary {
+                                    { "Source", "SearchGuest" },
+                                    { "AdditionalCharge", ViewBag.AdditionalChargeList},
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+<!-- Additional Charges Modal END -->
+
+
+<script type="text/javascript">
+
+    var currentPage = 1;
+    var grdReservation;
+    var IsSearchButtonClicked = false;
+
+    $(document).ready(function () {
+
+        //setTimeout(InitializeReservationGrid, 200);
+
+        //Additional Charge Search
+        $('form#frmAdvanceAdditionalChargeSearch .btnAdvanceSearchAdditionalChargeOk').click(function (e) {
+            $('form#frmReservationCharge #Code').attr("readonly", false);
+            var selectedCharge = $('input[name=rbAdditionalCharge]:checked', 'form#frmAdvanceAdditionalChargeSearch');
+            if (!IsNullOrEmpty(selectedCharge.val())) {
+                var id, code, description, amount;
+                id = $(selectedCharge).val();
+                code = $(selectedCharge).data('code');
+                description = $(selectedCharge).data('description');
+                amount = $(selectedCharge).data('price');
+
+                //show Code, Description & Price.
+                $('form#frmReservationCharge #AdditionalChargeId').val(id);
+                $('form#frmReservationCharge #Code').val(code);
+                $('form#frmReservationCharge #Description').val(description);
+                $('form#frmReservationCharge #Amount').val(amount);
+
+                $('form#frmReservationCharge #Code').attr("readonly", true);
+
+                //Close Modal
+                $('#additionalChargeModal').modal('toggle');
+            }
+        });
+
+        //Add Reservation Charge
+
+    });
+
+
+    function SearchReservationParameters(d) {
+        var roomNo = $('#RoomNo').val();
+        var lastName = $('#LastName').val();
+        var firstName = $('#FirstName').val();
+        var confirmationNo = $('#ConfirmationNo').val();
+        var companyId = $('#CompanyId').val();        
+        var groupId = $('#GroupId').val();
+        var blockCodeId = $('#BlockCodeId').val();
+        
+        d.PageNum = currentPage;
+        d.LastName = lastName;
+        d.FirstName = firstName;
+        d.RoomNo = roomNo;
+        d.CompanyId = companyId;        
+        d.GroupId = groupId;
+        d.BlockCodeId = blockCodeId;        
+        d.ConfirmationNo = confirmationNo;        
+    }
+
+
+    function ReservationGridDataBound(response) {
+        if (response.IsSuccess == true) {
+
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            if (IsSearchButtonClicked) {
+                goToByScroll("divReservationList");
+            }
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadReservationGrid() {
+        if (!IsNullOrEmpty(grdReservation)) {
+            grdReservation.ajax.url("@Url.Content("~/Cashiering/SearchGuest")").load();
+        } else {
+            InitializeReservationGrid();
+        }
+        $('#divReservationList').show();
+    }
+
+    function ReservationGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadReservationGrid();
+    }
+
+
+    function InitializeReservationGrid() {
+        grdReservation = $('#tblReservation').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Cashiering/SearchGuest")',
+                data: SearchReservationParameters,
+                dataSrc: ReservationGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            dateFormat: "mm/dd/yy",
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "RoomNumbers",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomNumbers + '</a> ';
+
+                }
+            },
+            {
+                targets: 1,
+                data: "LastName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
+
+                }
+            },
+            {
+                targets: 2,
+                data: "FirstName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.FirstName + '</a> ';
+
+                }
+            },
+            {
+                targets: 3,
+                data: "ArrivalDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
+                }
+            },
+            {
+                targets: 4,
+                data: "DepartureDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
+                }
+            },
+            {
+                targets: 5,
+                data: "Balance",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.Balance + '</a> ';
+
+                }
+            },
+            {
+                targets: 6,
+                data: "ReservationStatusName",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ReservationStatusName + '</a> ';
+
+                }
+            },
+            {
+                targets: 7,
+                data: "Company",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.Company + '</a> ';
+
+                }
+            },
+            {
+                targets: 8,
+                data: "Group",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                        + ' class="">' + full.Group + '</a> ';
+
+                }
+            },
+            {
+                targets: 9,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    var buttons = '';
+                    buttons += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                                + ' class="btn btn-primary btn-xs m-r-xs">Billing</a> ';
+                    return buttons;
+                }
+            }
+            ],
+            order: [[1, "asc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function OpenBillingForm(id) {
+        if (!IsNullOrEmpty(id)) {
+            //$('#billingInfoModal').modal('toggle');
+
+            //Ajax Request to open billing information.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Cashiering/GetBillingInfo")',
+                type: 'POST',
+                data: { reservationId: id, source : "SearchGuest" },
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {                        
+                        var result = response.data;
+                        var transactions = result.Transactions;
+
+                        clearBillingInfo();
+                                                
+                        $("form#frmBillingInfo #hdnReservationId").val(result.ReservationId);
+
+                        $("form#frmBillingInfo #Balance").val(result.Balance);
+                        $("form#frmBillingInfo #ArrivalDate").val(ParseJsonDate(result.ArrivalDate));
+                        $("form#frmBillingInfo #Company").val(result.Company);
+                        $("form#frmBillingInfo #RateCode").val(result.RateCode);
+                        $("form#frmBillingInfo #NoOfRooms").val(result.NoOfRooms);
+
+                        $("form#frmBillingInfo #Status").val(result.Status);
+                        $("form#frmBillingInfo #DepartureDate").val(ParseJsonDate(result.DepartureDate));
+                        $("form#frmBillingInfo #Group").val(result.Group);
+                        $("form#frmBillingInfo #RoomRent").val(result.RoomRent);
+                        $("form#frmBillingInfo #RoomTypeCode").val(result.RoomTypeCode);
+
+                        
+                        $("form#frmBillingInfo .spnTotalBalance").html(result.Balance);
+                        $(".spnGuestName").html(result.Name);
+                        $(".spnRoomNumbers").html("Room " + result.RoomNumbers);
+
+                        //Bind Billing Transaction Grid.
+                        bindBillingTransactionGrid(transactions);
+                        $('.spnCheckedOutLabel').hide();
+
+                        //Is Checked Out
+                        if (result.IsCheckedOut == true) {
+                            $("form#frmBillingInfo #btnAddCharge").hide();
+                            $("form#frmBillingInfo #btnCheckOut").hide();
+                            $('.spnCheckedOutLabel').show();
+                        }
+
+                        //ShowBalanceInfo();
+                        $('#billingInfoModal').modal('toggle');
+                    }
+                }
+            });
+        }
+    }
+
+    function searchGuest() {        
+        IsSearchButtonClicked = true;
+        currentPage = 1;
+        ReloadReservationGrid();
+        
+    }
+
+    function ShowBalanceInfo() {
+        var balance = 0;
+        $('#divReservationCharges table tbody td.tdAmount').each(function () {
+            balance += parseFloat($(this).attr("data-amount"));
+        });
+        $("form#frmBillingInfo .spnTotalBalance").html(balance);
+        $("form#frmBillingInfo #Balance").val(balance);
+    }
+
+    function bindBillingTransactionGrid(data) {        
+        if (!IsNullOrEmpty(data) && data.length > 0) {
+            var html = "";
+            for (i = 0; i < data.length; i++) {
+                var amount = (IsNullOrEmpty(data[i].Amount) ? "0" : data[i].Amount);
+                html += "<tr>";
+                html += "<td>" + ParseJsonDate(data[i].TransactionDate) + "</td>";
+                html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";                
+                html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
+                html += "<td class='tdAmount' data-amount='" + amount + "'>" + amount + "</td>";
+                html += "<td>" + (IsNullOrEmpty(data[i].Supplement) ? "" : data[i].Supplement) + "</td>";
+                html += "<td>" + (IsNullOrEmpty(data[i].Reference) ? "" : data[i].Reference) + "</td>";
+                html += "</tr>";
+            }
+
+            $("form#frmBillingInfo #divReservationCharges table tbody").prepend(html);
+        }
+
+        ShowBalanceInfo();
+    }
+
+    function clearGuest() {
+        $('#RoomNo').val('');
+        $('#LastName').val('');
+        $('#FirstName').val('');
+        $('#ConfirmationNo').val('');
+
+        $('#CompanyId').val('');        
+        $('#GroupId').val('');
+        $('#BlockCodeId').val('');
+
+        searchGuest();
+    }
+
+    function clearBillingInfo() {
+        $("form#frmBillingInfo #Balance").val('');
+        $("form#frmBillingInfo #ArrivalDate").val('');
+        $("form#frmBillingInfo #Company").val('');
+        $("form#frmBillingInfo #RateCode").val('');
+        $("form#frmBillingInfo #NoOfRooms").val('');
+
+        $("form#frmBillingInfo #Status").val('');
+        $("form#frmBillingInfo #DepartureDate").val('');
+        $("form#frmBillingInfo #Group").val('');
+        $("form#frmBillingInfo #RoomRent").val('');
+        $("form#frmBillingInfo #RoomTypeCode").val('');
+        $("form#frmBillingInfo #divReservationCharges table tbody").empty();
+    }
+
+    //Search Additional Charge
+    function openAdditionalChargeModal() {
+        $('form#frmAdvanceAdditionalChargeSearch #Code').val($("form#frmReservationCharge #Code").val());
+        $('form#frmAdvanceAdditionalChargeSearch #btnSearch').click();
+
+        $('#additionalChargeModal').modal('toggle');
+    }
+
+    //Add Reservation  Charge
+    function openReservationChargeModal() {
+        //Set Reservation Id.
+        $("form#frmReservationCharge #ReservationId").val($("form#frmBillingInfo #hdnReservationId").val());
+
+        $('#reservationChargeModal').modal('toggle');
+    }
+
+    //CheckOut
+    function CheckOut() {
+
+        var reservationId = $("form#frmBillingInfo #hdnReservationId").val();
+        if (!IsNullOrEmpty(reservationId)) {
+            swal({
+                title: 'Are you sure do you want to checkout ?',
+                type: 'info',
+                showCancelButton: true,
+                showCloseButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.value) {
+                    //Ajax Request to fetch Check Out Payment Method Modal.
+                    $.ajax({
+                        beforeSend: function (xhr) {
+                            showLoader();
+                        },
+                        error: function (result) {
+                            showToaster(result.responseText, ToasterType.ERROR);
+                        },
+                        complete: function () {
+                            hideLoader();
+                        },
+                        url: '@Url.Content("~/Cashiering/ShowCheckOutPaymentMethod")',
+                        type: 'POST',
+                        data: { reservationId: reservationId, source: "SearchGuest" },
+                        success: function (response) {
+                            if (response.IsSuccess == false) {
+                                showToaster(response.errorMessage, ToasterType.ERROR);
+                            }
+                            else {
+                                $('#divCheckOutPaymentMethod').html('');
+                                $('#divCheckOutPaymentMethod').html(response);
+
+                                //Open CheckOut Payment Method Modal.
+                                $('#checkOutPaymentModal').modal('toggle');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+       
+    }
+
+</script>
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

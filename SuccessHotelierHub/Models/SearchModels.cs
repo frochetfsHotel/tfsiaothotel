@@ -233,6 +233,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Show Checked In")]
         public bool IsShowCheckedInReservation { get; set; }
 
+        [DisplayName("Show Checked Out")]
+        public bool IsShowCheckedOutReservation { get; set; }
+
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
@@ -259,6 +262,7 @@ namespace SuccessHotelierHub.Models
         public string RateTypeCode { get; set; }
         public bool IsReservationCancel { get; set; }
         public bool IsCheckIn { get; set; }
+        public bool IsCheckOut { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
@@ -581,7 +585,7 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
-    #region Search Reservation
+    #region Search Arrivals
 
     public class SearchArrivalsParametersVM
     {
@@ -644,6 +648,7 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+        public Guid? ProfileId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -661,6 +666,71 @@ namespace SuccessHotelierHub.Models
         public bool IsReservationCancel { get; set; }
         public bool IsCheckIn { get; set; }
         public bool IsCheckOut { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public int TotalCount { get; set; }
+    }
+
+    #endregion
+
+    #region Search Guest
+
+    public class SearchGuestParametersVM
+    {
+        public SearchGuestParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        [DisplayName("Room #")]
+        public string RoomNo { get; set; }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        [DisplayName("Confirmation #")]
+        public string ConfirmationNo { get; set; }
+
+        [DisplayName("Company")]
+        public Guid? CompanyId { get; set; }
+
+        [DisplayName("Group")]
+        public Guid? GroupId { get; set; }
+
+        [DisplayName("Group Code")]
+        public Guid? BlockCodeId { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchGuestResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        public string ArrivalDate { get; set; }        
+        public string DepartureDate { get; set; }
+                
+        public string RoomNumbers { get; set; }
+        public double? Balance { get; set; }
+        public Guid? ReservationStatusId { get; set; }
+        public string ReservationStatusName { get; set; }
+
+        public Guid? CompanyId { get; set; }
+        public string Company { get; set; }
+
+        public Guid? GroupId { get; set; }
+        public string Group { get; set; }
+                
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
@@ -701,6 +771,29 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }
+    #endregion
+
+    #region Advance Search Additional Charge 
+
+    public class SearchAdvanceAdditionalChargeParametersVM
+    {
+        [DisplayName("Find")]
+        public string Code { get; set; }
+    }
+
+    public class SearchAdvanceAdditionalChargeResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        public string Code { get; set; }
+        public string Description { get; set; }
+        public double? Price { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+    }
+
     #endregion
 
     #region DataTable Column Info

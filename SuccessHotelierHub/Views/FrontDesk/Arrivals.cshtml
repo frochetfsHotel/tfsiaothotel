@@ -157,16 +157,16 @@
                         <table class="table table-bordered table-hover table-striped" id="tblArrival">
                             <thead>
                                 <tr>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Room</th>
-                                    <th>Room Type</th>
-                                    <th>Rate Type</th>
-                                    <th>Arrival</th>
-                                    <th>Departure</th>
-                                    <th>Rms</th>
-                                    <th>Night</th>
-                                    <th width="10%;">Action</th>
+                                    <th width="10%;">Last Name</th>
+                                    <th width="10%;">First Name</th>
+                                    <th width="5%;">Room</th>
+                                    <th width="10%;">Room Type</th>
+                                    <th width="10%;">Rate Type</th>
+                                    <th width="10%;">Arrival</th>
+                                    <th width="10%;">Departure</th>
+                                    <th width="5%;">Rms</th>
+                                    <th width="5%;">Night</th>
+                                    <th width="25%;">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -236,7 +236,7 @@
 
     $(document).ready(function () {
 
-        //setTimeout(InitializeArrivalGrid, 200);
+        setTimeout(InitializeArrivalGrid, 200);
 
         //Default Arrival Date. (Set today's date).
         $("#ArrivalFrom").datepicker("setDate", new Date());
@@ -341,6 +341,7 @@
             if (IsSearchButtonClicked) {
                 goToByScroll("divArrivalList");
             }
+            $('#divArrivalList').show();
             return response.data;
         }
         else {
@@ -491,6 +492,8 @@
                 className: "text-center",
                 render: function (data, type, full, meta) {
                     var buttons = '';
+                    buttons += '<a href="javascript:void(0);" onclick="GotoProfileEditPage(\'' + full.ProfileId + '\')" '
+                                + ' class="btn bg-olive btn-xs m-r-xs">Profile</a> ';
                     buttons += '<a href="javascript:void(0);" onclick="OpenCheckInPaymentMethodForm(\'' + full.Id + '\')" '
                                 + ' class="btn btn-primary btn-xs m-r-xs">Check In</a> ';
                     return buttons;
@@ -587,7 +590,12 @@
         searchArrival();
     }
 
-
+    function GotoProfileEditPage(profileId) {
+        if (!IsNullOrEmpty(profileId)) {
+            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=SearchArrivals";
+            redirectTo(url);
+        }
+    }
     
 
 

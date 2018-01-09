@@ -112,8 +112,7 @@ else
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
-                        if (response.IsSuccess == true) {
-                            debugger;
+                        if (response.IsSuccess == true) {                            
                             $(element).closest("tr").remove();
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }

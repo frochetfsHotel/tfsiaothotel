@@ -448,4 +448,10 @@ namespace SuccessHotelierHub.Utility
     {
         public const int PAGESIZE = 10;
     }
+
+    public static class AdditionalChargeCode
+    {
+        public const string ROOM_RENT = "1000";
+        public const string CHECK_OUT = "9004";
+    }
 }

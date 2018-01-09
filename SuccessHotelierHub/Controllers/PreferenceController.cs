@@ -55,7 +55,7 @@ namespace SuccessHotelierHub.Controllers
                         IsSuccess = true,
                         data = new
                         {
-                            PreferenceId = model.Id
+                            PreferenceId = preferenceId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }

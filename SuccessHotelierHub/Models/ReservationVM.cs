@@ -219,6 +219,9 @@ namespace SuccessHotelierHub.Models
         public string Remarks { get; set; }
         public string PreferenceItems { get; set; }
 
+        public double? TotalPrice { get; set; }
+        public double? TotalBalance { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

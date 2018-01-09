@@ -202,6 +202,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdditionalChargeController.cs" />
+    <Compile Include="Controllers\CashieringController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\FrontDeskController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Controllers\RateController.cs" />
     <Compile Include="Controllers\RateTypeController.cs" />
     <Compile Include="Controllers\ReservationCancellationReasonController.cs" />
+    <Compile Include="Controllers\ReservationChargeController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
@@ -221,8 +223,10 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdditionalChargeVM.cs" />
+    <Compile Include="Models\BillingInfoVM.cs" />
     <Compile Include="Models\CheckInCheckOutVM.cs" />
     <Compile Include="Models\CheckInPaymentMethodVM.cs" />
+    <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
     <Compile Include="Models\CityVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -239,6 +243,7 @@
     <Compile Include="Models\RateSheetResultVM.cs" />
     <Compile Include="Models\RateTypeVM.cs" />
     <Compile Include="Models\ReservationCancellationReasonVM.cs" />
+    <Compile Include="Models\ReservationChargeVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
     <Compile Include="Models\ReservationRoomMappingVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
@@ -263,6 +268,7 @@
     <Compile Include="Repository\RateRepository.cs" />
     <Compile Include="Repository\RateTypeRepository.cs" />
     <Compile Include="Repository\ReservationCancellationReasonRepository.cs" />
+    <Compile Include="Repository\ReservationChargeRepository.cs" />
     <Compile Include="Repository\ReservationRepository.cs" />
     <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomStatusRepository.cs" />
@@ -1911,6 +1917,10 @@
     <Content Include="Views\AdditionalCharge\Create.cshtml" />
     <Content Include="Views\AdditionalCharge\Edit.cshtml" />
     <Content Include="Views\AdditionalCharge\List.cshtml" />
+    <Content Include="Views\Cashiering\SearchGuest.cshtml" />
+    <Content Include="Views\ReservationCharge\_AddReservationCharges.cshtml" />
+    <Content Include="Views\AdditionalCharge\_AdvanceSearch.cshtml" />
+    <Content Include="Views\Cashiering\_CheckOutPaymentMethod.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

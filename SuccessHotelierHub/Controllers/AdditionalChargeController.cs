@@ -224,6 +224,26 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult SearchAdvanceAdditionalCharge(SearchAdvanceAdditionalChargeParametersVM model)
+        {
+            try
+            {
+                var charges = additionalChargeRepository.SearchAdvanceAdditionalCharge(model);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = charges
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         public bool CheckAdditionalChargeCodeAvailable(Guid? id, string code)
         {
             bool blnAvailable = true;
@@ -237,5 +257,7 @@ namespace SuccessHotelierHub.Controllers
 
             return blnAvailable;
         }
+
+      
     }
 }

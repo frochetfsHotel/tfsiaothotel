@@ -37,6 +37,22 @@ namespace SuccessHotelierHub.Repository
             return charge;
         }
 
+        public List<AdditionalChargeVM> GetAdditionalChargesByCode(string code)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Code", Value = code }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetAdditionalChargesByCode", parameters);
+
+
+            var charge = new List<AdditionalChargeVM>();
+            charge = DALHelper.CreateListFromTable<AdditionalChargeVM>(dt);
+
+            return charge;
+        }
+
         public string AddAdditionalCharges(AdditionalChargeVM additionalCharge)
         {
             string chargeId = string.Empty;
@@ -122,6 +138,21 @@ namespace SuccessHotelierHub.Repository
 
             var charges = new List<SearchAdditionalChargeResultVM>();
             charges = DALHelper.CreateListFromTable<SearchAdditionalChargeResultVM>(dt);
+
+            return charges;
+        }
+
+        public List<SearchAdvanceAdditionalChargeResultVM> SearchAdvanceAdditionalCharge(SearchAdvanceAdditionalChargeParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Code", Value = model.Code }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceAdditionalCharge", parameters);
+
+            var charges = new List<SearchAdvanceAdditionalChargeResultVM>();
+            charges = DALHelper.CreateListFromTable<SearchAdvanceAdditionalChargeResultVM>(dt);
 
             return charges;
         }

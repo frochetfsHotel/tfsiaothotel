@@ -176,7 +176,14 @@
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-6 form-group text-right">
+                        <div class="col-md-3 form-group m-t-sm">
+                            <label class="container1" for="IsShowCheckedOutReservation">
+                                Show Checked Out
+                                @Html.CheckBoxFor(m => m.IsShowCheckedOutReservation)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-3 form-group text-right">
                             <button type="button" id="btnSearch"
                                     class="btn btn-success m-r-xs" onclick="searchReservation()">
                                 Search
@@ -259,8 +266,7 @@
 
         setTimeout(InitializeReservationGrid, 200);
 
-        $("#frmReservationList input[type=text]").keyup(function (event) {
-            debugger;
+        $("#frmReservationList input[type=text]").keyup(function (event) {            
             if (event.keyCode === 13) {
                 $("#btnSearch").click();
             }
@@ -343,6 +349,8 @@
         var confirmationNo = $('#ConfirmationNo').val();
         var isShowCancelledReservation = $('#IsShowCancelledReservation').prop('checked');
         var isShowCheckedInReservation = $('#IsShowCheckedInReservation').prop('checked');
+        var isShowCheckedOutReservation = $('#IsShowCheckedOutReservation').prop('checked');
+        
 
         d.PageNum = currentPage;
         d.LastName = lastName;
@@ -362,13 +370,14 @@
         d.ConfirmationNo = confirmationNo;
         d.IsShowCancelledReservation = isShowCancelledReservation;
         d.IsShowCheckedInReservation = isShowCheckedInReservation;
+        d.IsShowCheckedOutReservation = isShowCheckedOutReservation;
     }
 
     function ReservationGridDataBound(response) {
         if (response.IsSuccess == true) {
             var confirmationNo = $('#ConfirmationNo').val();
             //If search by confirmation no. then redirect to edit page.
-            if (!IsNullOrEmpty(confirmationNo)) {
+            if (!IsNullOrEmpty(confirmationNo) && (!IsNullOrEmpty(response.data) && response.data.length > 0)) {
                 var id = response.data[0].Id;
                 GotoReservationEdit(id);
             }
@@ -550,6 +559,7 @@
                 render: function (data, type, full, meta) {
                     var isReservationCancel = full.IsReservationCancel;
                     var isCheckIn = full.IsCheckIn;
+                    var isCheckOut = full.IsCheckOut;
                     var buttons = "";
 
                     buttons += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
@@ -560,6 +570,9 @@
                     }
                     else if (isCheckIn == true) {
                         buttons += ' <button type="button" class="btn bg-navy btn-xs m-n">Checked In</button>';
+                        if (isCheckOut == true) {
+                            buttons += ' <button type="button" class="btn bg-purple btn-xs m-n">Checked Out</button>';
+                        }
                     }
                     else {
                         buttons += ' <button type="button" class="btn btn-danger btn-xs"'
@@ -631,6 +644,7 @@
         $('#ArrivalTo').val('');
         $('#IsShowCancelledReservation').prop("checked", false);
         $('#IsShowCheckedInReservation').prop("checked", false);
+        $('#IsShowCheckedOutReservation').prop("checked", false);
 
         searchReservation();
     }

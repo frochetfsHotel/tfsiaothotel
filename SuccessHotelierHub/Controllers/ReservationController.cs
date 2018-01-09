@@ -26,6 +26,8 @@ namespace SuccessHotelierHub.Controllers
         private PreferenceRepository preferenceRepository = new PreferenceRepository();
         private PreferenceGroupRepository preferenceGroupRepository = new PreferenceGroupRepository();
         private ReservationCancellationReasonRepository reservationCancellationReasonRepository = new ReservationCancellationReasonRepository();
+        private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
+        private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
 
         #endregion
 
@@ -167,6 +169,10 @@ namespace SuccessHotelierHub.Controllers
                 model.ConfirmationNumber = confirmationNo;
 
                 #endregion
+
+                double totalPrice = (double)(model.Rate * model.NoOfNight);
+                model.TotalPrice = Math.Round(totalPrice,2);
+                model.TotalBalance = Math.Round(totalPrice, 2);
 
                 reservationId = reservationRepository.AddReservation(model);
 
@@ -362,6 +368,10 @@ namespace SuccessHotelierHub.Controllers
                     model.ETA = time.TimeOfDay;
                 }
 
+                double totalPrice = (double)(model.Rate * model.NoOfNight);
+                model.TotalPrice = Math.Round(totalPrice, 2);
+                model.TotalBalance = Math.Round(totalPrice, 2);
+
                 reservationId = reservationRepository.UpdateReservation(model);
 
 
@@ -425,6 +435,29 @@ namespace SuccessHotelierHub.Controllers
                             }
                         }
                     }
+                    #endregion
+
+                    #region Update Room Rent Charges 
+
+                    var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
+
+                    var reservationCharge = reservationChargeRepository.GetReservationCharges(Guid.Parse(reservationId), roomRentCharge.Id).FirstOrDefault();
+
+                    if (reservationCharge != null)
+                    {
+                        reservationCharge.ReservationId = model.Id;
+                        reservationCharge.AdditionalChargeId = roomRentCharge.Id;
+                        reservationCharge.Code = roomRentCharge.Code;
+                        reservationCharge.Description = roomRentCharge.Description;
+                        reservationCharge.TransactionDate = model.ArrivalDate;
+                        reservationCharge.Amount = totalPrice;
+                        reservationCharge.Qty = 1;
+                        reservationCharge.IsActive = true;
+                        reservationCharge.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        reservationChargeRepository.UpdateReservationCharges(reservationCharge);
+                    }
+
                     #endregion
 
                     //Clear Session Object.
