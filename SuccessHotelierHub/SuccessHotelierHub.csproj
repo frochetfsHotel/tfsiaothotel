@@ -203,11 +203,14 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdditionalChargeController.cs" />
     <Compile Include="Controllers\CashieringController.cs" />
+    <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\CountryController.cs" />
     <Compile Include="Controllers\FrontDeskController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MasterScreenController.cs" />
+    <Compile Include="Controllers\NationalityController.cs" />
     <Compile Include="Controllers\PreferenceController.cs" />
     <Compile Include="Controllers\PreferenceGroupController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -218,6 +221,7 @@
     <Compile Include="Controllers\ReservationController.cs" />
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
+    <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -1921,10 +1925,20 @@
     <Content Include="Views\ReservationCharge\_AddReservationCharges.cshtml" />
     <Content Include="Views\AdditionalCharge\_AdvanceSearch.cshtml" />
     <Content Include="Views\Cashiering\_CheckOutPaymentMethod.cshtml" />
+    <Content Include="Views\Country\Create.cshtml" />
+    <Content Include="Views\Country\Edit.cshtml" />
+    <Content Include="Views\Country\List.cshtml" />
+    <Content Include="Views\City\Create.cshtml" />
+    <Content Include="Views\City\Edit.cshtml" />
+    <Content Include="Views\City\List.cshtml" />
+    <Content Include="Views\State\Create.cshtml" />
+    <Content Include="Views\State\Edit.cshtml" />
+    <Content Include="Views\State\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Common\" />
+    <Folder Include="Views\Nationality\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -744,20 +744,6 @@
             showInputs: false
         });
 
-        $('#PaymentMethodId').change(function (e) {
-            var selectedText = $(this).find("option:selected").text();
-            console.log(selectedText);
-
-            if (!IsNullOrEmpty(selectedText)) {
-                if (trim(selectedText) == "Cash") {
-                    $('.divCreditCardFields').fadeOut(500);
-                } else {
-                    $('.divCreditCardFields').fadeIn(500);
-                }
-            }
-        });
-
-
         //Show value of selected drop down.
         $('#Rate').val('@strRate');
         $('#ReservationTypeId').val('@Convert.ToString(Model.ReservationTypeId).ToUpper()');

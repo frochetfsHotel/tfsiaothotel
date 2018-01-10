@@ -54,7 +54,16 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.DepartureDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.CompanyId)
                             <select class="form-control" id="CompanyId" name="CompanyId">
                                 <option value="">--Select Company--</option>
@@ -63,7 +72,7 @@
                                 <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
                             </select>
                         </div>
-                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.GroupId)
                             <select class="form-control" id="GroupId" name="GroupId">
                                 <option value="">--Select Group--</option>
@@ -72,7 +81,7 @@
                                 <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
                             </select>
                         </div>
-                         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.BlockCodeId)
                             <select class="form-control" id="BlockCodeId" name="BlockCodeId">
                                 <option value="">--Select Group Code--</option>
@@ -82,8 +91,15 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row text-right">
-                        <div class="col-md-12 form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="container1" for="IsShowCheckedOut">
+                                Show Checked Out
+                                @Html.CheckBoxFor(m => m.IsShowCheckedOut)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-9 form-group text-right">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchGuest()">
                                 Search
                             </button>
@@ -200,7 +216,7 @@
                             <div class="col-md-6 text-right">
                                 VA
                                 <span class="spnTotalBalance"></span>
-                                <button class="m-l-md btn btn-sm btn-info" type="button" id="btnAddCharge" onclick="openReservationChargeModal();">Add Charges</button>
+                                <button class="m-l-md btn btn-sm btn-info" type="button" id="btnAddCharge" onclick="openReservationChargeModal();">Post</button>
                             </div>
                             <hr/>
                             <div class="clearfix"></div>
@@ -317,6 +333,9 @@
 
         //setTimeout(InitializeReservationGrid, 200);
 
+        //Default Departure Date. (Set today's date).
+        $("#DepartureDate").datepicker("setDate", new Date());
+
         //Additional Charge Search
         $('form#frmAdvanceAdditionalChargeSearch .btnAdvanceSearchAdditionalChargeOk').click(function (e) {
             $('form#frmReservationCharge #Code').attr("readonly", false);
@@ -354,6 +373,8 @@
         var companyId = $('#CompanyId').val();        
         var groupId = $('#GroupId').val();
         var blockCodeId = $('#BlockCodeId').val();
+        var departureDate = $('#DepartureDate').val();
+        var isShowCheckedOut = $('#IsShowCheckedOut').prop('checked');        
         
         d.PageNum = currentPage;
         d.LastName = lastName;
@@ -362,7 +383,9 @@
         d.CompanyId = companyId;        
         d.GroupId = groupId;
         d.BlockCodeId = blockCodeId;        
-        d.ConfirmationNo = confirmationNo;        
+        d.ConfirmationNo = confirmationNo;
+        d.DepartureDate = departureDate;
+        d.IsShowCheckedOut = isShowCheckedOut;
     }
 
 
@@ -423,8 +446,7 @@
             bDestroy: true,
             paging: false,
             searching: false,
-            bLengthChange: false,
-            dateFormat: "mm/dd/yy",
+            bLengthChange: false,            
             info: false,
             columnDefs: [
             {
@@ -432,8 +454,17 @@
                 data: "RoomNumbers",
                 orderable: false,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.RoomNumbers + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.RoomNumbers + '</a> ';
+                    }
+                    return html;
 
                 }
             },
@@ -442,9 +473,17 @@
                 data: "LastName",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.LastName + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.LastName + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -452,9 +491,17 @@
                 data: "FirstName",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.FirstName + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.FirstName + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -462,9 +509,17 @@
                 data: "ArrivalDate",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.ArrivalDate + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.ArrivalDate + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -472,9 +527,17 @@
                 data: "DepartureDate",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.DepartureDate + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.DepartureDate + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -482,9 +545,17 @@
                 data: "Balance",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.Balance + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.Balance + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -492,9 +563,17 @@
                 data: "ReservationStatusName",
                 orderable: false,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.ReservationStatusName + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.ReservationStatusName + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -502,9 +581,17 @@
                 data: "Company",
                 orderable: false,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.Company + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.Company + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -512,9 +599,17 @@
                 data: "Group",
                 orderable: false,
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                    var html = "";
+                    if (full.IsCheckOut == true)
+                    {
+                        html += '' + full.Group + '';
+                    }
+                    else
+                    {
+                        html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.Group + '</a> ';
-
+                    }
+                    return html;
                 }
             },
             {
@@ -524,8 +619,17 @@
                 className: "text-center",
                 render: function (data, type, full, meta) {
                     var buttons = '';
-                    buttons += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
-                                + ' class="btn btn-primary btn-xs m-r-xs">Billing</a> ';
+                    
+                    if (full.IsCheckOut == true)
+                    {
+                        buttons += ' <button type="button" class="btn bg-purple btn-xs m-n">Checked Out</button>';
+                    }
+                    else
+                    {
+                        buttons += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
+                                 + ' class="btn btn-primary btn-xs m-r-xs">Billing</a> ';
+                    }
+
                     return buttons;
                 }
             }
@@ -539,8 +643,6 @@
 
     function OpenBillingForm(id) {
         if (!IsNullOrEmpty(id)) {
-            //$('#billingInfoModal').modal('toggle');
-
             //Ajax Request to open billing information.
             $.ajax({
                 beforeSend: function (xhr) {
@@ -588,6 +690,7 @@
                         bindBillingTransactionGrid(transactions);
                         $('.spnCheckedOutLabel').hide();
 
+                        debugger;
                         //Is Checked Out
                         if (result.IsCheckedOut == true) {
                             $("form#frmBillingInfo #btnAddCharge").hide();
@@ -649,6 +752,8 @@
         $('#CompanyId').val('');        
         $('#GroupId').val('');
         $('#BlockCodeId').val('');
+        $('#DepartureDate').val('');
+        $('#IsShowCheckedOut').prop('checked', false);
 
         searchGuest();
     }

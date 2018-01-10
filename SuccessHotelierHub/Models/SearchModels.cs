@@ -625,17 +625,22 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Member #")]
         public string MemberNo { get; set; }
 
-        [DisplayName("Arrival From")]
-        public string ArrivalFrom { get; set; }
+        [DisplayName("Arrival Date")]
+        public DateTime? ArrivalDate { get; set; }
 
-        [DisplayName("Arrival To")]
-        public string ArrivalTo { get; set; }
+        //[DisplayName("Arrival To")]
+        //public string ArrivalTo { get; set; }
 
         [DisplayName("Confirmation#")]
         public string ConfirmationNo { get; set; }
 
         [DisplayName("Postal Code")]
         public string PostalCode { get; set; }
+
+        [DisplayName("Room #")]
+        public string RoomNumber { get; set; }
+
+        public bool IsShowCheckedIn { get; set; }
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
@@ -694,6 +699,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Confirmation #")]
         public string ConfirmationNo { get; set; }
 
+        [DisplayName("Departure Date")]
+        public DateTime? DepartureDate { get; set; }
+
         [DisplayName("Company")]
         public Guid? CompanyId { get; set; }
 
@@ -702,6 +710,8 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }
+
+        public  bool IsShowCheckedOut { get; set; }
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
@@ -724,6 +734,10 @@ namespace SuccessHotelierHub.Models
         public double? Balance { get; set; }
         public Guid? ReservationStatusId { get; set; }
         public string ReservationStatusName { get; set; }
+
+        public bool IsReservationCancel { get; set; }
+        public bool IsCheckIn { get; set; }
+        public bool IsCheckOut { get; set; }
 
         public Guid? CompanyId { get; set; }
         public string Company { get; set; }

@@ -72,7 +72,7 @@
         </div>
 
         <div class="box-footer text-right">
-            <button type="button" class="btn btn-success m-r-xs" onclick="return saveReservationCharges();">Save</button>
+            <button type="button" class="btn btn-success m-r-xs" onclick="return saveReservationCharges();">Post</button>
             <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Cancel</button>
         </div>
     }
@@ -83,6 +83,9 @@
 
     $(document).ready(function () {
         clearReservationChargesData();
+
+        //Default Transaction Date. (Set today's date).
+        $("#TransactionDate").datepicker("setDate", new Date());
     })
 
     function validateReservationCharges() {
@@ -140,7 +143,7 @@
     }
 
     function clearReservationChargesData() {
-        $('#TransactionDate').val('');
+        $("#TransactionDate").datepicker("setDate", new Date());
         $('#Code').val('');
         $('#Description').val('');
         $('#Amount').val('');
