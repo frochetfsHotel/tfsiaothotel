@@ -44,7 +44,7 @@
                             @Html.LabelFor(m => m.FirstName, new { @class = "normal-label" })
                             @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
                         </div>
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-2 form-group">
                             @Html.LabelFor(m => m.TelephoneNo, new { @class = "normal-label" })
                             @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone #" })
                         </div>
@@ -52,7 +52,7 @@
                             @Html.LabelFor(m => m.Email, new { @class = "normal-label" })
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         </div>
-                        <div class="col-md-2 form-group text-right m-t-md">
+                        <div class="col-md-3 form-group text-right m-t-md">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" 
                                     onclick="searchIndividualProfile()">
                                 Search
@@ -76,7 +76,7 @@
                                     <th>First Name</th>
                                     <th>Telephone #</th>
                                     <th>Email</th>                                    
-                                    <th width="35%">Action</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -173,7 +173,7 @@
             paging: false,
             searching: false,
             bLengthChange: false,
-            info: false,
+            info: false,            
             columnDefs: [
             {
                 targets: 0,

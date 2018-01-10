@@ -135,10 +135,10 @@
                         @Html.TextAreaFor(m => m.HomeAddress, new { @class = "form-control", @rows = "3", placeholder = "Home Address" })
                     </div>
                     <div class="col-md-4 form-group">
-                        <label for="ddlCity">City</label>
-                        @Html.DropDownListFor(m => m.CityId,
-                                (IEnumerable<SelectListItem>)ViewBag.CityList, "-- Select City --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCity" })
+                        <label for="ddlNationality">Nationality</label>
+                        @Html.DropDownListFor(m => m.NationalityId,
+                                (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
                     </div>
                 </div>
 
@@ -155,12 +155,11 @@
                                 (IEnumerable<SelectListItem>)ViewBag.StateList, "-- Select State --",
                                 htmlAttributes: new { @class = "form-control", @Id = "ddlState", @onchange = "getCity()" })
                     </div>
-                    
                     <div class="col-md-4 form-group">
-                        <label for="ddlNationality">Nationality</label>
-                        @Html.DropDownListFor(m => m.NationalityId,
-                                (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
+                        <label for="ddlCity">City</label>
+                        @Html.DropDownListFor(m => m.CityId,
+                                (IEnumerable<SelectListItem>)ViewBag.CityList, "-- Select City --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCity" })
                     </div>
                 </div>
 

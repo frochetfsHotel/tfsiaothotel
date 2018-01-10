@@ -145,10 +145,10 @@
                         @Html.TextAreaFor(m => m.HomeAddress, new { @class = "form-control", @rows = "3", placeholder = "Home Address" })                        
                     </div>
                     <div class="col-md-4 form-group">
-                        <label for="ddlCity">City</label>
-                        <select id="ddlCity" name="CityId" class="form-control">
-                            <option value="">-- Select City --</option>
-                        </select>
+                        <label for="ddlNationality">Nationality</label>
+                        @Html.DropDownListFor(m => m.NationalityId,
+                                (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
                     </div>
                 </div>
 
@@ -166,10 +166,10 @@
                         </select>
                     </div>
                     <div class="col-md-4 form-group">
-                        <label for="ddlNationality">Nationality</label>
-                        @Html.DropDownListFor(m => m.NationalityId,
-                                (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
+                        <label for="ddlCity">City</label>
+                        <select id="ddlCity" name="CityId" class="form-control">
+                            <option value="">-- Select City --</option>
+                        </select>
                     </div>
                 </div>
 

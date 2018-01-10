@@ -387,7 +387,7 @@ textarea {
     /*padding: 15px 0 20px;*/
 }
 .table-responsive {
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 .cursor-P{
@@ -712,4 +712,9 @@ label{
 }
 .dropdown-menu {
     min-width: auto;
+}
+.dashboard_bg {
+    background: url('../img/Dashboardbg.jpg');
+    background-position: center;
+    background-size: cover;
 }

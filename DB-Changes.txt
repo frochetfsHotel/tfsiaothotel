@@ -4466,63 +4466,399 @@ BEGIN
 
 END
 
+/**** DROP City Table *****/
 
-/*********** Add common columns to Country Table *****/
-
-ALTER TABLE Country ADD IsActive BIT NULL
+DROP TABLE [dbo].[City]
 GO
 
-ALTER TABLE Country ADD IsDeleted BIT NULL
+
+/**** DROP State Table *****/
+
+DROP TABLE [dbo].[State]
 GO
 
-ALTER TABLE Country ADD CreatedBy INT NULL
+/*** Drop FK_Reservation_Country Constraint  ***/
+
+ALTER TABLE [dbo].[Reservation] DROP CONSTRAINT [FK_Reservation_Country]
 GO
 
-ALTER TABLE Country ADD CreatedOn DATETIME NULL
+
+/**** DROP Country Table *****/
+
+DROP TABLE [dbo].[Country]
 GO
 
-ALTER TABLE Country ADD UpdatedBy INT NULL
+
+/*** Create Country Table ***/
+
+
+/****** Object:  Table [dbo].[Country]    Script Date: 1/10/2018 4:17:56 PM ******/
+SET ANSI_NULLS ON
 GO
 
-ALTER TABLE Country ADD UpdatedOn DATETIME NULL
+SET QUOTED_IDENTIFIER ON
 GO
 
-/*********** Add common columns to State Table *****/
-
-ALTER TABLE State ADD IsActive BIT NULL
+CREATE TABLE [dbo].[Country](
+	[Id] [int]  NOT NULL,
+	[Code] [nvarchar](10) NOT NULL,
+	[Name] [nvarchar](255) NOT NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+ CONSTRAINT [PK_Country] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
-ALTER TABLE State ADD IsDeleted BIT NULL
+
+/**** Create State Table ****/
+
+
+/****** Object:  Table [dbo].[State]    Script Date: 1/10/2018 4:17:35 PM ******/
+SET ANSI_NULLS ON
 GO
 
-ALTER TABLE State ADD CreatedBy INT NULL
+SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER TABLE State ADD CreatedOn DATETIME NULL
+CREATE TABLE [dbo].[State](
+	[Id] [int] NOT NULL,
+	[CountryId] [int] NOT NULL,
+	[Code] [nvarchar](10) NOT NULL,
+	[Name] [nvarchar](255) NOT NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+ CONSTRAINT [PK_State] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
-ALTER TABLE State ADD UpdatedBy INT NULL
+ALTER TABLE [dbo].[State]  WITH CHECK ADD  CONSTRAINT [FK_State_Country] FOREIGN KEY([CountryId])
+REFERENCES [dbo].[Country] ([Id])
 GO
 
-ALTER TABLE State ADD UpdatedOn DATETIME NULL
+ALTER TABLE [dbo].[State] CHECK CONSTRAINT [FK_State_Country]
 GO
 
-/*********** Add common columns to City Table *****/
 
-ALTER TABLE City ADD IsActive BIT NULL
+/****  Create City Table ****/
+
+
+/****** Object:  Table [dbo].[City]    Script Date: 1/10/2018 4:17:46 PM ******/
+SET ANSI_NULLS ON
 GO
 
-ALTER TABLE City ADD IsDeleted BIT NULL
+SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER TABLE City ADD CreatedBy INT NULL
+CREATE TABLE [dbo].[City](
+	[Id] [int] NOT NULL,
+	[StateId] [int] NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+ CONSTRAINT [PK_City] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
-ALTER TABLE City ADD CreatedOn DATETIME NULL
+ALTER TABLE [dbo].[City]  WITH CHECK ADD  CONSTRAINT [FK_City_State] FOREIGN KEY([StateId])
+REFERENCES [dbo].[State] ([Id])
 GO
 
-ALTER TABLE City ADD UpdatedBy INT NULL
+ALTER TABLE [dbo].[City] CHECK CONSTRAINT [FK_City_State]
 GO
 
-ALTER TABLE City ADD UpdatedOn DATETIME NULL
+
+/***** Insert Country Data ****/
+
+INSERT [dbo].[Country] ([Id], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (1, N'IN', N'India', 1, 1, GETDATE())
+INSERT [dbo].[Country] ([Id], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (2, N'US', N'USA', 1, 1, GETDATE())
+
+/*** Insert State Data ******/
+
+INSERT [dbo].[State] ([Id], [CountryId], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (1, (SELECT TOP 1 Id From [dbo].[Country]  WHERE [Name] = N'India'), N'GU', N'Gujarat', 1, 1, GETDATE())
+
+INSERT [dbo].[State] ([Id], [CountryId], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (2, (SELECT TOP 1 Id From [dbo].[Country]  WHERE [Name] = N'USA'), N'NY', N'New York', 1, 1, GETDATE())
+
+/*** Insert City Data ***/
+
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (1, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'Gujarat'), N'Ahmedabad', 1, 1, GETDATE())
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (2, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'Gujarat'), N'Surat', 1, 1, GETDATE())
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (3, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'Gujarat'), N'Rajkot', 1, 1, GETDATE())
+
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (4, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Albany', 1, 1, GETDATE())
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (5, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Kingston', 1, 1, GETDATE())
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (6, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Yonkers', 1, 1, GETDATE())
+INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (7, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Rome', 1, 1, GETDATE())
+
+
+/****** Update Old City Id with new city id in IndividualProfile Table ****/
+
+UPDATE IndividualProfile SET CityId = 4 WHERE CityId = 1002
+UPDATE IndividualProfile SET CityId = 5 WHERE CityId = 1003
+UPDATE IndividualProfile SET CityId = 6 WHERE CityId = 1004
+UPDATE IndividualProfile SET CityId = 7 WHERE CityId = 1005
+
+
+/*******************************************************************************************************************
+	SP Name : AddCountry
+	Comment : Create SP AddCountry
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddCountry]    Script Date: 1/10/2018 5:10:10 PM ******/
+SET ANSI_NULLS ON
 GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddCountry]
+	@Code			NVARCHAR(20)			,
+	@Name			NVARCHAR(255)			,	
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id INT
+	SET @Id = (SELECT ISNULL(MAX(Id),0) AS MaxId FROM Country)
+
+	SET @Id = (ISNULL(@Id,0) + 1)
+
+	INSERT INTO [dbo].[Country]
+           ([Id]
+           ,[Code]
+           ,[Name]		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@Code
+			   ,@Name
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateCountry
+	Comment : Create SP UpdateCountry
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateCountry]    Script Date: 1/10/2018 5:10:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateCountry]
+	@Id				INT						,
+	@Code			NVARCHAR(20)			,
+	@Name			NVARCHAR(255)			,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Country]
+		SET [Code]	=	@Code
+           ,[Name]	=	@Name		   
+		   ,[UpdatedBy]	=	@UpdatedBy
+		   ,[UpdatedOn]	=	GETDATE()
+		   ,[IsActive]	=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteCountry
+	Comment : Create SP DeleteCountry
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteCountry]    Script Date: 1/10/2018 5:29:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteCountry]
+	@Id			INT,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Country] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetCountryById
+	Comment : Create SP GetCountryById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetCountryById]    Script Date: 1/10/2018 5:31:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].GetCountryById
+	@Id INT = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Country]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+/*******************************************************************************************************************
+	SP Name : SearchCountry
+	Comment : Create SP SearchCountry
+	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[SearchCountry]    Script Date: 1/10/2018 5:32:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchCountry] '', '', 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchCountry]		
+	@Code			NVARCHAR(20)	=	NULL	,
+	@Name			NVARCHAR(255)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempCountry
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			INT					NOT NULL
+		,   [Code]			NVARCHAR(20)		NOT NULL
+		,   [Name]			NVARCHAR(255)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Country]
+						WHERE	ISNULL(IsDeleted,0) = 0
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+						)
+
+
+		INSERT INTO #tempCountry ([RowNum], [Id], [Code], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN [Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN [Code] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],
+				[Code],
+				[Name],
+				[CreatedOn],
+				[IsActive]
+			FROM [dbo].[Country]
+				WHERE	ISNULL(IsDeleted,0) = 0
+						AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+						AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],
+			temp.[Code],
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempCountry AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+

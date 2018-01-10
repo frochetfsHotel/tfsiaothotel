@@ -1,7 +1,108 @@
-﻿
+﻿@model SuccessHotelierHub.Models.CountryVM
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Country";
 }
 
-<h2>Edit</h2>
+<section class="content-header">
+    <h1>
+        Country <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Country</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
 
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Country Details</h3>
+        </div>
+        @using (Html.BeginForm("Edit", "Country", FormMethod.Post, new { id = "frmCountry", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Code, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
+                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateCountry();">Update</button>
+                <a href="@Url.Action("List", "Country")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    function validateCountry() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmCountry").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function updateCountry() {
+
+        if (validateCountry()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Country/Edit")',
+                type: 'POST',
+                data: $('#frmCountry').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Country details updated successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/Country/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>
