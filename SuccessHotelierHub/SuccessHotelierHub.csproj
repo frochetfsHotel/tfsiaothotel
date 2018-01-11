@@ -1938,11 +1938,13 @@
     <Content Include="Views\State\Edit.cshtml" />
     <Content Include="Views\State\List.cshtml" />
     <Content Include="Views\Shared\_DashboardLayout.cshtml" />
+    <Content Include="Views\Nationality\Create.cshtml" />
+    <Content Include="Views\Nationality\Edit.cshtml" />
+    <Content Include="Views\Nationality\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Common\" />
-    <Folder Include="Views\Nationality\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

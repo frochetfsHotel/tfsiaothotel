@@ -12,11 +12,11 @@ namespace SuccessHotelierHub.Repository
     {
         #region City
 
-        public List<CityVM> GetCities(int? cityId)
+        public List<CityVM> GetCities(int? stateId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@cityId", Value = cityId}
+                    new SqlParameter { ParameterName = "@StateId", Value = stateId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetCities", parameters);

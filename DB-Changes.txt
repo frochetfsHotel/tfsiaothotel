@@ -4235,8 +4235,6 @@ END
 *******************************************************************************************************************/
 
 
-USE [SuccessHotelierHub_Dev]
-GO
 /****** Object:  StoredProcedure [dbo].[SearchGuest]    Script Date: 1/10/2018 1:00:05 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -5468,4 +5466,336 @@ BEGIN
 				AND ISNULL(IsDeleted,0) = 0
 				AND ISNULL(IsActive,0) = 1
 		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : AddNationality
+	Comment : Create SP AddNationality
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddNationality]    Script Date: 1/11/2018 12:26:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddNationality]	
+	@Name			NVARCHAR(255)			,	
+	@Description	NVARCHAR(MAX)	= NULL	,
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Nationality]
+           ([Id]           
+           ,[Name]		   
+		   ,[Description]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name
+			   ,@Description
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateNationality
+	Comment : Create SP UpdateNationality
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateNationality]    Script Date: 1/11/2018 12:28:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateNationality]
+	@Id				UNIQUEIDENTIFIER		,
+	@Name			NVARCHAR(255)			,	
+	@Description	NVARCHAR(MAX)	= NULL	,
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Nationality]
+		SET	[Name]			=	@Name		   
+		   ,[Description]	=	@Description
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteNationality
+	Comment : Create SP DeleteNationality
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteNationality]    Script Date: 1/11/2018 12:32:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteNationality]
+	@Id			UNIQUEIDENTIFIER	,	
+	@UpdatedBy	INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Nationality] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetNationalityById
+	Comment : Create SP GetNationalityById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetNationalityById]    Script Date: 1/11/2018 1:20:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetNationalityById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Nationality]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchNationality
+	Comment : Create SP SearchNationality
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchNationality]    Script Date: 1/11/2018 1:21:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchNationality] '', '', 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchNationality]			
+	@Name			NVARCHAR(255)	=	NULL	,	
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempNationality
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL		
+		,   [Name]			NVARCHAR(255)		NOT NULL	
+		,   [Description]	NVARCHAR(MAX)		NULL	
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Nationality]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%')  
+						)
+
+
+		INSERT INTO #tempNationality ([RowNum], [Id], [Name], [Description], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+							THEN [Description] END ASC,
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+							THEN [Description] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],				
+				[Name],
+				[Description],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[Nationality]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%')  
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],			
+			temp.[Name],			
+			temp.[Description],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempNationality AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchAdvanceProfile
+	Comment : Changes in SP SearchAdvanceProfile
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceProfile]    Script Date: 1/11/2018 1:08:24 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceProfile]
+			@LastName			=	'' ,
+			@FirstName			=	'' ,
+			@ViewBy				=	NULL ,
+			@City				=	'' ,
+			@PostalCode			=	'' ,
+			@MemberTypeId		=	NULL ,
+			@MemberNo			=	'' ,
+			@Keyword			=	'' ,
+			@Communication		=	'' ,
+			@ClientID			=	'' ,
+			@CorpNo				=	'' ,
+			@IATANo				=	'' ,
+			@IsNegRates			=	0 ,
+			@IsShowInActive		=	0
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceProfile]
+	@LastName			NVARCHAR(255)		=	NULL,
+	@FirstName			NVARCHAR(255)		=	NULL,
+	@ViewBy				UNIQUEIDENTIFIER	=	NULL,
+	@City				NVARCHAR(255)		=	NULL,
+	@PostalCode			NVARCHAR(255)		=	NULL,
+	@MemberTypeId		UNIQUEIDENTIFIER	=	NULL,
+	@MemberNo			NVARCHAR(255)		=	NULL,
+	@Keyword			NVARCHAR(255)		=	NULL,
+	@Communication		NVARCHAR(255)		=	NULL,
+	@ClientID			NVARCHAR(255)		=	NULL,
+	@IATANo				NVARCHAR(255)		=	NULL,
+	@CorpNo				NVARCHAR(255)		=	NULL,
+	@IsNegRates			BIT					=	NULL,
+	@IsShowInActive		BIT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  P.[CreatedOn] DESC
+
+				) AS RowNum,
+				P.[Id], 
+				T.Id AS TitleId,
+				ISNULL(T.[Title],'') AS Title, 
+				ISNULL(P.[FirstName],'') AS FirstName, 
+				ISNULL(P.[LastName],'') AS LastName, 
+				ISNULL(P.[TelephoneNo],'') AS TelephoneNo, 
+				ISNULL(P.[Email],'') AS Email,   
+				ISNULL(P.[Address],'') AS [Address],
+				ISNULL(C.[Name],'') AS [City],
+				ISNULL(P.[ZipCode],'') AS ZipCode,
+				ISNULL(P.[CountryId],0) AS CountryId,
+				ISNULL(P.[StateId],0) AS StateId,
+				ISNULL(P.[CityId],0) AS CityId,
+				P.[CreatedOn], 
+				P.[IsActive]
+			FROM [dbo].[IndividualProfile] P
+					LEFT JOIN [dbo].[Title] T ON P.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[ProfileType] PT ON P.ProfileTypeId= PT.Id AND ISNULL(PT.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[Vip] V ON P.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[Nationality] N ON P.NationalityId= N.Id AND ISNULL(N.IsDeleted,0) = 0			
+					LEFT JOIN [dbo].[City] C ON P.CityId = C.Id 
+					LEFT JOIN [dbo].[State] S ON P.StateId = S.Id 
+					LEFT JOIN [dbo].[Country] CO ON P.CountryId = CO.Id 
+				WHERE	ISNULL(P.IsDeleted,0) = 0
+						AND (ISNULL(@FirstName,'') = '' OR P.[FirstName] LIKE '%'+ @FirstName +'%')  
+						AND (ISNULL(@LastName,'') = '' OR P.[LastName] LIKE '%'+ @LastName +'%')  
+						AND (ISNULL(@City,'') = '' OR C.[Name] LIKE '%'+ @City +'%')  
+						AND (ISNULL(@PostalCode,'') = '' OR P.[ZipCode] LIKE '%'+ @PostalCode +'%')  
+						AND (@IsShowInActive IS NULL OR 
+								P.IsActive IN  (CASE WHEN @IsShowInActive = 0 THEN 1 ELSE P.IsActive END))
+
+
 END

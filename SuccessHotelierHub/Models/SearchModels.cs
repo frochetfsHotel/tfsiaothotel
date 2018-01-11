@@ -167,6 +167,11 @@ namespace SuccessHotelierHub.Models
         public string Address { get; set; }
         public string City { get; set; }
         public string ZipCode { get; set; }
+
+        public int? CountryId { get; set; }
+        public int? StateId { get; set; }
+        public int? CityId { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
     }
@@ -626,7 +631,7 @@ namespace SuccessHotelierHub.Models
         public string MemberNo { get; set; }
 
         [DisplayName("Arrival Date")]
-        public DateTime? ArrivalDate { get; set; }
+        public string ArrivalDate { get; set; }
 
         //[DisplayName("Arrival To")]
         //public string ArrivalTo { get; set; }
@@ -915,6 +920,37 @@ namespace SuccessHotelierHub.Models
         public string StateName { get; set; }
         
         public string Name { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search Nationality
+
+    public class SearchNationalityParametersVM
+    {
+        public SearchNationalityParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }        
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchNationalityResultVM
+    {
+        public int RowNum { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }

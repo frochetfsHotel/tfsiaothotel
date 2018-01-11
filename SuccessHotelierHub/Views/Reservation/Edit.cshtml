@@ -783,18 +783,24 @@
         $('.btnAdvanceSearchProfileOk').click(function (e) {
             var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');
             if (!IsNullOrEmpty(selectedProfile.val())) {
-                var profileId, firstName, lastName, titleId, title;
+                var profileId, firstName, lastName, titleId, title, telephoneNo, countryId;
                 profileId = $(selectedProfile).val();
                 firstName = $(selectedProfile).data('firstname');
                 lastName = $(selectedProfile).data('lastname');
                 titleId = $(selectedProfile).data('titleid');
                 title = $(selectedProfile).data('title');
+                telephoneNo = $(selectedProfile).data('telephoneno');
+                countryId = $(selectedProfile).data('countryid');
 
                 $('#ProfileId').val(profileId);
 
                 $('#FirstName').val(firstName);
                 $('#LastName').val(lastName);
                 $('#TitleId').val(titleId);
+                $('#PhoneNo').val(telephoneNo);
+
+                if (!IsNullOrEmpty(countryId) && countryId != "0")
+                    $('#ddlCountry').val(countryId);
 
                 //Close Profile Search Modal.
                 $('#profileSearchModal').modal('toggle');

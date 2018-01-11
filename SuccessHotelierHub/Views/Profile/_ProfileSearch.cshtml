@@ -11,6 +11,8 @@
 
     <!--  Hidden Field -->
     <input type="hidden" id="hdnTitleId" name="hdnTitleId" value=""/>
+    <input type="hidden" id="hdnCountryId" name="hdnCountryId" value="" />
+    <input type="hidden" id="hdnPhoneNo" name="hdnPhoneNo" value="" />
     <!-- Hidden Field -->
 
     <div class="col-xs-12 text-right m-b-sm padding-zero">        
@@ -186,7 +188,7 @@
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
-                            markup += "<td class=\'text-center\'><label class=\'container_radio\'><input type=\'radio\' class=\'cursor-P flat-red\' id=\'rbProfile_" + result[i].Id + "\' name=\'rbProfile\' value=\'" + result[i].Id + "\'  data-firstname=\'" + result[i].FirstName + "\'  data-lastname=\'" + result[i].LastName + "\' data-titleid=\'" + result[i].TitleId + "\' data-title=\'" + result[i].Title + "\' /> <span class=\'checkmark_radio\'></span></label></td>";
+                            markup += "<td class=\'text-center\'><label class=\'container_radio\'><input type=\'radio\' class=\'cursor-P flat-red\' id=\'rbProfile_" + result[i].Id + "\' name=\'rbProfile\' value=\'" + result[i].Id + "\'  data-firstname=\'" + result[i].FirstName + "\'  data-lastname=\'" + result[i].LastName + "\' data-titleid=\'" + result[i].TitleId + "\' data-title=\'" + result[i].Title + "\' data-telephoneno=\'" + result[i].TelephoneNo + "\' data-countryid=\'" + result[i].CountryId + "\' /> <span class=\'checkmark_radio\'></span></label></td>";
                             markup += "<td onclick=\"onSelectProfile('rbProfile_" + result[i].Id + "');\">" + result[i].LastName + "</td>";
                             markup += "<td onclick=\"onSelectProfile('rbProfile_" + result[i].Id + "');\">" + result[i].FirstName + "</td>";
                             markup += "<td onclick=\"onSelectProfile('rbProfile_" + result[i].Id + "');\">" + result[i].TelephoneNo + "</td>";
@@ -229,6 +231,8 @@
         var lastName = $("form#frmAdvanceProfileSearch #LastName").val();
         var postalCode = $("form#frmAdvanceProfileSearch #PostalCode").val();
         var titleId = $("form#frmAdvanceProfileSearch #hdnTitleId").val();
+        var countryId = $("form#frmAdvanceProfileSearch #hdnCountryId").val();
+        var phoneNo = $("form#frmAdvanceProfileSearch #hdnPhoneNo").val();
 
         var url = '@Url.Content("~/Profile/CreateIndividualProfile")' + "?source=@sourceRedirectionParam";
 
@@ -243,6 +247,12 @@
         }
         if (!IsNullOrEmpty(titleId)) {
             url += "&titleId=" + titleId + "";
+        }
+        if (!IsNullOrEmpty(countryId)) {
+            url += "&countryId=" + countryId + "";
+        }
+        if (!IsNullOrEmpty(phoneNo)) {
+            url += "&phoneNo=" + phoneNo + "";
         }
 
         redirectTo(url);

@@ -87,6 +87,8 @@ namespace SuccessHotelierHub.Controllers
             var firstName = (string)TempData["FirstName"];
             var lastName = (string)TempData["LastName"];
             var titleId = (Guid?)TempData["TitleId"];
+            var countryId = (int?)TempData["CountryId"];
+            var telephoneNo = (string)TempData["TelephoneNo"];
 
             if (!string.IsNullOrWhiteSpace(profileId))
             {
@@ -106,6 +108,15 @@ namespace SuccessHotelierHub.Controllers
             if (titleId.HasValue)
             {
                 model.TitleId = titleId;
+            }
+
+            if (countryId.HasValue)
+            {
+                model.CountryId = countryId;
+            }
+            if (!string.IsNullOrWhiteSpace(telephoneNo))
+            {
+                model.PhoneNo = telephoneNo;
             }
 
             #endregion
@@ -305,6 +316,8 @@ namespace SuccessHotelierHub.Controllers
                 var firstName = (string)TempData["FirstName"];
                 var lastName = (string)TempData["LastName"];
                 var titleId = (Guid?)TempData["TitleId"];
+                var countryId = (int?)TempData["CountryId"];
+                var telephoneNo = (string)TempData["TelephoneNo"];
 
                 if (!string.IsNullOrWhiteSpace(profileId))
                 {
@@ -324,6 +337,15 @@ namespace SuccessHotelierHub.Controllers
                 if (titleId.HasValue)
                 {
                     model.TitleId = titleId;
+                }
+
+                if (countryId.HasValue)
+                {
+                    model.CountryId = countryId;
+                }
+                if (!string.IsNullOrWhiteSpace(telephoneNo))
+                {
+                    model.PhoneNo = telephoneNo;
                 }
 
                 #endregion

@@ -23,6 +23,14 @@
     {
         Model.TitleId = Guid.Parse(Convert.ToString(Request.QueryString["titleId"]));
     }
+    if (Request.QueryString["countryId"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["countryId"])))
+    {
+        Model.CountryId = Convert.ToInt32(Request.QueryString["countryId"]);
+    }
+    if (Request.QueryString["phoneNo"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["phoneNo"])))
+    {
+        Model.TelephoneNo = Convert.ToString(Request.QueryString["phoneNo"]);
+    }
     if (Request.QueryString["zipCode"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.QueryString["zipCode"])))
     {
         Model.ZipCode = Convert.ToString(Request.QueryString["zipCode"]);
