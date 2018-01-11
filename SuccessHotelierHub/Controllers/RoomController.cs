@@ -165,6 +165,102 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public ActionResult ShowAddRoom(Guid? roomTypeId)
+        {
+            try
+            {
+                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+                var roomStatusList = new SelectList(roomStatusRepository.GetRoomStatus(), "Id", "Name");
+
+                ViewBag.RoomTypeList = roomTypeList;
+                ViewBag.RoomStatusList = roomStatusList;
+
+                RoomVM model = new RoomVM();
+                model.IsActive = true;
+
+                if (roomTypeId.HasValue)
+                {
+                    model.RoomTypeId = roomTypeId.Value;
+
+                    var rooms = roomRepository.GetRoomByRoomTypeId(roomTypeId.Value);
+                    var lastAddedRoom = rooms.OrderByDescending(i => i.CreatedOn).FirstOrDefault();
+
+                    if (lastAddedRoom != null)
+                    {
+                        int roomNo = 0;
+                        int.TryParse(lastAddedRoom.RoomNo, out roomNo);
+                        roomNo = (roomNo + 1);
+                        model.RoomNo = roomNo.ToString();
+                    }
+                }
+
+                return PartialView("_AddRoom", model);
+            }
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(RoomVM model)
+        {
+            try
+            {
+                string roomId = string.Empty;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+
+                roomId = roomRepository.AddRoom(model);
+
+                if (!string.IsNullOrWhiteSpace(roomId))
+                {
+                    model.Id = Guid.Parse(roomId);
+
+                    #region Update Room Type (No. Of Rooms)
+
+                    //Increase the no. of rooms quantity in room type.
+                    var roomType = roomTypeRepository.GetRoomTypeById(model.RoomTypeId).FirstOrDefault();
+
+                    roomType.NoOfRooms = roomType.NoOfRooms > 0 ? (roomType.NoOfRooms + 1) : 0;
+
+                    roomTypeRepository.UpdateRoomType(roomType);
+
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RoomId = roomId,
+                            Room = model
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Room details not saved successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
         #endregion
     }
 }

@@ -23,7 +23,7 @@ namespace SuccessHotelierHub.Repository
             return nationalities;
         }
 
-        public List<NationalityVM> GetNationalityById(int nationalityId)
+        public List<NationalityVM> GetNationalityById(Guid nationalityId)
         {
             SqlParameter[] parameters =
                {
@@ -73,7 +73,7 @@ namespace SuccessHotelierHub.Repository
             return nationalityId;
         }
 
-        public string DeleteNationality(int id, int updatedBy)
+        public string DeleteNationality(Guid id, int updatedBy)
         {
             string nationalityId = string.Empty;
 

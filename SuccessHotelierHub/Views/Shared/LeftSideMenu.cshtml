@@ -157,7 +157,19 @@
                     <li><a href="@Url.Action("List","AdditionalCharge")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
-            @*<li class="treeview">
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-flag-checkered" aria-hidden="true"></i> Nationality
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("Create","Nationality")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","Nationality")"><i class="fa fa-search"></i> Search </a></li>
+                </ul>
+            </li>
+            <li class="treeview">
                 <a href="#">
                     <i class="fa fa-flag" aria-hidden="true"></i> Country
                     <span class="pull-right-container">
@@ -170,30 +182,30 @@
                 </ul>
             </li>
 
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-flag-o" aria-hidden="true"></i> State
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","State")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","State")"><i class="fa fa-search"></i> Search </a></li>
-                </ul>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-building" aria-hidden="true"></i> City
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","City")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","City")"><i class="fa fa-search"></i> Search </a></li>
-                </ul>
-            </li>*@
+            @*<li class="treeview">
+        <a href="#">
+            <i class="fa fa-flag-o" aria-hidden="true"></i> State
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li><a href="@Url.Action("Create","State")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+            <li><a href="@Url.Action("List","State")"><i class="fa fa-search"></i> Search </a></li>
+        </ul>
+    </li>
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-building" aria-hidden="true"></i> City
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li><a href="@Url.Action("Create","City")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+            <li><a href="@Url.Action("List","City")"><i class="fa fa-search"></i> Search </a></li>
+        </ul>
+    </li>*@
         </ul>
     </section>
     <!-- /.sidebar -->

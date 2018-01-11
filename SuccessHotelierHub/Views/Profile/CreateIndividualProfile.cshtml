@@ -286,6 +286,9 @@
 <script type="text/javascript">
     $(document).ready(function () {
         
+        //Label Bold.
+        SetLabelBold();
+
         $("#frmIndividualProfile input[type='text'], textarea").blur(function () {         
             if (!IsNullOrEmpty($(this).val())) {
                 $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");                
@@ -496,5 +499,66 @@
         }
     }
 
+    function SetLabelBold() {
+        //Title
+        if (!IsNullOrEmpty('@Model.TitleId'))
+            $('label[for="TitleId"]').addClass("label-bold");
+
+        //Email
+        if (!IsNullOrEmpty('@Model.TitleId'))
+            $('label[for="Email"]').addClass("label-bold");
+
+        //BusinessTelephoneNo
+        if (!IsNullOrEmpty('@Model.BusinessTelephoneNo'))
+            $('label[for="BusinessTelephoneNo"]').addClass("label-bold");
+
+        //Address
+        if (!IsNullOrEmpty(RemoveLineBreak('@Model.Address')))
+            $('label[for="Address"]').addClass("label-bold");
+
+        //HomeAddress
+        if (!IsNullOrEmpty(RemoveLineBreak('@Model.HomeAddress')))
+            $('label[for="HomeAddress"]').addClass("label-bold");
+
+        //Country
+        if (!IsNullOrEmpty('@Model.CountryId'))
+            $('label[for="ddlCountry"]').addClass("label-bold");
+
+        //State
+        if (!IsNullOrEmpty('@Model.StateId'))
+            $('label[for="ddlState"]').addClass("label-bold");
+
+        //City
+        if (!IsNullOrEmpty('@Model.CityId'))
+            $('label[for="ddlCity"]').addClass("label-bold");
+
+        //Nationality
+        if (!IsNullOrEmpty('@Model.NationalityId'))
+            $('label[for="ddlNationality"]').addClass("label-bold");
+
+        //ZipCode
+        if (!IsNullOrEmpty('@Model.ZipCode'))
+            $('label[for="ZipCode"]').addClass("label-bold");
+
+        //Vip
+        if (!IsNullOrEmpty('@Model.VipId'))
+            $('label[for="VipId"]').addClass("label-bold");
+
+        //CarRegistrationNo
+        if (!IsNullOrEmpty('@Model.CarRegistrationNo'))
+            $('label[for="CarRegistrationNo"]').addClass("label-bold");
+
+        //PassportNo
+        if (!IsNullOrEmpty('@Model.PassportNo'))
+            $('label[for="PassportNo"]').addClass("label-bold");
+
+        //DOB
+        if (!IsNullOrEmpty('@Model.DOB'))
+            $('label[for="DOB"]').addClass("label-bold");
+
+        //Remarks
+        if (!IsNullOrEmpty('@Model.Remarks'))
+            $('label[for="Remarks"]').addClass("label-bold");
+    }
 
 </script>

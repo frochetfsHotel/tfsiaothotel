@@ -1,0 +1,141 @@
+﻿@model SuccessHotelierHub.Models.RoomVM
+@using SuccessHotelierHub.Models
+@{
+    var sourceRedirectionParam = "";
+    sourceRedirectionParam = (string)ViewData["Source"];    
+}
+
+<div class="row">
+    @using (Html.BeginForm("Create", "Room", FormMethod.Post, new { id = "frmRoom", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <!--HIDDEN FIELD-->
+        @Html.HiddenFor(m => m.Id)
+        <!--HIDDEN FIELD-->
+
+        <div class="box-body pt_10 pb-0">
+            <div class="row">
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
+                    @Html.DropDownListFor(m => m.RoomTypeId,
+                                (IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "--Select Room Type--",
+                                htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.RoomNo , new { @class = "required-label" })                    
+                    @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })                    
+                    @Html.ValidationMessageFor(m => m.RoomNo, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.Type)
+                    @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Type" })                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.StatusId)
+                    @Html.DropDownListFor(m => m.StatusId,
+                                (IEnumerable<SelectListItem>)ViewBag.RoomStatusList, "--Select Status--",
+                                htmlAttributes: new { @class = "form-control" })
+                </div>
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.Description)
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                </div>
+                <div class="col-md-4 form-group m-t-lg">
+                    <label class="container1" for="IsActive">
+                        Is Active
+                        @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer text-right">
+            <button type="button" class="btn btn-success m-r-xs" onclick="return saveRoom();">Save</button>
+            <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Cancel</button>
+        </div>
+    }
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //clearRoomData();
+    })
+
+    function validateRoom() {
+        var errorMessage = "";
+        var blnValid = true;
+
+        var roomTypeId = $('#RoomTypeId').val();
+        var roomNo = $('#RoomNo').val();
+
+        if (IsNullOrEmpty(roomTypeId))
+        {
+            showToaster("Please select room type", ToasterType.ERROR);
+            return false;
+        }
+
+        if (IsNullOrEmpty(roomNo))
+        {
+            showToaster("Please enter room no.", ToasterType.ERROR);
+            return false;
+        }
+
+        if ($("#frmRoom").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            return false;
+        }
+
+        return blnValid;
+    }
+
+
+    function saveRoom() {
+
+        if (validateRoom()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Room/Create")',
+                type: 'POST',
+                data: $('#frmRoom').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Room details saved successfully", ToasterType.SUCCESS);
+                        clearRoomData();                        
+                        $('#roomModal').modal('toggle');
+
+                        loadRooms();
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
+    function clearRoomData() {
+        $('#RoomTypeId').val('');
+        $('#RoomNo').val('');
+        $('#Type').val('');
+        $('#Description').val('');
+        $('#StatusId').val('');
+    }
+</script>
+

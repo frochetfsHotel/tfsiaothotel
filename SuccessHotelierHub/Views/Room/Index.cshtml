@@ -21,7 +21,7 @@
         <div class="box-header with-border">
             <h3 class="box-title">Room Details</h3>
         </div>
-        <form class="frmRoom" enctype="multipart/form-data" method="post">
+        <form class="frmRoomList" id="frmRoomList" name="frmRoomList" enctype="multipart/form-data" method="post">
             <div class="box-body pt_10 pb-0">
                 <div class="col-md-4 col-sm-12 col-xs-12 padding-zero">
                     <label for="ddlRoomType" class="">Room Type</label>
@@ -38,12 +38,17 @@
                         }
                     </select>
                 </div>
+                <div class="col-md-8 col-sm-12 col-xs-12 padding-zero m-t-lg text-right">
+                    <button type="button" id="btnAddRoom" class="btn btn-sm btn-info" onclick="ShowAddRoomModal();">
+                        Add Room
+                    </button>
+                </div>
                 <div class="clearfix"></div>
                 <div class="clearfix"></div>
 
                 <div class="col-xs-12 padding-zero m-t-lg" id="divRoomList">
                 </div>
-                <div class="col-xs12 text-right m-t-lg" style="display:none;" id="divButtons">
+                <div class="col-xs12 text-right m-t-lg m-b-sm" style="display:none;" id="divButtons">
                     <button type="button" class="btn btn-success" id="btnSave" onclick="updateRooms();">Save</button>
                 </div>
 
@@ -51,6 +56,23 @@
         </form>
     </div>
 </section>
+
+<!-- Add Room Modal START -->
+<div id="roomModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Room</h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divRoomModal">
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Add Room Modal END -->
 
 <script type="text/javascript">
     function loadRooms() {
@@ -71,7 +93,7 @@
                 url: '@Url.Content("~/Room/ShowRoomList")',
                 type: 'GET',
                 data: { roomTypeId: roomType },
-                success: function (response) {                    
+                success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
@@ -94,7 +116,7 @@
 
         var roomTypeId = $('#ddlRoomType').val();
 
-        if (!IsNullOrEmpty(totalRooms) && totalRooms > 0) {            
+        if (!IsNullOrEmpty(totalRooms) && totalRooms > 0) {
             for (i = 0; i < totalRooms; i++)
             {
                 var roomObj = {};
@@ -125,7 +147,7 @@
                 url: '@Url.Content("~/Room/UpdateRooms")',
                 type: 'POST',
                 data: JSON.stringify({ 'models': models }),
-                success: function (response) {                    
+                success: function (response) {
                     if (response.IsSuccess == false)
                     {
                         showToaster(response.errorMessage, ToasterType.ERROR);
@@ -143,4 +165,37 @@
         }
     }
 
-</script>;
+    function ShowAddRoomModal() {
+        var roomTypeId = $('#ddlRoomType').val();
+
+        //Ajax Request to show room modal.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (result) {
+                showToaster(result.responseText, ToasterType.ERROR);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Room/ShowAddRoom")',
+            type: 'GET',
+            data: { roomTypeId: roomTypeId },
+            success: function (response) {
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    $('#divRoomModal').html('');
+                    $('#divRoomModal').html(response);
+
+                    //$('form#frmRoom #RoomTypeId').val(roomTypeId);
+
+                    $('#roomModal').modal('toggle');
+                }
+            }
+        });
+    }
+
+</script>

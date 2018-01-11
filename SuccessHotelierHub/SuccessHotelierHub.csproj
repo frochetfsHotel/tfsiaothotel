@@ -1941,6 +1941,7 @@
     <Content Include="Views\Nationality\Create.cshtml" />
     <Content Include="Views\Nationality\Edit.cshtml" />
     <Content Include="Views\Nationality\List.cshtml" />
+    <Content Include="Views\Room\_AddRoom.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

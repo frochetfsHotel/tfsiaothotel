@@ -15,7 +15,6 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration
 
         private NationalityRepository nationalityRepository = new NationalityRepository();
-        private CountryRepository countryRepository = new CountryRepository();
 
         #endregion
 
@@ -32,23 +31,23 @@ namespace SuccessHotelierHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CountryVM model)
+        public ActionResult Create(NationalityVM model)
         {
             try
             {
-                string countryId = string.Empty;
+                string nationalityId = string.Empty;
                 model.CreatedBy = LogInManager.LoggedInUserId;
 
-                countryId = countryRepository.AddCountry(model);
+                nationalityId = nationalityRepository.AddNationality(model);
 
-                if (!string.IsNullOrWhiteSpace(countryId))
+                if (!string.IsNullOrWhiteSpace(nationalityId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            CountryId = countryId
+                            NationalityId = nationalityId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -57,7 +56,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Country details not saved successfully."
+                        errorMessage = "Nationality details not saved successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -71,15 +70,15 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult Edit(Guid id)
         {
-            var country = countryRepository.GetCountryById(id);
+            var nationality = nationalityRepository.GetNationalityById(id);
 
-            CountryVM model = new CountryVM();
+            NationalityVM model = new NationalityVM();
 
-            if (country != null && country.Count > 0)
+            if (nationality != null && nationality.Count > 0)
             {
-                model = country[0];
+                model = nationality[0];
 
                 return View(model);
             }
@@ -89,23 +88,23 @@ namespace SuccessHotelierHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CountryVM model)
+        public ActionResult Edit(NationalityVM model)
         {
             try
             {
-                string countryId = string.Empty;
+                string nationalityId = string.Empty;
                 model.UpdatedBy = LogInManager.LoggedInUserId;
 
-                countryId = countryRepository.UpdateCountry(model);
+                nationalityId = nationalityRepository.UpdateNationality(model);
 
-                if (!string.IsNullOrWhiteSpace(countryId))
+                if (!string.IsNullOrWhiteSpace(nationalityId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            CountryId = countryId
+                            NationalityId = nationalityId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -114,7 +113,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Country details not updated successfully."
+                        errorMessage = "Nationality details not updated successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -129,22 +128,22 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(Guid id)
         {
             try
             {
-                string countryId = string.Empty;
+                string nationalityId = string.Empty;
 
-                countryId = countryRepository.DeleteCountry(id, LogInManager.LoggedInUserId);
+                nationalityId = nationalityRepository.DeleteNationality(id, LogInManager.LoggedInUserId);
 
-                if (!string.IsNullOrWhiteSpace(countryId))
+                if (!string.IsNullOrWhiteSpace(nationalityId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            CountryId = id
+                            NationalityId = nationalityId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -153,7 +152,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Country details not deleted successfully."
+                        errorMessage = "Nationality details not deleted successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -169,7 +168,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(SearchCountryParametersVM model)
+        public ActionResult Search(SearchNationalityParametersVM model)
         {
             try
             {
@@ -188,10 +187,10 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
-                var countries = countryRepository.SearchCountry(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                var nationalities = nationalityRepository.SearchNationality(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;
-                var dbRecords = countries.Select(m => m.TotalCount).FirstOrDefault();
+                var dbRecords = nationalities.Select(m => m.TotalCount).FirstOrDefault();
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
@@ -202,7 +201,7 @@ namespace SuccessHotelierHub.Controllers
                     CurrentPage = model.PageNum,
                     PageSize = Constants.PAGESIZE,
                     TotalRecords = totalRecords,
-                    data = countries
+                    data = nationalities
                 }, JsonRequestBehavior.AllowGet);
 
             }
