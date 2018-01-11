@@ -1,7 +1,154 @@
-﻿
+﻿@model SuccessHotelierHub.Models.CityVM
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit City";
 }
 
-<h2>Edit</h2>
+<section class="content-header">
+    <h1>
+        City <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">City</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
 
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">City Details</h3>
+        </div>
+        @using (Html.BeginForm("Edit", "City", FormMethod.Post, new { id = "frmCity", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CountryId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.CountryId,
+                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
+                                htmlAttributes: new { @class = "form-control", @onchange = "getState();" })
+                        @Html.ValidationMessageFor(m => m.CountryId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.StateId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.StateId,
+                                (IEnumerable<SelectListItem>)ViewBag.StateList, "--Select State--",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.StateId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive)
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateCity();">Update</button>
+                <a href="@Url.Action("List", "City")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateCity() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmCity").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function updateCity() {
+
+        if (validateCity()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/City/Edit")',
+                type: 'POST',
+                data: $('#frmCity').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("City details updated successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/City/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
+    function getState() {
+        var country = $('#CountryId').val();
+
+        if (!IsNullOrEmpty(country) && country != "0") {
+            //Get State
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Common/GetState")',
+                type: 'GET',
+                data: {
+                    countryId: parseInt(country)
+                },
+                success: function (result) {
+                    if (!IsNullOrEmpty(result)) {
+                        console.log(result);
+                        var optionHtml = "";
+                        optionHtml += "<option value=''>-- Select State --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].Value + "'>" + result.data[i].Text + "</option>";
+                            }
+                        }
+                        $('#StateId').html(optionHtml);
+                    }
+                }
+            });
+        }
+    }
+
+</script>

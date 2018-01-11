@@ -41,6 +41,7 @@ namespace SuccessHotelierHub
                       "~/Scripts/AdminLTE/bootstrap-datepicker.min.js",
                       "~/Scripts/AdminLTE/bootstrap-timepicker.min.js",
                       "~/Scripts/AdminLTE/adminlte.min.js",
+                      "~/Scripts/AdminLTE/jquery-slimscroll/jquery.slimscroll.min.js",
                       "~/Scripts/AdminLTE/toastr.min.js",
                       "~/Scripts/AdminLTE/sweetalert2/sweetalert2.min.js",
                       "~/Scripts/AdminLTE/demo.js",                      

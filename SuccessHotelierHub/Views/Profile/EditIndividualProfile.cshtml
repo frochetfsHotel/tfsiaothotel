@@ -361,8 +361,7 @@
         var country = $('#ddlCountry').val();
 
         if (!IsNullOrEmpty(country) && country != "0") {
-            //Get State
-            showLoader();
+            //Get State            
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -382,7 +381,7 @@
                     if (!IsNullOrEmpty(result)) {
                         console.log(result);
                         var optionHtml = "";
-                        optionHtml += "<option value=''>-- Selet State --</option>";
+                        optionHtml += "<option value=''>-- Select State --</option>";
                         if (result.IsSuccess == true) {
                             for (i = 0; i < result.data.length; i++) {
                                 optionHtml += "<option value='" + result.data[i].Value + "'>" + result.data[i].Text + "</option>";
@@ -419,7 +418,7 @@
                     if (!IsNullOrEmpty(result)) {
                         console.log(result);
                         var optionHtml = "";
-                        optionHtml += "<option value=''>-- Selet City --</option>";
+                        optionHtml += "<option value=''>-- Select City --</option>";
                         if (result.IsSuccess == true) {
                             for (i = 0; i < result.data.length; i++) {
                                 optionHtml += "<option value='" + result.data[i].Value + "'>" + result.data[i].Text + "</option>";

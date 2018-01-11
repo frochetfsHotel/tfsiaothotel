@@ -4588,36 +4588,6 @@ ALTER TABLE [dbo].[City] CHECK CONSTRAINT [FK_City_State]
 GO
 
 
-/***** Insert Country Data ****/
-
-INSERT [dbo].[Country] ([Id], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (1, N'IN', N'India', 1, 1, GETDATE())
-INSERT [dbo].[Country] ([Id], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (2, N'US', N'USA', 1, 1, GETDATE())
-
-/*** Insert State Data ******/
-
-INSERT [dbo].[State] ([Id], [CountryId], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (1, (SELECT TOP 1 Id From [dbo].[Country]  WHERE [Name] = N'India'), N'GU', N'Gujarat', 1, 1, GETDATE())
-
-INSERT [dbo].[State] ([Id], [CountryId], [Code], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (2, (SELECT TOP 1 Id From [dbo].[Country]  WHERE [Name] = N'USA'), N'NY', N'New York', 1, 1, GETDATE())
-
-/*** Insert City Data ***/
-
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (1, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'Gujarat'), N'Ahmedabad', 1, 1, GETDATE())
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (2, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'Gujarat'), N'Surat', 1, 1, GETDATE())
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (3, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'Gujarat'), N'Rajkot', 1, 1, GETDATE())
-
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (4, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Albany', 1, 1, GETDATE())
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (5, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Kingston', 1, 1, GETDATE())
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (6, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Yonkers', 1, 1, GETDATE())
-INSERT [dbo].[City] ([Id], [StateId], [Name], [IsActive], [CreatedBy], [CreatedOn]) VALUES (7, (SELECT TOP 1 Id From [dbo].[State]  WHERE [Name] = N'New York'), N'Rome', 1, 1, GETDATE())
-
-
-/****** Update Old City Id with new city id in IndividualProfile Table ****/
-
-UPDATE IndividualProfile SET CityId = 4 WHERE CityId = 1002
-UPDATE IndividualProfile SET CityId = 5 WHERE CityId = 1003
-UPDATE IndividualProfile SET CityId = 6 WHERE CityId = 1004
-UPDATE IndividualProfile SET CityId = 7 WHERE CityId = 1005
-
 
 /*******************************************************************************************************************
 	SP Name : AddCountry
@@ -4862,3 +4832,640 @@ BEGIN
 
 END
 
+/***++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++***/
+
+Name : Nilesh
+Date : 11-JAN-2018
+
+
+/*******************************************************************************************************************
+	SP Name : AddState
+	Comment : Create SP AddState
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddState]    Script Date: 1/10/2018 7:49:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddState]
+	@CountryId		INT						,
+	@Code			NVARCHAR(20)			,
+	@Name			NVARCHAR(255)			,	
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id INT
+	SET @Id = (SELECT ISNULL(MAX(Id),0) AS MaxId FROM [dbo].[State])
+
+	SET @Id = (ISNULL(@Id,0) + 1)
+
+	INSERT INTO [dbo].[State]
+           ([Id]
+		   ,[CountryId]
+           ,[Code]
+           ,[Name]		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@CountryId
+			   ,@Code
+			   ,@Name
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateState
+	Comment : Create SP UpdateState
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateState]    Script Date: 1/10/2018 7:51:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateState]
+	@Id				INT						,
+	@CountryId		INT						,
+	@Code			NVARCHAR(20)			,
+	@Name			NVARCHAR(255)			,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[State]
+		SET	[CountryId]		=	@CountryId 
+		   ,[Code]			=	@Code
+           ,[Name]			=	@Name		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteState
+	Comment : Create SP DeleteState
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteState]    Script Date: 1/10/2018 8:02:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteState]
+	@Id			INT,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[State] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetStateById
+	Comment : Create SP GetStateById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetStateById]    Script Date: 1/10/2018 7:52:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetStateById]
+	@Id INT = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[State]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchState
+	Comment : Create SP SearchState
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchState]    Script Date: 1/10/2018 7:53:35 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchState] NULL, '', '', 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchState]		
+	@CountryId		INT				=	NULL	,
+	@Code			NVARCHAR(20)	=	NULL	,
+	@Name			NVARCHAR(255)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempState
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			INT					NOT NULL
+		,	[CountryId]		INT					NULL
+		,   [CountryName]	NVARCHAR(255)		NULL
+		,   [Code]			NVARCHAR(20)		NOT NULL
+		,   [Name]			NVARCHAR(255)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[State]
+						WHERE	ISNULL(IsDeleted,0) = 0
+								AND (ISNULL(@CountryId,0) = 0 OR [CountryId] = @CountryId)
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+						)
+
+
+		INSERT INTO #tempState ([RowNum], [Id], [CountryId], [CountryName], [Code], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN S.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN S.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN S.[Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN S.[Code] END DESC,
+
+						CASE WHEN @SortColumn = 'CountryName' and @SortDirection = 'asc'
+							THEN C.[Name] END ASC,
+						CASE WHEN @SortColumn = 'CountryName' and @SortDirection = 'desc'
+							THEN C.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN S.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN S.[Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN S.[Name] END ASC
+
+				) AS RowNum,
+				S.[ID],
+				S.[CountryId],
+				C.[Name] AS CountryName,
+				S.[Code],
+				S.[Name],
+				S.[CreatedOn],
+				S.[IsActive]
+			FROM [dbo].[State] S
+					INNER JOIN [dbo].[Country] C ON S.CountryId = C.Id
+					AND ISNULL(C.IsDeleted,0) = 0
+				WHERE	ISNULL(S.IsDeleted,0) = 0
+						AND (ISNULL(@CountryId,0) = 0 OR S.[CountryId] = @CountryId)
+						AND (ISNULL(@Code,'') = '' OR S.[Code] LIKE '%'+ @Code +'%')  
+						AND (ISNULL(@Name,'') = '' OR S.[Name] LIKE '%'+ @Name +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],
+			temp.[CountryId],
+			temp.[CountryName],
+			temp.[Code],
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempState AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : AddCity
+	Comment : Create SP AddCity
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddCity]    Script Date: 1/10/2018 8:06:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddCity]
+	@StateId		INT						,	
+	@Name			NVARCHAR(255)			,	
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id INT
+	SET @Id = (SELECT ISNULL(MAX(Id),0) AS MaxId FROM [dbo].[City])
+
+	SET @Id = (ISNULL(@Id,0) + 1)
+
+	INSERT INTO [dbo].[City]
+           ([Id]
+		   ,[StateId]           
+           ,[Name]		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@StateId			   
+			   ,@Name
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateCity
+	Comment : Create SP UpdateCity
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateCity]    Script Date: 1/10/2018 8:08:20 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateCity]
+	@Id				INT						,
+	@StateId		INT						,	
+	@Name			NVARCHAR(255)			,
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[City]
+		SET	[StateId]		=	@StateId 		   
+           ,[Name]			=	@Name		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteCity
+	Comment : Create SP DeleteCity
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteCity]    Script Date: 1/10/2018 8:09:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteCity]
+	@Id			INT,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[City] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetCityById
+	Comment : Create SP GetCityById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetCityById]    Script Date: 1/10/2018 8:10:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetCityById]
+	@Id INT = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+     SELECT CI.*,S.Id AS StateId,C.Id AS CountryId FROM [dbo].[City] CI
+				LEFT JOIN [dbo].[State] S ON S.Id = CI.StateId
+					AND ISNULL(S.IsDeleted,0) = 0
+				LEFT JOIN [dbo].[Country] C ON C.Id = S.CountryId
+					AND ISNULL(C.IsDeleted,0) = 0
+		WHERE	ISNULL(CI.IsDeleted,0) = 0 
+				AND CI.Id = @Id
+		ORDER BY CI.[Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchCity
+	Comment : Create SP SearchCity
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchCity]    Script Date: 1/10/2018 8:10:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchCity] 0, 0, '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchCity]		
+	@CountryId		INT				=	NULL	,
+	@StateId		INT				=	NULL	,	
+	@Name			NVARCHAR(255)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempCity
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			INT					NOT NULL
+		,	[CountryId]		INT					NULL
+		,   [CountryName]	NVARCHAR(255)		NULL
+		,	[StateId]		INT					NULL
+		,   [StateName]	NVARCHAR(255)		NULL		
+		,   [Name]			NVARCHAR(255)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT CI.Id) 
+						FROM [dbo].[City] CI
+								INNER JOIN [dbo].[State] S ON CI.StateId = S.Id
+								AND ISNULL(S.IsDeleted,0) = 0
+						WHERE	ISNULL(CI.IsDeleted,0) = 0
+								AND (ISNULL(@CountryId,0) = 0 OR S.[CountryId] = @CountryId)
+								AND (ISNULL(@StateId,0) = 0 OR CI.[StateId] = @StateId)
+								AND (ISNULL(@Name,'') = '' OR CI.[Name] LIKE '%'+ @Name +'%')  
+						)
+
+
+		INSERT INTO #tempCity 
+		(
+			[RowNum], 
+			[Id], 
+			[CountryId], 
+			[CountryName], 
+			[StateId], 
+			[StateName],
+			[Name], 
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN CI.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN CI.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'CountryName' and @SortDirection = 'asc'
+							THEN C.[Name] END ASC,
+						CASE WHEN @SortColumn = 'CountryName' and @SortDirection = 'desc'
+							THEN C.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'StateName' and @SortDirection = 'asc'
+							THEN S.[Name] END ASC,
+						CASE WHEN @SortColumn = 'StateName' and @SortDirection = 'desc'
+							THEN S.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN CI.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN CI.[Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN CI.[Name] END ASC
+
+				) AS RowNum,
+				CI.[ID],
+				S.[CountryId],
+				C.[Name] AS CountryName,
+				CI.[StateId],
+				S.[Name] AS StateName,				
+				CI.[Name],
+				CI.[CreatedOn],
+				CI.[IsActive]
+			FROM [dbo].[City] CI
+					INNER JOIN [dbo].[State] S ON CI.StateId = S.Id
+					AND ISNULL(S.IsDeleted,0) = 0
+					INNER JOIN [dbo].[Country] C ON S.CountryId = C.Id
+					AND ISNULL(C.IsDeleted,0) = 0
+			WHERE	ISNULL(CI.IsDeleted,0) = 0
+					AND (ISNULL(@CountryId,0) = 0 OR S.[CountryId] = @CountryId)
+					AND (ISNULL(@StateId,0) = 0 OR CI.[StateId] = @StateId)
+					AND (ISNULL(@Name,'') = '' OR CI.[Name] LIKE '%'+ @Name +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],
+			temp.[CountryId],
+			temp.[CountryName],
+			temp.[StateId],
+			temp.[StateName],
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempCity AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/******************************************************************************************************************************/
+
+Name : Nilesh
+Date : 12-JAN-2018
+
+/*******************************************************************************************************************
+	SP Name : GetCountries
+	Comment : Changes in  GetCountries
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetCountries]    Script Date: 1/11/2018 12:06:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetCountries]
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	SELECT * FROM Country
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND ISNULL(IsActive,0) = 1
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetStates
+	Comment : Changes in  GetStates
+	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetStates]    Script Date: 1/11/2018 12:07:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetStates]
+	@CountryId INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT * FROM [dbo].[State]	
+		 WHERE	[CountryId] = @CountryId
+				AND ISNULL(IsDeleted,0) = 0
+				AND ISNULL(IsActive,0) = 1
+		 ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetCities
+	Comment : Changes in  GetCities
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetCities]    Script Date: 1/11/2018 12:08:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetCities]
+	@StateId INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT * FROM [dbo].[City]	
+		 WHERE	[StateId] = @StateId
+				AND ISNULL(IsDeleted,0) = 0
+				AND ISNULL(IsActive,0) = 1
+		ORDER BY [Name]
+END

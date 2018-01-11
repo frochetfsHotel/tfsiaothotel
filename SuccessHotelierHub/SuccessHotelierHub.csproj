@@ -1731,6 +1731,8 @@
     <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.phone.extensions.js" />
     <Content Include="Scripts\AdminLTE\input-mask\jquery.inputmask.regex.extensions.js" />
     <Content Include="Scripts\AdminLTE\input-mask\masking-input.js" />
+    <Content Include="Scripts\AdminLTE\jquery-slimscroll\jquery.slimscroll.js" />
+    <Content Include="Scripts\AdminLTE\jquery-slimscroll\jquery.slimscroll.min.js" />
     <Content Include="Scripts\AdminLTE\jquery.dataTables.js" />
     <Content Include="Scripts\AdminLTE\jquery.dataTables.min.js" />
     <Content Include="Scripts\AdminLTE\pages\dashboard.js" />

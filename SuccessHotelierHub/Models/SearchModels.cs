@@ -841,6 +841,86 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search State
+
+    public class SearchStateParametersVM
+    {
+        public SearchStateParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        [DisplayName("Country")]        
+        public int? CountryId { get; set; }
+
+        public string Code { get; set; }
+        public string Name { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchStateResultVM
+    {
+        public int RowNum { get; set; }
+        public int Id { get; set; }
+
+        public int? CountryId { get; set; }
+        public string CountryName { get; set; }
+
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search City
+
+    public class SearchCityParametersVM
+    {
+        public SearchCityParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        [DisplayName("Country")]
+        public int? CountryId { get; set; }
+
+        [DisplayName("State")]
+        public int? StateId { get; set; }
+        
+        public string Name { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchCityResultVM
+    {
+        public int RowNum { get; set; }
+        public int Id { get; set; }
+
+        public int? CountryId { get; set; }
+        public string CountryName { get; set; }
+
+        public int? StateId { get; set; }
+        public string StateName { get; set; }
+        
+        public string Name { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {
