@@ -5,6 +5,9 @@
 @{
     var sourceRedirectionParam = "";
     sourceRedirectionParam = (string)ViewData["Source"];
+
+    var arrivalDate = (string)ViewData["ArrivalDate"];
+    var departureDate = (string)ViewData["DepartureDate"];
 }
 
 <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
@@ -17,6 +20,8 @@
     @Html.HiddenFor(m => m.RoomIds)
     @Html.HiddenFor(m => m.NoOfRoom)
     @Html.HiddenFor(m => m.RoomTypeId)
+    <input type="hidden" id="hdnArrivalDate" name="hdnArrivalDate" value="@arrivalDate" />
+    <input type="hidden" id="hdnDepartureDate" name="hdnDepartureDate" value="@departureDate" />
     <!-- HIDDEN FIELD -->
     @*<div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">*@
     <div class="row">

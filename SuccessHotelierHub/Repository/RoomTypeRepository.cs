@@ -158,6 +158,22 @@ namespace SuccessHotelierHub.Repository
             return roomType;
         }
 
+        public List<RateSheetRoomTypeVM> GetRoomTypeDetailsForRateSheet(string roomTypeCode, string arrivalDate)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomTypeCode},
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = arrivalDate},
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomTypeDetailsForRateSheet", parameters);
+
+            var roomTypes = new List<RateSheetRoomTypeVM>();
+            roomTypes = DALHelper.CreateListFromTable<RateSheetRoomTypeVM>(dt);
+
+            return roomTypes;
+        }
+
         #endregion
     }
 }

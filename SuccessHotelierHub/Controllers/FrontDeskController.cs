@@ -18,6 +18,7 @@ namespace SuccessHotelierHub.Controllers
         private CheckInCheckOutRepository checkInCheckOutRepository = new CheckInCheckOutRepository();
         private RoomRepository roomRepository = new RoomRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
+        private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
         private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
 
@@ -177,6 +178,8 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomTypeId = reservation.RoomTypeId;
 
                 ViewData["Source"] = source;
+                ViewData["ArrivalDate"] = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd/MM/yyyy") : "";
+                ViewData["DepartureDate"] = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd/MM/yyyy") : "";
 
                 return PartialView("_PaymentMethod", model);
             }
@@ -208,15 +211,15 @@ namespace SuccessHotelierHub.Controllers
                     reservation.DepartureDate = dtDepartureDate;
 
                     string CheckInTimeText = model.CheckInTimeText;
+                    TimeSpan checkInTime = new TimeSpan();
                     if (!string.IsNullOrWhiteSpace(CheckInTimeText))
                     {
                         string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
                         string date = (todayDate + " " + CheckInTimeText);
                         DateTime time = Convert.ToDateTime(date);
+                        checkInTime = time.TimeOfDay;
 
-                        reservation.ETA = time.TimeOfDay;
-
-                        checkIn.CheckInTime = time.TimeOfDay;
+                        reservation.ETA = checkInTime;
                     }
 
                     reservation.UpdatedBy = LogInManager.LoggedInUserId;
@@ -269,8 +272,48 @@ namespace SuccessHotelierHub.Controllers
 
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
 
-                                //Update Room Occupied Flag.
-                                roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), true, LogInManager.LoggedInUserId);
+                                ////Update Room Occupied Flag.
+                                //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), true, LogInManager.LoggedInUserId);
+
+                                ////Update Room Status CLEAN to DIRTY.
+                                //roomRepository.UpdateRoomCheckInStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.DIRTY), true, LogInManager.LoggedInUserId);
+
+                                #region Add Reservation Log
+
+                                var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null).FirstOrDefault();
+
+                                if (lstReservationLog != null)
+                                {
+                                    lstReservationLog.ReservationId = model.ReservationId;
+                                    lstReservationLog.ProfileId = model.ProfileId;
+                                    lstReservationLog.RoomId = Guid.Parse(item.Trim());
+                                    lstReservationLog.CheckInDate = model.CheckInDate.Value;
+                                    lstReservationLog.CheckInTime = checkInTime;
+                                    lstReservationLog.CheckOutDate = reservation.DepartureDate;
+                                    lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.DIRTY);
+                                    lstReservationLog.IsActive = true;                                    
+                                    lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                    reservationLogRepository.UpdateReservationLog(lstReservationLog);
+                                }
+                                else
+                                {
+                                    ReservationLogVM reservationLog = new ReservationLogVM();
+                                    reservationLog.ReservationId = model.ReservationId;
+                                    reservationLog.ProfileId = model.ProfileId;
+                                    reservationLog.RoomId = Guid.Parse(item.Trim());
+                                    reservationLog.CheckInDate = model.CheckInDate.Value;
+                                    reservationLog.CheckInTime = checkInTime;
+                                    reservationLog.CheckOutDate = reservation.DepartureDate;
+                                    reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.DIRTY);
+                                    reservationLog.IsActive = true;
+                                    reservationLog.CreatedBy = LogInManager.LoggedInUserId;
+
+                                    reservationLogRepository.AddReservationLog(reservationLog);
+                                }
+                                
+                                #endregion
+
                             }
                         }
                     }
@@ -281,13 +324,14 @@ namespace SuccessHotelierHub.Controllers
                     checkIn.ReservationId = model.ReservationId;
                     checkIn.ProfileId = model.ProfileId;
                     checkIn.CheckInDate = model.CheckInDate.Value;
+                    checkIn.CheckInTime = checkInTime;
                     checkIn.IsActive = true;
                     checkIn.CreatedBy = LogInManager.LoggedInUserId;
 
                     var checkInId = checkInCheckOutRepository.AddCheckInDetail(checkIn);
 
                     #endregion
-
+                    
                     #region Update Reservation Check In Flag
 
                     reservationRepository.UpdateReservationCheckInFlag(model.ReservationId, true, LogInManager.LoggedInUserId);

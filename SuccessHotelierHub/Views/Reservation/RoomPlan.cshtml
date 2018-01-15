@@ -1,0 +1,205 @@
+﻿@model SuccessHotelierHub.Models.RoomPlanVM
+@{
+    ViewBag.Title = "Room Plan";
+}
+
+
+<section class="content-header">
+    <h1>
+        Room Plan
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Room Plan</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Room Plan</h3>
+            @*<div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>*@
+        </div>
+
+        @using (Html.BeginForm("RoomPlan", "Reservation", FormMethod.Post, new { id = "frmRoomPlan", enctype = "multipart/form-data" }))
+        {
+            <!-- HIDDEN FIELD -->
+            @Html.HiddenFor(m => m.StartDate)
+            <!-- HIDDEN FIELD-->
+
+            <div class="box-body">
+                <div class="col-xs-12 padding-zero">
+                    <div class="searchbox_padding searchBox_Border">
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.Date)
+                                    <div class="input-group date">
+                                        @Html.TextBoxFor(m => m.Date, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.RoomTypeId)
+                                    @Html.DropDownListFor(m => m.RoomTypeId,
+                                            new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
+                                            "Select Room Type",
+                                            new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.Rooms)
+                                    @Html.TextBoxFor(m => m.Rooms, new { @class = "form-control", placeholder = "Room #" })
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.FeatureId)
+                                    @Html.DropDownListFor(m => m.FeatureId, new List<SelectListItem>
+                                    {
+                                        new SelectListItem{ Text="Select Features", Value = "" },
+                                        new SelectListItem{ Text="Features 1", Value = "F15C97B6-4FC0-4AB7-A34D-D98961B8F844" },
+                                        new SelectListItem{ Text="Features 2", Value = "F15C97B6-4FC0-4AB7-A35D-D94861B9F745" },
+                                        new SelectListItem{ Text="Features 3", Value = "F15C97B6-4FC0-4AB7-A36D-G92061B0F537" },
+                                    }, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-offset-3 col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.RoomClassId)
+                                    @Html.DropDownListFor(m => m.RoomClassId, new List<SelectListItem>
+                                    {
+                                        new SelectListItem{ Text="Select Room Class", Value = "" },
+                                        new SelectListItem{ Text="Room Class 1", Value = "F15C97B6-4FC0-4AB7-A32D-D98961B8F844" },
+                                        new SelectListItem{ Text="Room Class 2", Value = "F15C97B6-4FC0-4AB7-A32D-D94861B9F745" },
+                                        new SelectListItem{ Text="Room Class 3", Value = "F15C97B6-4FC0-4AB7-A32D-G92061B0F537" },
+                                    }, htmlAttributes: new { @class = "form-control" })
+
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.FloorId)
+                                    @Html.DropDownListFor(m => m.FloorId, new List<SelectListItem>
+                                    {
+                                        new SelectListItem{ Text="Select Floor", Value = "" },
+                                        new SelectListItem{ Text="Floor 1", Value = "F15C97B6-4FC0-4AB7-A32D-D98961B8F848" },
+                                        new SelectListItem{ Text="Floor 2", Value = "F15C97B6-4FC0-4AB7-A32D-D94861B9F749" },
+                                        new SelectListItem{ Text="Floor 3", Value = "F15C97B6-4FC0-4AB7-A32D-G92061B0F530" },
+                                    }, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                    @Html.LabelFor(m => m.Smoking)
+                                    @Html.TextBoxFor(m => m.Smoking, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 row">
+                            <div class="col-md-12 col-sm-12 col-xs-12 padding-zero padding-right-media form-group">
+                                <label class="container1" for="IsVerticalZoom">
+                                    Vertical Zoom
+                                    @Html.CheckBoxFor(m => m.IsVerticalZoom)
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container1" for="IsHorizontalZoom">
+                                    Horizontal Zoom
+                                    @Html.CheckBoxFor(m => m.IsHorizontalZoom)
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container1" for="IsComponentRooms">
+                                    Component Rooms
+                                    @Html.CheckBoxFor(m => m.IsComponentRooms)
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-xs-12 padding-zero">
+                            <div class="pull-right m-t">
+                                <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="search();">Search</button>
+                                <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomPlanData();">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-md" id="divRoomPlanView">
+                    @*@Html.Partial("_RoomPlanView")*@
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Default Date. (Set today's date).
+        $("#Date").datepicker("setDate", new Date());
+
+        search();
+    });
+
+    function search() {
+        searchRoomPlan($('#Date').val());
+    }
+
+    function searchRoomPlan(startDate) {
+
+        if (IsNullOrEmpty(startDate)) {
+            startDate = $('#Date').val();
+        }
+        $('#StartDate').val(startDate);
+
+        //Ajax Request to fetch Room Plan View.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (result) {
+                showToaster(result.responseText, ToasterType.ERROR);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Reservation/SearchRoomPlan")',
+            type: 'POST',
+            data: $('#frmRoomPlan').serialize(),
+            success: function (response) {
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    $('#divRoomPlanView').html('');
+                    $('#divRoomPlanView').html(response);
+                }
+            }
+        });
+    }
+
+    function clearRoomPlanData() {
+        //Default Date. (Set today's date).
+        $("#Date").datepicker("setDate", new Date());
+        $('#RoomTypeId').val('');
+        $('#RoomClassId').val('');
+        $('#Rooms').val('');
+        $('#FloorId').val('');
+        $('#FeatureId').val('');
+        $('#Smoking').val('');
+
+        $('#IsVerticalZoom').prop('checked', false);
+        $('#IsHorizontalZoom').prop('checked', false);
+        $('#IsComponentRooms').prop('checked', false);
+
+
+        search();
+    }
+</script>
+
+

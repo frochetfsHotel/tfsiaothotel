@@ -19,6 +19,7 @@ namespace SuccessHotelierHub.Controllers
         private CheckInCheckOutRepository checkInCheckOutRepository = new CheckInCheckOutRepository();
         private RoomRepository roomRepository = new RoomRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
+        private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
         private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
 
@@ -270,13 +271,14 @@ namespace SuccessHotelierHub.Controllers
                 if(checkInDetails != null)
                 {
                     string CheckOutTimeText = model.CheckOutTimeText;
+                    TimeSpan checkOutTime = new TimeSpan();
+                    
                     if (!string.IsNullOrWhiteSpace(CheckOutTimeText))
                     {
                         string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
                         string date = (todayDate + " " + CheckOutTimeText);
                         DateTime time = Convert.ToDateTime(date);
-
-                        checkOut.CheckOutTime = time.TimeOfDay;
+                        checkOutTime = time.TimeOfDay;
                     }
 
                     //Get Reservation detail.
@@ -317,8 +319,47 @@ namespace SuccessHotelierHub.Controllers
 
                                 foreach (var item in roomIdsArr)
                                 {
-                                    //Update Room Occupied Flag.
-                                    roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
+                                    ////Update Room Occupied Flag.
+                                    //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
+                                    
+                                    ////Update Room Status DIRTY to CLEAN.
+                                    //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
+
+                                    #region Add Reservation Log
+
+                                    var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null).FirstOrDefault();
+
+                                    if (lstReservationLog != null)
+                                    {
+                                        lstReservationLog.ReservationId = model.ReservationId;
+                                        lstReservationLog.ProfileId = model.ProfileId;
+                                        lstReservationLog.RoomId = Guid.Parse(item.Trim());
+                                        lstReservationLog.CheckInDate = reservation.ArrivalDate;
+                                        lstReservationLog.CheckOutDate = model.CheckOutDate;
+                                        lstReservationLog.CheckOutTime = checkOutTime;
+                                        lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                        lstReservationLog.IsActive = true;
+                                        lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                        reservationLogRepository.UpdateReservationLog(lstReservationLog);
+                                    }
+                                    else
+                                    {
+                                        ReservationLogVM reservationLog = new ReservationLogVM();
+                                        reservationLog.ReservationId = model.ReservationId;
+                                        reservationLog.ProfileId = model.ProfileId;
+                                        reservationLog.RoomId = Guid.Parse(item.Trim());
+                                        reservationLog.CheckInDate = reservation.ArrivalDate;
+                                        reservationLog.CheckOutDate = model.CheckOutDate;
+                                        reservationLog.CheckOutTime = checkOutTime;
+                                        reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                        reservationLog.IsActive = true;
+                                        reservationLog.CreatedBy = LogInManager.LoggedInUserId;
+
+                                        reservationLogRepository.AddReservationLog(reservationLog);
+                                    }
+
+                                    #endregion
                                 }
                             }
                         }
@@ -331,6 +372,7 @@ namespace SuccessHotelierHub.Controllers
                         checkOut.ReservationId = model.ReservationId;
                         checkOut.ProfileId = model.ProfileId;
                         checkOut.CheckOutDate = model.CheckOutDate.Value;
+                        checkOut.CheckOutTime = checkOutTime;
                         checkOut.CheckOutReference = model.Reference;
                         checkOut.IsActive = true;
                         checkOut.UpdatedBy = LogInManager.LoggedInUserId;

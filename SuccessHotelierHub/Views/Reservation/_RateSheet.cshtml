@@ -3,13 +3,13 @@
 @{
 
     var rateTypeList = (List<RateTypeVM>)ViewData["RateType"];
-    var roomTypeList = (List<RoomTypeVM>)ViewData["RoomType"];
+    var rateSheetRoomTypeList = (List<RateSheetRoomTypeVM>)ViewData["RateSheetRoomType"];
     var isShowWeekEndPrice = (bool)ViewData["IsShowWeekEndPrice"];
 
     ReservationRepository reservationRepository = new ReservationRepository();
 }
 
-@if ((roomTypeList != null && roomTypeList.Count > 0) && (rateTypeList != null && rateTypeList.Count > 0))
+@if ((rateSheetRoomTypeList != null && rateSheetRoomTypeList.Count > 0) && (rateTypeList != null && rateTypeList.Count > 0))
 {
     var firstHeaderRow = string.Empty;
     var secondRow = string.Empty;
@@ -17,19 +17,19 @@
     var nextRowHtml = string.Empty;
 
     firstHeaderRow = "<th colspan='3'>Room Types</th>";
-    foreach (var roomType in roomTypeList)
+    foreach (var roomType in rateSheetRoomTypeList)
     {
         firstHeaderRow += (string.Format("<th class='cursor-P' onclick=\"openRoomTypeStatusModal('{1}');\">{0}</th>", roomType.RoomTypeCode, roomType.Id));
     }
 
     secondRow = "<td colspan='3'>Available Rooms</td>";
-    foreach (var roomType in roomTypeList)
+    foreach (var roomType in rateSheetRoomTypeList)
     {
-        secondRow += (string.Format("<td>{0}</td>", roomType.NoOfRooms));
+        secondRow += (string.Format("<td>{0}</td>", roomType.AvailableRooms));
     }
 
     thirdRow = "<td colspan='3'><b>Types Of Rate</b></td>";
-    foreach (var roomType in roomTypeList)
+    foreach (var roomType in rateSheetRoomTypeList)
     {
         thirdRow += (string.Format("<td>{0}</td>", ""));
     }
@@ -41,14 +41,14 @@
         nextRowHtml += "<td>USD</td>";
         nextRowHtml += "<td></td>";
 
-        foreach (var roomType in roomTypeList)
+        foreach (var roomType in rateSheetRoomTypeList)
         {
             var rateSheetDetail = reservationRepository.GetRateSheetDetail(rateType.Id, roomType.Id, isShowWeekEndPrice).FirstOrDefault();
             string colorClass = "text-green";
 
             if (rateSheetDetail != null)
             {
-                if (roomType.NoOfRooms == 0)
+                if (roomType.AvailableRooms == 0)
                 {
                     colorClass = "text-red";
                 }

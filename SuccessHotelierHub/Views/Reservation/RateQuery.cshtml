@@ -7,7 +7,7 @@
 
 @{
     var rateTypeList = (List<RateTypeVM>)ViewBag.RateTypeList;
-    var roomTypeList = (List<RoomTypeVM>)ViewBag.RoomTypeList;
+    var rateSheetRoomTypeList = (List<RateSheetRoomTypeVM>)ViewBag.RateSheetRoomTypeList;
 
     ProfileRepository profileRepository = new ProfileRepository();
 
@@ -331,7 +331,7 @@
                         @Html.Partial("_RateSheet",
                                 new ViewDataDictionary {
                                     { "RateType", rateTypeList },
-                                    { "RoomType", roomTypeList },
+                                    { "RateSheetRoomType", rateSheetRoomTypeList },
                                     { "IsShowWeekEndPrice", false }
                                 })
                     </div>

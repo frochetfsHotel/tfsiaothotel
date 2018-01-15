@@ -644,11 +644,13 @@ namespace SuccessHotelierHub.Controllers
             var firstName = (string)TempData["FirstName"];
             var lastName = (string)TempData["LastName"];
 
-            var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+            //var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+            var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, DateTime.Now.ToString("MM/dd/yyyy"));
+
             var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
 
             ViewBag.RateTypeList = rateTypeList;
-            ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.RateSheetRoomTypeList = rateSheetRoomTypeList;
 
             RateQueryVM model = new RateQueryVM();
 
@@ -686,11 +688,12 @@ namespace SuccessHotelierHub.Controllers
                     }
                 }
 
-                var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+                //var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+                var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, model.ArrivalDate.Value.ToString("MM/dd/yyyy"));
                 var rateTypeList = rateTypeRepository.GetRateType(model.RateTypeCode);
                 
                 ViewData["RateType"] = rateTypeList;
-                ViewData["RoomType"] = roomTypeList;
+                ViewData["RateSheetRoomType"] = rateSheetRoomTypeList;
                 ViewData["IsShowWeekEndPrice"] = blnShowWeekEndPrice;
 
                 return PartialView("_RateSheet");
@@ -713,6 +716,68 @@ namespace SuccessHotelierHub.Controllers
                     IsSuccess = true,
                     data = Url.Action("Create", "Reservation")
                 }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        #endregion
+
+        #region Room Plan
+
+        public ActionResult RoomPlan()
+        {
+            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+
+            ViewBag.RoomTypeList = roomTypeList;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult SearchRoomPlan(RoomPlanVM model)
+        {
+            try
+            {
+                var roomDetails = roomRepository.GetRoomDetailsForRoomPlan(model.RoomTypeId, model.Rooms);
+                ViewBag.RoomDetail = roomDetails;
+                
+                List<RoomPlanDateRangeVM> dates = new List<RoomPlanDateRangeVM>();
+
+                string firstDate = "", lastDate = "", nextDate = "", prevDate = "";
+                if (model.StartDate.HasValue)
+                {
+                    DateTime endDate = model.StartDate.Value.AddDays(6);
+
+                    for (DateTime dt = model.StartDate.Value; dt <= endDate; dt = dt.AddDays(1))
+                    {
+                        dates.Add(new RoomPlanDateRangeVM()
+                        {
+                            Date = dt,
+                            DateString = dt.ToString("dd/MM/yyyy"),
+                            DayOfTheWeek = dt.DayOfWeek.ToString()
+                        });
+                    }
+
+                    DateTime firstDayOfMonth = new DateTime(model.StartDate.Value.Year, model.StartDate.Value.Month, 1);
+
+                    firstDate = firstDayOfMonth.ToString("dd/MM/yyyy");
+                    lastDate = firstDayOfMonth.AddMonths(1).AddDays(-1).ToString("dd/MM/yyyy");
+
+                    nextDate = endDate.AddDays(1).ToString("dd/MM/yyyy");
+                    prevDate = model.StartDate.Value.AddDays(-7).ToString("dd/MM/yyyy");
+                }
+
+                ViewBag.Dates = dates;
+
+                ViewBag.FirstDate = firstDate;
+                ViewBag.LastDate = lastDate;
+                ViewBag.NextDate = nextDate;
+                ViewBag.PrevDate = prevDate;
+
+                return PartialView("_RoomPlanView");
             }
             catch (Exception e)
             {

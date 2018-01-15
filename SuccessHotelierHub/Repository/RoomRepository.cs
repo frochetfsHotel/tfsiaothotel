@@ -137,6 +137,22 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
+        public List<RoomPlanRoomVM> GetRoomDetailsForRoomPlan(Guid? roomTypeId, string roomNo)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = roomNo }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomDetailsForRoomPlan", parameters);
+
+            var rooms = new List<RoomPlanRoomVM>();
+            rooms = DALHelper.CreateListFromTable<RoomPlanRoomVM>(dt);
+
+            return rooms;
+        }
+
         #endregion
 
         #region Reservation Room Mapping 
@@ -201,6 +217,40 @@ namespace SuccessHotelierHub.Repository
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomOccupiedFlag", parameters));
+
+            return id;
+        }
+
+        public string UpdateRoomCheckInStatus(Guid roomId, Guid statusId, bool isOccupied, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = roomId },
+                    new SqlParameter { ParameterName = "@StatusId", Value = statusId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomCheckInStatus", parameters));
+
+            return id;
+        }
+
+        public string UpdateRoomCheckOutStatus(Guid roomId, Guid statusId, bool isOccupied, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = roomId },
+                    new SqlParameter { ParameterName = "@StatusId", Value = statusId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomCheckOutStatus", parameters));
 
             return id;
         }

@@ -101,4 +101,20 @@ namespace SuccessHotelierHub.Models
         public float? Amount { get; set; }
 
     }
+
+    public class RateSheetRoomTypeVM
+    {
+        public Guid Id { get; set; }
+
+        [DisplayName("Room Type Code")]
+        public string RoomTypeCode { get; set; }
+
+        public string Description { get; set; }
+
+        [DisplayName("Available Rooms")]
+        public int AvailableRooms { get; set; }
+
+        [DisplayName("Room Capacity")]
+        public int RoomCapacity { get; set; }
+    }
 }

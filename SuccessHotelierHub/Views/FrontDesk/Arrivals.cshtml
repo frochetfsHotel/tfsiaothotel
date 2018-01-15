@@ -286,6 +286,8 @@
         clearRoomSearch();
 
         $("form#frmAdvanceRoomSearch #RoomTypeId").val($('form#frmCheckInPayment #RoomTypeId').val());
+        $("form#frmAdvanceRoomSearch #ArrivalDate").val($('form#frmCheckInPayment #hdnArrivalDate').val());
+        $("form#frmAdvanceRoomSearch #DepartureDate").val($('form#frmCheckInPayment #hdnDepartureDate').val());
         $("form#frmAdvanceRoomSearch #divRoomType").hide();
 
         $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmCheckInPayment #RoomIds').val());

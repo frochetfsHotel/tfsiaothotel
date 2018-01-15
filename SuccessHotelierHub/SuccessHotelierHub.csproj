@@ -248,9 +248,11 @@
     <Compile Include="Models\RateTypeVM.cs" />
     <Compile Include="Models\ReservationCancellationReasonVM.cs" />
     <Compile Include="Models\ReservationChargeVM.cs" />
+    <Compile Include="Models\ReservationLogVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
     <Compile Include="Models\ReservationRoomMappingVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
+    <Compile Include="Models\RoomPlanVM.cs" />
     <Compile Include="Models\RoomStatusVM.cs" />
     <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />
     <Compile Include="Models\RoomTypeVM.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="Repository\RateTypeRepository.cs" />
     <Compile Include="Repository\ReservationCancellationReasonRepository.cs" />
     <Compile Include="Repository\ReservationChargeRepository.cs" />
+    <Compile Include="Repository\ReservationLogRepository.cs" />
     <Compile Include="Repository\ReservationRepository.cs" />
     <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomStatusRepository.cs" />
@@ -1942,6 +1945,8 @@
     <Content Include="Views\Nationality\Edit.cshtml" />
     <Content Include="Views\Nationality\List.cshtml" />
     <Content Include="Views\Room\_AddRoom.cshtml" />
+    <Content Include="Views\Reservation\RoomPlan.cshtml" />
+    <Content Include="Views\Reservation\_RoomPlanView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
