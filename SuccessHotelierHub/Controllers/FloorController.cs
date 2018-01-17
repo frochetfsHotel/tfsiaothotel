@@ -7,17 +7,18 @@ using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 
+
 namespace SuccessHotelierHub.Controllers
 {
-    public class CountryController : Controller
+    public class FloorController : Controller
     {
         #region Declaration
 
-        private CountryRepository countryRepository = new CountryRepository();        
+        private FloorRepository floorRepository = new FloorRepository();
 
         #endregion
 
-        // GET: Country
+        // GET: Floor
         public ActionResult Index()
         {
             return View();
@@ -30,36 +31,36 @@ namespace SuccessHotelierHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CountryVM model)
+        public ActionResult Create(FloorVM model)
         {
             try
             {
-                string countryId = string.Empty;
+                string floorId = string.Empty;
                 model.CreatedBy = LogInManager.LoggedInUserId;
 
-                #region Check Country Code Available.
+                #region Check Floor Code Available.
 
-                if (this.CheckCountryCodeAvailable(model.Id, model.Code) == false)
+                if (this.CheckFloorCodeAvailable(model.Id, model.Code) == false)
                 {
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = string.Format("Country Code : {0} already exist.", model.Code)
+                        errorMessage = string.Format("Floor Code : {0} already exist.", model.Code)
                     }, JsonRequestBehavior.AllowGet);
                 }
 
                 #endregion
 
-                countryId = countryRepository.AddCountry(model);
+                floorId = floorRepository.AddFloor(model);
 
-                if (!string.IsNullOrWhiteSpace(countryId))
+                if (!string.IsNullOrWhiteSpace(floorId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            CountryId = countryId
+                            FloorId = floorId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -68,7 +69,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Country details not saved successfully."
+                        errorMessage = "Floor details not saved successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -82,15 +83,15 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult Edit(Guid id)
         {
-            var country = countryRepository.GetCountryById(id);
+            var floor = floorRepository.GetFloorById(id);
 
-            CountryVM model = new CountryVM();
+            FloorVM model = new FloorVM();
 
-            if (country != null && country.Count > 0)
+            if (floor != null && floor.Count > 0)
             {
-                model = country[0];
+                model = floor[0];
 
                 return View(model);
             }
@@ -100,36 +101,36 @@ namespace SuccessHotelierHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CountryVM model)
+        public ActionResult Edit(FloorVM model)
         {
             try
             {
-                string countryId = string.Empty;
+                string floorId = string.Empty;
                 model.UpdatedBy = LogInManager.LoggedInUserId;
 
-                #region Check Country Code Available.
+                #region Check Floor Code Available.
 
-                if (this.CheckCountryCodeAvailable(model.Id, model.Code) == false)
+                if (this.CheckFloorCodeAvailable(model.Id, model.Code) == false)
                 {
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = string.Format("Country Code : {0} already exist.", model.Code)
+                        errorMessage = string.Format("Floor Code : {0} already exist.", model.Code)
                     }, JsonRequestBehavior.AllowGet);
                 }
 
                 #endregion
 
-                countryId = countryRepository.UpdateCountry(model);
+                floorId = floorRepository.UpdateFloor(model);
 
-                if (!string.IsNullOrWhiteSpace(countryId))
+                if (!string.IsNullOrWhiteSpace(floorId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            CountryId = countryId
+                            FloorId = floorId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -138,7 +139,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Country details not updated successfully."
+                        errorMessage = "Floor details not updated successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -153,22 +154,22 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(Guid id)
         {
             try
             {
-                string countryId = string.Empty;
+                string floorId = string.Empty;
 
-                countryId = countryRepository.DeleteCountry(id, LogInManager.LoggedInUserId);
+                floorId = floorRepository.DeleteFloor(id, LogInManager.LoggedInUserId);
 
-                if (!string.IsNullOrWhiteSpace(countryId))
+                if (!string.IsNullOrWhiteSpace(floorId))
                 {
                     return Json(new
                     {
                         IsSuccess = true,
                         data = new
                         {
-                            CountryId = id
+                            FloorId = floorId
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -177,7 +178,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Country details not deleted successfully."
+                        errorMessage = "Floor details not deleted successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -193,7 +194,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(SearchCountryParametersVM model)
+        public ActionResult Search(SearchFloorParametersVM model)
         {
             try
             {
@@ -212,10 +213,10 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
-                var countries = countryRepository.SearchCountry(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                var floors = floorRepository.SearchFloor(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;
-                var dbRecords = countries.Select(m => m.TotalCount).FirstOrDefault();
+                var dbRecords = floors.Select(m => m.TotalCount).FirstOrDefault();
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
@@ -226,7 +227,7 @@ namespace SuccessHotelierHub.Controllers
                     CurrentPage = model.PageNum,
                     PageSize = Constants.PAGESIZE,
                     TotalRecords = totalRecords,
-                    data = countries
+                    data = floors
                 }, JsonRequestBehavior.AllowGet);
 
             }
@@ -236,13 +237,13 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckCountryCodeAvailable(int? id, string code)
+        public bool CheckFloorCodeAvailable(Guid? floorId, string code)
         {
             bool blnAvailable = true;
 
-            var country = countryRepository.CheckCountryCodeAvailable(id, code);
+            var floor = floorRepository.CheckFloorCodeAvailable(floorId, code);
 
-            if (country.Any())
+            if (floor.Any())
             {
                 blnAvailable = false;
             }

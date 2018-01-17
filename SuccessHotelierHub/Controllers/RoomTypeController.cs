@@ -14,8 +14,9 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration
 
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
+        private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private RoomRepository roomRepository = new RoomRepository();
-
+        private RateRepository rateRepository = new RateRepository();
         #endregion
 
         public ActionResult Create()
@@ -66,6 +67,27 @@ namespace SuccessHotelierHub.Controllers
                         room.CreatedBy = LogInManager.LoggedInUserId;
 
                         roomRepository.AddRoom(room);
+                    }
+
+                    #endregion
+
+                    #region Add Rate (Default 100) for each Rate Type.
+
+                    var rateTypes = rateTypeRepository.GetRateType(string.Empty);
+
+                    if (rateTypes != null && rateTypes.Count > 0)
+                    {
+                        foreach (var rateType in rateTypes)
+                        {
+                            RoomTypeRateTypeMappingVM roomTypeRateTypeMapping = new RoomTypeRateTypeMappingVM();
+                            roomTypeRateTypeMapping.RoomTypeId = Guid.Parse(roomTypeId);
+                            roomTypeRateTypeMapping.RateTypeId = rateType.Id;
+                            roomTypeRateTypeMapping.Amount = 100; //Default Price.
+                            roomTypeRateTypeMapping.IsActive = true;
+                            roomTypeRateTypeMapping.CreatedBy = LogInManager.LoggedInUserId;
+
+                            rateRepository.AddRoomTypeRateTypeMapping(roomTypeRateTypeMapping);
+                        }
                     }
 
                     #endregion

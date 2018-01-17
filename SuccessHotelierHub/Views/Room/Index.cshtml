@@ -117,6 +117,8 @@
         var roomTypeId = $('#ddlRoomType').val();
 
         if (!IsNullOrEmpty(totalRooms) && totalRooms > 0) {
+            var floorSelected = true;
+
             for (i = 0; i < totalRooms; i++)
             {
                 var roomObj = {};
@@ -125,11 +127,20 @@
                 roomObj.RoomNo = $('#txtRoomNo_' + i).val();
                 roomObj.Type = $('#txtRoomType_' + i).val();
                 roomObj.Description = $('#txtDescription_' + i).val();
-                roomObj.StatusId = $('#ddlStatus_' + i).val();
+                roomObj.FloorId = $('#ddlFloor_' + i).val();
                 roomObj.IsOccupied = $('#chkIsOccupied_' + i).prop("checked");
                 roomObj.IsActive = $('#chkIsActive_' + i).prop("checked");
 
+                if (IsNullOrEmpty($('#ddlFloor_' + i).val())) {
+                    floorSelected = false;
+                }
+
                 models.push(roomObj);
+            }
+
+            if (floorSelected == false) {
+                showToaster("Please select floor for all the rooms.", ToasterType.ERROR);
+                return false;
             }
 
             $.ajax({

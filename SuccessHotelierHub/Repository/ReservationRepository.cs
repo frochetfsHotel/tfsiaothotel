@@ -350,7 +350,44 @@ namespace SuccessHotelierHub.Repository
 
         #endregion
 
+        #region Room Plan
 
+        public List<RoomPlanReservationDetailVM> GetReservationDetailsForRoomPlan(Guid? roomId, string startDate, string endDate)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },                    
+                    new SqlParameter { ParameterName = "@StartDate", Value = startDate },
+                    new SqlParameter { ParameterName = "@EndDate", Value = endDate }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationDetailsForRoomPlan", parameters);
+
+            var reservationDetails = new List<RoomPlanReservationDetailVM>();
+            reservationDetails = DALHelper.CreateListFromTable<RoomPlanReservationDetailVM>(dt);
+
+            return reservationDetails;
+        }
+
+        public string ChangeRoomAllocation(Guid reservationId, Guid roomId, DateTime? arrivalDate, DateTime? departureDate, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = arrivalDate },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = departureDate },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("ChangeRoomAllocation", parameters));
+
+            return id;
+        }
+
+        #endregion
 
     }
 }

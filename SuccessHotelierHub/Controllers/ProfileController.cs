@@ -215,15 +215,17 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.PreferenceGroupList = preferenceGroupList;
 
                 //Get State
-                var stateList = new SelectList(new List<StateVM>(), "Id", "Name").ToList();          
-                    
-                if(model.CountryId.HasValue)
-                    stateList = new SelectList(stateRepository.GetStates(model.CountryId), "Id", "Name").ToList();
+                var stateList = new SelectList(new List<StateVM>(), "Id", "Name").ToList();
 
                 //Get City
                 var cityList = new SelectList(new List<CityVM>(), "Id", "Name").ToList();
-                if (model.StateId.HasValue)
-                    cityList = new SelectList(cityRepository.GetCities(model.StateId), "Id", "Name").ToList();
+
+                if (model.CountryId.HasValue)
+                {
+                    stateList = new SelectList(stateRepository.GetStates(model.CountryId), "Id", "Name").ToList();
+                    
+                    cityList = new SelectList(cityRepository.GetCities(model.CountryId,model.StateId), "Id", "Name").ToList();
+                }
 
                 ViewBag.StateList = stateList;
                 ViewBag.CityList = cityList;

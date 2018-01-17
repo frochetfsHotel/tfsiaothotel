@@ -1,15 +1,15 @@
-﻿@model SuccessHotelierHub.Models.CountryVM
+﻿@model SuccessHotelierHub.Models.FloorVM
 @{
-    ViewBag.Title = "Edit Country";
+    ViewBag.Title = "Edit Floor";
 }
 
 <section class="content-header">
     <h1>
-        Country <small>Edit</small>
+        Floor <small>Edit</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Country</li>
+        <li class="">Floor</li>
         <li class="active">Edit</li>
     </ol>
 </section>
@@ -17,9 +17,9 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Country Details</h3>
+            <h3 class="box-title">Floor Details</h3>
         </div>
-        @using (Html.BeginForm("Edit", "Country", FormMethod.Post, new { id = "frmCountry", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Edit", "Floor", FormMethod.Post, new { id = "frmFloor", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
 
@@ -31,7 +31,7 @@
                 <div class="row">
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Code, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code", @readonly = "readonly" })
+                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
@@ -49,22 +49,21 @@
                 </div>
             </div>
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success m-r-xs" onclick="return updateCountry();">Update</button>
-                <a href="@Url.Action("List", "Country")" class="btn btn-danger">Cancel</a>
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateFloor();">Save</button>
+                <a href="@Url.Action("List", "Floor")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
 </section>
 
-
 <script type="text/javascript">
-    function validateCountry() {
+    function validateFloor() {
 
         var errorMessage = "";
         var blnValid = true;
 
 
-        if ($("#frmCountry").valid() == false) {
+        if ($("#frmFloor").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
@@ -73,9 +72,9 @@
     }
 
 
-    function updateCountry() {
+    function updateFloor() {
 
-        if (validateCountry()) {
+        if (validateFloor()) {
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -86,18 +85,18 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Country/Edit")',
+                url: '@Url.Content("~/Floor/Edit")',
                 type: 'POST',
-                data: $('#frmCountry').serialize(),
+                data: $('#frmFloor').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        showToaster("Country details updated successfully", ToasterType.SUCCESS);
+                        showToaster("Floor details updated successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('@Url.Content("~/Country/List")');
+                            redirectTo('@Url.Content("~/Floor/List")');
                         }, 1000);
                     }
                 }

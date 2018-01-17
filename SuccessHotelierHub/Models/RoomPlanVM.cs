@@ -82,4 +82,41 @@ namespace SuccessHotelierHub.Models
 
         public bool IsOccupied { get; set; }
     }
+
+    public class RoomPlanReservationDetailVM
+    {
+        public Guid ReservationId { get; set; }
+
+        public Guid ProfileId { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("No Of Night")]
+        public int NoOfNight { get; set; }
+
+        public Guid RoomId { get; set; }
+
+        [DisplayName("Status")]
+        public Guid? RoomStatusId { get; set; }
+
+        public string RoomStatus { get; set; }
+
+        public string RoomStatusColor { get; set; }
+
+        [DisplayName("Check In Date")]
+        public string CheckInDateString { get; set; }
+
+        [DisplayName("Check In Date")]
+        public DateTime? CheckInDate { get; set; }
+
+        [DisplayName("Check Out Date")]
+        public string CheckOutDateString { get; set; }
+
+        [DisplayName("Check Out Date")]
+        public DateTime? CheckOutDate { get; set; }
+    }
 }

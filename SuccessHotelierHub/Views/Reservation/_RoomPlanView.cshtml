@@ -1,12 +1,17 @@
 ﻿@using SuccessHotelierHub.Models;
-
+@using SuccessHotelierHub.Repository;
 @{
+    ReservationRepository reservationRepository = new ReservationRepository();
+
     var roomDetail = (List<RoomPlanRoomVM>)ViewBag.RoomDetail;
 
     var dates = (List<RoomPlanDateRangeVM>)ViewBag.Dates;
 
     var firstHeaderRowHtml = "";
     var secondHeaderRowHtml = "";
+
+    var startDate = "";
+    var endDate = "";
 
     if (dates != null)
     {
@@ -15,6 +20,9 @@
         secondHeaderRowHtml += "<th>Room#</th>";
         secondHeaderRowHtml += "<th>Room Status</th>";
         secondHeaderRowHtml += "<th>Room Type</th>";
+
+        startDate = dates[0].Date.Value.ToString("MM/dd/yyyy");
+        endDate = dates[dates.Count - 1].Date.Value.ToString("MM/dd/yyyy");
 
         foreach (var date in dates)
         {
@@ -31,7 +39,7 @@
 {
     <div class="col-xs-12 padding-zero m-t tbl_max_height">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped mb_5">
+            <table class="table table-bordered mb_5">
                 <thead>
                     <tr>
                         @Html.Raw(firstHeaderRowHtml)
@@ -48,18 +56,51 @@
                         {
                             statusBGColor = room.RoomStatusColor;
                         }
+
+                        var reservationDetail = reservationRepository.GetReservationDetailsForRoomPlan(room.Id, startDate, endDate);
+
                         <tr>
                             <td>@room.RoomNo</td>
                             <td style="background-color:@statusBGColor; color:#fff">@room.RoomStatus</td>
                             <td>@room.RoomTypeCode</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+
+                            @if (reservationDetail != null && reservationDetail.Count > 0)
+                            {
+                                int cardColspan = 0;
+                                for (int intI = 0; intI < dates.Count;)
+                                {
+                                    cardColspan = 0;
+                                    //var reservationInfo = reservationDetail.Where(i => i.CheckInDateString == dates[intI].DateString).FirstOrDefault();
+                                    var reservationInfo = reservationDetail.Where(i => (i.CheckInDate.Value.Date <= dates[intI].Date.Value.Date) && (i.CheckOutDate.Value.Date >= dates[intI].Date.Value.Date)).FirstOrDefault();
+                                    if (reservationInfo != null)
+                                    {
+                                        cardColspan = reservationInfo.NoOfNight > 1 ? (reservationInfo.NoOfNight + 1) : reservationInfo.NoOfNight;
+
+                                        <td colspan="@(cardColspan)" class="text-center  cursor-move bg-orange spnReservation"  id="@("tdReservation_" + reservationInfo.ReservationId)">
+                                            <button type="button" class="btn btn-xs bg-orange m-r-xs" id="@("spnReservation_" + reservationInfo.ReservationId)">
+                                                @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
+                                            </button>
+                                        </td>
+
+                                        intI = intI + (cardColspan);
+                                    }
+                                    else
+                                    {
+                                        intI++;
+                                        <td class="droppable"></td>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <td class="droppable"></td>
+                                <td class="droppable"></td>
+                                <td class="droppable"></td>
+                                <td class="droppable"></td>
+                                <td class="droppable"></td>
+                                <td class="droppable"></td>
+                                <td class="droppable"></td>
+                            }
                         </tr>
                     }
                 </tbody>
@@ -90,3 +131,66 @@ else
         <h5>No data available.</h5>
     </div>
 }
+
+<script type="text/javascript">
+    $(function () {
+
+        //$(".spnReservation").sortable({
+        //    connectWith: ".droppable",
+        //    cursor: "move",
+        //    placeholder: "ui-state-highlight",
+        //    items: 'tr',
+        //    receive: function (event, ui) {
+        //        debugger;
+        //        if (typeof ui.item.attr('rowspan') !== 'undefined' && ui.item.attr('rowspan') !== false) {
+        //            rowspan = ui.item.attr('rowspan');
+        //            $(this).attr('rowspan', rowspan);
+        //            ui.sender.attr('rowspan', 0);
+        //        }
+        //        if (typeof ui.item.attr('colspan') !== 'undefined' && ui.item.attr('colspan') !== false) {
+        //            colspan = ui.item.attr('colspan');
+        //            $(this).attr('colspan', colspan);
+        //            ui.sender.attr('colspan', 0);
+        //        }
+        //    }
+
+        //});
+
+        $(".spnReservation").draggable({
+            connectToSortable: ".droppable",            
+            cursor: "move",
+            drag: function (event, ui) {
+                //$(this).html("Dragged!");                
+            },
+            stop: handleDragStop
+        });
+
+        $(".droppable").droppable({
+            //accept: '.spnReservation',
+            drop: function (event, ui) {
+                console.log("handleDropStop : " + $(this));
+                console.log($(this));
+                var draggable = ui;
+                console.log(draggable);
+                console.log('The card with ID "' + ui.draggable.attr('id') + '" was dropped onto me!');
+
+                //$(this).append(ui.draggable.html());
+                //$(ui.draggable).remove();
+
+                //$(this)
+                //  .addClass("ui-state-highlight")
+                //  //.find("td")
+                //    .html("Dropped!");
+            },
+        });
+    });
+
+    function handleDragStop(event, ui) {
+        console.log("handleDragStop");
+        var draggable = ui;
+        console.log(draggable);
+        var offsetXPos = parseInt(ui.offset.left);
+        var offsetYPos = parseInt(ui.offset.top);
+        //alert("Drag stopped!\n\nOffset: (" + offsetXPos + ", " + offsetYPos + ")\n");
+    }
+</script>

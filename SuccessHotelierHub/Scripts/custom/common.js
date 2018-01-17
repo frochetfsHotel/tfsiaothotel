@@ -393,3 +393,10 @@ function RemoveLineBreak(data) {
     }
     return "";
 }
+
+function FormatNumberWithTwoDecimal(amount) {
+    if (amount != null && amount != '' && amount != undefined) {
+        return Number(amount).toFixed(2);
+    }
+    return "0.00";
+}

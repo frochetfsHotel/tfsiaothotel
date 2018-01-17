@@ -715,8 +715,9 @@ label{
 }
 .dashboard_bg {
     background: url('../img/Dashboardbg.jpg');
-    background-position: center;
+    /*background-position: center;*/
     background-size: cover;
+    /*min-height:546px;*/
 }
 
 
@@ -759,4 +760,8 @@ label{
 .tbl_max_height{
     max-height: 500px;
     overflow: auto;
+}
+
+.cursor-move{
+    cursor:move !important;
 }

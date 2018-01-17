@@ -36,10 +36,11 @@
             </div>
             <div class="row">
                 <div class="col-md-4 form-group">
-                    @Html.LabelFor(m => m.StatusId)
-                    @Html.DropDownListFor(m => m.StatusId,
-                                (IEnumerable<SelectListItem>)ViewBag.RoomStatusList, "--Select Status--",
+                    @Html.LabelFor(m => m.FloorId, new { @class = "required-label" })
+                    @Html.DropDownListFor(m => m.FloorId,
+                                (IEnumerable<SelectListItem>)ViewBag.FloorList, "--Select Floor--",
                                 htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.FloorId, "", new { @class = "text-danger" })
                 </div>
                 <div class="col-md-4 form-group">
                     @Html.LabelFor(m => m.Description)
@@ -75,16 +76,22 @@
 
         var roomTypeId = $('#RoomTypeId').val();
         var roomNo = $('#RoomNo').val();
+        var floorId = $('#FloorId').val();
 
         if (IsNullOrEmpty(roomTypeId))
         {
-            showToaster("Please select room type", ToasterType.ERROR);
+            showToaster("Please select room type.", ToasterType.ERROR);
             return false;
         }
 
         if (IsNullOrEmpty(roomNo))
         {
             showToaster("Please enter room no.", ToasterType.ERROR);
+            return false;
+        }
+
+        if (IsNullOrEmpty(floorId)) {
+            showToaster("Please select floor.", ToasterType.ERROR);
             return false;
         }
 
@@ -135,7 +142,7 @@
         $('#RoomNo').val('');
         $('#Type').val('');
         $('#Description').val('');
-        $('#StatusId').val('');
+        $('#FloorId').val('');
     }
 </script>
 

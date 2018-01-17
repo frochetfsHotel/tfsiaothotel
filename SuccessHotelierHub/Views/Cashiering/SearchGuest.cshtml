@@ -548,12 +548,12 @@
                     var html = "";
                     if (full.IsCheckOut == true)
                     {
-                        html += '' + full.Balance + '';
+                        html += '' + FormatNumberWithTwoDecimal(full.Balance) + '';
                     }
                     else
                     {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
-                        + ' class="">' + full.Balance + '</a> ';
+                        + ' class="">' + FormatNumberWithTwoDecimal(full.Balance) + '</a> ';
                     }
                     return html;
                 }
@@ -669,7 +669,7 @@
                                                 
                         $("form#frmBillingInfo #hdnReservationId").val(result.ReservationId);
 
-                        $("form#frmBillingInfo #Balance").val(result.Balance);
+                        $("form#frmBillingInfo #Balance").val(FormatNumberWithTwoDecimal(result.Balance));
                         $("form#frmBillingInfo #ArrivalDate").val(ParseJsonDate(result.ArrivalDate));
                         $("form#frmBillingInfo #Company").val(result.Company);
                         $("form#frmBillingInfo #RateCode").val(result.RateCode);
@@ -678,11 +678,11 @@
                         $("form#frmBillingInfo #Status").val(result.Status);
                         $("form#frmBillingInfo #DepartureDate").val(ParseJsonDate(result.DepartureDate));
                         $("form#frmBillingInfo #Group").val(result.Group);
-                        $("form#frmBillingInfo #RoomRent").val(result.RoomRent);
+                        $("form#frmBillingInfo #RoomRent").val(FormatNumberWithTwoDecimal(result.RoomRent));
                         $("form#frmBillingInfo #RoomTypeCode").val(result.RoomTypeCode);
 
                         
-                        $("form#frmBillingInfo .spnTotalBalance").html(result.Balance);
+                        $("form#frmBillingInfo .spnTotalBalance").html(FormatNumberWithTwoDecimal(result.Balance));
                         $(".spnGuestName").html(result.Name);
                         $(".spnRoomNumbers").html("Room " + result.RoomNumbers);
 
@@ -717,8 +717,8 @@
         $('#divReservationCharges table tbody td.tdAmount').each(function () {
             balance += parseFloat($(this).attr("data-amount"));
         });
-        $("form#frmBillingInfo .spnTotalBalance").html(balance);
-        $("form#frmBillingInfo #Balance").val(balance);
+        $("form#frmBillingInfo .spnTotalBalance").html(FormatNumberWithTwoDecimal(balance));
+        $("form#frmBillingInfo #Balance").val(FormatNumberWithTwoDecimal(balance));
     }
 
     function bindBillingTransactionGrid(data) {        
@@ -730,7 +730,7 @@
                 html += "<td>" + ParseJsonDate(data[i].TransactionDate) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";                
                 html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
-                html += "<td class='tdAmount' data-amount='" + amount + "'>" + amount + "</td>";
+                html += "<td class='tdAmount' data-amount='" + amount + "'>" + FormatNumberWithTwoDecimal(amount) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Supplement) ? "" : data[i].Supplement) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Reference) ? "" : data[i].Reference) + "</td>";
                 html += "</tr>";

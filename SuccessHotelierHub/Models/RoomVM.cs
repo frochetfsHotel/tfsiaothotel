@@ -28,6 +28,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Status")]
         public Guid? StatusId { get; set; }
 
+        [DisplayName("Floor")]
+        [Required(ErrorMessage = "Please select floor.")]
+        public Guid? FloorId { get; set; }
+
         public bool IsOccupied { get; set; }
 
         public int? CreatedBy { get; set; }

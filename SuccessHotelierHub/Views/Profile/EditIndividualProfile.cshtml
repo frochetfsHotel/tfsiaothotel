@@ -147,7 +147,7 @@
                         <label for="ddlCountry">Country</label>
                         @Html.DropDownListFor(m => m.CountryId,
                                 (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState()" })
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState();getCity();" })
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="ddlState">State</label>
@@ -395,9 +395,10 @@
     }
 
     function getCity() {
+        var country = $('#ddlCountry').val();
         var state = $('#ddlState').val();
 
-        if (!IsNullOrEmpty(state) && state != "0") {
+        if (!IsNullOrEmpty(country) && country != "0") {
             //Get City
             $.ajax({
                 beforeSend: function (xhr) {
@@ -412,6 +413,7 @@
                 url: '@Url.Content("~/Common/GetCity")',
                 type: 'GET',
                 data: {
+                    countryId: parseInt(country),
                     stateId: parseInt(state)
                 },
                 success: function (result) {

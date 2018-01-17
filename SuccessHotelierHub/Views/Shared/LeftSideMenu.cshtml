@@ -46,13 +46,14 @@
                     <li><a href="@Url.Action("Company","Profile")"><i class="fa fa-building"></i>Company (Design)</a></li>
                 </ul>
             </li>
+            <li>
+                <a href="@Url.Action("RoomPlan","Reservation")"><i class="fa fa-bed"></i>Room Plan</a>
+            </li>
             <li><a href="#"><i class="fa fa-group"></i>Groups *</a></li>
             <li><a href="#"><i class="fa fa-calendar"></i>Calendar *</a></li>
             <li><a href="#"><i class="fa fa-building-o"></i>Floor Plan *</a></li>
             @*<li><a href="#"><i class="fa fa-bed"></i>Room Plan *</a></li>*@
-            <li>
-                <a href="@Url.Action("RoomPlan","Reservation")"><i class="fa fa-bed"></i>Room Plan</a>
-            </li>
+            
             <li><a href="#"><i class="fa fa-users"></i>Conference Allotments *</a></li>
             <li><a href="#"><i class="fa fa-calendar"></i>Conference Plan *</a></li>
             <li><a href="#"><i class="fa fa-user-md"></i>Guest History *</a></li>
@@ -104,6 +105,19 @@
                 <ul class="treeview-menu">
                     <li><a href="@Url.Action("Create","RateType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
                     <li><a href="@Url.Action("List","RateType")"><i class="fa fa-search"></i> Search</a></li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-building-o" aria-hidden="true"></i> Floor
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("Create","Floor")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","Floor")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
 

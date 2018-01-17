@@ -1,7 +1,7 @@
 ﻿@using SuccessHotelierHub.Models
 @{
-    var roomList = (List<RoomVM>)ViewBag.RoomList;
-    var roomStatusList = (List<RoomStatusVM>)ViewBag.RoomStatusList;
+    var roomList = (List<RoomVM>)ViewBag.RoomList;    
+    var floorList = (List<FloorVM>)ViewBag.FloorList;
     var noOfRooms = (int)ViewBag.NoOfRooms;
     var index = 0;
 }
@@ -15,10 +15,9 @@
             <thead>
                 <tr>
                     <th width="10%">Room#</th>
+                    <th width="15%">Floor</th>
                     <th width="10%">Type</th>
-                    <th width="15%">Status</th>
-                    <th width="25%">Description</th>
-                    <th width="10%">Is Occupied</th>
+                    <th width="25%">Description</th>                    
                     <th width="10%">Is Active</th>
                     <th width="10%">Action</th>
                 </tr>
@@ -31,33 +30,27 @@
                             <input type="text" id="@("txtRoomNo_" + index)" name="@("txtRoomNo_" + index)" class="form-control" value="@room.RoomNo" />
                         </td>
                         <td>
-                            <input type="text" id="@("txtRoomType_" + index)" name="@("txtRoomType_" + index)" class="form-control" value="@room.Type" />
-                        </td>
-                        <td>
-                            <select id="@("ddlStatus_" + index)" name="@("ddlStatus_" + index) " class='form-control'>
-                                <option value="">--Select Status--</option>
-                                @foreach (var roomStatus in roomStatusList)
+                            <select id="@("ddlFloor_" + index)" name="@("ddlFloor_" + index) " class='form-control'>
+                                <option value="">--Select Floor--</option>
+                                @foreach (var floor in floorList)
                                 {
-                                    if (room.StatusId == roomStatus.Id)
+                                    if (room.FloorId == floor.Id)
                                     {
-                                        <option value="@roomStatus.Id" selected>@roomStatus.Name</option>
+                                        <option value="@floor.Id" selected>@floor.Name</option>
                                     }
                                     else
                                     {
-                                        <option value="@roomStatus.Id">@roomStatus.Name</option>
+                                        <option value="@floor.Id">@floor.Name</option>
                                     }
                                 }
                             </select>
                         </td>
                         <td>
-                            <textarea id="@("txtDescription_" + index)" name="@("txtDescription_" + index)" class="form-control" rows="1">@room.Description</textarea>
+                            <input type="text" id="@("txtRoomType_" + index)" name="@("txtRoomType_" + index)" class="form-control" value="@room.Type" />
                         </td>
+                        
                         <td>
-                            <label class="container1" for="@("chkIsOccupied_" + index)">
-                                <input type="checkbox" id="@("chkIsOccupied_" + index)" name="@("chkIsOccupied_" + index)"
-                                       @(room.IsOccupied ? "checked" : "") />
-                                <span class="checkmark"></span>
-                            </label>
+                            <textarea id="@("txtDescription_" + index)" name="@("txtDescription_" + index)" class="form-control" rows="1">@room.Description</textarea>
                         </td>
                         <td>
                             <label class="container1" for="@("chkIsActive_" + index)">

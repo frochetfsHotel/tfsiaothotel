@@ -1,5 +1,6 @@
 ﻿@using SuccessHotelierHub.Models
 @using SuccessHotelierHub.Repository
+@using SuccessHotelierHub.Utility
 @{
 
     var rateTypeList = (List<RateTypeVM>)ViewData["RateType"];
@@ -54,10 +55,10 @@
                 }
 
                 nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\">{0}</td>",
-                    rateSheetDetail.Amount, rateType.Id, roomType.Id,
+                    Utility.FormatAmountWithTwoDecimal(rateSheetDetail.Amount), rateType.Id, roomType.Id,
                     rateSheetDetail.Description,
                     rateSheetDetail.Id,
-                    rateSheetDetail.Amount,
+                    Utility.FormatAmountWithTwoDecimal(rateSheetDetail.Amount),
                     rateType.RateTypeCode,
                     roomType.RoomTypeCode,
                     colorClass));
@@ -66,10 +67,10 @@
             {
                 colorClass = "text-red";
                 nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\">{0}</td>",
-                    0, rateType.Id, roomType.Id,
+                    Utility.FormatAmountWithTwoDecimal(0), rateType.Id, roomType.Id,
                     string.Empty,
                     string.Empty,
-                    0,
+                    Utility.FormatAmountWithTwoDecimal(0),
                     rateType.RateTypeCode,
                     roomType.RoomTypeCode,
                     colorClass));

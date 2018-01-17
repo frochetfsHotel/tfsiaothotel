@@ -36,9 +36,9 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetCity(int stateId)
+        public ActionResult GetCity(int? countryId, int? stateId)
         {
-            var cityList = new SelectList(cityRepository.GetCities(stateId), "Id", "Name").ToList();
+            var cityList = new SelectList(cityRepository.GetCities(countryId, stateId), "Id", "Name").ToList();
 
             if (cityList != null && cityList.Count() > 0)
                 return Json(new { IsSuccess = true, data = cityList.ToList() }, JsonRequestBehavior.AllowGet);

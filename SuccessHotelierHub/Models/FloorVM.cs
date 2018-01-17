@@ -7,21 +7,17 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class CityVM
+    public class FloorVM
     {
-        public int Id { get; set; }
-
-        [DisplayName("Country")]
-        [Required(ErrorMessage = "Please select country.")]
-        public int? CountryId { get; set; }
-
-        [DisplayName("State")]
-        //[Required(ErrorMessage = "Please select state.")]
-        public int? StateId { get; set; }
+        public Guid Id { get; set; }
 
         [DisplayName("Name")]
-        [Required(ErrorMessage = "Please enter name.")]
+        [Required(ErrorMessage = "Please enter floor name.")]
         public string Name { get; set; }
+
+        [DisplayName("Code")]
+        [Required(ErrorMessage = "Please enter code.")]
+        public string Code { get; set; }
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

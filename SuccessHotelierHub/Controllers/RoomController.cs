@@ -14,6 +14,7 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration 
 
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
+        private FloorRepository floorRepository = new FloorRepository();
         private RoomRepository roomRepository = new RoomRepository();
         private RoomStatusRepository roomStatusRepository = new RoomStatusRepository();
 
@@ -36,11 +37,11 @@ namespace SuccessHotelierHub.Controllers
 
             if (roomType != null)
             {
-                var roomList = roomRepository.GetRoomByRoomTypeId(roomType.Id);
-                var roomStatusList = roomStatusRepository.GetRoomStatus();
+                var roomList = roomRepository.GetRoomByRoomTypeId(roomType.Id);                
+                var floorList = floorRepository.GetFloors();
 
-                ViewBag.RoomList = roomList;
-                ViewBag.RoomStatusList = roomStatusList;
+                ViewBag.RoomList = roomList;                
+                ViewBag.FloorList = floorList;
                 ViewBag.NoOfRooms = roomType.NoOfRooms;
 
                 return PartialView("_RoomList");
@@ -113,6 +114,22 @@ namespace SuccessHotelierHub.Controllers
                     foreach (var room in models)
                     {
                         room.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        #region Check Room No Available.
+
+                        if (this.CheckRoomNoAvailable(room.Id, room.RoomNo) == false)
+                        {
+                            return Json(new
+                            {
+                                IsSuccess = false,
+                                errorMessage = string.Format("Room No : {0} already exist.", room.RoomNo)
+                            }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        #endregion
+
+                        room.StatusId = Guid.Parse(RoomStatusType.CLEAN);
+
                         roomId = roomRepository.UpdateRoom(room);
                     }
 
@@ -170,10 +187,10 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
-                var roomStatusList = new SelectList(roomStatusRepository.GetRoomStatus(), "Id", "Name");
+                var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
 
                 ViewBag.RoomTypeList = roomTypeList;
-                ViewBag.RoomStatusList = roomStatusList;
+                ViewBag.FloorList = floorList;
 
                 RoomVM model = new RoomVM();
                 model.IsActive = true;
@@ -181,17 +198,6 @@ namespace SuccessHotelierHub.Controllers
                 if (roomTypeId.HasValue)
                 {
                     model.RoomTypeId = roomTypeId.Value;
-
-                    var rooms = roomRepository.GetRoomByRoomTypeId(roomTypeId.Value);
-                    var lastAddedRoom = rooms.OrderByDescending(i => i.CreatedOn).FirstOrDefault();
-
-                    if (lastAddedRoom != null)
-                    {
-                        int roomNo = 0;
-                        int.TryParse(lastAddedRoom.RoomNo, out roomNo);
-                        roomNo = (roomNo + 1);
-                        model.RoomNo = roomNo.ToString();
-                    }
                 }
 
                 return PartialView("_AddRoom", model);
@@ -215,6 +221,20 @@ namespace SuccessHotelierHub.Controllers
                 string roomId = string.Empty;
                 model.CreatedBy = LogInManager.LoggedInUserId;
 
+                #region Check Room No Available.
+
+                if (this.CheckRoomNoAvailable(model.Id, model.RoomNo) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Room No : {0} already exist.", model.RoomNo)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                model.StatusId = Guid.Parse(RoomStatusType.CLEAN);
                 roomId = roomRepository.AddRoom(model);
 
                 if (!string.IsNullOrWhiteSpace(roomId))
@@ -259,6 +279,20 @@ namespace SuccessHotelierHub.Controllers
                     errorMessage = e.Message
                 });
             }
+        }
+
+        public bool CheckRoomNoAvailable(Guid? roomId, string roomNo)
+        {
+            bool blnAvailable = true;
+
+            var room = roomRepository.CheckRoomNoAvailable(roomId, roomNo);
+
+            if (room.Any())
+            {
+                blnAvailable = false;
+            }
+
+            return blnAvailable;
         }
 
         #endregion

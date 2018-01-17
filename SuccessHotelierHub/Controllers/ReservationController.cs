@@ -18,6 +18,7 @@ namespace SuccessHotelierHub.Controllers
         private ProfileRepository profileRepository = new ProfileRepository();
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
+        private FloorRepository floorRepository = new FloorRepository();
         private RoomRepository roomRepository = new RoomRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
         private CountryRepository countryRepository = new CountryRepository();
@@ -730,8 +731,10 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult RoomPlan()
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+            var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
 
             ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.FloorList = floorList;
 
             return View();
         }
@@ -741,17 +744,19 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var roomDetails = roomRepository.GetRoomDetailsForRoomPlan(model.RoomTypeId, model.Rooms);
-                ViewBag.RoomDetail = roomDetails;
-                
+                string startDate = "", endDate = "";
+                string firstDate = "", lastDate = "", nextDate = "", prevDate = "";
                 List<RoomPlanDateRangeVM> dates = new List<RoomPlanDateRangeVM>();
 
-                string firstDate = "", lastDate = "", nextDate = "", prevDate = "";
                 if (model.StartDate.HasValue)
                 {
-                    DateTime endDate = model.StartDate.Value.AddDays(6);
+                    
+                    DateTime dtEndDate = model.StartDate.Value.AddDays(6);
 
-                    for (DateTime dt = model.StartDate.Value; dt <= endDate; dt = dt.AddDays(1))
+                    startDate = model.StartDate.Value.ToString("MM/dd/yyyy");
+                    endDate = dtEndDate.ToString("MM/dd/yyyy");
+                    
+                    for (DateTime dt = model.StartDate.Value; dt <= dtEndDate; dt = dt.AddDays(1))
                     {
                         dates.Add(new RoomPlanDateRangeVM()
                         {
@@ -766,18 +771,56 @@ namespace SuccessHotelierHub.Controllers
                     firstDate = firstDayOfMonth.ToString("dd/MM/yyyy");
                     lastDate = firstDayOfMonth.AddMonths(1).AddDays(-1).ToString("dd/MM/yyyy");
 
-                    nextDate = endDate.AddDays(1).ToString("dd/MM/yyyy");
+                    nextDate = dtEndDate.AddDays(1).ToString("dd/MM/yyyy");
                     prevDate = model.StartDate.Value.AddDays(-7).ToString("dd/MM/yyyy");
                 }
 
-                ViewBag.Dates = dates;
+                var roomDetails = roomRepository.GetRoomDetailsForRoomPlan(model.RoomTypeId, model.Rooms, startDate, endDate);
+                ViewBag.RoomDetail = roomDetails;
 
+                ViewBag.Dates = dates;
                 ViewBag.FirstDate = firstDate;
                 ViewBag.LastDate = lastDate;
                 ViewBag.NextDate = nextDate;
                 ViewBag.PrevDate = prevDate;
 
                 return PartialView("_RoomPlanView");
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ChangeRoomAllocation(Guid reservationId, Guid roomId, DateTime? arrivalDate, DateTime? departureDate)
+        {
+            try
+            {
+                string id = string.Empty;
+
+                //Change Room Allocation.
+                id = reservationRepository.ChangeRoomAllocation(reservationId, roomId, arrivalDate, departureDate, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(id))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            ReservationId = id
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Room Allocation not changed successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
             catch (Exception e)
             {

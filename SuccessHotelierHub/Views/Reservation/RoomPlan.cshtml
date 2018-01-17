@@ -19,12 +19,6 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Room Plan</h3>
-            @*<div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                    <i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-            </div>*@
         </div>
 
         @using (Html.BeginForm("RoomPlan", "Reservation", FormMethod.Post, new { id = "frmRoomPlan", enctype = "multipart/form-data" }))
@@ -72,7 +66,7 @@
                                 <div class="clearfix"></div>
                             </div>
                             <div class="row">
-                                <div class="col-md-offset-3 col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
                                     @Html.LabelFor(m => m.RoomClassId)
                                     @Html.DropDownListFor(m => m.RoomClassId, new List<SelectListItem>
                                     {
@@ -85,17 +79,19 @@
                                 </div>
                                 <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
                                     @Html.LabelFor(m => m.FloorId)
-                                    @Html.DropDownListFor(m => m.FloorId, new List<SelectListItem>
-                                    {
-                                        new SelectListItem{ Text="Select Floor", Value = "" },
-                                        new SelectListItem{ Text="Floor 1", Value = "F15C97B6-4FC0-4AB7-A32D-D98961B8F848" },
-                                        new SelectListItem{ Text="Floor 2", Value = "F15C97B6-4FC0-4AB7-A32D-D94861B9F749" },
-                                        new SelectListItem{ Text="Floor 3", Value = "F15C97B6-4FC0-4AB7-A32D-G92061B0F530" },
-                                    }, htmlAttributes: new { @class = "form-control" })
+                                    @Html.DropDownListFor(m => m.FloorId,
+                                            new SelectList((IEnumerable<SelectListItem>)ViewBag.FloorList, 
+                                                "Value", "Text"),
+                                            "Select Floor",
+                                            new { @class = "form-control" })
                                 </div>
                                 <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
                                     @Html.LabelFor(m => m.Smoking)
                                     @Html.TextBoxFor(m => m.Smoking, new { @class = "form-control" })
+                                </div>
+                                <div class="col-md-3 col-sm-4 col-xs-12 padding-zero form-group text-right m-t-lg">
+                                    <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="search();">Search</button>
+                                    <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomPlanData();">Clear</button>
                                 </div>
                             </div>
                         </div>
@@ -119,12 +115,6 @@
                             </div>
                         </div>
                         <div class="clearfix"></div>
-                        <div class="col-xs-12 padding-zero">
-                            <div class="pull-right m-t">
-                                <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="search();">Search</button>
-                                <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomPlanData();">Clear</button>
-                            </div>
-                        </div>
                     </div>
                     <div class="clearfix"></div>
                 </div>

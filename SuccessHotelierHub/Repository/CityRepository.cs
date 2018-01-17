@@ -12,11 +12,12 @@ namespace SuccessHotelierHub.Repository
     {
         #region City
 
-        public List<CityVM> GetCities(int? stateId)
+        public List<CityVM> GetCities(int? countryId, int? stateId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@StateId", Value = stateId }
+                    new SqlParameter { ParameterName = "@StateId", Value = stateId },
+                    new SqlParameter { ParameterName = "@CountryId", Value = countryId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetCities", parameters);
@@ -48,6 +49,7 @@ namespace SuccessHotelierHub.Repository
 
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@CountryId", Value = city.CountryId},
                     new SqlParameter { ParameterName = "@StateId", Value = city.StateId },                    
                     new SqlParameter { ParameterName = "@Name", Value = city.Name },
                     new SqlParameter { ParameterName = "@IsActive", Value = city.IsActive },
@@ -64,8 +66,9 @@ namespace SuccessHotelierHub.Repository
             string cityId = string.Empty;
 
             SqlParameter[] parameters =
-                {
+                {   
                     new SqlParameter { ParameterName = "@Id", Value = city.Id },
+                    new SqlParameter { ParameterName = "@CountryId", Value = city.CountryId},
                     new SqlParameter { ParameterName = "@StateId", Value = city.StateId },
                     new SqlParameter { ParameterName = "@Name", Value = city.Name },
                     new SqlParameter { ParameterName = "@IsActive", Value = city.IsActive },

@@ -106,6 +106,22 @@ namespace SuccessHotelierHub.Repository
             return countries;
         }
 
+        public List<CountryVM> CheckCountryCodeAvailable(int? id, string code)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@Code", Value = code }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckCountryCodeAvailable", parameters);
+
+            var country = new List<CountryVM>();
+            country = DALHelper.CreateListFromTable<CountryVM>(dt);
+
+            return country;
+        }
+
         #endregion
     }
 }

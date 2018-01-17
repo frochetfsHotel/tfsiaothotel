@@ -89,6 +89,7 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript">
+    var selectedRooms = [];
 
     $(document).ready(function () {
         $("form#frmAdvanceRoomSearch select").change(function () {
@@ -102,11 +103,41 @@
         });
     });
 
+    function BindCheckBoxRoomChangeEvent() {
+        $(".chkRoom").change(function () {            
+            if (this.checked) {
+                selectedRooms.push($(this).attr("id"));
+
+                checkRecentlySelectedRoomCheckbox();
+            }
+        });
+    }
     
     function onSelectRoom(element) {
         var isChecked = $('#' + element).prop("checked");
 
-        $('#' + element).prop("checked", !isChecked);
+        $('#' + element).prop("checked", !isChecked).trigger("change");        
+    }
+
+    function checkRecentlySelectedRoomCheckbox() {
+        var noOfRoomsUptoSelect = $('#hdnNoOfRoomsUptoSelect').val();
+
+        if (selectedRooms != null && selectedRooms.length > 0) {
+            if (selectedRooms.length >= noOfRoomsUptoSelect) {
+                //Uncheck all the checkboxes.
+                $('.chkRoom').prop("checked", false);
+
+                var count = 0;
+                for (i = selectedRooms.length - 1; i >= 0; i--) {
+                    $('#' + selectedRooms[i]).prop("checked", true);
+                    count = count + 1;
+
+                    if (count == noOfRoomsUptoSelect) {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     function searchRoom() {
@@ -116,6 +147,9 @@
         if (!IsNullOrEmpty(selectedRoomIds)) {
             selectedRoomIdsArr = selectedRoomIds.split(Delimeter.COMMA);
         }
+        
+        //Clear array
+        selectedRooms = [];
 
         $.ajax({
             beforeSend: function (xhr) {
@@ -158,10 +192,12 @@
                             if (selectedRoomIdsArr != null && selectedRoomIdsArr.length > 0) {                                
                                 if (arrayContains(result[i].RoomId, selectedRoomIdsArr) == true) {
                                     checked = "checked";
+
+                                    selectedRooms.push("chkRoom_" + result[i].RoomId);
                                 }
                             }
 
-                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + "/> <span class=\'checkmark\'></span></label></td>";
+                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " /> <span class=\'checkmark\'></span></label></td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomNo + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Type + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomTypeCode + "</td>";
@@ -177,6 +213,8 @@
                     }
 
                     tbody.append(markup);
+
+                    BindCheckBoxRoomChangeEvent();
                 }
             }
         });

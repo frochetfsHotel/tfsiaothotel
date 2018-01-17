@@ -169,7 +169,10 @@
             {
                 targets: 3,
                 data: "Amount",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return FormatNumberWithTwoDecimal(full.Amount);
+                }
             },
             {
                 targets: 4,
