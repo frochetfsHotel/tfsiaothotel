@@ -8687,3 +8687,298 @@ WHERE (MarketId = 'F15C97B6-4FC0-4AB7-A32D-D95261B8F944' OR MarketId = 'F15C97B6
 
 ALTER TABLE [dbo].[Reservation] WITH NOCHECK
 	ADD CONSTRAINT [FK_Reservation_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[Market] ([Id]);
+	
+/*******************************************************************************************************************
+	SP Name : GetAdditionalChargesByCode
+	Comment : Changes in SP GetAdditionalChargesByCode
+	
+*******************************************************************************************************************/
+	
+	
+/****** Object:  StoredProcedure [dbo].[GetAdditionalChargesByCode]    Script Date: 1/18/2018 7:01:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetAdditionalChargesByCode]
+	@Code NVARCHAR(25) = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[AdditionalCharges]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Code = @Code
+		ORDER BY [Description]
+END
+
+/*******************************************************************************************************************
+	SP Name : GetAdditionalChargesById
+	Comment : Changes in SP GetAdditionalChargesById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetAdditionalChargesById]    Script Date: 1/18/2018 7:02:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetAdditionalChargesById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[AdditionalCharges]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Description]
+END
+
+/*******************************************************************************************************************
+	SP Name : GetIndividualProfileById
+	Comment : Changes in SP GetIndividualProfileById
+	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[GetIndividualProfileById]    Script Date: 1/18/2018 7:02:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetIndividualProfileById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[IndividualProfile]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetPreferenceById
+	Comment : Changes in SP GetPreferenceById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetPreferenceById]    Script Date: 1/18/2018 7:03:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetPreferenceById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Preferences]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Description]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetPreferenceGroupById
+	Comment : Changes in SP GetPreferenceGroupById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetPreferenceGroupById]    Script Date: 1/18/2018 7:03:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetPreferenceGroupById]	
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[PreferenceGroup]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetRateTypeById
+	Comment : Changes in SP GetRateTypeById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRateTypeById]    Script Date: 1/18/2018 7:04:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetRateTypeById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RateType]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [RateTypeCode]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationById
+	Comment : Changes in SP GetReservationById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationById]    Script Date: 1/18/2018 7:05:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Reservation]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationCancellationReasonById
+	Comment : Changes in SP GetReservationCancellationReasonById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCancellationReasonById]    Script Date: 1/18/2018 7:05:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationCancellationReasonById]
+	@Id UNIQUEIDENTIFIER =  NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationCancellationReasons]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Code]
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationChargesById
+	Comment : Changes in SP GetReservationChargesById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationChargesById]    Script Date: 1/18/2018 7:05:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationChargesById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.*
+		FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (RC.Id = @Id)							
+		ORDER BY RC.CreatedOn DESC
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetRoomById
+	Comment : Changes in SP GetRoomById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomById]    Script Date: 1/18/2018 7:06:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetRoomById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Room]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY TRY_PARSE([RoomNo] AS INT)
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetRoomTypeById
+	Comment : Changes in SP GetRoomTypeById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomTypeById]    Script Date: 1/18/2018 7:08:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetRoomTypeById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RoomType]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [RoomTypeCode]
+END
+
+/*******************************************************************************************************************
+	SP Name : GetRoomTypeRateTypeMappingId
+	Comment : Changes in SP GetRoomTypeRateTypeMappingId
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomTypeRateTypeMappingId]    Script Date: 1/18/2018 7:08:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetRoomTypeRateTypeMappingId]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RoomTypeRateTypeMapping]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [CreatedOn]
+END
+
