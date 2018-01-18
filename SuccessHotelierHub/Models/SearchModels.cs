@@ -478,6 +478,7 @@ namespace SuccessHotelierHub.Models
         public Guid? RoomTypeId { get; set; }
         public Guid? RateTypeId { get; set; }
         public double Amount { get; set; }
+        public bool IsWeekEndPrice { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }

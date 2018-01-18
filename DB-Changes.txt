@@ -7398,3 +7398,364 @@ END
 Name : Nilesh
 Date : 18-JAN-2018
 
+/************ Add new column IsWeekEndPrice **********/
+ALTER TABLE RoomTypeRateTypeMapping ADD IsWeekEndPrice BIT NULL
+GO
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddRoomTypeRateTypeMapping
+	Comment : Changes in SP AddRoomTypeRateTypeMapping
+	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[AddRoomTypeRateTypeMapping]    Script Date: 1/18/2018 1:52:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddRoomTypeRateTypeMapping]
+	@RoomTypeId		UNIQUEIDENTIFIER			,
+	@RateTypeId		UNIQUEIDENTIFIER			,
+	@Description	NVARCHAR(500)		= NULL	,
+	@Amount			DECIMAL(18,2)				,	
+	@IsWeekEndPrice	BIT					= NULL	,
+	@IsActive		BIT					= NULL	,	
+	@CreatedBy		INT					= NULL
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[RoomTypeRateTypeMapping]
+           ([Id]
+           ,[RoomTypeId]
+		   ,[RateTypeId]
+           ,[Description]
+		   ,[Amount]
+		   ,[IsWeekEndPrice]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@RoomTypeId
+			   ,@RateTypeId
+			   ,@Description
+			   ,@Amount
+			   ,@IsWeekEndPrice
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateRoomTypeRateTypeMapping
+	Comment : Changes in SP UpdateRoomTypeRateTypeMapping
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateRoomTypeRateTypeMapping]    Script Date: 1/18/2018 1:52:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateRoomTypeRateTypeMapping]
+	@Id				UNIQUEIDENTIFIER				,
+	@RoomTypeId		UNIQUEIDENTIFIER				,
+	@RateTypeId		UNIQUEIDENTIFIER				,	
+	@Description	NVARCHAR(500)		=	NULL	,	
+	@Amount			DECIMAL(18,2)					,	
+	@IsWeekEndPrice	BIT					=	NULL	,
+	@IsActive		BIT								,
+	@UpdatedBy		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[RoomTypeRateTypeMapping] 
+		SET	[RoomTypeId]		=	@RoomTypeId
+		   ,[RateTypeId]		=	@RateTypeId
+           ,[Description]		=	@Description
+		   ,[Amount]			=	@Amount
+		   ,[IsWeekEndPrice]	=	@IsWeekEndPrice
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[IsActive]			=	@IsActive
+		   ,[UpdatedOn]			=	GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchRoomTypeRateTypeMapping
+	Comment : Changes in SP SearchRoomTypeRateTypeMapping
+	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[SearchRoomTypeRateTypeMapping]    Script Date: 1/18/2018 2:01:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchRoomTypeRateTypeMapping] NULL,NULL, NULL, NULL, 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchRoomTypeRateTypeMapping]		
+	@RoomTypeId		UNIQUEIDENTIFIER	=	NULL	,
+	@RateTypeId		UNIQUEIDENTIFIER	=	NULL	,		
+	@Amount			DECIMAL(18,2)		=	NULL	,
+	@IsWeekEndPrice	BIT					=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempRoomTypeRateTypeMapping
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL
+		,	[RoomTypeId]	UNIQUEIDENTIFIER	NULL
+		,   [RoomTypeCode]	NVARCHAR(50)		NULL
+		,	[RateTypeId]	UNIQUEIDENTIFIER	NULL
+		,   [RateTypeCode]	NVARCHAR(50)		NULL
+		,   [Description]	NVARCHAR(1000)		NULL
+		,   [Amount]		DECIMAL(18,2)		NULL
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT RTRTM.Id) 
+						FROM [dbo].[RoomTypeRateTypeMapping] RTRTM
+							INNER JOIN [dbo].[RoomType] ROT 
+								ON ROT.Id = RTRTM.RoomTypeId AND ISNULL(ROT.IsDeleted,0) = 0
+							INNER JOIN [dbo].RateType RAT 
+								ON RAT.Id = RTRTM.RateTypeId AND ISNULL(RAT.IsDeleted,0) = 0
+						WHERE	ISNULL(RTRTM.IsDeleted,0) = 0
+								AND (@RoomTypeId IS NULL OR RTRTM.RoomTypeId = @RoomTypeId)  
+								AND (@RateTypeId IS NULL OR RTRTM.RateTypeId = @RateTypeId)  
+								AND (ISNULL(@Amount,0) = 0 OR RTRTM.Amount = @Amount)
+								AND ISNULL(RTRTM.IsWeekEndPrice,0) = ISNULL(@IsWeekEndPrice,0)
+						)
+
+
+		INSERT INTO #tempRoomTypeRateTypeMapping 
+				([RowNum], [Id], [RoomTypeId], [RoomTypeCode], [RateTypeId], [RateTypeCode],
+					[Description], [Amount], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN RTRTM.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN RTRTM.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'asc'
+							THEN ROT.[RoomTypeCode] END ASC,
+						CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'desc'
+							THEN ROT.[RoomTypeCode] END DESC,
+
+						CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+							THEN RAT.[RateTypeCode] END ASC,
+						CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+							THEN RAT.[RateTypeCode] END DESC,
+
+						CASE WHEN @SortColumn = 'Amount' and @SortDirection = 'asc'
+							THEN RTRTM.[Amount] END ASC,
+						CASE WHEN @SortColumn = 'Amount' and @SortDirection = 'desc'
+							THEN RTRTM.[Amount] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN RTRTM.[CreatedOn] END DESC
+
+				) AS RowNum,
+				RTRTM.[ID],
+				ROT.Id AS RoomTypeId,
+				ROT.[RoomTypeCode],
+				RAT.Id AS RateTypeId,
+				RAT.[RateTypeCode],
+				RTRTM.[Description],
+				RTRTM.[Amount],
+				RTRTM.[CreatedOn],
+				RTRTM.[IsActive]
+			FROM [dbo].[RoomTypeRateTypeMapping] RTRTM
+				INNER JOIN [dbo].[RoomType] ROT ON ROT.Id = RTRTM.RoomTypeId AND ISNULL(ROT.IsDeleted,0) = 0
+				INNER JOIN [dbo].RateType RAT ON RAT.Id = RTRTM.RateTypeId AND ISNULL(RAT.IsDeleted,0) = 0
+				WHERE	ISNULL(RTRTM.IsDeleted,0) = 0
+						AND (@RoomTypeId IS NULL OR RTRTM.RoomTypeId = @RoomTypeId)  
+						AND (@RateTypeId IS NULL OR RTRTM.RateTypeId = @RateTypeId)  
+						AND (ISNULL(@Amount,0) = 0 OR RTRTM.Amount = @Amount)
+						AND ISNULL(RTRTM.IsWeekEndPrice,0) = ISNULL(@IsWeekEndPrice,0)
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum]		,
+			temp.[Id]			,						
+			temp.[RoomTypeId]	,
+			temp.[RoomTypeCode]	,
+			temp.[RateTypeId]	,
+			temp.[RateTypeCode]	,
+			temp.[Description]	,
+			temp.[Amount]		,
+			temp.[CreatedOn]	,	
+			temp.[IsActive]		,
+			@TotalCount AS TotalCount
+	FROM	#tempRoomTypeRateTypeMapping AS temp
+	WHERE	temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : CheckRoomTypeRateTypeMappingAvailable
+	Comment : Changes in SP CheckRoomTypeRateTypeMappingAvailable
+	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[CheckRoomTypeRateTypeMappingAvailable]    Script Date: 1/18/2018 1:55:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckRoomTypeRateTypeMappingAvailable] 
+		@Id = 'DB45342E-A543-41F5-8021-682900548B6F',
+		@RoomTypeId = 'E4D83BCE-DAB2-457A-98DA-2250C2ED6081',
+		@RateTypeId = '83DC25DC-5D62-4CFB-A05B-8C17C9BF7E65',
+		@IsWeekEndPrice	= NULL
+		
+*/
+
+ALTER PROCEDURE [dbo].[CheckRoomTypeRateTypeMappingAvailable]
+	@Id				UNIQUEIDENTIFIER	=	NULL,
+	@RoomTypeId		UNIQUEIDENTIFIER			,
+	@RateTypeId		UNIQUEIDENTIFIER			,
+	@IsWeekEndPrice	BIT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [RoomTypeRateTypeMapping] 
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND RoomTypeId = @RoomTypeId
+				AND RateTypeId = @RateTypeId
+				AND ISNULL(IsWeekEndPrice,0) = ISNULL(@IsWeekEndPrice,0)
+				
+		ORDER BY CreatedOn
+END
+
+
+/***************** Add WeekEndPrice Data ****/
+
+INSERT INTO [RoomTypeRateTypeMapping] ([Id],[RoomTypeId],[RateTypeId],[Amount],[IsActive],[CreatedBy],[CreatedOn],[IsWeekEndPrice])
+
+SELECT NEWID() AS Id, RoomTypeId, RateTypeId, Amount, 1 AS [IsActive], 1 AS [CreatedBy], 
+GETDATE() AS [CreatedOn], 1 AS [IsWeekEndPrice]
+ FROM [RoomTypeRateTypeMapping] WHERE ISNULL(IsDeleted,0) = 0 
+AND ISNULL(IsWeekEndPrice,0) = 0
+
+
+/*******************************************************************************************************************
+	SP Name : GetRateSheetDetail
+	Comment : Changes in SP GetRateSheetDetail
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRateSheetDetail]    Script Date: 1/18/2018 2:18:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetRateSheetDetail] 
+		@RateTypeId = '0853E143-6F2B-48CC-B322-4714142D9A00',
+		@RoomTypeId = '488FE9ED-4AA6-45D9-88F6-67FE6D5886D6',
+		@IsShowWeekEndPrice = 0
+*/
+ALTER PROCEDURE [dbo].[GetRateSheetDetail]
+	@RateTypeId				UNIQUEIDENTIFIER,
+	@RoomTypeId				UNIQUEIDENTIFIER,
+	@IsShowWeekEndPrice		BIT = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Amount AS DECIMAL(10,2)
+	SET @Amount = 0
+
+	CREATE TABLE #tempRoomTypeRateTypeMapping
+	(
+		Id				UNIQUEIDENTIFIER	NULL,
+		RoomTypeId		UNIQUEIDENTIFIER	NULL,
+		RateTypeId		UNIQUEIDENTIFIER	NULL,
+		Amount			DECIMAL(18,2)		NULL,
+		[Description]	NVARCHAR(1000)		NULL
+	) 
+
+	IF ISNULL(@IsShowWeekEndPrice,0) = 0
+	BEGIN
+		--1.) Get amount from mapping table. (Show WeekDay Price)
+			INSERT INTO #tempRoomTypeRateTypeMapping (Id, RoomTypeId, RateTypeId, Amount, [Description])
+			SELECT TOP 1 RTRTM.Id, RTRTM.RoomTypeId, RTRTM.RateTypeId, ISNULL(RTRTM.Amount,0) AS Amount, RTRTM.[Description]
+			FROM [RoomTypeRateTypeMapping] RTRTM 
+			WHERE	ISNULL(IsDeleted,0) = 0 AND ISNULL(IsActive,0) = 1
+					AND RTRTM.RateTypeId = @RateTypeId 
+					AND RTRTM.RoomTypeId = @RoomTypeId
+					AND ISNULL(IsWeekEndPrice,0) = 0
+			ORDER BY CreatedOn DESC
+		--END
+	END
+	ELSE
+	BEGIN
+
+		--2.) Get amount from mapping table. (Show WeekEnd Price)
+		INSERT INTO #tempRoomTypeRateTypeMapping (Id, RoomTypeId, RateTypeId, Amount, [Description])
+		SELECT TOP 1 RTRTM.Id, RTRTM.RoomTypeId, RTRTM.RateTypeId, ISNULL(RTRTM.Amount,0) AS Amount, RTRTM.[Description]
+		FROM [RoomTypeRateTypeMapping] RTRTM 
+		WHERE	ISNULL(IsDeleted,0) = 0 AND ISNULL(IsActive,0) = 1
+				AND RTRTM.RateTypeId = @RateTypeId 
+				AND RTRTM.RoomTypeId = @RoomTypeId
+				AND ISNULL(IsWeekEndPrice,0) = 1
+		ORDER BY CreatedOn DESC
+		
+	END
+
+
+	SELECT * FROM #tempRoomTypeRateTypeMapping
+END
+
+

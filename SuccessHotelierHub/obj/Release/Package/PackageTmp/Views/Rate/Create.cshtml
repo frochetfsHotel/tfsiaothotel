@@ -1,6 +1,17 @@
 ﻿@model SuccessHotelierHub.Models.RoomTypeRateTypeMappingVM
 @{
     ViewBag.Title = "Create Rate";
+
+    var sourceParam = Convert.ToString(Request.QueryString["source"]);
+    var btnCancelUrl = Url.Action("List", "Rate");
+
+    if (!string.IsNullOrWhiteSpace(sourceParam))
+    {
+        if (sourceParam == "WeekDayPrice")
+        {
+            btnCancelUrl = Url.Action("ManagePrice", "Rate");
+        }
+    }
 }
 
 
@@ -22,6 +33,10 @@
         @using (Html.BeginForm("Create", "Rate", FormMethod.Post, new { id = "frmRate", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            <input type="hidden" id="Source" name="Source" value="@sourceParam" />
+            <!--HIDDEN FIELD-->
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
@@ -64,7 +79,7 @@
             </div>
             <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return saveRate();">Save</button>
-                <a href="@Url.Action("List", "Rate")" c class="btn btn-danger">Cancel</a>
+                <a href="@btnCancelUrl" c class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
@@ -110,9 +125,13 @@
                     else {
                         showToaster("Rate details saved successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/Rate/List")');
-                        }, 1000);
+                        if (response.IsExternalUrl) {
+                            redirectTo(response.data);
+                        } else {
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/Rate/List")');
+                            }, 1000);
+                        }
                     }
                 }
             });

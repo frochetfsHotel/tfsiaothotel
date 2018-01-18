@@ -683,7 +683,7 @@ namespace SuccessHotelierHub.Controllers
 
                 if (model.ArrivalDate.HasValue)
                 {
-                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Friday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Sunday)
+                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Monday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Sunday)
                     {
                         blnShowWeekEndPrice = true;
                     }

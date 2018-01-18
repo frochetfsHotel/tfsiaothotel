@@ -37,6 +37,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateTypeId", Value = model.RateTypeId },
                     new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@Amount", Value = model.Amount },
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = model.IsWeekEndPrice },
                     new SqlParameter { ParameterName = "@IsActive", Value = model.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy }
                 };
@@ -57,6 +58,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateTypeId", Value = model.RateTypeId },
                     new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@Amount", Value = model.Amount },
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = model.IsWeekEndPrice },
                     new SqlParameter { ParameterName = "@IsActive", Value = model.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
                 };
@@ -90,6 +92,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Amount", Value = model.Amount },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = model.IsWeekEndPrice },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
                     new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
                 };
@@ -102,13 +105,14 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
-        public List<RoomTypeRateTypeMappingVM> CheckRoomTypeRateTypeMappingAvailable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId )
+        public List<RoomTypeRateTypeMappingVM> CheckRoomTypeRateTypeMappingAvailable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId, bool isWeekEndPrice)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@Id", Value = mappingId },
                     new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
-                    new SqlParameter { ParameterName = "@RateTypeId", Value = ratetypeId }
+                    new SqlParameter { ParameterName = "@RateTypeId", Value = ratetypeId },
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = isWeekEndPrice }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckRoomTypeRateTypeMappingAvailable", parameters);

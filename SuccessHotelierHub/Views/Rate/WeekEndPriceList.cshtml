@@ -1,50 +1,62 @@
-﻿@model SuccessHotelierHub.Models.SearchRateTypeParametersVM
+﻿@model SuccessHotelierHub.Models.SearchRoomTypeRateTypeMappingParametersVM
 @{
-    ViewBag.Title = "Search Rate Type";
+    var roomTypeList = (SelectList)ViewData["RoomTypeList"];
+    var ratetypeList = (SelectList)ViewData["RatetypeList"];
 }
-
-
 @{
-    var PagerName = "RateTypeGrid";
+    var PagerName = "WeekEndPriceGrid";
 }
-
 
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search Rate Type &nbsp; &nbsp;<small>(Week End Price)</small></h3>
+            <h3 class="box-title">Search Week End Price</h3>
             <div class="pull-right box-tools">
-                <a href="@Url.Content("~/RateType/Create?source=WeekEndPrice")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add Rate Type</a>
+                <a href="@Url.Content("~/Rate/Create?source=WeekEndPrice")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Week End Price</a>
             </div>
         </div>
-        <form class="frmRateTypeList" enctype="multipart/form-data" method="post">
+        <form class="frmWeekEndPriceList" id="frmWeekEndPriceList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="searchbox_padding searchBox_Border">
                     <div class="col-xs-12 padding-zero">
                         <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
-                            <label for="RateTypeCode" class="">Rate Type Code</label>
-                            @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
+                            <label for="RoomTypeId" class="">Room Type</label>
+                            @Html.DropDownListFor(m => m.RoomTypeId,
+                                            new SelectList((IEnumerable<SelectListItem>)roomTypeList, "Value", "Text"),
+                                            "Select Room Type",
+                                            new { @class = "form-control form-group" })
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                            <label for="RateTypeId" class="">Rate Type</label>
+                            @Html.DropDownListFor(m => m.RateTypeId,
+                                            new SelectList((IEnumerable<SelectListItem>)ratetypeList, "Value", "Text"),
+                                            "Select Rate Type",
+                                            new { @class = "form-control form-group" })
                         </div>
                         <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
                             <label for="Amount" class="">Amount</label>
                             @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount" })
                         </div>
-                        <div class="col-md-3 col-sm-4 col-xs-12 mt_25 form-group">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRateType()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRateType()">Clear</button>
+                        <div class="col-md-3 col-sm-4 col-xs-12 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchWeekEndPrice()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearWeekEndPrice()">Clear</button>
                         </div>
+
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                <div class="col-xs-12 padding-zero m-t">
+
+
+                <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped table-width" id="tblRateTypes">
+                        <table class="table table-bordered table-hover table-striped table-width" id="tblWeekEndPrice">
                             <thead>
                                 <tr>
                                     <th>CreatedOn</th>
+                                    <th>Room Type Code</th>
                                     <th>Rate Type Code</th>
-                                    <th>Description</th>
+                                    <th width="40%">Description</th>
                                     <th>Amount</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -54,7 +66,7 @@
                     </div>
                     <div class="clearfix"></div>
                     <div class="text-left">
-                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RateTypeGridPageChange" })
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "WeekEndPriceGridPageChange" })
                     </div>
                 </div>
             </div>
@@ -65,30 +77,32 @@
 
 <script type="text/javascript">
     var currentPage = 1;
-    var grdRateType;
+    var grdWeekEndPrice;
 
     $(document).ready(function () {
-        setTimeout(InitializeRateTypeGrid, 200);
+        setTimeout(InitializeWeekEndPriceGrid, 200);
 
         $("input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
-                $("#btnSearch").click();
+                $("form#frmWeekEndPriceList #btnSearch").click();
             }
         });
     });
 
 
-    function SearchRateTypeParameters(d) {
-        var rateTypeCode = $('#RateTypeCode').val();
-        var amount = $('#Amount').val();
+    function SearchWeekEndPriceParameters(d) {
+        var rateTypeId = $('form#frmWeekEndPriceList #RateTypeId').val();
+        var roomTypeId = $('form#frmWeekEndPriceList #RoomTypeId').val();
+        var amount = $('form#frmWeekEndPriceList #Amount').val();
 
         d.PageNum = currentPage;
-        d.RateTypeCode = rateTypeCode;
+        d.RateTypeId = rateTypeId;
+        d.RoomTypeId = roomTypeId;
         d.Amount = amount;
-        d.IsWeekEndPrice = false;
+        d.IsWeekEndPrice = true;
     }
 
-    function RateTypeGridDataBound(response) {
+    function WeekEndPriceGridDataBound(response) {
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
             return response.data;
@@ -99,18 +113,18 @@
     }
 
 
-    function ReloadRateTypeGrid() {
-        grdRateType.ajax.url("@Url.Content("~/RateType/Search")").load();
+    function ReloadWeekEndPriceGrid() {
+        grdWeekEndPrice.ajax.url("@Url.Content("~/Rate/Search")").load();
     }
 
-    function RateTypeGridPageChange(cPage) {
+    function WeekEndPriceGridPageChange(cPage) {
         currentPage = cPage;
-        ReloadRateTypeGrid();
+        ReloadWeekEndPriceGrid();
     }
 
 
-    function InitializeRateTypeGrid() {
-        grdRateType = $('#tblRateTypes').DataTable({
+    function InitializeWeekEndPriceGrid() {
+        grdWeekEndPrice = $('#tblWeekEndPrice').DataTable({
             serverSide: true,
             ajax: {
                 beforeSend: function (xhr) {
@@ -122,9 +136,9 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/RateType/Search")',
-                data: SearchRateTypeParameters,
-                dataSrc: RateTypeGridDataBound,
+                url: '@Url.Content("~/Rate/Search")',
+                data: SearchWeekEndPriceParameters,
+                dataSrc: WeekEndPriceGridDataBound,
                 type: "POST"
             },
             scrollCollapse: true,
@@ -146,16 +160,21 @@
             },
             {
                 targets: 1,
-                data: "RateTypeCode",
+                data: "RoomTypeCode",
                 orderable: true
             },
             {
                 targets: 2,
+                data: "RateTypeCode",
+                orderable: true
+            },
+            {
+                targets: 3,
                 data: "Description",
                 orderable: false
             },
             {
-                targets: 3,
+                targets: 4,
                 data: "Amount",
                 orderable: true,
                 render: function (data, type, full, meta) {
@@ -163,7 +182,7 @@
                 }
             },
             {
-                targets: 4,
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -176,15 +195,15 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoRateTypeEdit(\'' + full.Id + '\')" '
+                    return '<a href="javascript:void(0);" onclick="GotoWeekEndPriceEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
                         + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deleteRateType(this,event,\'' + full.Id + '\')">Delete</button>';
+                        + ' onclick="deleteWeekEndPrice(this,event,\'' + full.Id + '\')">Delete</button>';
                 }
             }
             ],
@@ -195,24 +214,25 @@
         })
     }
 
-    function GotoRateTypeEdit(Id) {
-        var url = '@Url.Content("~/RateType/Edit/")' + Id + '?source=WeekEndPrice';
+    function GotoWeekEndPriceEdit(Id) {
+        var url = '@Url.Content("~/Rate/Edit/")' + Id + '?source=WeekEndPrice';
         redirectTo(url);
     }
 
-    function searchRateType() {
+    function searchWeekEndPrice() {
         currentPage = 1;
-        ReloadRateTypeGrid();
+        ReloadWeekEndPriceGrid();
     }
 
-    function clearRateType() {
-        $('#RateTypeCode').val('');
-        $('#Amount').val('');
+    function clearWeekEndPrice() {
+        $('form#frmWeekEndPriceList #RoomTypeId').val('');
+        $('form#frmWeekEndPriceList #RateTypeId').val('');
+        $('form#frmWeekEndPriceList #Amount').val('');
 
-        searchRateType();
+        searchWeekEndPrice();
     }
 
-    function deleteRateType(item, e, id) {
+    function deleteWeekEndPrice(item, e, id) {
 
         swal({
             title: 'Are you sure do you want to delete?',
@@ -234,17 +254,17 @@
                     complete: function () {
                         hideLoader();
                     },
-                    url: '@Url.Content("~/RateType/Delete")',
+                    url: '@Url.Content("~/Rate/Delete")',
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
                         if (response.IsSuccess == true) {
 
-                            var tr = $('#tblRateTypes  tbody tr#' + id)
-                            var row = grdRateType.row(tr);
+                            var tr = $('#tblWeekEndPrice  tbody tr#' + id)
+                            var row = grdWeekEndPrice.row(tr);
                             var rowNode = row.node();
                             row.remove();
-                            grdRateType.draw();
+                            grdWeekEndPrice.draw();
 
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }
@@ -254,9 +274,7 @@
                     }
                 });
             }
-        })
-
+        });
 
     }
 </script>
-

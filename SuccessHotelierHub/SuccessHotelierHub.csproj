@@ -1958,6 +1958,7 @@
     <Content Include="Views\Rate\ManagePrice.cshtml" />
     <Content Include="Views\Rate\WeekDayPriceList.cshtml" />
     <Content Include="Views\RateType\WeekEndPriceList.cshtml" />
+    <Content Include="Views\Rate\WeekEndPriceList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

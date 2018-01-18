@@ -36,12 +36,40 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                string source = string.Empty;
+                string url = string.Empty;
+                string qid = string.Empty;
                 string mappingId = string.Empty;
+
+                model.IsWeekEndPrice = false;
+
+                #region  Check Source Parameters
+                if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                {
+                    source = Convert.ToString(Request.Form["Source"]);
+
+                    if (source == "WeekDayPrice")
+                    {
+                        TempData["TabName"] = "WeekDayPrice";
+                        url = Url.Action("ManagePrice", "Rate");
+                        model.IsWeekEndPrice = false;
+                    }
+                    else if (source == "WeekEndPrice")
+                    {
+                        TempData["TabName"] = "WeekEndPrice";
+                        url = Url.Action("ManagePrice", "Rate");
+
+                        model.IsWeekEndPrice = true;
+                    }
+                }
+                #endregion
+
+                
                 model.CreatedBy = LogInManager.LoggedInUserId;
 
                 #region Check Room Type Rate Type Mapping Available.
 
-                if (this.CheckRoomTypeRateTypeMappingAvailable(model.Id, model.RoomTypeId, model.RateTypeId) == false)
+                if (this.CheckRoomTypeRateTypeMappingAvailable(model.Id, model.RoomTypeId, model.RateTypeId, model.IsWeekEndPrice) == false)
                 {
                     return Json(new
                     {
@@ -54,30 +82,15 @@ namespace SuccessHotelierHub.Controllers
 
                 mappingId = rateRepository.AddRoomTypeRateTypeMapping(model);
 
-                #region  Check Source Parameters
-                if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                #region Check External URL
+                if (!string.IsNullOrWhiteSpace(url))
                 {
-                    string source = string.Empty;
-                    string url = string.Empty;
-                    string qid = string.Empty;
-
-                    source = Convert.ToString(Request.Form["Source"]);
-
-                    if (source == "WeekDayPrice")
+                    return Json(new
                     {
-                        TempData["TabName"] = "WeekDayPrice";
-                        url = Url.Action("ManagePrice", "Rate");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(url))
-                    {
-                        return Json(new
-                        {
-                            IsSuccess = true,
-                            IsExternalUrl = true,
-                            data = url
-                        }, JsonRequestBehavior.AllowGet);
-                    }
+                        IsSuccess = true,
+                        IsExternalUrl = true,
+                        data = url
+                    }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
 
@@ -140,13 +153,39 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                string source = string.Empty;
+                string url = string.Empty;
+                string qid = string.Empty;
                 string mappingId = string.Empty;
+
+                model.IsWeekEndPrice = false;
+
+                #region  Check Source Parameters
+                if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                {
+                    source = Convert.ToString(Request.Form["Source"]);
+
+                    if (source == "WeekDayPrice")
+                    {
+                        TempData["TabName"] = "WeekDayPrice";
+                        url = Url.Action("ManagePrice", "Rate");
+                        model.IsWeekEndPrice = false;
+                    }
+                    else if (source == "WeekEndPrice")
+                    {
+                        TempData["TabName"] = "WeekEndPrice";
+                        url = Url.Action("ManagePrice", "Rate");
+
+                        model.IsWeekEndPrice = true;
+                    }
+                }
+                #endregion
 
                 model.UpdatedBy = LogInManager.LoggedInUserId;
 
                 #region Check Room Type Rate Type Mapping Available.
 
-                if (this.CheckRoomTypeRateTypeMappingAvailable(model.Id, model.RoomTypeId, model.RateTypeId) == false)
+                if (this.CheckRoomTypeRateTypeMappingAvailable(model.Id, model.RoomTypeId, model.RateTypeId, model.IsWeekEndPrice) == false)
                 {
                     return Json(new
                     {
@@ -159,30 +198,15 @@ namespace SuccessHotelierHub.Controllers
 
                 mappingId = rateRepository.UpdateRoomTypeRateTypeMapping(model);
 
-                #region  Check Source Parameters
-                if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                #region Check External URL
+                if (!string.IsNullOrWhiteSpace(url))
                 {
-                    string source = string.Empty;
-                    string url = string.Empty;
-                    string qid = string.Empty;
-
-                    source = Convert.ToString(Request.Form["Source"]);
-
-                    if (source == "WeekDayPrice")
+                    return Json(new
                     {
-                        TempData["TabName"] = "WeekDayPrice";
-                        url = Url.Action("ManagePrice", "Rate");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(url))
-                    {
-                        return Json(new
-                        {
-                            IsSuccess = true,
-                            IsExternalUrl = true,
-                            data = url
-                        }, JsonRequestBehavior.AllowGet);
-                    }
+                        IsSuccess = true,
+                        IsExternalUrl = true,
+                        data = url
+                    }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
 
@@ -303,11 +327,11 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckRoomTypeRateTypeMappingAvailable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId)
+        public bool CheckRoomTypeRateTypeMappingAvailable(Guid? mappingId, Guid roomTypeId, Guid ratetypeId, bool isWeekEndPrice)
         {
             bool blnAvailable = true;
 
-            var mapping = rateRepository.CheckRoomTypeRateTypeMappingAvailable(mappingId, roomTypeId, ratetypeId);
+            var mapping = rateRepository.CheckRoomTypeRateTypeMappingAvailable(mappingId, roomTypeId, ratetypeId, isWeekEndPrice);
 
             if (mapping.Any())
             {

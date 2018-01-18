@@ -40,9 +40,11 @@
                                 })   
                 </div>
                 <div class="tab-pane" id="tab_WeekEndPrice">
-                    @Html.Partial("~/Views/RateType/WeekEndPriceList.cshtml",
+                    @Html.Partial("~/Views/Rate/WeekEndPriceList.cshtml",
                              new ViewDataDictionary {
-                                    { "Source", "WeekEndPrice" }                                    
+                                    { "Source", "WeekEndPrice" },
+                                    { "RoomTypeList", ViewBag.RoomTypeList},
+                                    { "RatetypeList", ViewBag.RatetypeList}
                                 })
                     
                 </div>
