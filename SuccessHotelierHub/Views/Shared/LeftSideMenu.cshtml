@@ -62,7 +62,7 @@
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusFrontDesk" data-widget="tree" style="display:none;">
             @*<li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-check-square-o" aria-hidden="true"></i>Check In (Design) *</a></li>*@
-            <li><a href="@Url.Action("Arrivals","FrontDesk")"><i class="fa fa-group"></i>Arrivals *</a></li>
+            <li><a href="@Url.Action("Arrivals","FrontDesk")"><i class="fa fa-group"></i>Arrivals</a></li>
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusCashiering" data-widget="tree" style="display:none;">
@@ -157,6 +157,18 @@
             </li>
             <li class="treeview">
                 <a href="#">
+                    <i class="fa fa-book" aria-hidden="true"></i> Reservation Type
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("Create","ReservationType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","ReservationType")"><i class="fa fa-search"></i> Search </a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
                     <i class="fa fa-times-circle-o" aria-hidden="true"></i> Cancellation Reason
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
@@ -191,43 +203,62 @@
                     <li><a href="@Url.Action("List","Nationality")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-flag" aria-hidden="true"></i> Country
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","Country")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","Country")"><i class="fa fa-search"></i> Search </a></li>
-                </ul>
-            </li>
+
 
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-flag-o" aria-hidden="true"></i> State
+                    <i class="fa fa-location-arrow"></i> Locations
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","State")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","State")"><i class="fa fa-search"></i> Search </a></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-flag" aria-hidden="true"></i> Country
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","Country")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","Country")"><i class="fa fa-search"></i> Search </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-flag-o" aria-hidden="true"></i> State
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","State")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","State")"><i class="fa fa-search"></i> Search </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-building" aria-hidden="true"></i> City
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","City")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","City")"><i class="fa fa-search"></i> Search </a></li>
+                        </ul>
+                    </li>
+                                      
                 </ul>
             </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-building" aria-hidden="true"></i> City
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","City")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","City")"><i class="fa fa-search"></i> Search </a></li>
-                </ul>
-            </li>
+
+           
+
+           
+            
         </ul>
     </section>
     <!-- /.sidebar -->

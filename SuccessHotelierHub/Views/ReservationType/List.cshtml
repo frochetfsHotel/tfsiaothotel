@@ -1,6 +1,6 @@
-﻿@model SuccessHotelierHub.Models.SearchRateTypeParametersVM
+﻿@model SuccessHotelierHub.Models.SearchReservationTypeParametersVM
 @{
-    ViewBag.Title = "Search Rate Type";
+    ViewBag.Title = "Search Reservation Type";
 }
 @section styles{
     <!-- DataTables -->
@@ -8,16 +8,16 @@
 }
 
 @{
-    var PagerName = "RateTypeGrid";
+    var PagerName = "ReservationTypeGrid";
 }
 
 <section class="content-header">
     <h1>
-        Rate Type <small>List</small>
+        Reservation Type <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Rate Type</li>
+        <li class="">Reservation Type</li>
         <li class="active">Search</li>
     </ol>
 </section>
@@ -25,40 +25,37 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search Rate Type</h3>
+            <h3 class="box-title">Search Reservation Type</h3>
             <div class="pull-right box-tools">
-                <a href="@Url.Action("Create","RateType")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add Rate Type</a>
+                <a href="@Url.Action("Create","ReservationType")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Reservation Type</a>
             </div>
         </div>
-        <form class="frmRateTypeList" enctype="multipart/form-data" method="post">
+        <form class="frmReservationTypeList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="searchbox_padding searchBox_Border">
                     <div class="col-xs-12 padding-zero">
-                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
-                            <label for="RateTypeCode" class="">Rate Type Code</label>
-                            @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
+                        <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                            @Html.LabelFor(m => m.Name)
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
-                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
-                            <label for="Amount" class="">Amount</label>
-                            @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount" })
-                        </div>
-                        <div class="col-md-3 col-sm-4 col-xs-12 mt_25 form-group">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRateType()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRateType()">Clear</button>
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchReservationType()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearReservationType()">Clear</button>
                         </div>
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                <div class="col-xs-12 padding-zero m-t">
+
+
+
+                <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped" id="tblRateTypes">
+                        <table class="table table-bordered table-hover table-striped" id="tblReservationType">
                             <thead>
                                 <tr>
-                                    <th>CreatedOn</th>
-                                    <th>Rate Type Code</th>
-                                    <th>Description</th>
-                                    <th>Amount</th>
+                                    <th>CreatedOn</th>                                    
+                                    <th>Name</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -67,7 +64,7 @@
                     </div>
                     <div class="clearfix"></div>
                     <div class="text-left">
-                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RateTypeGridPageChange" })
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "ReservationTypeGridPageChange" })
                     </div>
                 </div>
             </div>
@@ -78,10 +75,10 @@
 
 <script type="text/javascript">
     var currentPage = 1;
-    var grdRateType;
+    var grdReservationType;
 
     $(document).ready(function () {
-        setTimeout(InitializeRateTypeGrid, 200);
+        setTimeout(InitializeReservationTypeGrid, 200);
 
         $("input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
@@ -91,16 +88,14 @@
     });
 
 
-    function SearchRateTypeParameters(d) {
-        var rateTypeCode = $('#RateTypeCode').val();
-        var amount = $('#Amount').val();
+    function SearchReservationTypeParameters(d) {
+        var name = $('#Name').val();        
 
         d.PageNum = currentPage;
-        d.RateTypeCode = rateTypeCode;
-        d.Amount = amount;
+        d.Name = name;        
     }
 
-    function RateTypeGridDataBound(response) {
+    function ReservationTypeGridDataBound(response) {
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
             return response.data;
@@ -111,18 +106,18 @@
     }
 
 
-    function ReloadRateTypeGrid() {
-        grdRateType.ajax.url("@Url.Content("~/RateType/Search")").load();
+    function ReloadReservationTypeGrid() {
+        grdReservationType.ajax.url("@Url.Content("~/ReservationType/Search")").load();
     }
 
-    function RateTypeGridPageChange(cPage) {
+    function ReservationTypeGridPageChange(cPage) {
         currentPage = cPage;
-        ReloadRateTypeGrid();
+        ReloadReservationTypeGrid();
     }
 
 
-    function InitializeRateTypeGrid() {
-        grdRateType = $('#tblRateTypes').DataTable({
+    function InitializeReservationTypeGrid() {
+        grdReservationType = $('#tblReservationType').DataTable({
             serverSide: true,
             ajax: {
                 beforeSend: function (xhr) {
@@ -134,9 +129,9 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/RateType/Search")',
-                data: SearchRateTypeParameters,
-                dataSrc: RateTypeGridDataBound,
+                url: '@Url.Content("~/ReservationType/Search")',
+                data: SearchReservationTypeParameters,
+                dataSrc: ReservationTypeGridDataBound,
                 type: "POST"
             },
             scrollCollapse: true,
@@ -158,24 +153,11 @@
             },
             {
                 targets: 1,
-                data: "RateTypeCode",
+                data: "Name",
                 orderable: true
             },
             {
                 targets: 2,
-                data: "Description",
-                orderable: false
-            },
-            {
-                targets: 3,
-                data: "Amount",
-                orderable: true,
-                render: function (data, type, full, meta) {
-                    return FormatNumberWithTwoDecimal(full.Amount);
-                }
-            },
-            {
-                targets: 4,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -188,15 +170,15 @@
                 }
             },
             {
-                targets: 5,
+                targets: 3,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoRateTypeEdit(\'' + full.Id + '\')" '
+                    return '<a href="javascript:void(0);" onclick="GotoReservationTypeEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
                         + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deleteRateType(this,event,\'' + full.Id + '\')">Delete</button>';
+                        + ' onclick="deleteReservationType(this,event,\'' + full.Id + '\')">Delete</button>';
                 }
             }
             ],
@@ -207,24 +189,23 @@
         })
     }
 
-    function GotoRateTypeEdit(Id) {
-        var url = '@Url.Content("~/RateType/Edit/")' + Id;
+    function GotoReservationTypeEdit(Id) {
+        var url = '@Url.Content("~/ReservationType/Edit/")' + Id;
         redirectTo(url);
     }
 
-    function searchRateType() {
+    function searchReservationType() {
         currentPage = 1;
-        ReloadRateTypeGrid();
+        ReloadReservationTypeGrid();
     }
 
-    function clearRateType() {
-        $('#RateTypeCode').val('');
-        $('#Amount').val('');
+    function clearReservationType() {
+        $('#Name').val('');        
 
-        searchRateType();
+        searchReservationType();
     }
 
-    function deleteRateType(item, e, id) {
+    function deleteReservationType(item, e, id) {
 
         swal({
             title: 'Are you sure do you want to delete?',
@@ -246,17 +227,17 @@
                     complete: function () {
                         hideLoader();
                     },
-                    url: '@Url.Content("~/RateType/Delete")',
+                    url: '@Url.Content("~/ReservationType/Delete")',
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
                         if (response.IsSuccess == true) {
 
-                            var tr = $('#tblRateTypes  tbody tr#' + id)
-                            var row = grdRateType.row(tr);
+                            var tr = $('#tblReservationType  tbody tr#' + id)
+                            var row = grdReservationType.row(tr);
                             var rowNode = row.node();
                             row.remove();
-                            grdRateType.draw();
+                            grdReservationType.draw();
 
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }
@@ -266,7 +247,7 @@
                     }
                 });
             }
-        })
+        });
 
 
     }

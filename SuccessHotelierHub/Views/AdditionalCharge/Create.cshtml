@@ -1,5 +1,5 @@
 ﻿@model SuccessHotelierHub.Models.AdditionalChargeVM
-
+@using SuccessHotelierHub.Utility
 @{
     ViewBag.Title = "Create Additional Charge";
 }
@@ -39,7 +39,7 @@
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Price, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
+                        @Html.TextBoxFor(m => m.Price, Utility.FormatAmountWithTwoDecimal(Model != null && Model.Price.HasValue ? Model.Price.Value : 1), new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
                     </div>
 

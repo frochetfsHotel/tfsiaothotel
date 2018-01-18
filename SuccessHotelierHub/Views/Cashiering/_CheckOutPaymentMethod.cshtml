@@ -60,7 +60,7 @@
         </div>
         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
             @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
-            @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", onkeypress = "onlyNumeric(event)" })
+            @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model.Amount.HasValue? Model.Amount.Value : 0),new { @class = "form-control", onkeypress = "onlyNumeric(event)" })
 
         </div>
     </div>

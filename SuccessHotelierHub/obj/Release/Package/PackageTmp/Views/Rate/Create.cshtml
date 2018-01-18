@@ -4,12 +4,18 @@
 
     var sourceParam = Convert.ToString(Request.QueryString["source"]);
     var btnCancelUrl = Url.Action("List", "Rate");
-
+    var smallHeaderText = "";
     if (!string.IsNullOrWhiteSpace(sourceParam))
     {
         if (sourceParam == "WeekDayPrice")
         {
             btnCancelUrl = Url.Action("ManagePrice", "Rate");
+            smallHeaderText = "(Week Day Price)";
+        }
+        else if (sourceParam == "WeekEndPrice")
+        {
+            btnCancelUrl = Url.Action("ManagePrice", "Rate");
+            smallHeaderText = "(Week End Price)";
         }
     }
 }
@@ -28,7 +34,7 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Rate Details &nbsp; &nbsp;<small>(Week Day Price)</small></h3>
+            <h3 class="box-title">Rate Details &nbsp; &nbsp;<small>@smallHeaderText</small></h3>
         </div>
         @using (Html.BeginForm("Create", "Rate", FormMethod.Post, new { id = "frmRate", enctype = "multipart/form-data" }))
         {

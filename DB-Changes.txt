@@ -7759,3 +7759,348 @@ BEGIN
 END
 
 
+/******************************************************************************/
+
+Name : Nilesh
+Date : 18-JAN-2018 03:20 PM
+
+/*******************************************************************************************************************
+	SP Name : GetReservationCharges
+	Comment : Changes in SP GetReservationCharges
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 1/18/2018 3:14:48 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId		UNIQUEIDENTIFIER = NULL,
+	@AdditionalChargeId	UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.*, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+
+	UNION
+
+	SELECT RC.*, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+
+	ORDER BY SortOrder
+END
+
+/*********** Create new table ReservationType ******/
+
+
+/****** Object:  Table [dbo].[ReservationType]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ReservationType](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_ReservationType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddReservationType
+	Comment : Create SP AddReservationType
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddReservationType]    Script Date: 1/18/2018 4:01:35 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddReservationType]	
+	@Name			NVARCHAR(500)			,		
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationType]
+           ([Id]           
+           ,[Name]		   		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name			   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateReservationType
+	Comment : Create SP UpdateReservationType
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateReservationType]    Script Date: 1/18/2018 4:05:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateReservationType]
+	@Id				UNIQUEIDENTIFIER		,	
+	@Name			NVARCHAR(500)			,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationType]
+		SET	[Name]			=	@Name		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationTypeById
+	Comment : Create SP GetReservationTypeById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationTypeById]    Script Date: 1/18/2018 4:05:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationTypeById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationType]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteReservationType
+	Comment : Create SP DeleteReservationType
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationType]    Script Date: 1/18/2018 4:51:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationType]
+	@Id			UNIQUEIDENTIFIER	,	
+	@UpdatedBy	INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationType] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchReservationType
+	Comment : Create SP SearchReservationType
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchReservationType]    Script Date: 1/18/2018 4:51:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchReservationType] '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchReservationType]					
+	@Name			NVARCHAR(255)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempReservationType
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(255)		NOT NULL			
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[ReservationType]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  								
+						)
+
+
+		INSERT INTO #tempReservationType ([RowNum], [Id], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],								
+				[Name],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[ReservationType]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempReservationType AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationTypes
+	Comment : Create SP GetReservationTypes
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationTypes]    Script Date: 1/18/2018 4:06:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationTypes]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationType]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+/**** Update ReservationTypeId In Existing Data of Reservation Table*******/
+
+-- 1.) Create Reservation Type by Web (Master Screen)
+
+-- Credit Card
+UPDATE Reservation SET ReservationTypeId = 
+(SELECT TOP 1 Id FROM ReservationType WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Credit Card')
+WHERE ReservationTypeId = 'F15C97B6-4FC0-4AB7-A32D-D95261B8F944'
+
+
+--6pm Courtesy Hold
+UPDATE Reservation SET ReservationTypeId = 
+(SELECT TOP 1 Id FROM ReservationType WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='6pm Courtesy Hold')
+WHERE ReservationTypeId = 'F15C97B6-4FC0-4AB7-A32D-D95261B9F945'
+
+
+
+

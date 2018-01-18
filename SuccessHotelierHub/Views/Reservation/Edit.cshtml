@@ -351,7 +351,7 @@
 
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Rate)
-                        @Html.TextBoxFor(m => m.Rate, new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "calculateTotalPrice();" })
+                        @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model.Rate.HasValue ? Model.Rate.Value : 0), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "calculateTotalPrice();" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">                                               
                         <label class="container1" for="IsFixedRate">
@@ -409,13 +409,11 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationTypeId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.ReservationTypeId, new List<SelectListItem>
-                            {
-                                new SelectListItem{ Text="Select Reservation Type", Value = "" },
-                                new SelectListItem{ Text="Credit Card", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
-                                new SelectListItem{ Text="6pm Courtesy Hold", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
-                                new SelectListItem{ Text="Guarantee Type", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
-                            }, htmlAttributes: new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.ReservationTypeId,
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationTypeList,
+                                                "Value", "Text"),
+                                                "Select Reservation Type",
+                                                new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.ReservationTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
@@ -746,7 +744,7 @@
 
         //Show value of selected drop down.
         $('#Rate').val('@strRate');
-        $('#ReservationTypeId').val('@Convert.ToString(Model.ReservationTypeId).ToUpper()');
+        //$('#ReservationTypeId').val('@Convert.ToString(Model.ReservationTypeId).ToUpper()');
         $('#MarketId').val('@Convert.ToString(Model.MarketId).ToUpper()');
         $('#ReservationSourceId').val('@Convert.ToString(Model.ReservationSourceId).ToUpper()');
         $('#PaymentMethodId').val('@Convert.ToString(Model.PaymentMethodId).ToUpper()');
