@@ -1,0 +1,78 @@
+﻿@{ 
+    var tabName = string.Empty;
+    tabName = (string)ViewBag.TabName;
+
+}
+
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+<section class="content-header">
+    <h1>
+        Manage Price
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Price</li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Price Details</h3>
+        </div>
+        <div class="nav-tabs-custom m-t m-l m-r">
+            <ul class="nav nav-tabs" id="divTabs">
+                <li class="active"><a href="#tab_WeekDayPrice" data-toggle="tab">Week Day Price</a></li>
+                <li><a href="#tab_WeekEndPrice" data-toggle="tab">Week End Price</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_WeekDayPrice">
+                    @Html.Partial("~/Views/Rate/WeekDayPriceList.cshtml",
+                             new ViewDataDictionary {
+                                    { "Source", "WeekDayPrice" },
+                                    { "RoomTypeList", ViewBag.RoomTypeList},
+                                    { "RatetypeList", ViewBag.RatetypeList}
+                                })   
+                </div>
+                <div class="tab-pane" id="tab_WeekEndPrice">
+                    @Html.Partial("~/Views/RateType/WeekEndPriceList.cshtml",
+                             new ViewDataDictionary {
+                                    { "Source", "WeekEndPrice" }                                    
+                                })
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var tabName = '@tabName';
+        if (!IsNullOrEmpty(tabName)) {
+            if (tabName == 'WeekDayPrice') {
+                showTab('tab_WeekDayPrice');
+            }
+            else if (tabName == 'WeekEndPrice') {
+                showTab('tab_WeekEndPrice');
+            }
+
+        }
+    });
+
+    function showTab(tabName) {
+        $('#divTabs a[href="#' + tabName + '"]').tab('show');
+    }
+
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

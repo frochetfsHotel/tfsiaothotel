@@ -284,6 +284,11 @@
 <!-- Preference Modal Popup END -->
 
 <script type="text/javascript">
+
+    //$(window).on("beforeunload", function () {
+    //   return 'please save your setting before leaving the page';
+    //});
+
     $(document).ready(function () {
         
         //Label Bold.
@@ -500,6 +505,7 @@
                         if (response.IsExternalUrl) {
                             redirectTo(response.data);
                         } else {
+                            //$(window).off("beforeunload");
                             setTimeout(function () {
                                 redirectTo('@Url.Content("~/Profile/IndividualProfileList")');
                             }, 1000);
@@ -573,5 +579,6 @@
         if (!IsNullOrEmpty('@Model.Remarks'))
             $('label[for="Remarks"]').addClass("label-bold");
     }
+
 
 </script>

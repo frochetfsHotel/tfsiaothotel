@@ -765,3 +765,7 @@ label{
 .cursor-move{
     cursor:move !important;
 }
+
+.table-width {
+width:100% !important;
+}

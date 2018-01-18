@@ -1,6 +1,17 @@
 ﻿@model SuccessHotelierHub.Models.RateTypeVM
 @{
     ViewBag.Title = "Edit Rate Type";
+
+    var sourceParam = Convert.ToString(Request.QueryString["source"]);
+    var btnCancelUrl = Url.Action("List", "RateType");
+
+    if (!string.IsNullOrWhiteSpace(sourceParam))
+    {
+        if (sourceParam == "WeekEndPrice")
+        {
+            btnCancelUrl = Url.Action("ManagePrice", "Rate");
+        }
+    }
 }
 
 <section class="content-header">
@@ -26,6 +37,7 @@
 
             <!--HIDDEN FIELD-->
             @Html.HiddenFor(m => m.Id)
+            <input type="hidden" id="Source" name="Source" value="@sourceParam" />
             <!--HIDDEN FIELD-->
 
             <div class="box-body pt_10 pb-0">
@@ -55,7 +67,7 @@
             </div>
             <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return updateRateType();">Update</button>
-                <a href="@Url.Action("List", "RateType")" class="btn btn-danger">Cancel</a>
+                <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
@@ -99,9 +111,14 @@
                     else {
                         showToaster("Rate Type details updated successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/RateType/List")');
-                        }, 1000);
+                        if (response.IsExternalUrl) {
+                            redirectTo(response.data);
+                        }
+                        else {
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/RateType/List")');
+                            }, 1000);
+                        }
                     }
                 }
             });

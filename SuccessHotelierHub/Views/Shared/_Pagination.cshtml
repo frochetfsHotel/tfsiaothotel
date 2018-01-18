@@ -3,30 +3,31 @@
 <nav aria-label="..." class="">
     <div class="hidden-xs pull-right  m-t-sm">
         <ul class="pagination pagination-sm" style="margin:0;">
-            <li id="liFirst" class="page-item">
+            <li id="@("liFirst_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="First" onclick="return @(Model.TokenForEnableDisableButtons + "FirstButtonClick")(this, event)">
                     <span>First</span>
                 </a>
             </li>
 
-            <li id="liPrevious" class="page-item">
+            <li id="@("liPrevious_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "PreviousButtonClick")(this, event)">
                     <span>Previous</span>
                 </a>
             </li>
 
             <li class="page-item pull-left liPageNum">
-                <input id="txtPageNumber" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event)" onblur="return PaginationGoToSpecificPage(this, event)" />
-                <span class="pull-right spanPageNum hovered">of <span id="spanTotalPages"></span> Pages.</span>
+                <input id="@("txtPageNumber_" + Model.TokenForEnableDisableButtons)" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event);" 
+                    onblur="return @(Model.TokenForEnableDisableButtons + "PaginationGoToSpecificPage")(this, event)"/>
+                <span class="pull-right spanPageNum hovered">of <span id="@("spanTotalPages_" + Model.TokenForEnableDisableButtons)"></span> Pages.</span>
             </li>
 
-            <li id="liNext" class="page-item">
+            <li id="@("liNext_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Next" onclick="return @(Model.TokenForEnableDisableButtons + "NextButtonClick")(this, event)">
                     <span>Next</span>
                 </a>
             </li>
 
-            <li id="liLast" class="page-item">
+            <li id="@("liLast_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Last" onclick="return @(Model.TokenForEnableDisableButtons + "LastButtonClick")(this, event)">
                     <span>Last</span>
                 </a>
@@ -36,29 +37,30 @@
 
     <div class="visible-xs pull-right">
         <ul class="pagination pagination-sm" style="margin:0;">
-            <li id="liFirst" class="page-item">
+            <li id="@("liFirst_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "FirstButtonClick")(this, event)">                    
                     <span class="glyphicon glyphicon-step-backward"></span>
                 </a>
             </li>
 
-            <li id="liPrevious" class="page-item">
+            <li id="@("liPrevious_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Previous" onclick="return @(Model.TokenForEnableDisableButtons + "PreviousButtonClick")(this, event)">                    
                     <span class="glyphicon glyphicon-triangle-left"></span>
                 </a>
             </li>
 
             <li class="page-item pull-left liPageNum">
-                <input id="txtPageNumber" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event)" onblur="return PaginationGoToSpecificPage(this, event)" />                
+                <input id="@("txtPageNumber_" + Model.TokenForEnableDisableButtons)" type="text" class="form-control pageNumTextBox pull-left" onkeydown="return CheckKey(this, event);"
+                    onblur="return @(Model.TokenForEnableDisableButtons + "PaginationGoToSpecificPage")(this, event)" />                
             </li>
 
-            <li id="liNext" class="page-item">
+            <li id="@("liNext_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Next" onclick="return @(Model.TokenForEnableDisableButtons + "NextButtonClick")(this, event)">
                     <span class="glyphicon glyphicon-triangle-right"></span>
                 </a>
             </li>
 
-            <li id="liLast" class="page-item">
+            <li id="@("liLast_" + Model.TokenForEnableDisableButtons)" class="page-item">
                 <a class="page-link hovered" href="javascript:void(0)" aria-label="Last" onclick="return @(Model.TokenForEnableDisableButtons + "LastButtonClick")(this, event)">
                     <span class="glyphicon glyphicon-step-forward"></span>
                 </a>
@@ -76,7 +78,8 @@
         function @("PagerDataBound" + Model.TokenForEnableDisableButtons)(_currentPage, _recordPerPage, _totalRecords) {
             _paginationCurrentPage@(Model.TokenForEnableDisableButtons) = _currentPage;
             _paginationTotalPage@(Model.TokenForEnableDisableButtons) = CountPages(_totalRecords, _recordPerPage)
-            FormatPagination()
+            //FormatPagination()
+            @(Model.TokenForEnableDisableButtons + "FormatPagination")();
         }
     }
 
@@ -127,38 +130,38 @@
         }
     }
 
-    function FormatPagination(){
+    function @(Model.TokenForEnableDisableButtons + "FormatPagination")(){
 
-        $('#txtPageNumber').val('')
-        $('#txtPageNumber').val(_paginationCurrentPage@(Model.TokenForEnableDisableButtons))
-        $('#spanTotalPages').html(Math.floor(_paginationTotalPage@(Model.TokenForEnableDisableButtons)))
+        $('#txtPageNumber_@Model.TokenForEnableDisableButtons').val('')
+        $('#txtPageNumber_@Model.TokenForEnableDisableButtons').val(_paginationCurrentPage@(Model.TokenForEnableDisableButtons))
+        $('#spanTotalPages_@Model.TokenForEnableDisableButtons').html(Math.floor(_paginationTotalPage@(Model.TokenForEnableDisableButtons)))
 
         //for first button
         if (_paginationCurrentPage@(Model.TokenForEnableDisableButtons) == 1) {
-            $('#liFirst').addClass('disabled')
+            $('#liFirst_@Model.TokenForEnableDisableButtons').addClass('disabled')
         }
         else
         {
-            $('#liFirst').removeClass('disabled')
+            $('#liFirst_@Model.TokenForEnableDisableButtons').removeClass('disabled')
         }
 
         //for Previous button
         if (_paginationCurrentPage@(Model.TokenForEnableDisableButtons) <= 1) {
-            $('#liPrevious').addClass('disabled')
+            $('#liPrevious_@Model.TokenForEnableDisableButtons').addClass('disabled')
         }
         else{
-            $('#liPrevious').removeClass('disabled')
+            $('#liPrevious_@Model.TokenForEnableDisableButtons').removeClass('disabled')
         }
 
         //for last button
         if (_paginationCurrentPage@(Model.TokenForEnableDisableButtons) == _paginationTotalPage@(Model.TokenForEnableDisableButtons)) {
-            $('#liLast').addClass('disabled')
-            $('#liNext').addClass('disabled')
+            $('#liLast_@Model.TokenForEnableDisableButtons').addClass('disabled')
+            $('#liNext_@Model.TokenForEnableDisableButtons').addClass('disabled')
         }
         else
         {
-            $('#liLast').removeClass('disabled')
-            $('#liNext').removeClass('disabled')
+            $('#liLast_@Model.TokenForEnableDisableButtons').removeClass('disabled')
+            $('#liNext_@Model.TokenForEnableDisableButtons').removeClass('disabled')
         }
     }
 
@@ -178,27 +181,29 @@
         }
 
         if (e.keyCode == 13) {
-            return PaginationGoToSpecificPage(itm, e)
+            //return PaginationGoToSpecificPage(itm, e)
+            return @(Model.TokenForEnableDisableButtons + "PaginationGoToSpecificPage")(itm, e);
         }
     }
 
-    function PaginationGoToSpecificPage(itm, e){
+    function @(Model.TokenForEnableDisableButtons + "PaginationGoToSpecificPage")(itm, e){
         var enteredNum = Number($(itm).val());
         if (enteredNum != undefined && enteredNum != "" && enteredNum != NaN && _paginationCurrentPage@(Model.TokenForEnableDisableButtons) != enteredNum) {
-            AutoSetPageNumber(enteredNum)
+            //AutoSetPageNumber(enteredNum)
+            @(Model.TokenForEnableDisableButtons + "AutoSetPageNumber")(enteredNum);
             @(Model.PageChangeMethod)(_paginationCurrentPage@(Model.TokenForEnableDisableButtons))
             return true;
         }
         return false;
     }
 
-    function AutoSetPageNumber(enteredNum){
+    function @(Model.TokenForEnableDisableButtons + "AutoSetPageNumber")(enteredNum){
         if (enteredNum <= 0) {
-            $('#txtPageNumber').val(1)
+            $('#txtPageNumber_@Model.TokenForEnableDisableButtons').val(1)
             _paginationCurrentPage@(Model.TokenForEnableDisableButtons) = 1;
         }
         else if (enteredNum > _paginationTotalPage@(Model.TokenForEnableDisableButtons)) {
-            $('#txtPageNumber').val(_paginationTotalPage@(Model.TokenForEnableDisableButtons))
+            $('#txtPageNumber_@Model.TokenForEnableDisableButtons').val(_paginationTotalPage@(Model.TokenForEnableDisableButtons))
             _paginationCurrentPage@(Model.TokenForEnableDisableButtons) = _paginationTotalPage@(Model.TokenForEnableDisableButtons);
         }
         else{

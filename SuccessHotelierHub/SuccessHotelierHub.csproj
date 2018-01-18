@@ -1955,6 +1955,9 @@
     <Content Include="Views\Floor\Create.cshtml" />
     <Content Include="Views\Floor\Edit.cshtml" />
     <Content Include="Views\Floor\List.cshtml" />
+    <Content Include="Views\Rate\ManagePrice.cshtml" />
+    <Content Include="Views\Rate\WeekDayPriceList.cshtml" />
+    <Content Include="Views\RateType\WeekEndPriceList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

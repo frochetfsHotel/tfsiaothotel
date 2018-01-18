@@ -50,6 +50,33 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(rateTypeId))
                 {
+                    #region  Check Source Parameters
+                    if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                    {
+                        string source = string.Empty;
+                        string url = string.Empty;
+                        string qid = string.Empty;
+
+                        source = Convert.ToString(Request.Form["Source"]);
+
+                        if (source == "WeekEndPrice")
+                        {
+                            TempData["TabName"] = "WeekEndPrice";
+                            url = Url.Action("ManagePrice", "Rate");
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = url
+                            }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -122,6 +149,33 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(rateTypeId))
                 {
+                    #region  Check Source Parameters
+                    if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                    {
+                        string source = string.Empty;
+                        string url = string.Empty;
+                        string qid = string.Empty;
+
+                        source = Convert.ToString(Request.Form["Source"]);
+
+                        if (source == "WeekEndPrice")
+                        {
+                            TempData["TabName"] = "WeekEndPrice";
+                            url = Url.Action("ManagePrice", "Rate");
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = url
+                            }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

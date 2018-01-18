@@ -1,0 +1,261 @@
+﻿@model SuccessHotelierHub.Models.SearchRateTypeParametersVM
+@{
+    ViewBag.Title = "Search Rate Type";
+}
+
+
+@{
+    var PagerName = "RateTypeGrid";
+}
+
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Rate Type &nbsp; &nbsp;<small>(Week End Price)</small></h3>
+            <div class="pull-right box-tools">
+                <a href="@Url.Content("~/RateType/Create?source=WeekEndPrice")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Rate Type</a>
+            </div>
+        </div>
+        <form class="frmRateTypeList" enctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="searchbox_padding searchBox_Border">
+                    <div class="col-xs-12 padding-zero">
+                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                            <label for="RateTypeCode" class="">Rate Type Code</label>
+                            @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                            <label for="Amount" class="">Amount</label>
+                            @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount" })
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12 mt_25 form-group">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRateType()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRateType()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="col-xs-12 padding-zero m-t">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped table-width" id="tblRateTypes">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Rate Type Code</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RateTypeGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdRateType;
+
+    $(document).ready(function () {
+        setTimeout(InitializeRateTypeGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+
+    function SearchRateTypeParameters(d) {
+        var rateTypeCode = $('#RateTypeCode').val();
+        var amount = $('#Amount').val();
+
+        d.PageNum = currentPage;
+        d.RateTypeCode = rateTypeCode;
+        d.Amount = amount;
+    }
+
+    function RateTypeGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadRateTypeGrid() {
+        grdRateType.ajax.url("@Url.Content("~/RateType/Search")").load();
+    }
+
+    function RateTypeGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadRateTypeGrid();
+    }
+
+
+    function InitializeRateTypeGrid() {
+        grdRateType = $('#tblRateTypes').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RateType/Search")',
+                data: SearchRateTypeParameters,
+                dataSrc: RateTypeGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                "visible": false
+            },
+            {
+                targets: 1,
+                data: "RateTypeCode",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "Description",
+                orderable: false
+            },
+            {
+                targets: 3,
+                data: "Amount",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return FormatNumberWithTwoDecimal(full.Amount);
+                }
+            },
+            {
+                targets: 4,
+                data: "IsActive",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isActive = full.IsActive;
+                    if (isActive == true) {
+                        return "Active";
+                    } else {
+                        return "In Active";
+                    }
+                }
+            },
+            {
+                targets: 5,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoRateTypeEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs"'
+                        + ' onclick="deleteRateType(this,event,\'' + full.Id + '\')">Delete</button>';
+                }
+            }
+            ],
+            order: [[1, "asc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function GotoRateTypeEdit(Id) {
+        var url = '@Url.Content("~/RateType/Edit/")' + Id + '?source=WeekEndPrice';
+        redirectTo(url);
+    }
+
+    function searchRateType() {
+        currentPage = 1;
+        ReloadRateTypeGrid();
+    }
+
+    function clearRateType() {
+        $('#RateTypeCode').val('');
+        $('#Amount').val('');
+
+        searchRateType();
+    }
+
+    function deleteRateType(item, e, id) {
+
+        swal({
+            title: 'Are you sure do you want to delete?',
+            type: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (result) {
+                        showToaster(result.responseText, ToasterType.ERROR);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/RateType/Delete")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.IsSuccess == true) {
+
+                            var tr = $('#tblRateTypes  tbody tr#' + id)
+                            var row = grdRateType.row(tr);
+                            var rowNode = row.node();
+                            row.remove();
+                            grdRateType.draw();
+
+                            showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                        }
+                        else {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                    }
+                });
+            }
+        })
+
+
+    }
+</script>
+

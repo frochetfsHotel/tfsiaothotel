@@ -1,6 +1,17 @@
 ﻿@model SuccessHotelierHub.Models.RoomTypeRateTypeMappingVM
 @{
     ViewBag.Title = "Edit Rate";
+
+    var sourceParam = Convert.ToString(Request.QueryString["source"]);
+    var btnCancelUrl = Url.Action("List", "Rate");
+
+    if (!string.IsNullOrWhiteSpace(sourceParam))
+    {
+        if (sourceParam == "WeekDayPrice")
+        {
+            btnCancelUrl = Url.Action("ManagePrice", "Rate");
+        }
+    }
 }
 
 
@@ -26,7 +37,8 @@
             <!--HIDDEN FIELD-->
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.RoomTypeId)
-            @Html.HiddenFor(m => m.RateTypeId)
+            @Html.HiddenFor(m => m.RateTypeId)            
+            <input type="hidden" id="Source" name="Source" value="@sourceParam" />            
             <!--HIDDEN FIELD-->
 
             <div class="box-body pt_10 pb-0">
@@ -69,7 +81,7 @@
             </div>
             <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return updateRate();">Update</button>
-                <a href="@Url.Action("List", "Rate")" c class="btn btn-danger">Cancel</a>
+                <a href="@btnCancelUrl" c class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
@@ -116,9 +128,13 @@
                     else {
                         showToaster("Rate details updated successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/Rate/List")');
-                        }, 1000);
+                        if (response.IsExternalUrl) {
+                            redirectTo(response.data);
+                        } else {
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/Rate/List")');
+                            }, 1000);
+                        }
                     }
                 }
             });

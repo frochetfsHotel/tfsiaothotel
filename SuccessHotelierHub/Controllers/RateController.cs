@@ -54,6 +54,33 @@ namespace SuccessHotelierHub.Controllers
 
                 mappingId = rateRepository.AddRoomTypeRateTypeMapping(model);
 
+                #region  Check Source Parameters
+                if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                {
+                    string source = string.Empty;
+                    string url = string.Empty;
+                    string qid = string.Empty;
+
+                    source = Convert.ToString(Request.Form["Source"]);
+
+                    if (source == "WeekDayPrice")
+                    {
+                        TempData["TabName"] = "WeekDayPrice";
+                        url = Url.Action("ManagePrice", "Rate");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(url))
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            IsExternalUrl = true,
+                            data = url
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
+
                 if (!string.IsNullOrWhiteSpace(mappingId))
                 {
                     return Json(new
@@ -131,6 +158,33 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 mappingId = rateRepository.UpdateRoomTypeRateTypeMapping(model);
+
+                #region  Check Source Parameters
+                if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                {
+                    string source = string.Empty;
+                    string url = string.Empty;
+                    string qid = string.Empty;
+
+                    source = Convert.ToString(Request.Form["Source"]);
+
+                    if (source == "WeekDayPrice")
+                    {
+                        TempData["TabName"] = "WeekDayPrice";
+                        url = Url.Action("ManagePrice", "Rate");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(url))
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            IsExternalUrl = true,
+                            data = url
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
 
                 if (!string.IsNullOrWhiteSpace(mappingId))
                 {
@@ -261,6 +315,25 @@ namespace SuccessHotelierHub.Controllers
             }
 
             return blnAvailable;
+        }
+
+        public ActionResult ManagePrice()
+        {
+            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+            var ratetypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "ID", "RateTypeCode");
+
+            ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.RateTypeList = ratetypeList;
+
+            string tabName = string.Empty;
+
+            if (TempData["TabName"] != null) {
+                tabName = Convert.ToString(TempData["TabName"]);
+            }
+
+            ViewBag.TabName = tabName;
+
+            return View();
         }
     }
 }
