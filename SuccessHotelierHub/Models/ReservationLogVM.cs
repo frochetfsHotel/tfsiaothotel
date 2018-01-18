@@ -9,7 +9,7 @@ namespace SuccessHotelierHub.Models
 {
     public class ReservationLogVM
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [DisplayName("Reservation")]        
         public Guid? ReservationId { get; set; }
