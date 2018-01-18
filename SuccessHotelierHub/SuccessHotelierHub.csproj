@@ -212,6 +212,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\NationalityController.cs" />
+    <Compile Include="Controllers\PackageController.cs" />
     <Compile Include="Controllers\PreferenceController.cs" />
     <Compile Include="Controllers\PreferenceGroupController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\NationalityVM.cs" />
+    <Compile Include="Models\PackageVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
     <Compile Include="Models\PreferenceGroupVM.cs" />
     <Compile Include="Models\PreferenceVM.cs" />
@@ -272,6 +274,7 @@
     <Compile Include="Repository\CountryRepository.cs" />
     <Compile Include="Repository\FloorRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
+    <Compile Include="Repository\PackageRepository.cs" />
     <Compile Include="Repository\PreferenceGroupRepository.cs" />
     <Compile Include="Repository\PreferenceRepository.cs" />
     <Compile Include="Repository\ProfileRepository.cs" />
@@ -1965,6 +1968,9 @@
     <Content Include="Views\ReservationType\Create.cshtml" />
     <Content Include="Views\ReservationType\Edit.cshtml" />
     <Content Include="Views\ReservationType\List.cshtml" />
+    <Content Include="Views\Package\Create.cshtml" />
+    <Content Include="Views\Package\Edit.cshtml" />
+    <Content Include="Views\Package\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

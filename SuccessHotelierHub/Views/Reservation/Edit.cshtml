@@ -376,12 +376,10 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.PackageId)
-                        <select class="form-control" id="PackageId" name="PackageId">
-                            <option value="">--Select Packages--</option>
-                            <option value="F15C98B6-4FC0-4AB7-A34D-D98961B8F844">Packages 1</option>
-                            <option value="F15C99B6-4FC0-4AB7-A35D-D94861B9F745">Packages 2</option>
-                            <option value="F15C90B6-4FC0-4AB7-A36D-G92061B0F537">Packages 3</option>
-                        </select>
+                        @Html.DropDownListFor(m => m.PackageId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.PackageList, "Value", "Text"),
+                                "Select Package",
+                                new { @class = "form-control" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.BlockCodeId)

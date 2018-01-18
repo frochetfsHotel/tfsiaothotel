@@ -30,7 +30,7 @@ namespace SuccessHotelierHub.Controllers
         private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
         private ReservationTypeRepository reservationTypeRepository = new ReservationTypeRepository();
-
+        private PackageRepository packageRepository = new PackageRepository();
         #endregion
 
 
@@ -45,6 +45,7 @@ namespace SuccessHotelierHub.Controllers
             var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
+            var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
 
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();
@@ -131,6 +132,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.ReservationTypeList = reservationTypeList;
+            ViewBag.PackageList = packageList;
 
             return View(model);
         }
@@ -361,6 +363,7 @@ namespace SuccessHotelierHub.Controllers
                 var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
+                var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -369,6 +372,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.RateTypeList = rateTypeList;
                 ViewBag.RoomTypeList = roomTypeList;
                 ViewBag.ReservationTypeList = reservationTypeList;
+                ViewBag.PackageList = packageList;
 
                 return View(model);
             }
@@ -654,9 +658,12 @@ namespace SuccessHotelierHub.Controllers
             var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, DateTime.Now.ToString("MM/dd/yyyy"));
 
             var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
+            var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+
 
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RateSheetRoomTypeList = rateSheetRoomTypeList;
+            ViewBag.PackageList = packageList;
 
             RateQueryVM model = new RateQueryVM();
 

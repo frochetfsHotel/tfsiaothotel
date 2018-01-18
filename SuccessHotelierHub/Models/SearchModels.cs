@@ -1018,6 +1018,35 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Package
+
+    public class SearchPackageParametersVM
+    {
+        public SearchPackageParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+        public string Name { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchPackageResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {
