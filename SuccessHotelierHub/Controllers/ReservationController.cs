@@ -31,6 +31,7 @@ namespace SuccessHotelierHub.Controllers
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
         private ReservationTypeRepository reservationTypeRepository = new ReservationTypeRepository();
         private PackageRepository packageRepository = new PackageRepository();
+        private MarketRepository marketRepository = new MarketRepository();
         #endregion
 
 
@@ -46,6 +47,7 @@ namespace SuccessHotelierHub.Controllers
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
             var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+            var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
 
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();
@@ -133,6 +135,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.ReservationTypeList = reservationTypeList;
             ViewBag.PackageList = packageList;
+            ViewBag.MarketList = marketList;
 
             return View(model);
         }
@@ -364,6 +367,7 @@ namespace SuccessHotelierHub.Controllers
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
                 var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+                var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -373,6 +377,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.RoomTypeList = roomTypeList;
                 ViewBag.ReservationTypeList = reservationTypeList;
                 ViewBag.PackageList = packageList;
+                ViewBag.MarketList = marketList;
 
                 return View(model);
             }

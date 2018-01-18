@@ -146,7 +146,7 @@
                         @Html.LabelFor(m => m.TitleId)
                         @Html.DropDownListFor(m => m.TitleId,
                                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.TitleList, "Value", "Text"),
-                                                "Select Title",
+                                                "--Select Title--",
                                                 new { @class = "form-control" })
                     </div>
                     <div class="col-md-3 form-group">
@@ -164,7 +164,7 @@
                     <div class="col-md-3 form-group">
                         <label for="ddlCountry">Country</label>
                         @Html.DropDownListFor(m => m.CountryId,
-                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
+                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "--Select Country--",
                                 htmlAttributes: new { @class = "form-control", @Id = "ddlCountry" })
                     </div>
                     <div class="col-md-3 form-group">
@@ -180,7 +180,7 @@
                         @Html.LabelFor(m => m.VipId)
                         @Html.DropDownListFor(m => m.VipId,
                                      new SelectList((IEnumerable<SelectListItem>)ViewBag.VipList, "Value", "Text"),
-                                    "Select VIP",
+                                    "--Select VIP--",
                                     new { @class = "form-control" })
 
                     </div>
@@ -344,7 +344,7 @@
                         @Html.LabelFor(m => m.RateCodeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RateCodeId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
-                                "Select Rate Code",
+                                "--Select Rate Code--",
                                 new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.RateCodeId, "", new { @class = "text-danger" })
                     </div>
@@ -378,7 +378,7 @@
                         @Html.LabelFor(m => m.PackageId)
                         @Html.DropDownListFor(m => m.PackageId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.PackageList, "Value", "Text"),
-                                "Select Package",
+                                "--Select Package--",
                                 new { @class = "form-control" })
                     </div>
                     <div class="col-md-3 form-group">
@@ -410,19 +410,16 @@
                         @Html.DropDownListFor(m => m.ReservationTypeId,
                                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationTypeList,
                                                 "Value", "Text"),
-                                                "Select Reservation Type",
+                                                "--Select Reservation Type--",
                                                 new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.ReservationTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.MarketId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.MarketId, new List<SelectListItem>
-                            {
-                                new SelectListItem{ Text = "--Select Market--", Value = "" },
-                                new SelectListItem{ Text = "Market 1", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
-                                new SelectListItem{ Text = "Market 2", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
-                                new SelectListItem{ Text = "Market 3", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
-                            }, htmlAttributes: new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.MarketId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.MarketList, "Value", "Text"),
+                                "--Select Market--",
+                                new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.MarketId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
@@ -742,8 +739,6 @@
 
         //Show value of selected drop down.
         $('#Rate').val('@strRate');
-        //$('#ReservationTypeId').val('@Convert.ToString(Model.ReservationTypeId).ToUpper()');
-        $('#MarketId').val('@Convert.ToString(Model.MarketId).ToUpper()');
         $('#ReservationSourceId').val('@Convert.ToString(Model.ReservationSourceId).ToUpper()');
         $('#PaymentMethodId').val('@Convert.ToString(Model.PaymentMethodId).ToUpper()');
 

@@ -210,6 +210,7 @@
     <Compile Include="Controllers\FrontDeskController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\NationalityController.cs" />
     <Compile Include="Controllers\PackageController.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Models\FloorVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MarketVM.cs" />
     <Compile Include="Models\NationalityVM.cs" />
     <Compile Include="Models\PackageVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="Repository\CityRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
     <Compile Include="Repository\FloorRepository.cs" />
+    <Compile Include="Repository\MarketRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
     <Compile Include="Repository\PackageRepository.cs" />
     <Compile Include="Repository\PreferenceGroupRepository.cs" />
@@ -1971,6 +1974,9 @@
     <Content Include="Views\Package\Create.cshtml" />
     <Content Include="Views\Package\Edit.cshtml" />
     <Content Include="Views\Package\List.cshtml" />
+    <Content Include="Views\Market\Create.cshtml" />
+    <Content Include="Views\Market\Edit.cshtml" />
+    <Content Include="Views\Market\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -8389,3 +8389,301 @@ END
 ALTER TABLE [dbo].[Reservation] WITH NOCHECK
 	ADD CONSTRAINT [FK_Reservation_Package] FOREIGN KEY ([PackageId]) REFERENCES [dbo].[Package] ([Id]);
 	
+/*******************************************************************************************************/
+
+/*********** Create new table Market ******/
+
+
+/****** Object:  Table [dbo].[Market]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Market](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_Market] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddMarket
+	Comment : Create SP AddMarket
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddMarket]    Script Date: 1/18/2018 6:37:57 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddMarket]	
+	@Name			NVARCHAR(500)			,		
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Market]
+           ([Id]           
+           ,[Name]		   		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name			   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateMarket
+	Comment : Create SP UpdateMarket
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateMarket]    Script Date: 1/18/2018 6:38:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateMarket]
+	@Id				UNIQUEIDENTIFIER		,	
+	@Name			NVARCHAR(500)			,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Market]
+		SET	[Name]			=	@Name		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/*******************************************************************************************************************
+	SP Name : DeleteMarket
+	Comment : Create SP DeleteMarket
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteMarket]    Script Date: 1/18/2018 6:38:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteMarket]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Market] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetMarketById
+	Comment : Create SP GetMarketById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetMarketById]    Script Date: 1/18/2018 6:39:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetMarketById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Market]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetMarkets
+	Comment : Create SP GetMarkets
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetMarkets]    Script Date: 1/18/2018 6:39:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetMarkets]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Market]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchMarket
+	Comment : Create SP SearchMarket
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchMarket]    Script Date: 1/18/2018 6:40:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchMarket] '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchMarket]					
+	@Name			NVARCHAR(500)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempMarket
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(255)		NOT NULL			
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Market]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  								
+						)
+
+
+		INSERT INTO #tempMarket ([RowNum], [Id], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],								
+				[Name],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[Market]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempMarket AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/**** Update MarketId In Existing Data of Reservation Table*******/
+
+-- 1.) Create Market by Web (Master Screen)
+
+-- Digital
+UPDATE Reservation SET MarketId = 
+(SELECT TOP 1 Id FROM Market WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Digital')
+WHERE (MarketId = 'F15C97B6-4FC0-4AB7-A32D-D95261B8F944' OR MarketId = 'F15C97B6-4FC0-4AB7-A32D-D95261B9F945')
+
+
+
+/**** Add Foreign Key of MarketId in Reservation Table****/
+
+ALTER TABLE [dbo].[Reservation] WITH NOCHECK
+	ADD CONSTRAINT [FK_Reservation_Market] FOREIGN KEY ([MarketId]) REFERENCES [dbo].[Market] ([Id]);
