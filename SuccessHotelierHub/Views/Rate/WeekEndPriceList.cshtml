@@ -205,7 +205,7 @@
                 }
             }
             ],
-            order: [[1, "asc"]],
+            order: [[2, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
@@ -233,7 +233,7 @@
     function deleteWeekEndPrice(item, e, id) {
 
         swal({
-            title: 'Are you sure do you want to delete?',
+            title: 'Are you sure you want to delete?',
             type: 'warning',
             showCancelButton: true,
             showCloseButton: true,

@@ -148,18 +148,18 @@
                         @Html.DropDownListFor(m => m.CountryId,
                                 (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
                                 htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState();getCity();" })
+                    </div>                   
+                    <div class="col-md-4 form-group">
+                        <label for="ddlCity">City</label>
+                        @Html.DropDownListFor(m => m.CityId,
+                                (IEnumerable<SelectListItem>)ViewBag.CityList, "-- Select City --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCity" })
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="ddlState">State</label>
                         @Html.DropDownListFor(m => m.StateId,
                                 (IEnumerable<SelectListItem>)ViewBag.StateList, "-- Select State --",
                                 htmlAttributes: new { @class = "form-control", @Id = "ddlState", @onchange = "getCity()" })
-                    </div>
-                    <div class="col-md-4 form-group">
-                        <label for="ddlCity">City</label>
-                        @Html.DropDownListFor(m => m.CityId,
-                                (IEnumerable<SelectListItem>)ViewBag.CityList, "-- Select City --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCity" })
                     </div>
                 </div>
 
