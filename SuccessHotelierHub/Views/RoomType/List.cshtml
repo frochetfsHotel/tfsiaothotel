@@ -33,25 +33,24 @@
         </div>
         <form class="frmRoomTypeList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
-                <div class="searchbox_padding searchBox_Border">
-                    <div class="col-xs-12 padding-zero">
-                        <div class="col-md-3 col-sm-3 col-xs-12 padding_left padding-right-media form-group">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-3 form-group">
                             <label for="RoomTypeCode" class="">Room Type Code</label>
                             @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
                         </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 padding_left padding-right-media form-group">
+                        <div class="col-md-3 form-group">
                             <label for="NoOfRooms" class="">No Of Rooms</label>
                             @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms" })
                         </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 padding_left padding-right-media form-group">
+                        <div class="col-md-3 form-group">
                             <label for="RoomCapacity" class="">Room Capacity</label>
                             @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity" })
                         </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group mt_25">
+                        <div class="col-md-3 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRoomType()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRoomType()">Clear</button>
                         </div>
-                        <div class="clearfix"></div>
                     </div>
                 </div>
                   

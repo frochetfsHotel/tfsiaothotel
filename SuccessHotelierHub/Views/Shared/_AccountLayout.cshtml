@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotelier Hub</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/scripts")
+    @RenderSection("styles", required: false)    
+</head>
+<body class="hold-transition login-page">
+    <!-- Loading START -->
+    <div id="divLoader" class="loader" style="z-index: 9999; display: none;">
+        <img style="display: block; margin: auto" alt="progress" src="~/Content/img/ajax-loader.gif">
+    </div>
+    <!-- Loading END -->
+    
+    @RenderBody()    
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+

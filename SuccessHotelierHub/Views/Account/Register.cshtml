@@ -1,41 +1,98 @@
-﻿@model SuccessHotelierHub.Models.RegisterViewModel
+﻿@model SuccessHotelierHub.Models.UserVM
 @{
     ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
-<h2>@ViewBag.Title.</h2>
+<div class="register-box">
+    <div class="register-logo">
+        <a href="#"><b>Hotelier</b>Hub</a>
+    </div>
+    <div class="register-box-body">
+        <p class="login-box-msg">Register with Hotelier Hub</p>
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id="frmRegister", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-group has-feedback">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group has-feedback">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group has-feedback">
+                @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password", type = "password" })      
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group has-feedback">
+                @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm Password", type = "password" })
+                <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+            <div class="row text-center">
+                <!-- /.col -->
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-primary btn-block btn-flat" id="btnRegister" onclick="saveUserDetail();">Register</button>
+                </div>
+                <div class="col-xs-12 m-t-sm">
+                    <a href="@Url.Action("Login","Account")" class="text-center">I already have a login</a>
+                </div>
+                <!-- /.col -->
+            </div>
+        }
+        
+    </div>
+    <!-- /.form-box -->
+</div>
+<!-- /.register-box -->
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-    <h4>Create a new account.</h4>
-    <hr />
-    @Html.ValidationSummary("", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
-        </div>
-    </div>
-}
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+
+<script type="text/javascript">
+    function validateUserDetail() {
+
+        var errorMessage = "";
+        var blnValid = true;
+        if ($("#frmRegister").valid() == false) {
+            showToaster("Please fill all the required field", ToasterType.ERROR);
+            blnValid = false;
+        }
+        return blnValid;
+    }
+
+
+    function saveUserDetail() {
+
+        if (validateUserDetail()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    $('#btnRegister').html('<span>Processing <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>');
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    $('#btnRegister').html('Register');
+                },
+                url: '@Url.Content("~/Account/Register")',
+                type: 'POST',
+                data: $('#frmRegister').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("You have registered successfully.", ToasterType.SUCCESS);
+
+                        redirectTo('@Url.Content("~/Account/Login")');                        
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

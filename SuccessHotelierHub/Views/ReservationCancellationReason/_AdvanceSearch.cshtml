@@ -12,12 +12,8 @@
 
 
 <form id="frmAdvanceCancellationReasonSearch" name="frmAdvanceCancellationReasonSearch" enctype="multipart/form-data" method="post">
-    <div class="col-xs-12 text-right m-b-sm padding-zero">        
-        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchCancellationReasonOk">OK</button>
-        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
-    </div>
-
-    <div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">
+    
+    <div class="pt_10 pl_10 pb_10 pr_10 col-xs-12 searchBox_Border">
         <div class="row">
             <div class="col-md-8 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.Reason)
@@ -37,45 +33,51 @@
         </div>
     </div>
 
+    <div class="col-xs-12 text-right m-t-sm m-b-sm padding-zero">
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchCancellationReasonOk">OK</button>
+        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
+    </div>
 
-    <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
-        <table class="table table-bordered table-hover table-striped cursor-P table_maxheight" id="tblReason">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Code</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (reservationCancellationReasonList != null && reservationCancellationReasonList.Count > 0)
+    <div class="col-xs-12 m-b-md padding-zero">
+        <div class="table-responsive m-t-md" style="min-height:225px; height:225px;">
+            <table class="table table-bordered table-hover table-striped cursor-P table_maxheight" id="tblReason">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Code</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (reservationCancellationReasonList != null && reservationCancellationReasonList.Count > 0)
                 {
                     foreach (var reason in reservationCancellationReasonList)
                     {
-                        <tr onclick="onSelectReason('@("rbCancellationReason_" + reason.Id)');">
-                            <td>
-                                <input type="radio" class="rbCancellationReason cursor-P" id="@("rbCancellationReason_" + reason.Id)"
-                                       name="rbCancellationReason" value="@reason.Id"
-                                       data-code="@reason.Code"
-                                       data-description="@reason.Description" onchange="showReason(this);" />
-                            </td>
+                            <tr onclick="onSelectReason('@("rbCancellationReason_" + reason.Id)');">
+                                <td>
+                                    <input type="radio" class="rbCancellationReason cursor-P" id="@("rbCancellationReason_" + reason.Id)"
+                                           name="rbCancellationReason" value="@reason.Id"
+                                           data-code="@reason.Code"
+                                           data-description="@reason.Description" onchange="showReason(this);" />
+                                </td>
 
-                            <td>@reason.Code</td>
-                            <td>@reason.Description</td>
-                        </tr>
+                                <td>@reason.Code</td>
+                                <td>@reason.Description</td>
+                            </tr>
 
                     }
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="3" lass="text-center">
-                            No data available.
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="3" lass="text-center">
+                                No data available.
+                            </td>
+                        </tr>
                 }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </form>
 

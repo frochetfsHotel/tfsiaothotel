@@ -10,6 +10,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
+    [HotelierHubAuthorize]
     public class NationalityController : Controller
     {
         #region Declaration

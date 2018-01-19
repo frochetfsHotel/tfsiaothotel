@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-
+    [HotelierHubAuthorize]
     public class RateTypeController : Controller
     {
         #region Declaration

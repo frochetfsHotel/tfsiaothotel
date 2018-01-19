@@ -9,6 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
+    [HotelierHubAuthorize]
     public class PreferenceController : Controller
     {
         #region Declaration

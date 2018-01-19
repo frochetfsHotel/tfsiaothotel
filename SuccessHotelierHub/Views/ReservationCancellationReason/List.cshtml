@@ -34,19 +34,19 @@
         <form class="frmPreferenceList" enctype="multipart/form-data" method="post">
             <div class="box-body">
 
-                <div class="searchbox_padding searchBox_Border">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
 
-                    <div class="col-xs-12 padding-zero">
-                        <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
                             @Html.LabelFor(m => m.Code)
                             @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
                         </div>
-                        <div class="col-md-4 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                        <div class="col-md-4 form-group">
                             @Html.LabelFor(m => m.Description)
                             @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                         </div>
                         
-                        <div class="col-md-4 col-sm-4 col-xs-12 form-group mt_25">
+                        <div class="col-md-4 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs"
                                     onclick="searchReservationCancellationReason()">
                                 Search
@@ -57,7 +57,6 @@
                             </button>
                         </div>
                         
-                        <div class="clearfix"></div>
                     </div>
                 </div>
 

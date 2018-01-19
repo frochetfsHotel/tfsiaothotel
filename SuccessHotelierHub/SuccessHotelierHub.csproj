@@ -209,7 +209,6 @@
     <Compile Include="Controllers\FloorController.cs" />
     <Compile Include="Controllers\FrontDeskController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\NationalityController.cs" />
@@ -228,6 +227,7 @@
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Controllers\StateController.cs" />
+    <Compile Include="Controllers\UserRoleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -272,6 +272,8 @@
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
+    <Compile Include="Models\UserRoleVM.cs" />
+    <Compile Include="Models\UserVM.cs" />
     <Compile Include="Models\VipVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\AdditionalChargeRepository.cs" />
@@ -300,11 +302,17 @@
     <Compile Include="Repository\RoomTypeRepository.cs" />
     <Compile Include="Repository\StateRepository.cs" />
     <Compile Include="Repository\TitleRepository.cs" />
+    <Compile Include="Repository\UserRepository.cs" />
+    <Compile Include="Repository\UserRoleRepository.cs" />
     <Compile Include="Repository\VipRepository.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utility\DALHelper.cs" />
     <Compile Include="Utility\HMTLHelperExtensions.cs" />
+    <Compile Include="Utility\HotelierHubAuthorize.cs" />
+    <Compile Include="Utility\LoginManager.cs" />
     <Compile Include="Utility\Utility.cs" />
+    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\AdminLTE\AdminLTE.css" />
@@ -358,7 +366,7 @@
     <Content Include="Content\css\AdminLTE\sweetalert\sweetalert.css" />
     <Content Include="Content\css\AdminLTE\toastr.min.css" />
     <Content Include="Content\css\bootstrap.css" />
-    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\bootstrap.min_bak.css" />
     <Content Include="Content\css\font-awesome\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome\css\font-awesome.min.css" />
     <Content Include="Content\css\font-awesome\fonts\fontawesome-webfont.svg" />
@@ -1989,9 +1997,13 @@
     <Content Include="Views\PaymentMethod\Create.cshtml" />
     <Content Include="Views\PaymentMethod\Edit.cshtml" />
     <Content Include="Views\PaymentMethod\List.cshtml" />
+    <Content Include="Views\UserRole\Edit.cshtml" />
+    <Content Include="Views\UserRole\List.cshtml" />
+    <Content Include="Views\UserRole\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AccountController\" />
     <Folder Include="Views\Common\" />
   </ItemGroup>
   <ItemGroup>

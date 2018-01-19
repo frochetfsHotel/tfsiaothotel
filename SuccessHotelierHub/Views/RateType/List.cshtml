@@ -33,21 +33,20 @@
         </div>
         <form class="frmRateTypeList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
-                <div class="searchbox_padding searchBox_Border">
-                    <div class="col-xs-12 padding-zero">
-                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
                             <label for="RateTypeCode" class="">Rate Type Code</label>
                             @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
                         </div>
-                        <div class="col-md-3 col-sm-4 col-xs-12 padding_left padding-right-media form-group">
+                        <div class="col-md-4 form-group">
                             <label for="Amount" class="">Amount</label>
                             @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount" })
                         </div>
-                        <div class="col-md-3 col-sm-4 col-xs-12 mt_25 form-group">
+                        <div class="col-md-4 mt_25 form-group">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRateType()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRateType()">Clear</button>
                         </div>
-                        <div class="clearfix"></div>
                     </div>
                 </div>
                 <div class="col-xs-12 padding-zero m-t">

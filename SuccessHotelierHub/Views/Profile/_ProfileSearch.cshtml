@@ -16,13 +16,10 @@
     <!-- Hidden Field -->
 
     <div class="col-xs-12 text-right m-b-sm padding-zero">        
-        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchProfileOk">OK</button>
-        <button type="button" class="btn btn-success m-r-xs" onclick="addNewProfile()">New</button>
-        <button type="button" class="btn btn-warning m-r-xs" onclick="editSelectedProfile()">Edit</button>
-        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>        
+        <button type="button" class="btn btn-success m-r-xs" onclick="addNewProfile()">New</button>           
     </div>
 
-    <div class="pt_10 pl_10 pr_10 searchBox_Border">
+    <div class="pt_10 pl_10 pr_10 col-xs-12 searchBox_Border">
         <div class="row">
             <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.LastName)
@@ -113,21 +110,27 @@
         </div>
     </div>
 
-    
+    <div class="col-xs-12 text-right m-t-sm m-b-sm padding-zero">
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchProfileOk">OK</button>        
+        <button type="button" class="btn btn-warning m-r-xs" onclick="editSelectedProfile()">Edit</button>
+        <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Close</button>
+    </div>
 
-    <div class="table-responsive m-t-md table_maxheight">
-        <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblProfile">
-            <thead>
-                <tr>
-                    <th class="text-center"></th>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>Telephone#</th>                    
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <div class="col-xs-12 m-b-md padding-zero">
+        <div class="table-responsive m-t-md table_maxheight">
+            <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblProfile">
+                <thead>
+                    <tr>
+                        <th class="text-center"></th>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Telephone#</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 </form>
 

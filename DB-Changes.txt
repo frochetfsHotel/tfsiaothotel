@@ -9604,3 +9604,499 @@ ALTER TABLE [dbo].[Reservation] WITH NOCHECK
 	
 	
 
+/**************************************************************************************************************/
+
+/*************** Create new table UserRole ************/
+
+/****** Object:  Table [dbo].[UserRole]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserRole](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Code] [nvarchar](25) NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_UserRole] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*************** Create new table UserDetail ************/
+
+/****** Object:  Table [dbo].[UserDetail]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserDetail](
+	[Id] [uniqueidentifier] NOT NULL,
+	[UserRoleId] [uniqueidentifier] NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[Email] [nvarchar](500) NOT NULL,
+	[Password] [nvarchar] (2000) NOT NULL,	
+	[UserId]	[int]	NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_UserDetail] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddUserDetail
+	Comment : Create SP AddUserDetail
+	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[AddUserDetail]    Script Date: 1/19/2018 3:10:43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUserDetail]	
+	@UserRoleId		UNIQUEIDENTIFIER	=	NULL	,
+	@Name			NVARCHAR(500)					,		
+	@Email			NVARCHAR(500)					,		
+	@Password		NVARCHAR(2000)					,
+	@IsActive		BIT					=	NULL	,	
+	@CreatedBy		INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	DECLARE @UserId AS INT = 0
+	SET @UserId = (SELECT ISNULL(MAX(UserId),0) AS MaxUserId FROM [dbo].[UserDetail])
+
+	SET @UserId = (@UserId + 1)
+
+	INSERT INTO [dbo].[UserDetail]
+           ([Id]           
+		   ,[UserRoleId]
+           ,[Name]		
+		   ,[Email]
+		   ,[Password]   
+		   ,[UserId]		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id		
+			   ,@UserRoleId	   
+			   ,@Name		
+			   ,@Email
+			   ,@Password
+			   ,@UserId	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @UserId AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetUserLogin
+	Comment : Create SP GetUserLogin
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserLogin]    Script Date: 1/19/2018 3:00:11 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[GetUserLogin]		
+	@Email			NVARCHAR(500)		,		
+	@Password		NVARCHAR(2000)					
+	
+AS
+BEGIN
+	SELECT UD.*,UR.Code AS UserRoleCode, UR.[Name] AS UserRoleName
+		 FROM [UserDetail] UD	
+			LEFT JOIN [UserRole] UR ON UR.Id = UD.UserRoleId
+				AND ISNULL(UR.IsDeleted,0) = 0 AND ISNULL(UR.IsActive,0) = 1
+		WHERE ISNULL(UD.IsDeleted,0) = 0 AND ISNULL(UD.IsActive,0) = 1
+			AND ISNULL(UD.Email,'') = @Email
+			AND ISNULL(UD.[Password],'') = @Password
+END
+
+
+
+
+
+/**************** Encryption Key in Web.Config ***********/
+
+<add key="EncryptionKey" value="HotelierHub"/>
+
+
+/*******************************************************************************************************************
+	SP Name : CheckUserEmailExist
+	Comment : Create SP CheckUserEmailExist
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckUserEmailExist]    Script Date: 1/19/2018 3:24:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckUserEmailExist] 
+		@Id = NULL,
+		@Email = ''
+*/
+
+CREATE PROCEDURE [dbo].[CheckUserEmailExist]
+	@Id			UNIQUEIDENTIFIER	=	NULL,
+	@Email		NVARCHAR(500)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[UserDetail]
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND Email = @Email
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : AddUserRole
+	Comment : Create SP AddUserRole	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddUserRole]    Script Date: 1/19/2018 11:59:16 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUserRole]	
+	@Code			NVARCHAR(25)			,	
+	@Name			NVARCHAR(500)			,		
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UserRole]
+           ([Id]           
+		   ,[Code]		   		
+           ,[Name]		   		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id	
+			   ,@Code
+			   ,@Name			   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateUserRole
+	Comment : Create SP UpdateUserRole	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateUserRole]    Script Date: 1/19/2018 5:00:48 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateUserRole]
+	@Id				UNIQUEIDENTIFIER		,	
+	@Code			NVARCHAR(25)			,	
+	@Name			NVARCHAR(500)			,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserRole]
+		SET	[Name]			=	@Name		   		   
+		   ,[Code]	=	@Code
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/*******************************************************************************************************************
+	SP Name : DeleteUserRole
+	Comment : Create SP DeleteUserRole	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteUserRole]    Script Date: 1/19/2018 5:01:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteUserRole]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserRole] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetUserRoleById
+	Comment : Create SP GetUserRoleById	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserRoleById]    Script Date: 1/19/2018 5:02:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserRoleById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[UserRole]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetUserRoles
+	Comment : Create SP GetUserRoles	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserRoles]    Script Date: 1/19/2018 5:03:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserRoles]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[UserRole]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchUserRole
+	Comment : Create SP SearchUserRole	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[SearchUserRole]    Script Date: 1/19/2018 5:03:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchUserRole] '', '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchUserRole]					
+	@Code			NVARCHAR(25)	=	NULL	,		
+	@Name			NVARCHAR(500)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempUserRole
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Code]			NVARCHAR(25)		NOT NULL	
+		,   [Name]			NVARCHAR(500)		NOT NULL			
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[UserRole]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%') 								
+						)
+
+
+		INSERT INTO #tempUserRole ([RowNum], [Id], [Code], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN [Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN [Code] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],		
+				[Code],						
+				[Name],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[UserRole]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')
+					AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Code],				
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempUserRole AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/*******************************************************************************************************************
+	SP Name : CheckUserRoleCodeAvailable
+	Comment : Create SP CheckUserRoleCodeAvailable	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckUserRoleCodeAvailable]    Script Date: 1/19/2018 5:05:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckUserRoleCodeAvailable] 
+		@Id = NULL,
+		@Code = 'COMP'
+*/
+
+CREATE PROCEDURE [dbo].[CheckUserRoleCodeAvailable]
+	@Id				UNIQUEIDENTIFIER	=	NULL,
+	@Code			NVARCHAR(25)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM UserRole 
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND Code = @Code
+		ORDER BY [Name]
+END
+
+
+/************* Add User Roles ***********/
+
+INSERT [dbo].[UserRole] ([Id], [Code], [Name], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) 
+VALUES (N'c959e203-fa02-4507-a59c-8fdcd9613e32', N'ADMIN', N'Admin', 1, CAST(N'2018-01-19T13:19:06.530' AS DateTime), NULL, NULL, 1, NULL)
+
+INSERT [dbo].[UserRole] ([Id], [Code], [Name], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) 
+VALUES (N'36c62668-97b6-4b98-867f-b9c153363fc0', N'STUDENT', N'Student', 1, CAST(N'2018-01-19T13:19:06.533' AS DateTime), NULL, NULL, 1, NULL)
+
+INSERT [dbo].[UserRole] ([Id], [Code], [Name], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) 
+VALUES (N'0f14eeeb-e9f4-4fcb-9486-bdd9ddc7ebf1', N'TUTOR', N'Tutor', 1, CAST(N'2018-01-19T13:19:06.533' AS DateTime), NULL, NULL, 1, NULL)
+
+/*** Add Admin User Login *****/
+	
+-- UserDetail
+INSERT INTO [dbo].[UserDetail] ([Id],[Name],[Email],[Password],[CreatedOn],[IsActive],[UserId]) 
+	VALUES (NEWID(), 'Admin' ,'admin@hotelierhub.com', 'c35n4z3mFEpQSquyRnYzFg==',  GETDATE(), 1, (SELECT (ISNULL(MAX(UserId),0) + 1) FROM UserDetail))
+
