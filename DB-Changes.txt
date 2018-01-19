@@ -8982,3 +8982,309 @@ BEGIN
 		ORDER BY [CreatedOn]
 END
 
+/****************************************************************************************************************************/
+
+Name : Nilesh
+Date : 19-JAN-2018
+
+/************* Create New Table Reservation Source ***************/
+
+/****** Object:  Table [dbo].[ReservationSource]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ReservationSource](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_ReservationSource] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddReservationSource
+	Comment : Create SP AddReservationSource
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddReservationSource]    Script Date: 1/19/2018 11:59:16 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddReservationSource]	
+	@Name			NVARCHAR(500)			,		
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationSource]
+           ([Id]           
+           ,[Name]		   		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name			   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateReservationSource
+	Comment : Create SP UpdateReservationSource
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateReservationSource]    Script Date: 1/19/2018 12:01:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateReservationSource]
+	@Id				UNIQUEIDENTIFIER				,	
+	@Name			NVARCHAR(500)					,	
+	@IsActive		BIT					=	NULL	,	
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationSource]
+		SET	[Name]			=	@Name		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteReservationSource
+	Comment : Create SP DeleteReservationSource
+	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[DeleteReservationSource]    Script Date: 1/19/2018 12:02:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationSource]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationSource]
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+/*******************************************************************************************************************
+	SP Name : GetReservationSourceById
+	Comment : Create SP GetReservationSourceById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationSourceById]    Script Date: 1/19/2018 12:03:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationSourceById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationSource]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationSources
+	Comment : Create SP GetReservationSources
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationSources]    Script Date: 1/19/2018 12:03:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationSources]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationSource]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchReservationSource
+	Comment : Create SP SearchReservationSource
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchReservationSource]    Script Date: 1/19/2018 12:04:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchReservationSource] '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchReservationSource]					
+	@Name			NVARCHAR(500)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempReservationSource
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(255)		NOT NULL			
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[ReservationSource]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  								
+						)
+
+
+		INSERT INTO #tempReservationSource ([RowNum], [Id], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],								
+				[Name],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[ReservationSource]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempReservationSource AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+/**** Update ReservationSourceId In Existing Data of Reservation Table*******/
+
+-- 1.) Create Reservation Source by Web (Master Screen)
+
+-- Guest Direct
+UPDATE Reservation SET ReservationSourceId = 
+(SELECT TOP 1 Id FROM ReservationSource WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Guest Direct')
+WHERE ReservationSourceId = 'F15C97B6-4FC0-4AB7-A32D-D95261B8F944'
+
+
+-- CRS
+UPDATE Reservation SET ReservationSourceId = 
+(SELECT TOP 1 Id FROM ReservationSource WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='CRS')
+WHERE ReservationSourceId = 'F15C97B6-4FC0-4AB7-A32D-D95261B9F945'
+
+
+/**** Add Foreign Key of ReservationSourceId in Reservation Table****/
+
+ALTER TABLE [dbo].[Reservation] WITH NOCHECK
+	ADD CONSTRAINT [FK_Reservation_ReservationSource] FOREIGN KEY ([ReservationSourceId]) REFERENCES [dbo].[ReservationSource] ([Id]);
+	
+	
+

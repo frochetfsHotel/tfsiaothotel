@@ -222,6 +222,7 @@
     <Compile Include="Controllers\ReservationCancellationReasonController.cs" />
     <Compile Include="Controllers\ReservationChargeController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
+    <Compile Include="Controllers\ReservationSourceController.cs" />
     <Compile Include="Controllers\ReservationTypeController.cs" />
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
@@ -258,6 +259,7 @@
     <Compile Include="Models\ReservationLogVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
     <Compile Include="Models\ReservationRoomMappingVM.cs" />
+    <Compile Include="Models\ReservationSourceVM.cs" />
     <Compile Include="Models\ReservationTypeVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
     <Compile Include="Models\RoomPlanVM.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="Repository\ReservationChargeRepository.cs" />
     <Compile Include="Repository\ReservationLogRepository.cs" />
     <Compile Include="Repository\ReservationRepository.cs" />
+    <Compile Include="Repository\ReservationSourceRepository.cs" />
     <Compile Include="Repository\ReservationTypeRepository.cs" />
     <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomStatusRepository.cs" />
@@ -1977,6 +1980,9 @@
     <Content Include="Views\Market\Create.cshtml" />
     <Content Include="Views\Market\Edit.cshtml" />
     <Content Include="Views\Market\List.cshtml" />
+    <Content Include="Views\ReservationSource\Create.cshtml" />
+    <Content Include="Views\ReservationSource\Edit.cshtml" />
+    <Content Include="Views\ReservationSource\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

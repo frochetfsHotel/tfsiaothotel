@@ -1,4 +1,6 @@
 ﻿@model SuccessHotelierHub.Models.RoomTypeRateTypeMappingVM
+@using SuccessHotelierHub.Utility
+
 @{
     ViewBag.Title = "Edit Rate";
 
@@ -68,7 +70,7 @@
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);" })
+                        @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model.Amount) ,new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event);", value = "100.00" })
                         @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
                     </div>
                 </div>

@@ -424,13 +424,10 @@
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationSourceId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.ReservationSourceId, new List<SelectListItem>
-                            {
-                                new SelectListItem{ Text = "--Select Source--", Value = "" },
-                                new SelectListItem{ Text = "Guest Direct", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
-                                new SelectListItem{ Text = "CRS", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
-                                new SelectListItem{ Text = "Internet", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
-                            }, htmlAttributes: new { @class = "form-control" })
+                       @Html.DropDownListFor(m => m.ReservationSourceId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationSourceList, "Value", "Text"),
+                                "--Select Source--",
+                                new { @class = "form-control" })
 
                         @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
                     </div>
@@ -657,7 +654,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Room Types</h4>
+                <h4 class="modal-title">Room Types Search</h4>
             </div>
             <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/RoomType/_AdvanceSearch.cshtml",
@@ -679,7 +676,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Room Types</h4>
+                <h4 class="modal-title">Room Search</h4>
             </div>
             <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
@@ -738,9 +735,7 @@
         });
 
         //Show value of selected drop down.
-        $('#Rate').val('@strRate');
-        $('#ReservationSourceId').val('@Convert.ToString(Model.ReservationSourceId).ToUpper()');
-        $('#PaymentMethodId').val('@Convert.ToString(Model.PaymentMethodId).ToUpper()');
+        $('#Rate').val('@strRate');                
 
         calculateTotalPrice();
 
