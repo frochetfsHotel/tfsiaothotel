@@ -22,6 +22,7 @@ namespace SuccessHotelierHub.Controllers
         private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
         private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
+        private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
 
         #endregion
 
@@ -201,6 +202,7 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
 
                 #region Room Mapping
 
@@ -250,6 +252,7 @@ namespace SuccessHotelierHub.Controllers
                 model.Amount = reservation.TotalBalance;
 
                 ViewData["Source"] = source;
+                ViewData["PaymentMethodList"] = paymentMethodList;
 
                 return PartialView("_CheckOutPaymentMethod", model);
             }

@@ -33,6 +33,8 @@ namespace SuccessHotelierHub.Controllers
         private PackageRepository packageRepository = new PackageRepository();
         private MarketRepository marketRepository = new MarketRepository();
         private ReservationSourceRepository reservationSourceRepository = new ReservationSourceRepository();
+        private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
+
         #endregion
 
 
@@ -50,6 +52,7 @@ namespace SuccessHotelierHub.Controllers
             var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
             var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
             var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+            var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
 
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();
@@ -139,6 +142,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.PackageList = packageList;
             ViewBag.MarketList = marketList;
             ViewBag.ReservationSourceList = reservationSourceList;
+            ViewBag.PaymentMethodList = paymentMethodList;
 
             return View(model);
         }
@@ -372,6 +376,7 @@ namespace SuccessHotelierHub.Controllers
                 var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
                 var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
                 var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+                var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -383,6 +388,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.PackageList = packageList;
                 ViewBag.MarketList = marketList;
                 ViewBag.ReservationSourceList = reservationSourceList;
+                ViewBag.PaymentMethodList = paymentMethodList;
 
                 return View(model);
             }

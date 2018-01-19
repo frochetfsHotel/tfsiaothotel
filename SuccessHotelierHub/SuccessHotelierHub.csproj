@@ -214,6 +214,7 @@
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\NationalityController.cs" />
     <Compile Include="Controllers\PackageController.cs" />
+    <Compile Include="Controllers\PaymentMethodController.cs" />
     <Compile Include="Controllers\PreferenceController.cs" />
     <Compile Include="Controllers\PreferenceGroupController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Models\NationalityVM.cs" />
     <Compile Include="Models\PackageVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
+    <Compile Include="Models\PaymentMethodVM.cs" />
     <Compile Include="Models\PreferenceGroupVM.cs" />
     <Compile Include="Models\PreferenceVM.cs" />
     <Compile Include="Models\IndividualProfile.cs" />
@@ -280,6 +282,7 @@
     <Compile Include="Repository\MarketRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
     <Compile Include="Repository\PackageRepository.cs" />
+    <Compile Include="Repository\PaymentMethodRepository.cs" />
     <Compile Include="Repository\PreferenceGroupRepository.cs" />
     <Compile Include="Repository\PreferenceRepository.cs" />
     <Compile Include="Repository\ProfileRepository.cs" />
@@ -1983,6 +1986,9 @@
     <Content Include="Views\ReservationSource\Create.cshtml" />
     <Content Include="Views\ReservationSource\Edit.cshtml" />
     <Content Include="Views\ReservationSource\List.cshtml" />
+    <Content Include="Views\PaymentMethod\Create.cshtml" />
+    <Content Include="Views\PaymentMethod\Edit.cshtml" />
+    <Content Include="Views\PaymentMethod\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

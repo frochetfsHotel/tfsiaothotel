@@ -9285,6 +9285,322 @@ WHERE ReservationSourceId = 'F15C97B6-4FC0-4AB7-A32D-D95261B9F945'
 
 ALTER TABLE [dbo].[Reservation] WITH NOCHECK
 	ADD CONSTRAINT [FK_Reservation_ReservationSource] FOREIGN KEY ([ReservationSourceId]) REFERENCES [dbo].[ReservationSource] ([Id]);
+
+	
+
+/************* Create New Table Payment Method ***************/
+
+/****** Object:  Table [dbo].[PaymentMethod]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PaymentMethod](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_PaymentMethod] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddPaymentMethod
+	Comment : Create SP AddPaymentMethod
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddPaymentMethod]    Script Date: 1/19/2018 11:59:16 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddPaymentMethod]	
+	@Name			NVARCHAR(500)			,		
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[PaymentMethod]
+           ([Id]           
+           ,[Name]		   		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name			   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdatePaymentMethod
+	Comment : Create SP UpdatePaymentMethod
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdatePaymentMethod]    Script Date: 1/19/2018 12:01:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdatePaymentMethod]
+	@Id				UNIQUEIDENTIFIER				,	
+	@Name			NVARCHAR(500)					,	
+	@IsActive		BIT					=	NULL	,	
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[PaymentMethod]
+		SET	[Name]			=	@Name		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeletePaymentMethod
+	Comment : Create SP DeletePaymentMethod
+	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[DeletePaymentMethod]    Script Date: 1/19/2018 12:02:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeletePaymentMethod]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[PaymentMethod]
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+/*******************************************************************************************************************
+	SP Name : GetPaymentMethodById
+	Comment : Create SP GetPaymentMethodById
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetPaymentMethodById]    Script Date: 1/19/2018 12:03:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetPaymentMethodById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[PaymentMethod]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetPaymentMethods
+	Comment : Create SP GetPaymentMethods
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetPaymentMethods]    Script Date: 1/19/2018 12:03:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetPaymentMethods]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[PaymentMethod]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchPaymentMethod
+	Comment : Create SP SearchPaymentMethod
+	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchPaymentMethod]    Script Date: 1/19/2018 12:04:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchPaymentMethod] '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchPaymentMethod]					
+	@Name			NVARCHAR(500)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempPaymentMethod
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(255)		NOT NULL			
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[PaymentMethod]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  								
+						)
+
+
+		INSERT INTO #tempPaymentMethod ([RowNum], [Id], [Name], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],								
+				[Name],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[PaymentMethod]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempPaymentMethod AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+/**** Update PaymentMethodId In Existing Data of Reservation Table*******/
+
+-- 1.) Create Payment Method by Web (Master Screen)
+
+-- Cash
+UPDATE Reservation SET PaymentMethodId = 
+(SELECT TOP 1 Id FROM PaymentMethod WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Cash')
+WHERE PaymentMethodId = 'F15C97B6-4FC0-4AB7-A32D-D95261B8F946'
+
+
+-- Visa
+UPDATE Reservation SET PaymentMethodId = 
+(SELECT TOP 1 Id FROM PaymentMethod WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Visa')
+WHERE PaymentMethodId = 'F15C97B6-4FC0-4AB7-A32D-D95261B8F944'
+
+-- American Express
+UPDATE Reservation SET PaymentMethodId = 
+(SELECT TOP 1 Id FROM PaymentMethod WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='American Express')
+WHERE PaymentMethodId = 'F15C97B6-4FC0-4AB7-A32D-D95261B9F945'
+
+-- Discover
+UPDATE Reservation SET PaymentMethodId = 
+(SELECT TOP 1 Id FROM PaymentMethod WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Discover')
+WHERE PaymentMethodId = 'F15C97B6-4FC0-4AB7-A32D-G95261B0F937'
+
+-- Master Card
+UPDATE Reservation SET PaymentMethodId = 
+(SELECT TOP 1 Id FROM PaymentMethod WHERE ISNULL(IsDeleted,0) = 0 AND [Name] ='Master Card')
+WHERE PaymentMethodId = 'F15C97B6-4FC0-4AB7-A32D-G95261B0F939'
+
+
+/**** Add Foreign Key of PaymentMethodId in Reservation Table****/
+
+ALTER TABLE [dbo].[Reservation] WITH NOCHECK
+	ADD CONSTRAINT [FK_Reservation_PaymentMethod] FOREIGN KEY ([PaymentMethodId]) REFERENCES [dbo].[PaymentMethod] ([Id]);
 	
 	
 

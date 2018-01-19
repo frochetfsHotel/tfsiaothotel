@@ -373,15 +373,10 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.PaymentMethodId, new List<SelectListItem>
-                            {
-                                new SelectListItem{ Text = "--Select Payment Method--", Value = "" },
-                                new SelectListItem{ Text = "Cash", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F946" },
-                                new SelectListItem{ Text = "Visa", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B8F944" },
-                                new SelectListItem{ Text = "American Express", Value = "F15C97B6-4FC0-4AB7-A32D-D95261B9F945" },
-                                new SelectListItem{ Text = "Discover", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F937" },
-                                new SelectListItem{ Text = "Master Card", Value = "F15C97B6-4FC0-4AB7-A32D-G95261B0F939" },
-                            }, htmlAttributes: new { @class = "form-control" })
+                        @Html.DropDownListFor(m => m.PaymentMethodId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
+                                "--Select Payment Method--",
+                                new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
                     </div>
 
