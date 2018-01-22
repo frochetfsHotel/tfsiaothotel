@@ -1,15 +1,14 @@
-﻿@model SuccessHotelierHub.Models.FloorVM
+﻿@model SuccessHotelierHub.Models.RoomVM
 @{
-    ViewBag.Title = "Create Floor";
+    ViewBag.Title = "Create Room";
 }
-
 <section class="content-header">
     <h1>
-        Floor <small>Create</small>
+        Room <small>Create</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Floor</li>
+        <li class="">Room</li>
         <li class="active">Create</li>
     </ol>
 </section>
@@ -17,38 +16,42 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Floor Details</h3>
+            <h3 class="box-title">Room Details</h3>
         </div>
-        @using (Html.BeginForm("Create", "Floor", FormMethod.Post, new { id = "frmFloor", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Create", "Room", FormMethod.Post, new { id = "frmRoom", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.Code, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
-                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.FloorId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.FloorId,
+                                (IEnumerable<SelectListItem>)ViewBag.FloorList, "--Select Floor--",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FloorId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
-                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.RoomTypeId,
+                                (IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "--Select Room Type--",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.FloorNo, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.FloorNo, new { @class = "form-control", placeholder = "Floor #", @readonly = "readonly " })                        
+                        @Html.LabelFor(m => m.Type)
+                        @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Code" })
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Description)
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })                        
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.NoOfRoom, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "No Of Room" })
-                        @Html.ValidationMessageFor(m => m.NoOfRoom, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.RoomNo, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.RoomNo,  new { @class = "form-control", placeholder = "Room #" })
+                        @Html.ValidationMessageFor(m => m.RoomNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
@@ -60,21 +63,21 @@
                 </div>
             </div>
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success m-r-xs" onclick="return saveFloor();">Save</button>
-                <a href="@Url.Action("List", "Floor")" class="btn btn-danger">Cancel</a>
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveRoom();">Save</button>
+                <a href="@Url.Action("List", "Room")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
 </section>
 
 <script type="text/javascript">
-    function validateFloor() {
+    function validateRoom() {
 
         var errorMessage = "";
         var blnValid = true;
 
 
-        if ($("#frmFloor").valid() == false) {
+        if ($("#frmRoom").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
@@ -83,9 +86,9 @@
     }
 
 
-    function saveFloor() {
+    function saveRoom() {
 
-        if (validateFloor()) {
+        if (validateRoom()) {
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -96,18 +99,18 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Floor/Create")',
+                url: '@Url.Content("~/Room/Create")',
                 type: 'POST',
-                data: $('#frmFloor').serialize(),
+                data: $('#frmRoom').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        showToaster("Floor details saved successfully", ToasterType.SUCCESS);
+                        showToaster("Room details saved successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('@Url.Content("~/Floor/List")');
+                            redirectTo('@Url.Content("~/Room/List")');
                         }, 1000);
                     }
                 }
@@ -116,3 +119,5 @@
         }
     }
 </script>
+
+

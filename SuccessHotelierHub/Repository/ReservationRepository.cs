@@ -348,6 +348,22 @@ namespace SuccessHotelierHub.Repository
             return reservationId;
         }
 
+        public string UpdateReservationStatus(Guid id, Guid? reservationStatusId, int updatedBy)
+        {
+            string reservationId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@ReservationStatusId", Value = reservationStatusId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationStatus", parameters));
+
+            return reservationId;
+        }
+
         #endregion
 
         #region Room Plan
@@ -387,6 +403,25 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
+        #endregion
+
+
+        #region Reservation Status
+        public List<ReservationStatusVM> GetReservationStatusById(Guid reservationId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationStatusById", parameters);
+
+
+            var reservationStatus = new List<ReservationStatusVM>();
+            reservationStatus = DALHelper.CreateListFromTable<ReservationStatusVM>(dt);
+
+            return reservationStatus;
+        }
         #endregion
 
     }

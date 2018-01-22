@@ -170,15 +170,38 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomTypeCode = roomType.RoomTypeCode;
                 model.NoOfRooms = reservation.NoOfRoom;
 
+                model.StatusId = reservation.ReservationStatusId;
+
+                if (model.StatusId.HasValue)
+                {
+                    //Get Reservation Status Detail.
+                    var reservationStatus = reservationRepository.GetReservationStatusById(model.StatusId.Value).FirstOrDefault();
+
+                    if (reservationStatus != null)
+                    {
+                        model.Status = reservationStatus.Name;
+
+                        if (reservation.DepartureDate.HasValue)
+                        {
+                            //If checkout date is current date then status must be DUE OUT.
+                            //if(reservation.DepartureDate.Value.ToString("dd/MM/yyyy") == DateTime.Now.ToString("dd/MM/yyyy"))
+                            if (reservation.IsCheckOut == false && reservation.DepartureDate.Value <= DateTime.Now)
+                            {
+                                model.Status = "DUE OUT";
+                            }
+                        }
+                    }
+                }
+
                 if (reservation.IsCheckOut)
                 {
                     model.IsCheckedOut = reservation.IsCheckOut;
-                    model.Status = "CHECKED OUT";
+                    //model.Status = "CHECKED OUT";
                 }
                 else
                 {
                     model.IsCheckedOut = false;
-                    model.Status = "DUE OUT";
+                    //model.Status = "DUE OUT";
                 }
                 
                 model.Transactions = transactions;
@@ -412,6 +435,12 @@ namespace SuccessHotelierHub.Controllers
                         #region Update Reservation Check Out Flag
 
                         reservationRepository.UpdateReservationCheckOutFlag(model.ReservationId, true, LogInManager.LoggedInUserId);
+
+                        #endregion
+
+                        #region Update Reservation Status
+
+                        reservationRepository.UpdateReservationStatus(model.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
 
                         #endregion
 

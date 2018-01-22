@@ -499,6 +499,13 @@ namespace SuccessHotelierHub.Utility
         public const string DIRTY = "28B74F64-569D-4EB8-A044-74BE6DC131AD";
     }
 
+    public static class ReservationStatusName
+    {
+        public const string DUEOUT = "C019A362-1A34-4D4F-A793-5182406D4DB3";
+        public const string CHECKEDIN = "FB5C5376-8872-4ED8-9A1C-CBF8BB0716AA";
+        public const string CHECKEDOUT = "94488A00-864A-4A4D-B742-68FBB84ED5D9";
+    }
+
     public static class Constants
     {
         public const int PAGESIZE = 10;

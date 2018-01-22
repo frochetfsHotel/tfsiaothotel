@@ -318,8 +318,7 @@ namespace SuccessHotelierHub.Models
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
-        public string RoomTypeCode { get; set; }        
-        public int NoOfRooms { get; set; }
+        public string RoomTypeCode { get; set; }                
         public int RoomCapacity { get; set; }
 
         public List<ColumnName> columns { get; set; }
@@ -330,8 +329,7 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
-        public string RoomTypeCode { get; set; }
-        public int NoOfRooms { get; set; }
+        public string RoomTypeCode { get; set; }        
         public int RoomCapacity { get; set; }
         public string Description { get; set; }        
         public DateTime? CreatedOn { get; set; }
@@ -983,6 +981,13 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
+
+        [DisplayName("Floor #")]
+        public int? FloorNo { get; set; }
+
+        [DisplayName("No Of Room")]
+        public int NoOfRoom { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
@@ -1159,6 +1164,60 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search Room
+
+    public class SearchRoomParametersVM
+    {
+        public SearchRoomParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Room Type")]
+        public Guid? RoomTypeId { get; set; }
+
+        [DisplayName("Floor")]
+        public Guid? FloorId { get; set; }
+
+        [DisplayName("Room #")]
+        public string RoomNo { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchRoomResultVM
+    {
+        public int RowNum { get; set; }
+
+        public Guid Id { get; set; }
+        public string Type { get; set; }
+        public string RoomNo { get; set; }
+        public string Description { get; set; }
+
+        public Guid? RoomTypeId { get; set; }
+
+        [DisplayName("Room Type Code")]
+        public string RoomTypeCode { get; set; }
+
+        public Guid? FloorId { get; set; }
+
+        [DisplayName("Floor Name")]
+        public string FloorName { get; set; }
+
+        [DisplayName("Floor #")]
+        public int? FloorNo { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }

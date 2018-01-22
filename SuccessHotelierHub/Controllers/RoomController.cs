@@ -40,10 +40,12 @@ namespace SuccessHotelierHub.Controllers
             {
                 var roomList = roomRepository.GetRoomByRoomTypeId(roomType.Id);                
                 var floorList = floorRepository.GetFloors();
+                var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+                
 
                 ViewBag.RoomList = roomList;                
                 ViewBag.FloorList = floorList;
-                ViewBag.NoOfRooms = roomType.NoOfRooms;
+                ViewBag.RoomTypeList = roomTypeList;
 
                 return PartialView("_RoomList");
             }
@@ -68,14 +70,14 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(roomId))
                 {
-                    #region Update Room Type (No. Of Rooms)
+                    #region Update Floor (No. Of Rooms)
 
-                    //Decrease the no. of rooms quantity from room type.
-                    var roomType = roomTypeRepository.GetRoomTypeById(roomDetail.RoomTypeId).FirstOrDefault();
+                    //Decrease the no. of rooms quantity from floor.
+                    var floor = floorRepository.GetFloorById(roomDetail.FloorId).FirstOrDefault();
 
-                    roomType.NoOfRooms = roomType.NoOfRooms > 0 ? (roomType.NoOfRooms - 1) : 0;
+                    floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom - 1) : 0;
 
-                    roomTypeRepository.UpdateRoomType(roomType);
+                    floorRepository.UpdateFloor(floor);
 
                     #endregion
 
@@ -118,14 +120,14 @@ namespace SuccessHotelierHub.Controllers
 
                         var roomId = roomRepository.DeleteRoom(id, LogInManager.LoggedInUserId);
 
-                        #region Update Room Type (No. Of Rooms)
+                        #region Update Floor (No. Of Rooms)
 
-                        //Decrease the no. of rooms quantity from room type.
-                        var roomType = roomTypeRepository.GetRoomTypeById(roomDetail.RoomTypeId).FirstOrDefault();
+                        //Decrease the no. of rooms quantity from floor.
+                        var floor = floorRepository.GetFloorById(roomDetail.FloorId).FirstOrDefault();
 
-                        roomType.NoOfRooms = roomType.NoOfRooms > 0 ? (roomType.NoOfRooms - 1) : 0;
+                        floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom - 1) : 0;
 
-                        roomTypeRepository.UpdateRoomType(roomType);
+                        floorRepository.UpdateFloor(floor);
 
                         #endregion
 
@@ -265,6 +267,17 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public ActionResult Create()
+        {
+            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+            var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
+
+            ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.FloorList = floorList;
+
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(RoomVM model)
@@ -294,14 +307,14 @@ namespace SuccessHotelierHub.Controllers
                 {
                     model.Id = Guid.Parse(roomId);
 
-                    #region Update Room Type (No. Of Rooms)
+                    #region Update Floor (No. Of Rooms)
 
-                    //Increase the no. of rooms quantity in room type.
-                    var roomType = roomTypeRepository.GetRoomTypeById(model.RoomTypeId).FirstOrDefault();
+                    //Increase the no. of rooms quantity in floor.
+                    var floor = floorRepository.GetFloorById(model.FloorId).FirstOrDefault();
 
-                    roomType.NoOfRooms = roomType.NoOfRooms > 0 ? (roomType.NoOfRooms + 1) : 0;
+                    floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom + 1) : 0;
 
-                    roomTypeRepository.UpdateRoomType(roomType);
+                    floorRepository.UpdateFloor(floor);
 
                     #endregion
 
@@ -331,6 +344,139 @@ namespace SuccessHotelierHub.Controllers
                     IsSuccess = false,
                     errorMessage = e.Message
                 });
+            }
+        }
+
+        public ActionResult Edit(Guid id)
+        {
+            var room = roomRepository.GetRoomById(id);
+
+            RoomVM model = new RoomVM();
+
+            if (room != null && room.Count > 0)
+            {
+                model = room[0];
+
+                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+                var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
+
+                ViewBag.RoomTypeList = roomTypeList;
+                ViewBag.FloorList = floorList;
+
+                return View(model);
+            }
+
+            return RedirectToAction("List");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(RoomVM model)
+        {
+            try
+            {
+                string roomId = string.Empty;
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+
+                #region Check Room No Available.
+
+                if (this.CheckRoomNoAvailable(model.Id, model.RoomNo) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Room No : {0} already exist.", model.RoomNo)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                model.StatusId = Guid.Parse(RoomStatusType.CLEAN);
+                roomId = roomRepository.UpdateRoom(model);
+
+                if (!string.IsNullOrWhiteSpace(roomId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RoomId = roomId,
+                            Room = model
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Room details not updated successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        public ActionResult List()
+        {
+            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
+            var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
+
+            ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.FloorList = floorList;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Search(SearchRoomParametersVM model)
+        {
+            try
+            {
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+
+                var rooms = roomRepository.SearchRoom(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+
+                int totalRecords = 0;
+                var dbRecords = rooms.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = rooms
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
 

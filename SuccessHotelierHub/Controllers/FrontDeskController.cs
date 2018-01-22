@@ -344,6 +344,12 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Update Reservation Status
+
+                    reservationRepository.UpdateReservationStatus(model.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDIN), LogInManager.LoggedInUserId);
+
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

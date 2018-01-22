@@ -74,11 +74,11 @@
                 @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
 
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 divCreditCardInfo">
                 @Html.LabelFor(m => m.CreditCardNo)
                 @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
             </div>
-            <div class="col-md-4 divCardExpiryDate">
+            <div class="col-md-4 divCreditCardInfo divCardExpiryDate">
                 @Html.LabelFor(m => m.CardExpiryDate)
                 <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate" />
             </div>
@@ -179,6 +179,13 @@
     function SelectPaymentMethod() {
         if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
             var paymentMethod = $('#PaymentMethodId option:selected').text();
+
+            if (paymentMethod == 'Cash') {
+                $('.divCreditCardInfo').hide();
+            } else {
+                $('.divCreditCardInfo').show();
+            }
+
             $('#PaymentMethod').val(paymentMethod);
         }
 

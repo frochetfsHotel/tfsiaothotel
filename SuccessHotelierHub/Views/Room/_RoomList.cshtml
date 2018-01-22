@@ -1,12 +1,12 @@
 ﻿@using SuccessHotelierHub.Models
 @{
-    var roomList = (List<RoomVM>)ViewBag.RoomList;    
+    var roomList = (List<RoomVM>)ViewBag.RoomList;
     var floorList = (List<FloorVM>)ViewBag.FloorList;
-    var noOfRooms = (int)ViewBag.NoOfRooms;
+    var roomTypeList = (List<RoomTypeVM>)ViewBag.RoomTypeList;
     var index = 0;
 }
 
-@if (noOfRooms > 0)
+@if (roomList != null && roomList.Count > 0)
 {
     <input type="hidden" id="hdnTotalRooms" name="hdnTotalRooms" value="@roomList.Count" />
 
@@ -15,9 +15,10 @@
             <thead>
                 <tr>
                     <th width="10%">Room#</th>
+                    <th width="10%">Code</th>
                     <th width="15%">Floor</th>
-                    <th width="10%">Type</th>
-                    <th width="25%">Description</th>                    
+                    <th width="15%">Room Type Code</th>
+                    <th width="25%">Description</th>
                     <th width="10%">Is Active</th>
                     <th width="10%">Action</th>
                 </tr>
@@ -28,6 +29,9 @@
                     <tr>
                         <td>
                             <input type="text" id="@("txtRoomNo_" + index)" name="@("txtRoomNo_" + index)" class="form-control" value="@room.RoomNo" />
+                        </td>
+                        <td>
+                            <input type="text" id="@("txtRoomType_" + index)" name="@("txtRoomType_" + index)" class="form-control" value="@room.Type" />
                         </td>
                         <td>
                             <select id="@("ddlFloor_" + index)" name="@("ddlFloor_" + index) " class='form-control'>
@@ -46,9 +50,21 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" id="@("txtRoomType_" + index)" name="@("txtRoomType_" + index)" class="form-control" value="@room.Type" />
+                            <select id="@("ddlRoomType_" + index)" name="@("ddlRoomType_" + index) " class='form-control'>
+                                <option value="">--Select Room Type--</option>
+                                @foreach (var roomType in roomTypeList)
+                                {
+                                    if (room.RoomTypeId == roomType.Id)
+                                    {
+                                        <option value="@roomType.Id" selected>@roomType.RoomTypeCode</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@roomType.Id">@roomType.RoomTypeCode</option>
+                                    }
+                                }
+                            </select>
                         </td>
-                        
                         <td>
                             <textarea id="@("txtDescription_" + index)" name="@("txtDescription_" + index)" class="form-control" rows="1">@room.Description</textarea>
                         </td>
@@ -71,12 +87,12 @@
         </table>
         <div class="clearfix"></div>
     </div>
-
 }
 else
 {
     <h2>No rooms available.</h2>
 }
+
 
 <script type="text/javascript">
     function DeleteRoom(element, id) {
@@ -105,7 +121,7 @@ else
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
-                        if (response.IsSuccess == true) {                            
+                        if (response.IsSuccess == true) {
                             $(element).closest("tr").remove();
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }

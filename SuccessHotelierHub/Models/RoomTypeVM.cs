@@ -17,10 +17,6 @@ namespace SuccessHotelierHub.Models
 
         public string Description { get; set; }
 
-        [DisplayName("No Of Rooms")]
-        [Required(ErrorMessage = "Please enter no of rooms.")]        
-        public int NoOfRooms { get; set; }
-
         [DisplayName("Room Capacity")]
         public int RoomCapacity { get; set; }
 

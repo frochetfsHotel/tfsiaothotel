@@ -1,6 +1,6 @@
-﻿@model SuccessHotelierHub.Models.SearchRoomTypeParametersVM
+﻿@model SuccessHotelierHub.Models.SearchRoomParametersVM
 @{
-    ViewBag.Title = "Search Room Type";
+    ViewBag.Title = "Search Room";
 }
 @section styles{
     <!-- DataTables -->
@@ -8,16 +8,16 @@
 }
 
 @{
-    var PagerName = "RoomTypeGrid";
+    var PagerName = "RoomGrid";
 }
 
 <section class="content-header">
     <h1>
-        Room Type <small>List</small>
+        Room <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Room Type</li>
+        <li class="">Room</li>
         <li class="active">Search</li>
     </ol>
 </section>
@@ -25,54 +25,67 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search Room Type</h3>
+            <h3 class="box-title">Search Room</h3>
             <div class="pull-right box-tools">
-                <a href="@Url.Action("Create","RoomType")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add Room Type</a>
+                <a href="@Url.Action("Create","Room")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Room</a>
             </div>
         </div>
-        <form class="frmRoomTypeList" enctype="multipart/form-data" method="post">
+        <form class="frmRoomList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
                         <div class="col-md-3 form-group">
-                            <label for="RoomTypeCode" class="">Room Type Code</label>
-                            @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                            @Html.LabelFor(m => m.FloorId, new { @class = "required-label" })
+                            @Html.DropDownListFor(m => m.FloorId,
+                                (IEnumerable<SelectListItem>)ViewBag.FloorList, "--Select Floor--",
+                                htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.FloorId, "", new { @class = "text-danger" })
                         </div>
                         <div class="col-md-3 form-group">
-                            <label for="RoomCapacity" class="">Room Capacity</label>
-                            @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity" })
+                            @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
+                            @Html.DropDownListFor(m => m.RoomTypeId,
+                                (IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "--Select Room Type--",
+                                htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.RoomNo, new { @class = "required-label" })
+                            @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
+                            @Html.ValidationMessageFor(m => m.RoomNo, "", new { @class = "text-danger" })
                         </div>
                         <div class="col-md-3 form-group mt_25">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRoomType()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRoomType()">Clear</button>
-                        </div>
-                    </div>
-                </div>
-                  
-
-
-                    <div class="col-xs-12 padding-zero m-t-md">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped" id="tblRoomTypes">
-                                <thead>
-                                    <tr>
-                                        <th>CreatedOn</th>
-                                        <th>Room Type Code</th>
-                                        <th>Description</th>                                        
-                                        <th>Room Capacity</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchRoom()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearRoom()">Clear</button>
                         </div>
                         <div class="clearfix"></div>
-                        <div class="text-left">
-                            @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RoomTypeGridPageChange" })
-                        </div>
                     </div>
                 </div>
+
+
+
+                <div class="col-xs-12 padding-zero m-t-md">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblRoom">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Room #</th>
+                                    <th>Code</th>
+                                    <th>Floor</th>                                    
+                                    <th>Room Type Code</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RoomGridPageChange" })
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 </section>
@@ -80,10 +93,10 @@
 
 <script type="text/javascript">
     var currentPage = 1;
-    var grdRoomType;
+    var grdRoom;
 
     $(document).ready(function () {
-        setTimeout(InitializeRoomTypeGrid, 200);
+        setTimeout(InitializeRoomGrid, 200);
 
         $("input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
@@ -93,14 +106,18 @@
     });
 
 
-    function SearchRoomTypeParameters(d) {
-        var roomTypeCode = $('#RoomTypeCode').val();        
+    function SearchRoomParameters(d) {
+        var floorId = $('#FloorId').val();
+        var roomTypeId = $('#RoomTypeId').val();
+        var roomNo = $('#RoomNo').val();
 
         d.PageNum = currentPage;
-        d.RoomTypeCode = roomTypeCode;        
+        d.FloorId = floorId;
+        d.RoomTypeId = roomTypeId;
+        d.RoomNo = roomNo;
     }
 
-    function RoomTypeGridDataBound(response) {
+    function RoomGridDataBound(response) {
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
             return response.data;
@@ -111,18 +128,18 @@
     }
 
 
-    function ReloadRoomTypeGrid() {
-        grdRoomType.ajax.url("@Url.Content("~/RoomType/Search")").load();
+    function ReloadRoomGrid() {
+        grdRoom.ajax.url("@Url.Content("~/Room/Search")").load();
     }
 
-    function RoomTypeGridPageChange(cPage) {
+    function RoomGridPageChange(cPage) {
         currentPage = cPage;
-        ReloadRoomTypeGrid();
+        ReloadRoomGrid();
     }
 
 
-    function InitializeRoomTypeGrid() {
-        grdRoomType = $('#tblRoomTypes').DataTable({
+    function InitializeRoomGrid() {
+        grdRoom = $('#tblRoom').DataTable({
             serverSide: true,
             ajax: {
                 beforeSend: function (xhr) {
@@ -134,9 +151,9 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/RoomType/Search")',
-                data: SearchRoomTypeParameters,
-                dataSrc: RoomTypeGridDataBound,
+                url: '@Url.Content("~/Room/Search")',
+                data: SearchRoomParameters,
+                dataSrc: RoomGridDataBound,
                 type: "POST"
             },
             scrollCollapse: true,
@@ -158,21 +175,26 @@
             },
             {
                 targets: 1,
-                data: "RoomTypeCode",
+                data: "RoomNo",
                 orderable: true
             },
             {
                 targets: 2,
-                data: "Description",
-                orderable: false
+                data: "Type",
+                orderable: true
             },
             {
                 targets: 3,
-                data: "RoomCapacity",
+                data: "FloorName",
                 orderable: true
             },
             {
                 targets: 4,
+                data: "RoomTypeCode",
+                orderable: true
+            },
+            {
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -185,15 +207,15 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoRoomTypeEdit(\'' + full.Id + '\')" '
+                    return '<a href="javascript:void(0);" onclick="GotoRoomEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
                         + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deleteRoomType(this,event,\'' + full.Id + '\')">Delete</button>';
+                        + ' onclick="deleteRoom(this,event,\'' + full.Id + '\')">Delete</button>';
                 }
             }
             ],
@@ -204,23 +226,25 @@
         })
     }
 
-    function GotoRoomTypeEdit(Id) {
-        var url = '@Url.Content("~/RoomType/Edit/")' + Id;
+    function GotoRoomEdit(Id) {
+        var url = '@Url.Content("~/Room/Edit/")' + Id;
         redirectTo(url);
     }
 
-    function searchRoomType() {
+    function searchRoom() {
         currentPage = 1;
-        ReloadRoomTypeGrid();
+        ReloadRoomGrid();
     }
 
-    function clearRoomType() {
-        $('#RoomTypeCode').val('');        
+    function clearRoom() {        
+        $('#FloorId').val('');
+        $('#RoomTypeId').val('');
+        $('#RoomNo').val('');
 
-        searchRoomType();
+        searchRoom();
     }
 
-    function deleteRoomType(item, e, id) {
+    function deleteRoom(item, e, id) {
 
         swal({
             title: 'Are you sure you want to delete?',
@@ -242,17 +266,17 @@
                     complete: function () {
                         hideLoader();
                     },
-                    url: '@Url.Content("~/RoomType/Delete")',
+                    url: '@Url.Content("~/Room/Delete")',
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
                         if (response.IsSuccess == true) {
 
-                            var tr = $('#tblRoomTypes  tbody tr#' + id)
-                            var row = grdRoomType.row(tr);
+                            var tr = $('#tblRoom  tbody tr#' + id)
+                            var row = grdRoom.row(tr);
                             var rowNode = row.node();
                             row.remove();
-                            grdRoomType.draw();
+                            grdRoom.draw();
 
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }

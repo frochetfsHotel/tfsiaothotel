@@ -17,25 +17,6 @@
         <div class="box-body pt_10 pb-0">
             <div class="row">
                 <div class="col-md-4 form-group">
-                    @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
-                    @Html.DropDownListFor(m => m.RoomTypeId,
-                                (IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "--Select Room Type--",
-                                htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="col-md-4 form-group">
-                    @Html.LabelFor(m => m.RoomNo , new { @class = "required-label" })                    
-                    @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })                    
-                    @Html.ValidationMessageFor(m => m.RoomNo, "", new { @class = "text-danger" })
-                </div>
-                <div class="col-md-4 form-group">
-                    @Html.LabelFor(m => m.Type)
-                    @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Type" })                    
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 form-group">
                     @Html.LabelFor(m => m.FloorId, new { @class = "required-label" })
                     @Html.DropDownListFor(m => m.FloorId,
                                 (IEnumerable<SelectListItem>)ViewBag.FloorList, "--Select Floor--",
@@ -43,9 +24,28 @@
                     @Html.ValidationMessageFor(m => m.FloorId, "", new { @class = "text-danger" })
                 </div>
                 <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
+                    @Html.DropDownListFor(m => m.RoomTypeId,
+                                (IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "--Select Room Type--",
+                                htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
+                </div>        
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.Type)
+                    @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Code" })
+                </div>                   
+            </div>
+            <div class="row">                
+                <div class="col-md-4 form-group">
                     @Html.LabelFor(m => m.Description)
                     @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                </div>               
+                <div class="col-md-4 form-group">
+                    @Html.LabelFor(m => m.RoomNo, new { @class = "required-label" })
+                    @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
+                    @Html.ValidationMessageFor(m => m.RoomNo, "", new { @class = "text-danger" })
                 </div>
+                
                 <div class="col-md-4 form-group m-t-lg">
                     <label class="container1" for="IsActive">
                         Is Active
@@ -78,6 +78,12 @@
         var roomNo = $('#RoomNo').val();
         var floorId = $('#FloorId').val();
 
+
+        if (IsNullOrEmpty(floorId)) {
+            showToaster("Please select floor.", ToasterType.ERROR);
+            return false;
+        }
+
         if (IsNullOrEmpty(roomTypeId))
         {
             showToaster("Please select room type.", ToasterType.ERROR);
@@ -87,11 +93,6 @@
         if (IsNullOrEmpty(roomNo))
         {
             showToaster("Please enter room no.", ToasterType.ERROR);
-            return false;
-        }
-
-        if (IsNullOrEmpty(floorId)) {
-            showToaster("Please select floor.", ToasterType.ERROR);
             return false;
         }
 

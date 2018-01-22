@@ -262,6 +262,7 @@
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
     <Compile Include="Models\ReservationRoomMappingVM.cs" />
     <Compile Include="Models\ReservationSourceVM.cs" />
+    <Compile Include="Models\ReservationStatusVM.cs" />
     <Compile Include="Models\ReservationTypeVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
     <Compile Include="Models\RoomPlanVM.cs" />
@@ -2000,6 +2001,9 @@
     <Content Include="Views\UserRole\Edit.cshtml" />
     <Content Include="Views\UserRole\List.cshtml" />
     <Content Include="Views\UserRole\Create.cshtml" />
+    <Content Include="Views\Room\Create.cshtml" />
+    <Content Include="Views\Room\Edit.cshtml" />
+    <Content Include="Views\Room\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

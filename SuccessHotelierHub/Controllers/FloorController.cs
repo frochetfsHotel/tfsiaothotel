@@ -16,7 +16,7 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration
 
         private FloorRepository floorRepository = new FloorRepository();
-
+        private RoomRepository roomRepository = new RoomRepository();
         #endregion
 
         // GET: Floor
@@ -27,7 +27,10 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult Create()
         {
-            return View();
+            FloorVM model = new FloorVM();
+            model.FloorNo = (floorRepository.GetMaxFloorNo() + 1);
+            model.IsActive = true;            
+            return View(model);
         }
 
         [HttpPost]
@@ -56,6 +59,28 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(floorId))
                 {
+
+                    #region Add Rooms 
+
+                    int roomNo = (model.FloorNo.Value * 100);
+
+                    for (int intI = 1; intI <= model.NoOfRoom; intI++)
+                    {
+                        RoomVM room = new RoomVM();
+                        room.FloorId = Guid.Parse(floorId);
+                        room.Type = "";
+                        room.RoomNo = (roomNo + intI).ToString();
+                        room.Description = "";
+                        room.StatusId = Guid.Parse(RoomStatusType.CLEAN);
+                        room.IsActive = true;
+                        room.IsOccupied = false;
+                        room.CreatedBy = LogInManager.LoggedInUserId;
+
+                        roomRepository.AddRoom(room);
+                    }
+
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

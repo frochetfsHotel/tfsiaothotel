@@ -51,8 +51,7 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomType.RoomTypeCode },
-                    new SqlParameter { ParameterName = "@Description", Value = roomType.Description },
-                    new SqlParameter { ParameterName = "@NoOfRooms", Value = roomType.NoOfRooms },
+                    new SqlParameter { ParameterName = "@Description", Value = roomType.Description },                    
                     new SqlParameter { ParameterName = "@RoomCapacity", Value = roomType.RoomCapacity },
                     new SqlParameter { ParameterName = "@IsActive", Value = roomType.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = roomType.CreatedBy }
@@ -71,8 +70,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Id", Value = roomType.Id },
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomType.RoomTypeCode },
-                    new SqlParameter { ParameterName = "@Description", Value = roomType.Description },
-                    new SqlParameter { ParameterName = "@NoOfRooms", Value = roomType.NoOfRooms },
+                    new SqlParameter { ParameterName = "@Description", Value = roomType.Description },                    
                     new SqlParameter { ParameterName = "@RoomCapacity", Value = roomType.RoomCapacity },
                     new SqlParameter { ParameterName = "@IsActive", Value = roomType.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = roomType.UpdatedBy }
@@ -102,8 +100,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@RoomTypeCode", Value = model.RoomTypeCode },
-                    new SqlParameter { ParameterName = "@NoOfRooms", Value = model.NoOfRooms },
+                    new SqlParameter { ParameterName = "@RoomTypeCode", Value = model.RoomTypeCode },                    
                     new SqlParameter { ParameterName = "@RoomCapacity", Value = model.RoomCapacity },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },

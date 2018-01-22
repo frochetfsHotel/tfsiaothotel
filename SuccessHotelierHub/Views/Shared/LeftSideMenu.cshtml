@@ -133,23 +133,23 @@
                     <li><a href="@Url.Action("List","RoomType")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
             </li>
-            <li>
+            @*<li>
                 <a href="@Url.Action("Index", "Room")">
                     <i class="fa fa-bed" aria-hidden="true"></i> Room
                 </a>
-            </li>
-            @*<li class="treeview">
+            </li>*@
+            <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-star-half-o" aria-hidden="true"></i> Rate
+                    <i class="fa fa-bed" aria-hidden="true"></i> Room
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","Rate")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","Rate")"><i class="fa fa-search"></i> Search </a></li>
+                    <li><a href="@Url.Action("Create","Room")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                    <li><a href="@Url.Action("List","Room")"><i class="fa fa-search"></i> Search </a></li>
                 </ul>
-            </li>*@
+            </li>
             <li>
                 <a href="@Url.Action("ManagePrice", "Rate")">
                     <i class="fa fa-money" aria-hidden="true"></i> Manage Price

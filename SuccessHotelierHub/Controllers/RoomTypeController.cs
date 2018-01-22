@@ -48,29 +48,9 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 roomTypeId = roomTypeRepository.AddRoomType(model);
-
-
-
+                
                 if (!string.IsNullOrWhiteSpace(roomTypeId))
                 {
-                    #region Add Rooms 
-
-                    for (int intI = 1; intI <= model.NoOfRooms; intI++)
-                    {
-                        RoomVM room = new RoomVM();
-                        room.RoomTypeId = Guid.Parse(roomTypeId);
-                        room.Type = (model.RoomTypeCode.ToUpper() + "_" + intI);
-                        room.RoomNo = intI.ToString();
-                        room.Description = "";
-                        room.StatusId = Guid.Parse(RoomStatusType.CLEAN);
-                        room.IsActive = true;
-                        room.IsOccupied = false;
-                        room.CreatedBy = LogInManager.LoggedInUserId;
-
-                        roomRepository.AddRoom(room);
-                    }
-
-                    #endregion
 
                     #region Add Rate (Default 100) for each Rate Type.
 

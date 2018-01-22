@@ -45,6 +45,9 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Name", Value = floor.Name },
                     new SqlParameter { ParameterName = "@Code", Value = floor.Code },
+                    new SqlParameter { ParameterName = "@FloorNo", Value = floor.FloorNo },
+                    new SqlParameter { ParameterName = "@NoOfRoom", Value = floor.NoOfRoom },
+                    new SqlParameter { ParameterName = "@Description", Value = floor.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = floor.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = floor.CreatedBy }
                 };
@@ -63,6 +66,9 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Id", Value = floor.Id },
                     new SqlParameter { ParameterName = "@Name", Value = floor.Name },
                     new SqlParameter { ParameterName = "@Code", Value = floor.Code },
+                    new SqlParameter { ParameterName = "@FloorNo", Value = floor.FloorNo },
+                    new SqlParameter { ParameterName = "@NoOfRoom", Value = floor.NoOfRoom },
+                    new SqlParameter { ParameterName = "@Description", Value = floor.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = floor.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = floor.UpdatedBy }
                 };
@@ -121,6 +127,13 @@ namespace SuccessHotelierHub.Repository
             floor = DALHelper.CreateListFromTable<FloorVM>(dt);
 
             return floor;
+        }
+
+        public int GetMaxFloorNo()
+        {
+            var floorNo = DALHelper.ExecuteScalar("GetMaxFloorNo");
+
+            return (floorNo != null && !string.IsNullOrWhiteSpace(Convert.ToString(floorNo))) ? Convert.ToInt32(floorNo) : 0;
         }
 
         #endregion

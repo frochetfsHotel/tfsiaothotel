@@ -157,6 +157,28 @@ namespace SuccessHotelierHub.Repository
             return rooms;
         }
 
+
+        public List<SearchRoomResultVM> SearchRoom(SearchRoomParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = model.RoomTypeId },
+                    new SqlParameter { ParameterName = "@FloorId", Value = model.FloorId },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = model.RoomNo },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchRoom", parameters);
+
+            var rooms = new List<SearchRoomResultVM>();
+            rooms = DALHelper.CreateListFromTable<SearchRoomResultVM>(dt);
+
+            return rooms;
+        }
+
         #endregion
 
         #region Reservation Room Mapping 

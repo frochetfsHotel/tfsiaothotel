@@ -18,7 +18,6 @@ namespace SuccessHotelierHub.Models
         public string Description { get; set; }
 
         [DisplayName("Amount")]
-        [Required(ErrorMessage = "Please enter amount.")]
         [DataType(DataType.Currency, ErrorMessage = "Please enter valid amount.")]
         public double Amount { get; set; }
 

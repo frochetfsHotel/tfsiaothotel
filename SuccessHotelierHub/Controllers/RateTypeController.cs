@@ -32,6 +32,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 string rateTypeId = string.Empty;
                 model.CreatedBy = LogInManager.LoggedInUserId;
+                model.Amount = 100; //Default Price
 
                 #region Check Rate Type Code Available.
 
@@ -129,7 +130,7 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 string rateTypeId = string.Empty;
-
+                model.Amount = 100; //Default Price
                 model.UpdatedBy = LogInManager.LoggedInUserId;
 
                 #region Check Rate Type Code Available.

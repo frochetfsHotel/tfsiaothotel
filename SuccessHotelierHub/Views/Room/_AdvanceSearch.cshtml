@@ -55,7 +55,7 @@
             </div>
             <div class="col-md-4 col-xs-12 form-group">
                 @Html.LabelFor(m => m.Type)
-                @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Type" })
+                @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Code" })
             </div>
             <div class="col-md-4 m-b-sm text-right m-t-md">
                 <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoom()">Search</button>
@@ -74,7 +74,7 @@
                     <tr>
                         <th width="5%;"></th>
                         <th>Room#</th>
-                        <th>Type</th>
+                        <th>Code</th>
                         <th>Room Type</th>
                         <th width="10%">Status</th>
                         <th>Description</th>

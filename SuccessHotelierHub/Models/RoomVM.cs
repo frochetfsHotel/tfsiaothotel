@@ -11,15 +11,19 @@ namespace SuccessHotelierHub.Models
     {
         public Guid Id { get; set; }
 
+        [DisplayName("Floor")]
+        [Required(ErrorMessage = "Please select floor.")]
+        public Guid FloorId { get; set; }
+
         [DisplayName("Room Type")]
         [Required(ErrorMessage = "Please select room type.")]
-        public Guid RoomTypeId { get; set; }
+        public Guid? RoomTypeId { get; set; }
 
         [DisplayName("Room #")]
         [Required(ErrorMessage = "Please enter room no.")]
         public string RoomNo { get; set; }
 
-        [DisplayName("Type")]
+        [DisplayName("Code")]
         public string Type { get; set; }
 
         [DisplayName("Description")]
@@ -28,9 +32,6 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Status")]
         public Guid? StatusId { get; set; }
 
-        [DisplayName("Floor")]
-        [Required(ErrorMessage = "Please select floor.")]
-        public Guid? FloorId { get; set; }
 
         public bool IsOccupied { get; set; }
 

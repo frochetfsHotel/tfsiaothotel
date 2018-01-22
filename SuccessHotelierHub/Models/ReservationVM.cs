@@ -222,6 +222,9 @@ namespace SuccessHotelierHub.Models
         public double? TotalPrice { get; set; }
         public double? TotalBalance { get; set; }
 
+
+        public Guid? ReservationStatusId { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

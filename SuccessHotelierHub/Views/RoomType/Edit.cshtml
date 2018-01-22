@@ -30,17 +30,12 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-6 form-group">
                         @Html.LabelFor(m => m.RoomTypeCode, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
                         @Html.ValidationMessageFor(m => m.RoomTypeCode, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.NoOfRooms, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.NoOfRooms, new { @class = "form-control", placeholder = "No Of Rooms", onkeydown = "onlyDigits(event)", @readonly = "readonly" })
-                        @Html.ValidationMessageFor(m => m.NoOfRooms, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-6 form-group">
                         @Html.LabelFor(m => m.RoomCapacity)
                         @Html.TextBoxFor(m => m.RoomCapacity, new { @class = "form-control", placeholder = "Room Capacity", onkeydown = "onlyDigits(event)" })
                     </div>
