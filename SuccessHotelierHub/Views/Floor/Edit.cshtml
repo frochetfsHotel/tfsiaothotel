@@ -41,7 +41,7 @@
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.FloorNo, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.FloorNo, new { @class = "form-control", placeholder = "Floor #", @readonly = "readonly " })
+                        @Html.TextBoxFor(m => m.FloorNo, new { @class = "form-control", placeholder = "Floor #", @readonly = "readonly" })
                     </div>
                 </div>
                 <div class="row">
@@ -51,7 +51,7 @@
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.NoOfRoom, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "No Of Room" })
+                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", placeholder = "No Of Room" , @readonly = "readonly" })
                         @Html.ValidationMessageFor(m => m.NoOfRoom, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group m-t-lg">
