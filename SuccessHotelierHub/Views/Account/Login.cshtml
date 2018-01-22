@@ -85,7 +85,8 @@
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        redirectTo('@Url.Content("~/Home/Index")');
+                        //Load default dashboard menu.
+                        setCurrentMenu('Dashboard', '@Url.Content("~/Home/Index")')
                     }
                 }
             });

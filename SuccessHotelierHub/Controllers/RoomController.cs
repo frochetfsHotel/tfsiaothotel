@@ -104,6 +104,58 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        public ActionResult DeleteSelected(List<Guid> ids)
+        {
+            try
+            {
+                var isDelete = false;
+
+                if (ids != null)
+                {
+                    foreach (var id in ids)
+                    {
+                        var roomDetail = roomRepository.GetRoomById(id).FirstOrDefault();
+
+                        var roomId = roomRepository.DeleteRoom(id, LogInManager.LoggedInUserId);
+
+                        #region Update Room Type (No. Of Rooms)
+
+                        //Decrease the no. of rooms quantity from room type.
+                        var roomType = roomTypeRepository.GetRoomTypeById(roomDetail.RoomTypeId).FirstOrDefault();
+
+                        roomType.NoOfRooms = roomType.NoOfRooms > 0 ? (roomType.NoOfRooms - 1) : 0;
+
+                        roomTypeRepository.UpdateRoomType(roomType);
+
+                        #endregion
+
+                        isDelete = true;
+                    }
+                }
+
+                if (isDelete)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Rooms not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
         public ActionResult UpdateRooms(List<RoomVM> models)
         {
             try

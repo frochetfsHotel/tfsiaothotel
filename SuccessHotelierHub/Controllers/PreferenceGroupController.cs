@@ -158,6 +158,44 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        public ActionResult DeleteSelected(List<Guid> ids)
+        {
+            try
+            {
+                var isDelete = false;
+
+                if (ids != null)
+                {
+                    foreach (var id in ids)
+                    {
+                        preferenceGroupRepository.DeletePreferenceGroup(id, LogInManager.LoggedInUserId);
+                        isDelete = true;
+                    }
+                }
+
+                if (isDelete)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Preference Groups not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
         public ActionResult Search(SearchPreferenceGroupParametersVM model)
         {
             try

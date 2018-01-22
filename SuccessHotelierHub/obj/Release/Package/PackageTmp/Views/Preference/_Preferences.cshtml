@@ -10,7 +10,7 @@
 
 <form id="frmAdvancePreferenceSearch" name="frmAdvancePreferenceSearch" enctype="multipart/form-data" method="post">
 
-    <div class="pt_10 pl_10 pr_10 searchBox_Border">
+    <div class="pt_10 pl_10 pr_10 col-xs-12 searchBox_Border">
         <div class="row">
             <div class="col-md-4 col-sm-3 col-xs-12 form-group">
                 @Html.LabelFor(m => m.PreferenceGroupId)
@@ -29,6 +29,7 @@
             <div class="clearfix"></div>
         </div>
     </div>
+
     <div class="col-xs-12 text-right m-t-sm m-b-sm padding-zero">
         <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchPreferenceOk">OK</button>
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -42,19 +43,20 @@
         </div>
     </div>
 
-
-    <div class="table-responsive m-t-md table_maxheight">
-        <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblPreference">
-            <thead>
-                <tr>
-                    <th width="5%;"></th>
-                    <th>Preference Group</th>
-                    <th>Description</th>
-                    <th>Preference</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <div class="col-xs-12 m-b-sm padding-zero">
+        <div class="table-responsive m-t-md table_maxheight">
+            <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblPreference">
+                <thead>
+                    <tr>
+                        <th width="5%;"></th>
+                        <th>Preference Group</th>
+                        <th>Description</th>
+                        <th>Preference</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 </form>
 

@@ -400,3 +400,11 @@ function FormatNumberWithTwoDecimal(amount) {
     }
     return "0.00";
 }
+
+function RemoveArrayItemByValue(itemToRemove, arr) {
+    if (arr != null && arr.length > 0) {
+        arr.splice($.inArray(itemToRemove, arr), 1);
+    }
+
+    return arr;
+}

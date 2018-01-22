@@ -36,12 +36,7 @@
                 <a href="javascript:void(0);" onclick="setCurrentMenu('Cashiering','@Url.Content("~/Home/Default")');">
                     <i class="fa fa-money font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Cashiering</span>
                 </a>
-            </li>
-            <li class="text-center topMenu" id="menuMasterScreen">
-                <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Home/Default")');">
-                    <i class="fa fa-cc-mastercard font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Master Screens</span>
-                </a>
-            </li>
+            </li>          
             <li class="text-center topMenu" id="menuEndOfDayScreen">
                 <a href="javascript:void(0);">
                     <i class="fa fa-clock-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">End Of Day</span>
@@ -49,7 +44,12 @@
             </li>
             <li class="text-center topMenu" id="menuBillingScreen">
                 <a href="javascript:void(0);">
-                    <i class="fa fa-credit-card font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Billing </span>
+                    <i class="fa fa-file-text font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reports </span>
+                </a>
+            </li>
+            <li class="text-center topMenu" id="menuMasterScreen">
+                <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Home/Default")');">
+                    <i class="fa fa-cc-mastercard font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Master Screens</span>
                 </a>
             </li>
         </ul>
@@ -61,7 +61,7 @@
                 <li class="dropdown user user-menu">
                     <a href="@Url.Action("SignOut","Account")" class="dropdown-toggle p-22">
                         <i class="fa fa-sign-out"></i>
-                        <span class="hidden_xs">Sign Out</span>
+                        <span class="hidden_xs">Logout</span>
                     </a>
                 </li>
             </ul>
