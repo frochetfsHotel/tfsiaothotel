@@ -11203,3 +11203,199 @@ BEGIN
 		
 END
 
+
+
+/************************************************************************************************************************************/
+
+Name : Nilesh
+Date : 23-JAN-2018
+
+
+/******* Add Description column into ReservationType Table ****/
+
+
+ALTER TABLE ReservationType ADD [Description] NVARCHAR(MAX) NULL
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddReservationType
+	Comment : Changes in SP AddReservationType	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddReservationType]    Script Date: 1/23/2018 2:20:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservationType]	
+	@Name			NVARCHAR(500)			,	
+	@Description	NVARCHAR(MAX)	= NULL	,	
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationType]
+           ([Id]           
+           ,[Name]		  
+		   ,[Description] 		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name	
+			   ,@Description		   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateReservationType
+	Comment : Changes in SP UpdateReservationType	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateReservationType]    Script Date: 1/23/2018 2:20:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateReservationType]
+	@Id				UNIQUEIDENTIFIER		,	
+	@Name			NVARCHAR(500)			,	
+	@Description	NVARCHAR(MAX)	= NULL	,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationType]
+		SET	[Name]			=	@Name		
+		   ,[Description]	=	@Description   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchReservationType
+	Comment : Changes in SP SearchReservationType	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchReservationType]    Script Date: 1/23/2018 2:21:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchReservationType] '', '',  1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchReservationType]					
+	@Name			NVARCHAR(500)	=	NULL	,	
+	@Description	NVARCHAR(MAX)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempReservationType
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(255)		NOT NULL	
+		,	[Description]	NVARCHAR(MAX)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[ReservationType]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  								
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+						)
+
+
+		INSERT INTO #tempReservationType ([RowNum], [Id], [Name], [Description], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],								
+				[Name],
+				ISNULL([Description],'') AS [Description],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[ReservationType]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 					 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],	
+			temp.[Description],		
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempReservationType AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+

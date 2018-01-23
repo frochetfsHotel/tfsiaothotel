@@ -12,15 +12,15 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
 
         [DisplayName("Preference Group")]
-        [Required(ErrorMessage = "Please select preference group")]
+        [Required(ErrorMessage = "Please select preference group.")]
         public Guid PreferenceGroupId { get; set; }
 
         [DisplayName("Preference Code")]
-        [Required(ErrorMessage = "Please enter code")]
+        [Required(ErrorMessage = "Please enter code.")]
         public string Code { get; set; }
 
         [DisplayName("Preference")]
-        [Required(ErrorMessage = "Please enter description")]
+        [Required(ErrorMessage = "Please enter preference.")]
         public string Description { get; set; }
 
         public int? CreatedBy { get; set; }

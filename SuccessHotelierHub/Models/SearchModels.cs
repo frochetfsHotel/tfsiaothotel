@@ -1006,7 +1006,12 @@ namespace SuccessHotelierHub.Models
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
-        public string Name { get; set; }        
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }   
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -1016,7 +1021,8 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
-        public string Name { get; set; }        
+        public string Name { get; set; }
+        public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }

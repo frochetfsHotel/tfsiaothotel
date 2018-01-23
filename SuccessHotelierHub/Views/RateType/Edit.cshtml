@@ -36,16 +36,16 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row"> 
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.RateTypeCode, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.RateTypeCode, new { @class = "form-control", placeholder = "Rate Type Code" })
                         @Html.ValidationMessageFor(m => m.RateTypeCode, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Description)
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">
+                    <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)

@@ -12,17 +12,17 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
 
         [DisplayName("Room Type")]
-        [Required(ErrorMessage = "Please select room type")]
+        [Required(ErrorMessage = "Please select room type.")]
         public Guid RoomTypeId { get; set; }
 
         [DisplayName("Rate Type")]
-        [Required(ErrorMessage = "Please select rate type")]
+        [Required(ErrorMessage = "Please select rate type.")]
         public Guid RateTypeId { get; set; }
 
         public string Description { get; set; }
 
         [DisplayName("Amount")]
-        [Required(ErrorMessage = "Please enter amount")]
+        [Required(ErrorMessage = "Please enter amount.")]
         [DataType(DataType.Currency, ErrorMessage = "Please enter valid amount.")]
         public double Amount { get; set; }
 

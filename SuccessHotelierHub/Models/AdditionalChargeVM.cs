@@ -12,11 +12,11 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
 
         [DisplayName("Code")]
-        [Required(ErrorMessage = "Please enter code")]
+        [Required(ErrorMessage = "Please enter code.")]
         public string Code { get; set; }
 
         [DisplayName("Description")]
-        [Required(ErrorMessage = "Please enter description")]
+        [Required(ErrorMessage = "Please enter description.")]
         public string Description { get; set; }
 
         [DisplayName("Price")]
