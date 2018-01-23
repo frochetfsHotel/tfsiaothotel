@@ -59,12 +59,18 @@
                     </div>
                 </div>
 
+                <div class="col-xs-12 padding-zero m-t" id="divMultipleDeleteAction" style="display:none;">
+                    <div class="text-left">
+                        <button type="button" id="btnDeleteMultipleRecords" class="btn bg-orange btn-sm" onclick="deleteSelected()">Delete Selected</button>
+                    </div>
+                </div>
+
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblCity">
                             <thead>
                                 <tr>
-                                    <th>CreatedOn</th>
+                                    <th></th>
                                     <th>Country</th>
                                     <th>State</th>
                                     <th>Name</th>
@@ -88,6 +94,7 @@
 <script type="text/javascript">
     var currentPage = 1;
     var grdCity;
+    var selectedCityIds = [];
 
     $(document).ready(function () {
         setTimeout(InitializeCityGrid, 200);
@@ -102,7 +109,7 @@
 
     function SearchCityParameters(d) {
         var countryId = $('#CountryId').val();
-        var stateId = $('#StateId').val();        
+        var stateId = $('#StateId').val();
         var name = $('#Name').val();
 
         d.PageNum = currentPage;
@@ -114,6 +121,14 @@
     function CityGridDataBound(response) {
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            if (response.data.length > 0) {
+                $('#divMultipleDeleteAction').show();
+            } else {
+                ClearCityIdsArray();
+                $('#divMultipleDeleteAction').hide();
+            }
+
             return response.data;
         }
         else {
@@ -144,6 +159,7 @@
                 },
                 complete: function () {
                     hideLoader();
+                    BindCheckBoxCityChangeEvent();
                 },
                 url: '@Url.Content("~/City/Search")',
                 data: SearchCityParameters,
@@ -164,8 +180,21 @@
             {
                 targets: 0,
                 data: "CreatedOn",
-                orderable: true,
-                "visible": false
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var chkBox = "";
+                    var checked = "";
+                    if (selectedCityIds != null && selectedCityIds.length > 0) {
+                        if (arrayContains(full.Id.toString(), selectedCityIds) == true) {
+                            checked = "checked";
+                        }
+                    }
+
+                    chkBox += "<label class='container1' for='chkCity_" + full.Id + "'>";
+                    chkBox += "<input type='checkbox' class='chkCityItem' id='chkCity_" + full.Id + "' name='chkCity_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
+                    chkBox += "<span class='checkmark'></span> </label>";
+                    return chkBox;
+                }
             },
             {
                 targets: 1,
@@ -222,12 +251,13 @@
 
     function searchCity() {
         currentPage = 1;
+        ClearCityIdsArray();
         ReloadCityGrid();
     }
 
     function clearCity() {
         $('#CountryId').val('');
-        $('#StateId').val('');        
+        $('#StateId').val('');
         $('#Name').val('');
 
         searchCity();
@@ -312,6 +342,78 @@
                     }
                 }
             });
+        }
+    }
+
+    function BindCheckBoxCityChangeEvent() {
+        $(".chkCityItem").change(function () {
+            if (this.checked) {
+                AddCityIdIntoArray($(this).val());
+            } else {
+                RemoveCityIdFromArray($(this).val());
+            }
+        });
+    }
+
+    function AddCityIdIntoArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedCityIds.push(id);
+        }
+    }
+
+    function RemoveCityIdFromArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedCityIds = RemoveArrayItemByValue(id, selectedCityIds);
+        }
+    }
+
+    function ClearCityIdsArray() {
+        selectedCityIds = [];
+    }
+
+    function deleteSelected() {
+
+        if (selectedCityIds != null && selectedCityIds.length > 0) {
+            swal({
+                title: 'Are you sure you want to delete selected records?',
+                type: 'warning',
+                showCancelButton: true,
+                showCloseButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        beforeSend: function (xhr) {
+                            showLoader();
+                        },
+                        error: function (result) {
+                            showToaster(result.responseText, ToasterType.ERROR);
+                        },
+                        complete: function () {
+                            hideLoader();
+                        },
+                        url: '@Url.Content("~/City/DeleteSelected")',
+                        type: 'POST',
+                        data: { ids: selectedCityIds },
+                        success: function (response) {
+                            if (response.IsSuccess == true) {
+                                ClearCityIdsArray();
+
+                                searchCity();
+
+                                showToaster("Records deleted successfully", ToasterType.SUCCESS);
+                            }
+                            else {
+                                showToaster(response.errorMessage, ToasterType.ERROR);
+                            }
+                        }
+                    });
+                }
+            });
+        } else {
+            showToaster("Please select at least one checkbox to delete record.", ToasterType.ERROR);
         }
     }
 

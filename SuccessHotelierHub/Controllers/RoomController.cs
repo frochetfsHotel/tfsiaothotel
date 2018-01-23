@@ -75,9 +75,12 @@ namespace SuccessHotelierHub.Controllers
                     //Decrease the no. of rooms quantity from floor.
                     var floor = floorRepository.GetFloorById(roomDetail.FloorId).FirstOrDefault();
 
-                    floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom - 1) : 0;
+                    if (floor != null)
+                    {
+                        floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom - 1) : 0;
 
-                    floorRepository.UpdateFloor(floor);
+                        floorRepository.UpdateFloor(floor);
+                    }
 
                     #endregion
 
@@ -125,9 +128,12 @@ namespace SuccessHotelierHub.Controllers
                         //Decrease the no. of rooms quantity from floor.
                         var floor = floorRepository.GetFloorById(roomDetail.FloorId).FirstOrDefault();
 
-                        floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom - 1) : 0;
+                        if (floor != null)
+                        {
+                            floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom - 1) : 0;
 
-                        floorRepository.UpdateFloor(floor);
+                            floorRepository.UpdateFloor(floor);
+                        }
 
                         #endregion
 
@@ -312,9 +318,12 @@ namespace SuccessHotelierHub.Controllers
                     //Increase the no. of rooms quantity in floor.
                     var floor = floorRepository.GetFloorById(model.FloorId).FirstOrDefault();
 
-                    floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom + 1) : 0;
+                    if (floor != null)
+                    {
+                        floor.NoOfRoom = floor.NoOfRoom > 0 ? (floor.NoOfRoom + 1) : 0;
 
-                    floorRepository.UpdateFloor(floor);
+                        floorRepository.UpdateFloor(floor);
+                    }
 
                     #endregion
 

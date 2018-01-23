@@ -57,7 +57,7 @@
                         <table class="table table-bordered table-hover table-striped" id="tblRateTypes">
                             <thead>
                                 <tr>
-                                    <th>CreatedOn</th>
+                                    <th></th>
                                     <th>Rate Type Code</th>
                                     <th>Description</th>                                    
                                     <th>Status</th>
@@ -162,7 +162,7 @@
             {
                 targets: 0,
                 data: "CreatedOn",
-                orderable: true,
+                orderable: false,
                 render: function (data, type, full, meta) {
                     var chkBox = "";
                     var checked = "";
@@ -228,6 +228,7 @@
 
     function searchRateType() {
         currentPage = 1;
+        ClearRateTypeIdsArray();
         ReloadRateTypeGrid();
     }
 

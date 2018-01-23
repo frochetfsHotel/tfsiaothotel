@@ -182,6 +182,44 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult DeleteSelected(List<int> ids)
+        {
+            try
+            {
+                var isDelete = false;
+
+                if (ids != null)
+                {
+                    foreach (var id in ids)
+                    {
+                        cityRepository.DeleteCity(id, LogInManager.LoggedInUserId);
+                        isDelete = true;
+                    }
+                }
+
+                if (isDelete)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "City details not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         public ActionResult List()
         {
             //Get Country

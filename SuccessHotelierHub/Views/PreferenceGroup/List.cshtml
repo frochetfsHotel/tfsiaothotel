@@ -174,7 +174,7 @@
             {
                 targets: 0,
                 data: "CreatedOn",
-                orderable: true,
+                orderable: false,
                 render: function (data, type, full, meta) {
                     var chkBox = "";
                     var checked = "";
@@ -240,6 +240,7 @@
 
     function searchPreferenceGroup() {
         currentPage = 1;
+        ClearPreferenceGroupIdsArray();
         ReloadPreferenceGroupGrid();
     }
 

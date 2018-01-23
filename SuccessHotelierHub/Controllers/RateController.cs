@@ -272,6 +272,44 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult DeleteSelected(List<Guid> ids)
+        {
+            try
+            {
+                var isDelete = false;
+
+                if (ids != null)
+                {
+                    foreach (var id in ids)
+                    {
+                        rateRepository.DeleteRoomTypeRateTypeMapping(id, LogInManager.LoggedInUserId);
+                        isDelete = true;
+                    }
+                }
+
+                if (isDelete)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Rates not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         public ActionResult List()
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
