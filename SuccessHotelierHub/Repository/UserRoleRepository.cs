@@ -46,6 +46,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Code", Value = userRole.Code},
                     new SqlParameter { ParameterName = "@Name", Value = userRole.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = userRole.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = userRole.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = userRole.CreatedBy }
                 };
@@ -64,6 +65,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Id", Value = userRole.Id },
                     new SqlParameter { ParameterName = "@Code", Value = userRole.Code},
                     new SqlParameter { ParameterName = "@Name", Value = userRole.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = userRole.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = userRole.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = userRole.UpdatedBy }
                 };
@@ -94,6 +96,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Code", Value = model.Code },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

@@ -17,7 +17,10 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Name")]
         [Required(ErrorMessage = "Please enter role name.")]
-        public string Name { get; set; }        
+        public string Name { get; set; }
+
+        [DisplayName("Description")]        
+        public string Description { get; set; }
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
