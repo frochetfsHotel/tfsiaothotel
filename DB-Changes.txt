@@ -12354,3 +12354,299 @@ BEGIN
 	-- PAGING COMPLETED
 
 END
+
+
+
+/********************************************************************************************************/
+
+
+/*********** Create new table RoomFeatures ******/
+
+
+/****** Object:  Table [dbo].[RoomFeatures]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[RoomFeatures](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[Name] [nvarchar](500) NOT NULL,
+	[Description] [nvarchar](MAX) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_RoomFeatures] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddRoomFeatures
+	Comment : Create SP AddRoomFeatures	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddRoomFeatures]    Script Date: 1/23/2018 4:04:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddRoomFeatures]	
+	@Name			NVARCHAR(500)			,	
+	@Description	NVARCHAR(MAX)	= NULL	,	
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[RoomFeatures]
+           ([Id]           
+           ,[Name]		  
+		   ,[Description] 		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name		
+			   ,@Description	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateRoomFeatures
+	Comment : Create SP UpdateRoomFeatures	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateRoomFeatures]    Script Date: 1/23/2018 4:06:11 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateRoomFeatures]
+	@Id				UNIQUEIDENTIFIER		,	
+	@Name			NVARCHAR(500)			,	
+	@Description	NVARCHAR(MAX)	= NULL	,	
+	@IsActive		BIT				= NULL	,	
+	@UpdatedBy		INT				= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[RoomFeatures]
+		SET	[Name]			=	@Name
+		   ,[Description]	=	@Description		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteRoomFeatures
+	Comment : Create SP DeleteRoomFeatures	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteRoomFeatures]    Script Date: 1/23/2018 4:06:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteRoomFeatures]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[RoomFeatures] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetRoomFeaturesById
+	Comment : Create SP GetRoomFeaturesById	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomFeaturesById]    Script Date: 1/23/2018 4:07:11 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetRoomFeaturesById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RoomFeatures]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetRoomFeatures
+	Comment : Create SP GetRoomFeatures	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomFeatures]    Script Date: 1/23/2018 4:07:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetRoomFeatures]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RoomFeatures]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchRoomFeatures
+	Comment : Create SP SearchRoomFeatures	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchRoomFeatures]    Script Date: 1/23/2018 4:08:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchRoomFeatures] '', '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchRoomFeatures]					
+	@Name			NVARCHAR(500)	=	NULL	,		
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempRoomFeatures
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(255)		NOT NULL	
+		,	[Description]	NVARCHAR(MAX)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[RoomFeatures]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+						)
+
+
+		INSERT INTO #tempRoomFeatures ([RowNum], [Id], [Name], [Description], [CreatedOn], [IsActive])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+						
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+							THEN [Description] END ASC,
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+							THEN [Description] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],								
+				[Name],
+				ISNULL([Description],'') AS [Description],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[RoomFeatures]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],		
+			temp.[Description],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempRoomFeatures AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+

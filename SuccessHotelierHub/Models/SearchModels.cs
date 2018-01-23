@@ -1208,6 +1208,41 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Room Features
+
+    public class SearchRoomFeatureParametersVM
+    {
+        public SearchRoomFeatureParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchRoomFeatureResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region Search Room
 
     public class SearchRoomParametersVM

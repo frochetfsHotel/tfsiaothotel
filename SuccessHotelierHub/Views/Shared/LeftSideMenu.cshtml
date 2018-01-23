@@ -121,35 +121,60 @@
                 </ul>
             </li>
 
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-bed" aria-hidden="true"></i> Room Type
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","RoomType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","RoomType")"><i class="fa fa-search"></i> Search </a></li>
-                </ul>
-            </li>
+           
             @*<li>
                 <a href="@Url.Action("Index", "Room")">
                     <i class="fa fa-bed" aria-hidden="true"></i> Room
                 </a>
             </li>*@
+
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-bed" aria-hidden="true"></i> Room
+                    <i class="fa fa-sitemap"></i> Room Master
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="@Url.Action("Create","Room")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                    <li><a href="@Url.Action("List","Room")"><i class="fa fa-search"></i> Search </a></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-bed" aria-hidden="true"></i> Room Type
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","RoomType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","RoomType")"><i class="fa fa-search"></i> Search </a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-bath" aria-hidden="true"></i> Room
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","Room")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","Room")"><i class="fa fa-search"></i> Search </a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-500px" aria-hidden="true"></i> Room Features
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="@Url.Action("Create","RoomFeatures")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                            <li><a href="@Url.Action("List","RoomFeatures")"><i class="fa fa-search"></i> Search </a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
+            
             <li>
                 <a href="@Url.Action("ManagePrice", "Rate")">
                     <i class="fa fa-money" aria-hidden="true"></i> Manage Price
@@ -158,7 +183,7 @@
 
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-book"></i> Reservations Master Screen
+                    <i class="fa fa-book"></i> Reservations Master
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>

@@ -1,0 +1,157 @@
+﻿@model SuccessHotelierHub.Models.ReservationChargeVM
+@using SuccessHotelierHub.Models
+@using SuccessHotelierHub.Utility
+@{
+    var sourceRedirectionParam = "";
+    sourceRedirectionParam = (string)ViewData["Source"];
+}
+
+<div class="row">
+    @using (Html.BeginForm("Create", "ReservationCharge", FormMethod.Post, new { id = "frmReservationCharge", enctype = "multipart/form-data" }))
+    {
+        
+        <!--HIDDEN FIELD-->
+        @Html.HiddenFor(m => m.ReservationId)
+        @Html.HiddenFor(m => m.AdditionalChargeId)
+        <!--HIDDEN FIELD-->
+
+        <div class="box-body pt_10 pb-0">
+
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.TransactionDate, new { @class = "required-label" })
+                    <div class="input-group date">
+                        @Html.TextBoxFor(m => m.TransactionDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.TransactionDate, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.Code, new { @class = "required-label" })
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
+                        <div class="input-group-addon cursor-P" onclick="openAdditionalChargeModal();">
+                            <i class="fa fa-search"></i>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
+                    @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model != null && Model.Amount.HasValue ? Model.Amount.Value : 1), new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event)" })
+                    @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.Description)
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.Qty)
+                    @Html.TextBoxFor(m => m.Qty, new { @class = "form-control", placeholder = "Qty", onkeydown = "onlyDigits(event)" })
+                </div>
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.Supplement)
+                    @Html.TextBoxFor(m => m.Supplement, new { @class = "form-control", placeholder = "Supplement" })
+                </div>
+                <div class="col-md-3 form-group">
+                    @Html.LabelFor(m => m.Reference)
+                    @Html.TextBoxFor(m => m.Reference, new { @class = "form-control", placeholder = "Reference" })
+                </div>
+                <div class="col-md-3 form-group m-t-lg">
+                    <label class="container1" for="IsActive">
+                        Is Active
+                        @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer text-right">
+            <button type="button" class="btn btn-success m-r-xs" onclick="return saveReservationCharges();">Post</button>
+            <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Cancel</button>
+        </div>
+    }
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        clearReservationChargesData();
+
+        //Default Transaction Date. (Set today's date).
+        $("#TransactionDate").datepicker("setDate", new Date());
+    })
+
+    function validateReservationCharges() {
+        var errorMessage = "";
+        var blnValid = true;
+
+        if ($("#frmReservationCharge").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function saveReservationCharges() {
+
+        if (validateReservationCharges()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (result) {
+                    showToaster(result.responseText, ToasterType.ERROR);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/ReservationCharge/Create")',
+                type: 'POST',
+                data: $('#frmReservationCharge').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        console.log("saveReservationCharges : OnSuccess() = " + response.data);
+                        var lastTransaction = response.data.Transaction;
+
+                        if (lastTransaction != null)
+                        {
+                            //Call Grid Function.
+                            bindBillingTransactionGrid(lastTransaction);
+                        }
+                        showToaster("Charge details saved successfully", ToasterType.SUCCESS);
+
+                        clearReservationChargesData();
+
+                        $('#reservationChargeModal').modal('toggle');
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
+    function clearReservationChargesData() {
+        $("#TransactionDate").datepicker("setDate", new Date());
+        $('#Code').val('');
+        $('#Description').val('');
+        $('#Amount').val('');
+        $('#Qty').val('');
+        $('#Supplement').val('');
+        $('#Reference').val('');
+    }
+</script>
+
+

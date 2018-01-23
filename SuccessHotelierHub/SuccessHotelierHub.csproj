@@ -225,6 +225,7 @@
     <Compile Include="Controllers\ReservationSourceController.cs" />
     <Compile Include="Controllers\ReservationTypeController.cs" />
     <Compile Include="Controllers\RoomController.cs" />
+    <Compile Include="Controllers\RoomFeaturesController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\UserRoleController.cs" />
@@ -265,6 +266,7 @@
     <Compile Include="Models\ReservationStatusVM.cs" />
     <Compile Include="Models\ReservationTypeVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
+    <Compile Include="Models\RoomFeatureVM.cs" />
     <Compile Include="Models\RoomPlanVM.cs" />
     <Compile Include="Models\RoomStatusVM.cs" />
     <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />
@@ -298,6 +300,7 @@
     <Compile Include="Repository\ReservationRepository.cs" />
     <Compile Include="Repository\ReservationSourceRepository.cs" />
     <Compile Include="Repository\ReservationTypeRepository.cs" />
+    <Compile Include="Repository\RoomFeatureRepository.cs" />
     <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomStatusRepository.cs" />
     <Compile Include="Repository\RoomTypeRepository.cs" />
@@ -2004,6 +2007,10 @@
     <Content Include="Views\Room\Create.cshtml" />
     <Content Include="Views\Room\Edit.cshtml" />
     <Content Include="Views\Room\List.cshtml" />
+    <Content Include="Views\RoomFeatures\Create.cshtml" />
+    <Content Include="Views\RoomFeatures\Edit.cshtml" />
+    <Content Include="Views\RoomFeatures\List.cshtml" />
+    <Content Include="Views\ReservationCharge\_PostReservationCharges.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
