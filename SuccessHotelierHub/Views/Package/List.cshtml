@@ -39,6 +39,10 @@
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Description)
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                        </div>
                         <div class="col-md-4 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchPackage()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearPackage()">Clear</button>
@@ -53,8 +57,9 @@
                         <table class="table table-bordered table-hover table-striped" id="tblPackage">
                             <thead>
                                 <tr>
-                                    <th>CreatedOn</th>
+                                    <th></th>
                                     <th>Name</th>
+                                    <th>Description</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -89,9 +94,11 @@
 
     function SearchPackageParameters(d) {
         var name = $('#Name').val();
+        var description = $('#Description').val();
 
         d.PageNum = currentPage;
         d.Name = name;
+        d.Description = description;
     }
 
     function PackageGridDataBound(response) {
@@ -157,6 +164,11 @@
             },
             {
                 targets: 2,
+                data: "Description",
+                orderable: false
+            },
+            {
+                targets: 3,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -169,7 +181,7 @@
                 }
             },
             {
-                targets: 3,
+                targets: 4,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -200,7 +212,7 @@
 
     function clearPackage() {
         $('#Name').val('');
-
+        $('#Description').val('');
         searchPackage();
     }
 
