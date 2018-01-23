@@ -182,16 +182,20 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var chkBox = "";
-                    var checked = "";
-                    if (selectedAdditionalChargeIds != null && selectedAdditionalChargeIds.length > 0) {
-                        if (arrayContains(full.Id, selectedAdditionalChargeIds) == true) {
-                            checked = "checked";
-                        }
-                    }
 
-                    chkBox += "<label class='container1' for='chkAdditionalCharge_" + full.Id + "'>";
-                    chkBox += "<input type='checkbox' class='chkAdditionalChargeItem' id='chkAdditionalCharge_" + full.Id + "' name='chkAdditionalCharge_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
-                    chkBox += "<span class='checkmark'></span> </label>";
+                    if (full.Code != '1000' && full.Code != '9004') {
+
+                        var checked = "";
+                        if (selectedAdditionalChargeIds != null && selectedAdditionalChargeIds.length > 0) {
+                            if (arrayContains(full.Id, selectedAdditionalChargeIds) == true) {
+                                checked = "checked";
+                            }
+                        }
+
+                        chkBox += "<label class='container1' for='chkAdditionalCharge_" + full.Id + "'>";
+                        chkBox += "<input type='checkbox' class='chkAdditionalChargeItem' id='chkAdditionalCharge_" + full.Id + "' name='chkAdditionalCharge_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
+                        chkBox += "<span class='checkmark'></span> </label>";
+                    }
                     return chkBox;
                 }
             },

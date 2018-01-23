@@ -39,6 +39,10 @@
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Description)
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                        </div>
                         <div class="col-md-4 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchPaymentMethod()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearPaymentMethod()">Clear</button>
@@ -47,16 +51,16 @@
                 </div>
 
 
-
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblPaymentMethod">
                             <thead>
                                 <tr>
-                                    <th>CreatedOn</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th class="width_10"></th>
+                                    <th class="width_30">Name</th>
+                                    <th class="width_30">Description</th>
+                                    <th class="width_10">Status</th>
+                                    <th class="width_20">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -89,9 +93,11 @@
 
     function SearchPaymentMethodParameters(d) {
         var name = $('#Name').val();
+        var description = $('#Description').val();
 
         d.PageNum = currentPage;
         d.Name = name;
+        d.Description = description;
     }
 
     function PaymentMethodGridDataBound(response) {
@@ -157,6 +163,11 @@
             },
             {
                 targets: 2,
+                data: "Description",
+                orderable: false
+            },
+            {
+                targets: 3,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -169,7 +180,7 @@
                 }
             },
             {
-                targets: 3,
+                targets: 4,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -200,7 +211,7 @@
 
     function clearPaymentMethod() {
         $('#Name').val('');
-
+        $('#Description').val('');
         searchPaymentMethod();
     }
 

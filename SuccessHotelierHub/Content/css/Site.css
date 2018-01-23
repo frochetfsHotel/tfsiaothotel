@@ -769,3 +769,34 @@ label{
 .table-width {
 width:100% !important;
 }
+
+.width_10{
+    width:10% !important;
+}
+.width_20{
+    width:20% !important;
+}
+.width_30{
+    width:30% !important;
+}
+.width_40{
+    width:40% !important;
+}
+.width_50{
+    width:50% !important;
+}
+.width_60{
+    width:60% !important;
+}
+.width_70{
+    width:70% !important;
+}
+.width_80{
+    width:80% !important;
+}
+.width_90{
+    width:90% !important;
+}
+.width_100{
+    width:100% !important;
+}
