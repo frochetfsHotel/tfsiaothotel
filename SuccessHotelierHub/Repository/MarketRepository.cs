@@ -44,6 +44,7 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Name", Value = market.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = market.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = market.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = market.CreatedBy }
                 };
@@ -61,6 +62,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Id", Value = market.Id },
                     new SqlParameter { ParameterName = "@Name", Value = market.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = market.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = market.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = market.UpdatedBy }
                 };
@@ -90,6 +92,7 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
