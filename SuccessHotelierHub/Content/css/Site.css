@@ -770,32 +770,68 @@ label{
 width:100% !important;
 }
 
+.width_5{
+    width:5% !important;
+}
+.width_8{
+    width:8% !important;
+}
 .width_10{
     width:10% !important;
+}
+.width_12{
+    width:12% !important;
+}
+.width_15{
+    width:15% !important;
 }
 .width_20{
     width:20% !important;
 }
+.width_25{
+    width:25% !important;
+}
 .width_30{
     width:30% !important;
+}
+.width_35{
+    width:35% !important;
 }
 .width_40{
     width:40% !important;
 }
+.width_45{
+    width:45% !important;
+}
 .width_50{
     width:50% !important;
+}
+.width_55{
+    width:55% !important;
 }
 .width_60{
     width:60% !important;
 }
+.width_65{
+    width:65% !important;
+}
 .width_70{
     width:70% !important;
+}
+.width_75{
+    width:75% !important;
 }
 .width_80{
     width:80% !important;
 }
+.width_85{
+    width:85% !important;
+}
 .width_90{
     width:90% !important;
+}
+.width_95{
+    width:95% !important;
 }
 .width_100{
     width:100% !important;

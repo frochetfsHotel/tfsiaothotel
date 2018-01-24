@@ -9,67 +9,81 @@
 <div class="row">
     @using (Html.BeginForm("Create", "ReservationCharge", FormMethod.Post, new { id = "frmReservationCharge", enctype = "multipart/form-data" }))
     {
-        
+
         <!--HIDDEN FIELD-->
         @Html.HiddenFor(m => m.ReservationId)
-        @Html.HiddenFor(m => m.AdditionalChargeId)
+        <input type="hidden" id="hdnTotalTransactionCharges" name="hdnTotalTransactionCharges" value="1" />
         <!--HIDDEN FIELD-->
 
         <div class="box-body pt_10 pb-0">
-
-            <div class="row">
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.TransactionDate, new { @class = "required-label" })
-                    <div class="input-group date">
-                        @Html.TextBoxFor(m => m.TransactionDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
-                    </div>
-                    @Html.ValidationMessageFor(m => m.TransactionDate, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.Code, new { @class = "required-label" })
-                    <div class="input-group">
-                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
-                        <div class="input-group-addon cursor-P" onclick="openAdditionalChargeModal();">
-                            <i class="fa fa-search"></i>
-                        </div>
-                    </div>
-                    @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
-                </div>
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.Amount, new { @class = "required-label" })
-                    @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model != null && Model.Amount.HasValue ? Model.Amount.Value : 1), new { @class = "form-control", placeholder = "Amount", onkeypress = "onlyNumeric(event)" })
-                    @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
-                </div>
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.Description)
-                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.Qty)
-                    @Html.TextBoxFor(m => m.Qty, new { @class = "form-control", placeholder = "Qty", onkeydown = "onlyDigits(event)" })
-                </div>
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.Supplement)
-                    @Html.TextBoxFor(m => m.Supplement, new { @class = "form-control", placeholder = "Supplement" })
-                </div>
-                <div class="col-md-3 form-group">
-                    @Html.LabelFor(m => m.Reference)
-                    @Html.TextBoxFor(m => m.Reference, new { @class = "form-control", placeholder = "Reference" })
-                </div>
-                <div class="col-md-3 form-group m-t-lg">
-                    <label class="container1" for="IsActive">
-                        Is Active
-                        @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-            </div>
+            <div class="row tbl_max_height">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="tblTransactionCharges">
+                        <thead>
+                            <tr>
+                                <th class="width_5"></th>
+                                <th class="width_15">Date</th>
+                                <th class="width_12">Code</th>
+                                <th class="width_10">Amount</th>
+                                <th class="width_20">Description</th>
+                                <th class="width_8">Qty</th>
+                                <th class="width_15">Supplement</th>
+                                <th class="width_15">Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-rownumber="1">
+                                <td>
+                                    <span class="text-red font_20 cursor-P" onclick="removeRow(this);">
+                                        <i class="fa fa-remove text"></i>
+                                    </span>
+                                    <input type="hidden" id="AdditionalChargeId_1" name="AdditionalChargeId_1" value="0" />
+                                </td>
+                                <td>
+                                    <div class="input-group date">
+                                        <input type="text" id="TransactionDate_1" name="TransactionDate_1"
+                                               class="form-control mydatepicker" placeholder="dd/MM/yyyy" />
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="text" id="Code_1" name="Code_1"
+                                               class="form-control" placeholder="Code" />
+                                        <div class="input-group-addon cursor-P" onclick="openAdditionalChargeModal(1);">
+                                            <i class="fa fa-search"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" id="Amount_1" name="Amount_1"
+                                           class="form-control" placeholder="Amount" 
+                                           onkeypress = "onlyNumeric(event)"  />
+                                </td>
+                                <td>
+                                    <textarea id="Description_1" name="Description_1" rows="1" 
+                                              class="form-control"></textarea>
+                                </td>
+                                <td>
+                                    <input type="text" id="Qty_1" name="Qty_1"
+                                           class="form-control"
+                                           onkeydown = "onlyDigits(event)"/>
+                                </td>
+                                <td>
+                                    <input type="text" id="Supplement_1" name="Supplement_1"
+                                           class="form-control" placeholder="Supplement" />
+                                </td>
+                                <td>
+                                    <input type="text" id="Reference_1" name="Reference_1"
+                                           class="form-control" placeholder="Reference" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>                
+            </div>            
         </div>
 
         <div class="box-footer text-right">
@@ -86,71 +100,205 @@
         clearReservationChargesData();
 
         //Default Transaction Date. (Set today's date).
-        $("#TransactionDate").datepicker("setDate", new Date());
+        $("#TransactionDate_1").datepicker("setDate", new Date());
     })
 
+    function AddNewTransactionRow() {
+        var rowNumber = $('#hdnTotalTransactionCharges').val();
+
+        if (!IsNullOrEmpty(rowNumber)) {
+            rowNumber = parseInt(rowNumber) + 1;
+        } else {
+            rowNumber = 1;
+        }
+
+        var html = "";
+
+        //Create New Row
+        html += "<tr data-rownumber='" + rowNumber + "'>";
+
+        //Remove Button + Hidden Field
+        html += "<td>";
+        html += "<span class='text-red font_20 cursor-P' onclick='removeRow(this);'>";
+        html += "<i class='fa fa-remove text'></i>";
+        html += " </span>";
+        html += "<input type='hidden' id='AdditionalChargeId_" + rowNumber + "' name='AdditionalChargeId_" + rowNumber + "' value='0'>";
+        html += "</td>";
+
+        //Date
+        html += "<td>";
+        html += "<div class='input-group date'>";
+        html += "<input type='text' id='TransactionDate_" + rowNumber + "' name='TransactionDate_" + rowNumber + "' class='form-control mydatepicker' placeholder='dd/MM/yyyy' />";
+        html += " <div class='input-group-addon'><i class='fa fa-calendar'></i></div>";
+        html += "</div>";
+        html += "</td>";
+
+        //Code
+        html += "<td>";
+        html += "<div class='input-group'>";
+        html += "<input type='text' id='Code_" + rowNumber + "' name='Code_" + rowNumber + "' class='form-control' placeholder='Code' />";
+        html += "<div class='input-group-addon cursor-P' onclick='openAdditionalChargeModal(" + rowNumber + ");'><i class='fa fa-search'></i></div>";
+        html += "</div>";
+        html += "</td>";
+
+        //Amount
+        html += "<td>";
+        html += "<input type='text' id='Amount_" + rowNumber + "' name='Amount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='onlyNumeric(event)'>";
+        html += "</td>";
+
+        //Description
+        html += "<td>";
+        html += "<textarea id='Description_" + rowNumber + "' name='Description_" + rowNumber + "'  rows='1' class='form-control'></textarea>";
+        html += "</td>";
+
+        //Qty
+        html += "<td>";
+        html += "<input type='text' id='Qty_" + rowNumber + "' name='Qty_" + rowNumber + "' class='form-control' onkeydown='onlyDigits(event)'>";
+        html += "</td>";
+
+        //Supplement
+        html += "<td>";
+        html += "<input type='text' id='Supplement_" + rowNumber + "' name='Supplement_" + rowNumber + "' class='form-control' placeholder='Supplement'>";
+        html += "</td>";
+
+        //Reference
+        html += "<td>";
+        html += "<input type='text' id='Reference_" + rowNumber + "' name='Reference_" + rowNumber + "' class='form-control' placeholder='Reference'>";
+        html += "</td>";
+
+
+        html += "</tr>";
+
+
+        $('form#frmReservationCharge #tblTransactionCharges tbody').append(html);
+
+        $('#hdnTotalTransactionCharges').val(rowNumber);
+
+        //Bind DatePicker
+        $("#TransactionDate_" + rowNumber).datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+
+        $("#TransactionDate_" + rowNumber).datepicker("setDate", new Date());
+    }
+
+    function removeRow(element) {
+        $(element).closest("tr").remove();
+    }
     function validateReservationCharges() {
         var errorMessage = "";
         var blnValid = true;
 
-        if ($("#frmReservationCharge").valid() == false) {
-            showToaster("Please fill all the required field first", ToasterType.ERROR);
-            blnValid = false;
+        $("form#frmReservationCharge #tblTransactionCharges tbody tr").each(function () {
+            var rowNumber = $(this).attr("data-rownumber");            
+            if (!IsNullOrEmpty(rowNumber)) {
+                rowNumber = parseInt(rowNumber);
+                var code = $('#Code_' + rowNumber).val();
+                var chargeId = $('#AdditionalChargeId_' + rowNumber).val();
+
+                if (IsNullOrEmpty(code) || IsNullOrEmpty(chargeId)) {
+                    blnValid = false;
+                }
+            }
+        });
+
+        if (blnValid == false) {
+            showToaster("Please search and select valid transaction code.", ToasterType.ERROR);
+            return false;
         }
 
         return blnValid;
     }
 
 
+
     function saveReservationCharges() {
-
         if (validateReservationCharges()) {
-            $.ajax({
-                beforeSend: function (xhr) {
-                    showLoader();
-                },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
-                },
-                complete: function () {
-                    hideLoader();
-                },
-                url: '@Url.Content("~/ReservationCharge/Create")',
-                type: 'POST',
-                data: $('#frmReservationCharge').serialize(),
-                success: function (response) {
-                    if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                    else {
-                        console.log("saveReservationCharges : OnSuccess() = " + response.data);
-                        var lastTransaction = response.data.Transaction;
 
-                        if (lastTransaction != null)
-                        {
-                            //Call Grid Function.
-                            bindBillingTransactionGrid(lastTransaction);
-                        }
-                        showToaster("Charge details saved successfully", ToasterType.SUCCESS);
+            var listReservationCharge = [];
 
-                        clearReservationChargesData();
+            $("form#frmReservationCharge #tblTransactionCharges tbody tr").each(function () {                
+                var rowNumber = $(this).attr("data-rownumber");
 
-                        $('#reservationChargeModal').modal('toggle');
-                    }
+                if (!IsNullOrEmpty(rowNumber)) {
+
+                    rowNumber = parseInt(rowNumber);
+
+                    var modelReservationCharge = {};
+
+                    modelReservationCharge.ReservationId = $('#ReservationId').val();
+                    modelReservationCharge.TransactionDate = $('#TransactionDate_' + rowNumber).val();
+                    modelReservationCharge.AdditionalChargeId = $('#AdditionalChargeId_' + rowNumber).val();
+                    modelReservationCharge.Code = $('#Code_' + rowNumber).val();
+                    modelReservationCharge.Description = $('#Description_' + rowNumber).val();
+                    modelReservationCharge.Amount = $('#Amount_' + rowNumber).val();
+                    modelReservationCharge.Qty = $('#Qty_' + rowNumber).val();
+                    modelReservationCharge.Supplement = $('#Supplement_' + rowNumber).val();
+                    modelReservationCharge.Reference = $('#Reference_' + rowNumber).val();
+                    modelReservationCharge.IsActive = true;
+
+                    listReservationCharge.push(modelReservationCharge);
+
                 }
             });
-            return false;
+            if (listReservationCharge != null && listReservationCharge.length > 0) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (result) {
+                        showToaster(result.responseText, ToasterType.ERROR);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/ReservationCharge/AddCharges")',
+                    type: 'POST',
+                    //data: $('#frmReservationCharge').serialize(),
+                    data: { models: listReservationCharge },
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            console.log("saveReservationCharges : OnSuccess() = " + response.data);
+                            var transactions = response.data.Transactions;
+
+                            if (transactions != null) {
+                                //Call Grid Function.
+                                bindBillingTransactionGrid(transactions);
+                            }
+                            showToaster("Charge details saved successfully", ToasterType.SUCCESS);
+
+                            clearReservationChargesData();
+
+                            //$('#reservationChargeModal').modal('toggle');
+                            CloseModal('reservationChargeModal');
+                        }
+                        return false;
+                    }
+                });                
+            } else {
+                showToaster("Please add atleast one transaction charge", ToasterType.ERROR);
+                return false;
+            }
         }
     }
 
     function clearReservationChargesData() {
-        $("#TransactionDate").datepicker("setDate", new Date());
-        $('#Code').val('');
-        $('#Description').val('');
-        $('#Amount').val('');
-        $('#Qty').val('');
-        $('#Supplement').val('');
-        $('#Reference').val('');
+        $("#TransactionDate_1").datepicker("setDate", new Date());
+        $('#Code_1').val('');
+        $('#Description_1').val('');
+        $('#Amount_1').val('');
+        $('#Qty_1').val('');
+        $('#Supplement_1').val('');
+        $('#Reference_1').val('');
+        $('#AdditionalChargeId_1').val('');
+        $('#hdnTotalTransactionCharges').val('1');
+
+        //Remove all the rows except first one.
+        $("form#frmReservationCharge  #tblTransactionCharges tbody").find("tr:gt(0)").remove();
     }
 </script>
 

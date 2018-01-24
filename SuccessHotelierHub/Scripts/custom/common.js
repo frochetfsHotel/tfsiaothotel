@@ -408,3 +408,25 @@ function RemoveArrayItemByValue(itemToRemove, arr) {
 
     return arr;
 }
+
+
+/** Boostrap Modal ***/
+
+function OpenModal(modelId, isAllowToCloseModalFromOutsideClick) {
+
+    if (isAllowToCloseModalFromOutsideClick) {
+        $('#' + modelId).modal('toggle');
+    } else {
+        $('#' + modelId).modal({
+            keyboard: false,
+            //backdrop: 'static',
+            //backdrop: false,
+            show: true
+        })
+    }
+}
+
+function CloseModal(modelId) {
+    $('#' + modelId).modal('hide');
+}
+
