@@ -24,6 +24,7 @@ namespace SuccessHotelierHub.Controllers
         private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
+        private TitleRepository titleRepository = new TitleRepository();
 
         #endregion
 
@@ -476,6 +477,117 @@ namespace SuccessHotelierHub.Controllers
             {
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
+        }
+
+        public ActionResult Preview(Guid? Id)
+        {
+            if (Id == null)
+            {
+                return HttpNotFound();
+            }
+
+            BillingTransactionReportVM model = new BillingTransactionReportVM();
+
+            var reservation = reservationRepository.GetReservationById(Id.Value).FirstOrDefault();
+
+            #region Room Mapping
+
+            //Get Room Mapping
+            var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null);
+            var roomIds = string.Empty;
+            var roomNumbers = string.Empty;
+
+            if (selectedRooms != null && selectedRooms.Count > 0)
+            {
+                foreach (var room in selectedRooms)
+                {
+                    roomIds += string.Format("{0},", room.RoomId);
+                    roomNumbers += string.Format("{0}, ", room.RoomNo);
+                }
+                
+                if (!string.IsNullOrWhiteSpace(roomNumbers))
+                {
+                    //Remove Last Comma.
+                    roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                }
+            }
+            #endregion
+
+            #region Reservation Charges
+
+            var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null);
+
+            #endregion
+
+            #region Profile
+
+            var profile = new IndividualProfileVM();
+
+            if(reservation.ProfileId.HasValue)
+                profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value).FirstOrDefault();
+
+            #endregion
+
+            #region Title 
+
+            var title = new TitleVM();
+            if(profile.TitleId.HasValue)
+                title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
+
+            #endregion
+
+            double total = 0;
+            double roomRent = 0;            
+            double totalBalance = 0;
+            double balanceDue = 0;
+
+            model.Id = reservation.Id;
+            model.ProfileId = reservation.ProfileId;
+            model.Title = title.Title;
+            model.Name = (profile.FirstName + ' ' + profile.LastName);
+            model.Address = "";
+            model.RoomNumer = roomNumbers;
+            model.FolioNumber = "";
+            model.CashierNumber = "";
+            model.PageNumber = "1";
+            model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd/MM/yyyy") : "";
+            model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd/MM/yyyy") : "";
+            model.GSTRegistrationNumber = "";
+
+            model.Transactions = transactions;
+
+            //Get Amount.
+
+            foreach (var item in transactions)
+            {
+                totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
+
+                //Room Rent
+                if(item.Code == "1000")
+                    roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
+
+                //Balance Due
+                if (item.Code == "9004") //Check out
+                    balanceDue = item.Amount.HasValue ? item.Amount.Value : 0;
+                
+            }
+        
+
+            model.FandB = 0;
+            model.Other = 0;
+            model.Total = total;
+            model.Room = roomRent;
+            model.TotalBalance = totalBalance;
+            model.BalanceDue = balanceDue;
+
+            //HTML to PDF
+            string html = Utility.Utility.RenderPartialViewToString((Controller)this, "Preview", model);
+            byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+            //return File(pdfBytes, "application/pdf", "bill.pdf");
+            return File(pdfBytes, "application/pdf");
+
+            //return View(model);
         }
     }
 }

@@ -127,7 +127,12 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@NoOfNight", Value = model.NoOfNight },
                     new SqlParameter { ParameterName = "@DepartureDate", Value = model.DepartureDate },
                     new SqlParameter { ParameterName = "@RoomNo", Value = model.RoomNo },
-                    new SqlParameter { ParameterName = "@Type", Value = model.Type }
+                    new SqlParameter { ParameterName = "@Type", Value = model.Type },
+                    new SqlParameter { ParameterName = "@RoomFeatures", Value = model.RoomFeaturesIds },
+                    new SqlParameter { ParameterName = "@IsClean", Value = model.IsClean },
+                    new SqlParameter { ParameterName = "@IsDirty", Value = model.IsDirty },
+                    new SqlParameter { ParameterName = "@IsInspected", Value = model.IsInspected }
+
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceRoom", parameters);

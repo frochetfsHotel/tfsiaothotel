@@ -45,6 +45,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp">
+      <HintPath>E:\Nilesh\Project\TAP\TAP\bin\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.pdfa">
+      <HintPath>E:\Nilesh\Project\TAP\TAP\bin\itextsharp.pdfa.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.xmlworker">
+      <HintPath>E:\Nilesh\Project\TAP\TAP\bin\itextsharp.xmlworker.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.xtra">
+      <HintPath>E:\Nilesh\Project\TAP\TAP\bin\itextsharp.xtra.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.0.1011, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -235,6 +247,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdditionalChargeVM.cs" />
     <Compile Include="Models\BillingInfoVM.cs" />
+    <Compile Include="Models\BillingTransactionReportVM.cs" />
     <Compile Include="Models\CheckInCheckOutVM.cs" />
     <Compile Include="Models\CheckInPaymentMethodVM.cs" />
     <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
@@ -321,6 +334,7 @@
     <Content Include="Content\css\AdminLTE\select2\select2.css" />
     <Content Include="Content\css\AdminLTE\select2\select2.png" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\img\invoice_logo.jpg" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>
@@ -2017,6 +2031,7 @@
     <Content Include="Views\RoomFeatures\Edit.cshtml" />
     <Content Include="Views\RoomFeatures\List.cshtml" />
     <Content Include="Views\ReservationCharge\_PostReservationCharges.cshtml" />
+    <Content Include="Views\Cashiering\Preview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

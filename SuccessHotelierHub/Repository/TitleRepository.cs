@@ -19,5 +19,22 @@ namespace SuccessHotelierHub.Repository
 
             return titles;
         }
+        
+
+        public List<TitleVM> GetTitlebyId(Guid profileId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Id", Value = profileId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTitlebyId", parameters);
+
+
+            var title = new List<TitleVM>();
+            title = DALHelper.CreateListFromTable<TitleVM>(dt);
+
+            return title;
+        }
     }
 }

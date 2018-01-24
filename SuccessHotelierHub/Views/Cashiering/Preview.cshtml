@@ -1,0 +1,235 @@
+﻿@model SuccessHotelierHub.Models.BillingTransactionReportVM
+@using SuccessHotelierHub.Utility
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        p {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 5px;
+        }
+
+        .text_bold {
+            font-weight: bold;
+        }
+
+        thead {
+            border: 1px solid #000;
+        }
+
+        table {
+            width: 96%;
+            font-size: 14px;
+            color: #333;
+            font-weight: 400;
+            text-align: left;
+            margin: auto;
+        }
+
+        .invoice_header {
+            background: #3c8dbc;
+            color: #fff;
+            text-align: center;
+            /*padding: 10px 0;*/
+        }
+
+        .border_bottom {
+            border-bottom: 1px solid #000;
+        }
+
+
+        tr.border_bottom td {
+            border-bottom: 1px solid black;
+        }
+
+        tr.border_top td {
+            border-top: 1px solid black;
+        }
+
+        .para {
+            width: 74%;
+            margin-left: 81px;
+            text-align: justify;
+            margin-top: 10px;
+        }
+
+        .img_margin {
+            margin: auto;
+            display: block;
+        }
+    </style>
+    <title></title>
+</head>
+
+<body class="gray-bg" style="width: 800px; margin-left: auto; margin-right: auto;">
+    <div class="row border-bottom white-bg dashboard-header">
+        <div style="border:1px solid #dedede; box-shadow: 0px 0px 5px #dddddd; padding:10px;">
+            <div style="font-size: 14px; color: #333; font-weight: 400; text-align: center; font-family: Calibri;  margin-top: 10px;margin-bottom: 20px;border:thick">
+                <table style="border:none">
+                    <tr>
+                        <td style="width:100%;text-align:center" align="center">
+                            <img src="http://tfshotelierhub.com/Content/img/invoice_logo.jpg" class="img_margin" />
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <div style="text-align:center">
+                    <table style="border:none">
+                        <tr>
+                            <td class="invoice_header" valign="middle" style="padding-top:10px;height:50px;">
+                                <label style="font-size:30px;" class="text_bold">INVOICE</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <table style="border:none">
+                        <tr>
+                            <td style="width:50%;text-align:left" valign="top">
+                                <label class="mb5"><b>@Model.Title @Model.Name</b></label>
+                                <br />
+                                <label class="mb5"><b>@Model.Address</b></label>
+                            </td>
+                            <td style="width:50%;">
+                                <table>
+                                    <tr>
+                                        <td>Room Number</td>
+                                        <td>:</td>
+                                        <td>@Model.RoomNumer</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Folio Number</td>
+                                        <td>:</td>
+                                        <td>@Model.FolioNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cashier Number</td>
+                                        <td>:</td>
+                                        <td>@Model.CashierNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Page Number</td>
+                                        <td>:</td>
+                                        <td>@Model.PageNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Arrival Date</td>
+                                        <td>:</td>
+                                        <td>@Model.ArrivalDate</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Departure Date</td>
+                                        <td>:</td>
+                                        <td>@Model.DepartureDate</td>
+                                    </tr>
+                                </table>
+                                <br />
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <table class="table" style="border-bottom:1px solid #000;">
+                        <thead>
+                            <tr class="border_bottom border_top">
+                                <td class="text_bold" style="border-left:1px solid #000;">Date</td>
+                                <td class="text_bold">Description</td>
+                                <td class="text_bold">Additional Information</td>
+                                <td class="text_bold">Charges</td>
+                                <td class="text_bold" style="border-right:1px solid #000;">Credit</td>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model.Transactions != null && Model.Transactions.Count > 0)
+                            {
+                                foreach (var transaction in Model.Transactions)
+                                {
+                                    <tr>
+                                        <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("dd/MM/yyyy") : "")</td>
+                                        <td>@transaction.Description</td>
+                                        <td>@transaction.Code</td>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value : 0)</td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                    <br />
+                    <table style="border:none">
+                        <tr>
+                            <td style="width:50%;">
+                                <label class="">Guest Signature:_____________________ </label>
+                                <br />
+                                <table style="margin-top:10px;">
+                                    <tr>
+                                        <th>GST Summary</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 250px">Total</th>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.Total)</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 250px">Room</th>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.Room)</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 250px">F & B</th>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.FandB)</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 250px">Other</th>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.Other)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>G.S.T. Registration Number: </th>
+                                        <td>@Model.GSTRegistrationNumber</td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <td style="width:50%;">
+                                <table>
+                                    <tr class="border_bottom">
+                                        <td class="text_bold">Total</td>
+                                        <td class="text_bold">
+                                            @Utility.FormatAmountWithTwoDecimal(Model.TotalBalance)
+                                        </td>
+                                        <td class="text_bold">0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Balance Due</b></td>
+                                        <td><b>@Utility.FormatAmountWithTwoDecimal(Model.BalanceDue)</b></td>
+                                        <td></td>
+                                    </tr>
+
+                                </table>
+
+                                <p class="para">
+                                    I agree that my liability for this bill is not waived and
+                                    I agree to be held personally liable in the event that the indicated person,
+                                    company or association fails to pay for any part or the full.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</body>
+</html>

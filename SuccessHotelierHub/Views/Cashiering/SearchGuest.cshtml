@@ -153,8 +153,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Billing - [<span class="spnGuestName"></span> - <span class="spnRoomNumbers"></span>]
-                &nbsp; <span class="spnCheckedOutLabel text-blue" style="display:none;">Checked Out</span></h4>
+                    <h4 class="modal-title">
+                        Billing - [<span class="spnGuestName"></span> - <span class="spnRoomNumbers"></span>]
+                        &nbsp; <span class="spnCheckedOutLabel text-blue" style="display:none;">Checked Out</span>
+                        <a href="#" id="lnkPrint" class="btn btn-sm btn-warning m-r-md pull-right" target="_blank">Print</a>
+                    </h4>
             </div>
             <div class="modal-body modal-body_padding" id="divBillingInfo">
                 <form id="frmBillingInfo" name="frmBillingInfo" enctype="multipart/form-data">
@@ -380,19 +383,19 @@
         var lastName = $('#LastName').val();
         var firstName = $('#FirstName').val();
         var confirmationNo = $('#ConfirmationNo').val();
-        var companyId = $('#CompanyId').val();        
+        var companyId = $('#CompanyId').val();
         var groupId = $('#GroupId').val();
         var blockCodeId = $('#BlockCodeId').val();
         var departureDate = $('#DepartureDate').val();
-        var isShowCheckedOut = $('#IsShowCheckedOut').prop('checked');        
-        
+        var isShowCheckedOut = $('#IsShowCheckedOut').prop('checked');
+
         d.PageNum = currentPage;
         d.LastName = lastName;
         d.FirstName = firstName;
         d.RoomNo = roomNo;
-        d.CompanyId = companyId;        
+        d.CompanyId = companyId;
         d.GroupId = groupId;
-        d.BlockCodeId = blockCodeId;        
+        d.BlockCodeId = blockCodeId;
         d.ConfirmationNo = confirmationNo;
         d.DepartureDate = departureDate;
         d.IsShowCheckedOut = isShowCheckedOut;
@@ -456,7 +459,7 @@
             bDestroy: true,
             paging: false,
             searching: false,
-            bLengthChange: false,            
+            bLengthChange: false,
             info: false,
             columnDefs: [
             {
@@ -629,7 +632,7 @@
                 className: "text-center",
                 render: function (data, type, full, meta) {
                     var buttons = '';
-                    
+
                     if (full.IsCheckOut == true)
                     {
                         buttons += ' <button type="button" class="btn bg-purple btn-xs m-n">Checked Out</button>';
@@ -671,12 +674,12 @@
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
-                    else {                        
+                    else {
                         var result = response.data;
                         var transactions = result.Transactions;
 
                         clearBillingInfo();
-                                                
+
                         $("form#frmBillingInfo #hdnReservationId").val(result.ReservationId);
 
                         $("form#frmBillingInfo #Balance").val(FormatNumberWithTwoDecimal(result.Balance));
@@ -691,7 +694,7 @@
                         $("form#frmBillingInfo #RoomRent").val(FormatNumberWithTwoDecimal(result.RoomRent));
                         $("form#frmBillingInfo #RoomTypeCode").val(result.RoomTypeCode);
 
-                        
+
                         $("form#frmBillingInfo .spnTotalBalance").html(FormatNumberWithTwoDecimal(result.Balance));
                         $(".spnGuestName").html(result.Name);
                         $(".spnRoomNumbers").html("Room " + result.RoomNumbers);
@@ -707,6 +710,7 @@
                             $('.spnCheckedOutLabel').show();
                         }
 
+                        $('#lnkPrint').attr("href", '@Url.Content("~/Cashiering/Preview")' + '?Id=' + result.ReservationId);                        
                         //ShowBalanceInfo();
                         //$('#billingInfoModal').modal('toggle');
                         OpenModal('billingInfoModal', false);
@@ -716,11 +720,11 @@
         }
     }
 
-    function searchGuest() {        
+    function searchGuest() {
         IsSearchButtonClicked = true;
         currentPage = 1;
         ReloadReservationGrid();
-        
+
     }
 
     function ShowBalanceInfo() {
@@ -732,14 +736,14 @@
         $("form#frmBillingInfo #Balance").val(FormatNumberWithTwoDecimal(balance));
     }
 
-    function bindBillingTransactionGrid(data) {        
+    function bindBillingTransactionGrid(data) {
         if (!IsNullOrEmpty(data) && data.length > 0) {
             var html = "";
             for (i = 0; i < data.length; i++) {
                 var amount = (IsNullOrEmpty(data[i].Amount) ? "0" : data[i].Amount);
                 html += "<tr>";
                 html += "<td>" + ParseJsonDate(data[i].TransactionDate) + "</td>";
-                html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";                
+                html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
                 html += "<td class='tdAmount' data-amount='" + amount + "'>" + FormatNumberWithTwoDecimal(amount) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Supplement) ? "" : data[i].Supplement) + "</td>";
@@ -759,7 +763,7 @@
         $('#FirstName').val('');
         $('#ConfirmationNo').val('');
 
-        $('#CompanyId').val('');        
+        $('#CompanyId').val('');
         $('#GroupId').val('');
         $('#BlockCodeId').val('');
         $('#DepartureDate').val('');
@@ -851,7 +855,7 @@
             });
         }
 
-       
+
     }
 
 </script>

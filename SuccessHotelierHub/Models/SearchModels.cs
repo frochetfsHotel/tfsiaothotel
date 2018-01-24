@@ -430,11 +430,13 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Room#")]
         public string RoomNo { get; set; }
 
-        [DisplayName("Type")]
+        [DisplayName("Code")]
         public string Type { get; set; }
 
         [DisplayName("Room Features")]
         public List<Guid> RoomFeatures { get; set; }
+
+        public string RoomFeaturesIds { get; set; }
 
         [DisplayName("Clean")]
         public bool IsClean { get; set; }
@@ -468,6 +470,8 @@ namespace SuccessHotelierHub.Models
         public Guid RoomTypeId { get; set; }
         public string RoomTypeCode { get; set; }
         public string RoomTypeDescription { get; set; }
+
+        public string RoomFeatures { get; set; }
 
 
     }

@@ -273,6 +273,12 @@
         //Label Bold.
         SetLabelBold();
 
+        $("#frmIndividualProfile input[type='text'], textarea").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                data_needs_saving = true;
+            }
+        });
+
         $("#frmIndividualProfile input[type='text'], textarea").blur(function () {
             if (!IsNullOrEmpty($(this).val())) {
                 $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
@@ -283,6 +289,7 @@
 
         $("#frmIndividualProfile select").change(function () {
             if (!IsNullOrEmpty($(this).val())) {
+                data_needs_saving = true;
                 $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
             } else {
                 $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
@@ -474,6 +481,10 @@
                     }
                     else {
                         showToaster("Profile details updated successfully.", ToasterType.SUCCESS);
+
+                        //reset the global varible once the data is saved
+                        data_needs_saving = false;
+
                         if (response.IsExternalUrl) {
                             redirectTo(response.data);
                         } else {
@@ -549,5 +560,14 @@
         if (!IsNullOrEmpty('@Model.Remarks'))
             $('label[for="Remarks"]').addClass("label-bold");
     }
+
+    window.onbeforeunload = function () {
+        //Check the global variable - if the data needs saving then take user confirmation
+        if (data_needs_saving) {
+            return "There are unsaved data on the page, do you want to save or discard?";
+        } else {
+            return;
+        }
+    };
 
 </script>

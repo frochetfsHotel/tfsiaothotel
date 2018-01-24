@@ -100,6 +100,10 @@ D:\TSHH_Src\SuccessHotelierHub\bin\SuccessHotelierHub.pdb
 D:\TSHH_Src\SuccessHotelierHub\bin\Antlr3.Runtime.dll
 D:\TSHH_Src\SuccessHotelierHub\bin\EntityFramework.dll
 D:\TSHH_Src\SuccessHotelierHub\bin\EntityFramework.SqlServer.dll
+D:\TSHH_Src\SuccessHotelierHub\bin\itextsharp.dll
+D:\TSHH_Src\SuccessHotelierHub\bin\itextsharp.pdfa.dll
+D:\TSHH_Src\SuccessHotelierHub\bin\itextsharp.xmlworker.dll
+D:\TSHH_Src\SuccessHotelierHub\bin\itextsharp.xtra.dll
 D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.AI.Agent.Intercept.dll
 D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.AI.DependencyCollector.dll
 D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.AI.PerfCounterCollector.dll
@@ -163,4 +167,3 @@ D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.Owin.Security.Twitter.xml
 D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\TSHH_Src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.dll
 D:\TSHH_Src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.pdb
-D:\TSHH_Src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.csprojResolveAssemblyReference.cache

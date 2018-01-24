@@ -23,6 +23,7 @@ namespace SuccessHotelierHub.Controllers
         private AdditionalChargeRepository additionalChargeRepository = new AdditionalChargeRepository();
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
+        private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
 
         #endregion
 
@@ -39,8 +40,10 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult Arrivals()
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
+            var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
             ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.RoomFeaturesList = roomFeaturesList;
 
             return View();
         }

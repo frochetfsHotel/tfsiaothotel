@@ -209,7 +209,7 @@
 
 <!-- Room Modal Popup START -->
 <div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -220,7 +220,8 @@
                 @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "SearchArrivals" },
-                                    { "RoomType", ViewBag.RoomTypeList }
+                                    { "RoomType", ViewBag.RoomTypeList },
+                                    { "RoomFeatures", ViewBag.RoomFeaturesList }
                                 })
             </div>
             <div class="clearfix"></div>

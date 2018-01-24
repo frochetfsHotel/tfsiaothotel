@@ -666,7 +666,7 @@
 
 <!-- Room Modal Popup START -->
 <div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
@@ -677,7 +677,8 @@
                 @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateReservation" },
-                                    { "RoomType", ViewBag.RoomTypeList }
+                                    { "RoomType", ViewBag.RoomTypeList },
+                                    { "RoomFeatures", ViewBag.RoomFeaturesList }
                                 })
             </div>
             <div class="clearfix"></div>
@@ -700,8 +701,15 @@
             }
         });
 
+        $("#frmReservation input[type='text'], textarea").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                data_needs_saving = true;
+            }
+        });
+
         $("#frmReservation select").change(function () {
             if (!IsNullOrEmpty($(this).val())) {
+                data_needs_saving = true;
                 $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
             } else {
                 $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
@@ -1013,6 +1021,10 @@
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
+
+                        //reset the global varible once the data is saved
+                        data_needs_saving = false;
+
                         showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
 
                         setTimeout(function () {
@@ -1351,6 +1363,14 @@
 
     }
 
+    window.onbeforeunload = function () {
+        //Check the global variable - if the data needs saving then take user confirmation
+        if (data_needs_saving) {
+            return "There are unsaved data on the page, do you want to save or discard?";
+        } else {
+            return;
+        }
+    };
 </script>
 
 @section scripts {

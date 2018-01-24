@@ -243,6 +243,11 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                if (model.RoomFeatures != null && model.RoomFeatures.Count > 0)
+                {
+                    model.RoomFeaturesIds = String.Join(",", model.RoomFeatures.ToArray());
+                }
+
                 var rooms = roomRepository.SearchAdvanceRoom(model);
 
                 return Json(new

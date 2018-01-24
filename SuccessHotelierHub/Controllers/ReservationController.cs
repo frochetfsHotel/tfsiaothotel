@@ -35,6 +35,7 @@ namespace SuccessHotelierHub.Controllers
         private MarketRepository marketRepository = new MarketRepository();
         private ReservationSourceRepository reservationSourceRepository = new ReservationSourceRepository();
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
+        private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
 
         #endregion
 
@@ -54,6 +55,8 @@ namespace SuccessHotelierHub.Controllers
             var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
             var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
             var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+            var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
+
 
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();
@@ -144,6 +147,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.MarketList = marketList;
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
+            ViewBag.RoomFeaturesList = roomFeaturesList;
 
             return View(model);
         }
@@ -378,6 +382,7 @@ namespace SuccessHotelierHub.Controllers
                 var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
                 var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
                 var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -390,6 +395,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.MarketList = marketList;
                 ViewBag.ReservationSourceList = reservationSourceList;
                 ViewBag.PaymentMethodList = paymentMethodList;
+                ViewBag.RoomFeaturesList = roomFeaturesList;
 
                 return View(model);
             }

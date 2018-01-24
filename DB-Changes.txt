@@ -13003,3 +13003,224 @@ BEGIN
 	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
 	-- PAGING COMPLETED
 END
+
+
+/***********************************************************************************************/
+
+/****** Create function split strings ***/
+
+/****** Object:  UserDefinedFunction [dbo].[SplitStrings]    Script Date: 1/24/2018 2:47:56 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE FUNCTION [DBO].[SplitStrings] (
+     @INPUT NVARCHAR(MAX),
+		@CHARACTER CHAR(1)
+)
+		RETURNS @OUTPUT TABLE (
+		ITEM NVARCHAR(1000)
+		)
+
+AS
+BEGIN
+  DECLARE @STARTINDEX INT, @ENDINDEX INT
+  SET @STARTINDEX = 1
+  IF SUBSTRING(@INPUT, LEN(@INPUT) - 1, LEN(@INPUT)) <> @CHARACTER
+  BEGIN
+        SET @INPUT = @INPUT + @CHARACTER
+  END
+
+  WHILE CHARINDEX(@CHARACTER, @INPUT) > 0
+  BEGIN
+        SET @ENDINDEX = CHARINDEX(@CHARACTER, @INPUT)
+
+        INSERT INTO @OUTPUT(ITEM)
+        SELECT SUBSTRING(@INPUT, @STARTINDEX, @ENDINDEX - 1)
+
+        SET @INPUT = SUBSTRING(@INPUT, @ENDINDEX + 1, LEN(@INPUT))
+  END
+
+	DELETE	@OUTPUT
+	WHERE	ISNULL(ITEM,'') = ''
+
+  RETURN
+
+END -- END FUNCTION
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : SearchAdvanceRoom
+	Comment : Changes in SP SearchAdvanceRoom	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceRoom]    Script Date: 1/24/2018 2:42:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceRoom]
+			@RoomTypeId		=	NULL	,
+			@ArrivalDate	=	''		,
+			@NoOfNight		=	NULL	,
+			@DepartureDate	=	NULL	,
+			@RoomNo			=	''		,
+			@Type			=	''		,
+			@RoomFeatures	=	'1E918B53-B6B5-4EB7-B3F0-BE53CD44E86F'		,
+			@IsClean		=	NULL	,
+			@IsDirty		=	NULL	,
+			@IsInspected	=	NULL	
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceRoom]
+	@RoomTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate		DATETIME			=	NULL	,
+	@NoOfNight			INT					=	NULL	,
+	@DepartureDate		DATETIME			=	NULL	,
+	@RoomNo				NVARCHAR(255)		=	NULL	,
+	@Type				NVARCHAR(255)		=	NULL	,
+	@RoomFeatures		NVARCHAR(MAX)		=	NULL	,
+	@IsClean			BIT					=	NULL	,
+	@IsDirty			BIT					=	NULL	,
+	@IsInspected		BIT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	CREATE TABLE #tempRoom
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL		
+		,   [Type]					NVARCHAR(50)		NULL	
+		,   [RoomNo]				NVARCHAR(255)		NOT NULL
+		,	[Description]			NVARCHAR(2000)		NULL
+		,	[RoomStatusId]			UNIQUEIDENTIFIER	NULL
+		,	[RoomStatusName]		NVARCHAR(255)		NULL
+		,	[RoomStatusColor]		NVARCHAR(255)		NULL
+		,	[RoomTypeId]			UNIQUEIDENTIFIER	NULL
+		,	[RoomTypeCode]			NVARCHAR(255)		NULL
+		,	[RoomTypeDescription]	NVARCHAR(255)		NULL		
+		,	[RoomFeatures]			NVARCHAR(MAX)		NULL
+	)
+
+	
+	INSERT INTO #tempRoom 
+		(
+			[RowNum]				, 
+			[Id]					, 
+			[Type]					, 
+			[RoomNo]				, 
+			[Description]			, 
+			[RoomStatusId]			,
+			[RoomStatusName]		,
+			[RoomStatusColor]		,
+			[RoomTypeId]			, 
+			[RoomTypeCode]			,
+			[RoomTypeDescription]	, 
+			[RoomFeatures]			
+		)
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  TRY_PARSE(R.[RoomNo] AS INT) ASC
+
+				) AS RowNum,
+				R.Id AS RoomId,
+				ISNULL(R.RoomNo,'') AS RoomNo,
+				ISNULL(R.[Type],'') AS [Type],
+				ISNULL(R.[Description],'') AS [Description],				
+				
+				RS.Id AS RoomStatusId,
+				RS.[Name] AS RoomStatusName,
+				RS.[ColorCode] AS RoomStatusColor,
+
+				ROT.Id AS RoomTypeId,
+				ISNULL(ROT.RoomTypeCode,'') AS RoomTypeCode,
+				ISNULL(ROT.[Description],'') AS RoomTypeDescription,
+
+				ISNULL((STUFF(( SELECT ', '+ CAST(RF.[Name] AS varchar(MAX))					
+				FROM RoomFeaturesMapping RFM						
+						INNER JOIN RoomFeatures RF ON RF.Id = RFM.RoomFeatureId
+							AND ISNULL(RF.IsDeleted,0) = 0
+				WHERE	ISNULL(RFM.IsDeleted,0) = 0
+							AND RFM.RoomId = R.Id						
+			FOR XMl PATH('')),1,1,'')),'') AS RoomFeatures
+
+		
+			FROM Room R
+					INNER JOIN  RoomType ROT ON R.RoomTypeId = ROT.Id 
+						AND ISNULL(ROT.IsDeleted,0) = 0  AND ISNULL(ROT.IsActive,0) = 1 
+					LEFT JOIN (SELECT DISTINCT RL.RoomId, RL.RoomStatusId
+									FROM ReservationLog RL 
+									WHERE ISNULL(RL.IsDeleted,0) = 0 
+										AND ISNULL(RL.IsActive,0) = 1 
+										AND ((ISNULL(@ArrivalDate,'') = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS date) AND CAST(RL.CheckOutDate  AS date))
+												OR (ISNULL(@DepartureDate,'') = '' OR CAST(@DepartureDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS date) AND CAST(RL.CheckOutDate  AS date)))
+										) AS RL
+						ON RL.RoomId = R.Id
+					LEFT JOIN RoomStatus RS ON RS.Id = (CASE WHEN RL.RoomStatusId IS NOT NULL THEN RL.RoomStatusId ELSE R.StatusId END)					
+						AND ISNULL(RS.IsDeleted,0) = 0  AND ISNULL(RS.IsActive,0) = 1 
+					LEFT JOIN RoomFeaturesMapping RFM ON RFM.RoomId = R.Id
+						AND ISNULL(RFM.IsDeleted,0) = 0  AND ISNULL(RFM.IsActive,0) = 1 
+					LEFT JOIN RoomFeatures RF ON RF.Id = RFM.RoomFeatureId
+						AND ISNULL(RF.IsDeleted,0) = 0  AND ISNULL(RF.IsActive,0) = 1 
+			WHERE	ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsActive,0) = 1										
+					AND RS.[Name] = (CASE WHEN ISNULL(@IsClean,0) = 1 THEN  'Clean' ELSE RS.[Name] END)
+					AND RS.[Name] = (CASE WHEN ISNULL(@IsDirty,0) = 1 THEN  'Dirty' ELSE RS.[Name] END)										
+					--AND RS.[Name] = 'Clean'										  
+					AND (@RoomTypeId IS NULL OR R.RoomTypeId= @RoomTypeId)
+					AND (ISNULL(@RoomNo,'') = '' OR R.RoomNo LIKE '%' + @RoomNo + '%')
+					AND (ISNULL(@Type,'') = '' OR R.RoomNo LIKE '%' + @Type + '%')
+					
+		
+	--Room Features.		
+	SELECT 
+			DISTINCT
+			temp.RowNum,
+			temp.[Id],			
+			temp.[Type],			
+			temp.[RoomNo],		
+			temp.[Description],	
+			temp.[RoomStatusId],
+			temp.[RoomStatusName],
+			temp.[RoomStatusColor],
+			temp.[RoomTypeId],
+			temp.[RoomTypeCode],
+			temp.[RoomFeatures]
+	FROM	
+		#tempRoom AS temp
+		LEFT JOIN RoomFeaturesMapping ON RoomFeaturesMapping.RoomId = temp.Id
+			AND ISNULL(RoomFeaturesMapping.IsDeleted,0) = 0
+		WHERE ISNULL(@RoomFeatures,'') = '' OR 
+			RoomFeaturesMapping.RoomFeatureId IN (SELECT * FROM [dbo].[SplitStrings] (@RoomFeatures,',')) 
+
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetTitlebyId
+	Comment : Create SP GetTitlebyId	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetTitlebyId]    Script Date: 1/24/2018 5:54:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetTitlebyId]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Title]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		
+END

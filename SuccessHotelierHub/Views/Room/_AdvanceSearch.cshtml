@@ -1,12 +1,18 @@
 ﻿@model SuccessHotelierHub.Models.SearchAdvanceRoomParametersVM
 @using SuccessHotelierHub.Models
-@{ 
+@{
     var sourceRedirectionParam = "";
 
     sourceRedirectionParam = (string)ViewData["Source"];
 
     var roomTypeList = (List<SelectListItem>)ViewData["RoomType"];
+    var roomFeaturesList = (List<RoomFeatureVM>)ViewData["RoomFeatures"];
 }
+
+
+<link href="~/Content/css/AdminLTE/select2/select2.css" rel="stylesheet" />
+<link href="~/Content/css/AdminLTE/select2/select2-bootstrap.css" rel="stylesheet" />
+
 
 <form id="frmAdvanceRoomSearch" name="frmAdvanceRoomSearch" enctype="multipart/form-data" method="post">
 
@@ -18,50 +24,83 @@
 
 
     <div class="pt_10 pl_10 pr_10 searchBox_Border">
-        <div class="row">
-            <div class="col-md-4 col-sm-4 col-xs-12 form-group" id="divRoomType">
-                @Html.LabelFor(m => m.RoomTypeId)
-                @Html.DropDownListFor(m => m.RoomTypeId,
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-12 form-group" id="divRoomType">
+                    @Html.LabelFor(m => m.RoomTypeId)
+                    @Html.DropDownListFor(m => m.RoomTypeId,
                                 (IEnumerable<SelectListItem>)roomTypeList, "-- Select Room Type --",
                                 htmlAttributes: new { @class = "form-control" })
-            </div>
-            <div class="col-md-3 col-xs-12 form-group">
-                @Html.LabelFor(m => m.ArrivalDate)
-                <div class="input-group date">
-                    @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
-                    <div class="input-group-addon">
-                        <i class="fa fa-calendar"></i>
+                </div>
+                <div class="col-md-3 col-xs-12 form-group">
+                    @Html.LabelFor(m => m.ArrivalDate)
+                    <div class="input-group date">
+                        @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-2 col-xs-12 form-group">
-                @Html.LabelFor(m => m.NoOfNight)
-                @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
-            </div>
-            <div class="col-md-3 col-xs-12 form-group">
-                @Html.LabelFor(m => m.DepartureDate)
-                <div class="input-group date">
-                    @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
-                    <div class="input-group-addon">
-                        <i class="fa fa-calendar"></i>
-                    </div>
+                <div class="col-md-3 col-xs-12 form-group">
+                    @Html.LabelFor(m => m.NoOfNight)
+                    @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", placeholder = "1", onkeydown = "onlyDigits(event)" })
                 </div>
+                <div class="col-md-3 col-xs-12 form-group">
+                    @Html.LabelFor(m => m.DepartureDate)
+                    <div class="input-group date">
+                        @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                    </div>
+                </div>  
+                <div class="clearfix"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-xs-12 form-group">
+                    @Html.LabelFor(m => m.RoomNo)
+                    @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
+                </div>
+                <div class="col-md-6 col-xs-12 form-group">
+                    <label for="RoomFeatures">Select Room Features</label>
+                    <select id="RoomFeatures" name="RoomFeatures" class="form-control" multiple>
+                        @if (roomFeaturesList != null && roomFeaturesList.Count > 0)
+                        {
+                            foreach (var feature in roomFeaturesList)
+                            {
+                                <option value="@feature.Id">@feature.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 m-b-sm text-right m-t-md">
+                    <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoom()">Search</button>
+                    <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomSearch()">Clear</button>
+                </div>
+                <div class="clearfix"></div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-4 col-xs-12 form-group">
-                @Html.LabelFor(m => m.RoomNo)
-                @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
-            </div>
-            <div class="col-md-4 col-xs-12 form-group">
-                @Html.LabelFor(m => m.Type)
-                @Html.TextBoxFor(m => m.Type, new { @class = "form-control", placeholder = "Code" })
-            </div>
-            <div class="col-md-4 m-b-sm text-right m-t-md">
-                <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchRoom()">Search</button>
-                <button type="button" class="btn btn-danger" id="btnClear" onclick="clearRoomSearch()">Clear</button>
-            </div>
-        </div>
+       <div class="col-md-2 row">
+           <div class="col-md-12 col-xs-12 form-group">
+               <label class="container1" for="IsClean">
+                   Clean
+                   @Html.CheckBoxFor(m => m.IsClean, new { @checked = "checked" })
+                   <span class="checkmark"></span>
+               </label>
+               <label class="container1" for="IsDirty">
+                   Dirty
+                   @Html.CheckBoxFor(m => m.IsDirty)
+                   <span class="checkmark"></span>
+               </label>
+               <label class="container1" for="IsInspected">
+                   Inspected
+                   @Html.CheckBoxFor(m => m.IsInspected)
+                   <span class="checkmark"></span>
+               </label>
+               <div class="clearfix"></div>
+           </div>
+       </div>
+        <div class="clearfix"></div>
     </div>
     <div class="col-xs-12 text-right m-b-sm padding-zero m-t-sm">
         <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchRoomOk">OK</button>
@@ -76,6 +115,7 @@
                         <th>Room#</th>
                         <th>Code</th>
                         <th>Room Type</th>
+                        <th>Features</th>
                         <th width="10%">Status</th>
                         <th>Description</th>
                     </tr>
@@ -94,6 +134,12 @@
     var selectedRooms = [];
 
     $(document).ready(function () {
+
+        $("#RoomFeatures").select2({
+            placeholder: "Search Features",
+            allowClear: true
+        });
+
         $("form#frmAdvanceRoomSearch select").change(function () {
             searchRoom();
         });
@@ -106,7 +152,7 @@
     });
 
     function BindCheckBoxRoomChangeEvent() {
-        $(".chkRoom").change(function () {            
+        $(".chkRoom").change(function () {
             if (this.checked) {
                 selectedRooms.push($(this).attr("id"));
 
@@ -114,11 +160,11 @@
             }
         });
     }
-    
+
     function onSelectRoom(element) {
         var isChecked = $('#' + element).prop("checked");
 
-        $('#' + element).prop("checked", !isChecked).trigger("change");        
+        $('#' + element).prop("checked", !isChecked).trigger("change");
     }
 
     function checkRecentlySelectedRoomCheckbox() {
@@ -149,7 +195,7 @@
         if (!IsNullOrEmpty(selectedRoomIds)) {
             selectedRoomIdsArr = selectedRoomIds.split(Delimeter.COMMA);
         }
-        
+
         //Clear array
         selectedRooms = [];
 
@@ -180,7 +226,7 @@
                     var markup = "";
 
                     if (result.length > 0) {
-                        //Add the data rows.                        
+                        //Add the data rows.
                         for (var i = 0; i < result.length; i++) {
                             markup += "<tr>";
 
@@ -191,7 +237,7 @@
                                 statusColor = result[i].RoomStatusColor;
                             }
 
-                            if (selectedRoomIdsArr != null && selectedRoomIdsArr.length > 0) {                                
+                            if (selectedRoomIdsArr != null && selectedRoomIdsArr.length > 0) {
                                 if (arrayContains(result[i].RoomId, selectedRoomIdsArr) == true) {
                                     checked = "checked";
 
@@ -204,6 +250,7 @@
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Type + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomTypeCode + "</td>";
 
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomFeatures + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\"><span>" + result[i].RoomStatusName + "<i class=\'m-l-sm fa fa-circle\' style=\'color:" + statusColor + "\'> </i></span></td>";
 
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Description + "</td>";
@@ -235,3 +282,4 @@
 
 </script>
 
+<script src="~/Scripts/AdminLTE/select2/select2.min.js"></script>

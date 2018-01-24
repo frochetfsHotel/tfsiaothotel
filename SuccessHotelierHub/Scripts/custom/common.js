@@ -1,4 +1,7 @@
-﻿$(function () {
+﻿//This is a global varibale - will be set once the form is dirty and reset when saved
+var data_needs_saving = false;
+
+$(function () {
 
     LoadLeftSideMenu();
 

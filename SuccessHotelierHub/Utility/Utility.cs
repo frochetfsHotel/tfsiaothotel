@@ -13,6 +13,10 @@ using System.Reflection;
 using System.Configuration;
 using System.Text;
 using System.Security.Cryptography;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
+using iTextSharp.tool.xml;
 
 
 namespace SuccessHotelierHub.Utility
@@ -29,7 +33,7 @@ namespace SuccessHotelierHub.Utility
         /// <param name="maxWidth"></param>
         /// <param name="maxHeight"></param>
         /// <returns></returns>
-        public static string ScaleImage(Image image, int maxWidth, int maxHeight)
+        public static string ScaleImage(System.Drawing.Image image, int maxWidth, int maxHeight)
         {
             try
             {
@@ -405,6 +409,58 @@ namespace SuccessHotelierHub.Utility
             }
             return cipherText;
         }
+
+        public static string RenderPartialViewToString(Controller controller, string viewName, object model)
+        {
+            controller.ViewData.Model = model;
+            using (StringWriter sw = new StringWriter())
+            {
+                ViewEngineResult viewResult = ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName);
+                ViewContext viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData, controller.TempData, sw);
+                viewResult.View.Render(viewContext, sw);
+
+                return sw.ToString();
+            }
+        }
+
+        #region 'Get Pdf'
+
+        public static byte[] GetPDF(string html)
+        {
+            byte[] bPDF = null;
+
+            MemoryStream ms = new MemoryStream();
+            TextReader txtReader = new StringReader(html);
+
+            // 1: create object of a itextsharp document class
+            Document doc = new Document(PageSize.A4, 25, 25, 25, 25);
+
+            // 2: we create a itextsharp pdfwriter that listens to the document and directs a XML-stream to a file
+            PdfWriter oPdfWriter = PdfWriter.GetInstance(doc, ms);
+
+            // 3: we create a worker parse the document
+            doc.Open();
+            HTMLWorker htmlWorker = new HTMLWorker(doc);
+            StringReader sr = new StringReader(html);
+            XMLWorkerHelper.GetInstance().ParseXHtml(oPdfWriter, doc, sr);
+            // 4: we open document and start the worker on the document
+
+            //htmlWorker.StartDocument();
+
+            //// 5: parse the html into the document
+            //htmlWorker.Parse(txtReader);
+
+            //// 6: close the document and the worker
+            //htmlWorker.EndDocument();
+            //htmlWorker.Close();
+            doc.Close();
+
+            bPDF = ms.ToArray();
+
+            return bPDF;
+        }
+
+        #endregion
     }
 
 
