@@ -78,6 +78,7 @@
                                     <th>Code</th>
                                     <th>Floor</th>                                    
                                     <th>Room Type Code</th>
+                                    <th>Features</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -222,6 +223,11 @@
             },
             {
                 targets: 5,
+                data: "RoomFeatures",
+                orderable: false
+            },
+            {
+                targets: 6,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -234,7 +240,7 @@
                 }
             },
             {
-                targets: 6,
+                targets: 7,
                 data: "Id",
                 orderable: false,
                 className: "text-center",

@@ -179,6 +179,56 @@ namespace SuccessHotelierHub.Repository
             return rooms;
         }
 
+        public string UpdateRoomOccupiedFlag(Guid roomId, bool isOccupied, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = roomId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomOccupiedFlag", parameters));
+
+            return id;
+        }
+
+        public string UpdateRoomCheckInStatus(Guid roomId, Guid statusId, bool isOccupied, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = roomId },
+                    new SqlParameter { ParameterName = "@StatusId", Value = statusId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomCheckInStatus", parameters));
+
+            return id;
+        }
+
+        public string UpdateRoomCheckOutStatus(Guid roomId, Guid statusId, bool isOccupied, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = roomId },
+                    new SqlParameter { ParameterName = "@StatusId", Value = statusId },
+                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomCheckOutStatus", parameters));
+
+            return id;
+        }
+
         #endregion
 
         #region Reservation Room Mapping 
@@ -231,55 +281,73 @@ namespace SuccessHotelierHub.Repository
             return reservationRoomMapping;
         }
 
-        public string UpdateRoomOccupiedFlag(Guid roomId, bool isOccupied, int updatedBy)
+        #endregion
+
+        #region Room Features Mapping
+
+        public string AddUpdateRoomFeaturesMapping(RoomFeaturesMappingVM model)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = roomId },
-                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@RoomId", Value = model.RoomId },
+                    new SqlParameter { ParameterName = "@RoomFeatureId", Value = model.RoomFeatureId } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
                 };
 
-            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomOccupiedFlag", parameters));
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUpdateRoomFeaturesMapping", parameters));
 
             return id;
         }
 
-        public string UpdateRoomCheckInStatus(Guid roomId, Guid statusId, bool isOccupied, int updatedBy)
+        public string DeleteRoomFeaturesMappingByRoom(Guid roomId, int updatedBy)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = roomId },
-                    new SqlParameter { ParameterName = "@StatusId", Value = statusId },
-                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
                 };
 
-            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomCheckInStatus", parameters));
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteRoomFeaturesMappingByRoom", parameters));
 
             return id;
         }
 
-        public string UpdateRoomCheckOutStatus(Guid roomId, Guid statusId, bool isOccupied, int updatedBy)
+        public string DeleteRoomFeaturesMapping(Guid mappingId, int updatedBy)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = roomId },
-                    new SqlParameter { ParameterName = "@StatusId", Value = statusId },
-                    new SqlParameter { ParameterName = "@IsOccupied", Value = isOccupied },
+                    new SqlParameter { ParameterName = "@Id", Value = mappingId },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
                 };
 
-            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateRoomCheckOutStatus", parameters));
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteRoomFeaturesMapping", parameters));
 
             return id;
         }
+
+        public List<RoomFeaturesMappingVM> GetRoomFeaturesMapping(Guid? roomId, Guid? roomFeatureId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@RoomId", Value = (object) roomId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@RoomFeatureId", Value = (object) roomFeatureId ?? DBNull.Value }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomFeaturesMapping", parameters);
+
+            var roomFeaturesMapping = new List<RoomFeaturesMappingVM>();
+            roomFeaturesMapping = DALHelper.CreateListFromTable<RoomFeaturesMappingVM>(dt);
+
+            return roomFeaturesMapping;
+        }
+
 
         #endregion
     }

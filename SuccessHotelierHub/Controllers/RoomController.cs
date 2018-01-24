@@ -18,6 +18,7 @@ namespace SuccessHotelierHub.Controllers
         private FloorRepository floorRepository = new FloorRepository();
         private RoomRepository roomRepository = new RoomRepository();
         private RoomStatusRepository roomStatusRepository = new RoomStatusRepository();
+        private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
 
         #endregion
 
@@ -70,6 +71,13 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(roomId))
                 {
+                    #region Delete Room Features
+
+                    //Delete Room Features.
+                    roomRepository.DeleteRoomFeaturesMappingByRoom(id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
                     #region Update Floor (No. Of Rooms)
 
                     //Decrease the no. of rooms quantity from floor.
@@ -122,6 +130,13 @@ namespace SuccessHotelierHub.Controllers
                         var roomDetail = roomRepository.GetRoomById(id).FirstOrDefault();
 
                         var roomId = roomRepository.DeleteRoom(id, LogInManager.LoggedInUserId);
+
+                        #region Delete Room Features
+
+                        //Delete Room Features.
+                        roomRepository.DeleteRoomFeaturesMappingByRoom(id, LogInManager.LoggedInUserId);
+
+                        #endregion
 
                         #region Update Floor (No. Of Rooms)
 
@@ -277,9 +292,11 @@ namespace SuccessHotelierHub.Controllers
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
             var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
+            var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.FloorList = floorList;
+            ViewBag.RoomFeaturesList = roomFeaturesList;
 
             return View();
         }
@@ -327,6 +344,24 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+
+                    #region Add Room Features
+
+                    if (model.RoomFeatures != null && model.RoomFeatures.Count > 0)
+                    {
+                        foreach (var item in model.RoomFeatures)
+                        {
+                            RoomFeaturesMappingVM roomFeaturesMapping = new RoomFeaturesMappingVM();
+                            roomFeaturesMapping.RoomId = Guid.Parse(roomId);
+                            roomFeaturesMapping.RoomFeatureId = item;
+                            roomFeaturesMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            roomFeaturesMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            roomRepository.AddUpdateRoomFeaturesMapping(roomFeaturesMapping);
+                        }
+                    }
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -369,8 +404,26 @@ namespace SuccessHotelierHub.Controllers
                 var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
                 var floorList = new SelectList(floorRepository.GetFloors(), "Id", "Name");
 
+                var roomFeatures = roomRepository.GetRoomFeaturesMapping(id, null);
+
+                if (roomFeatures != null && roomFeatures.Count > 0)
+                {
+                    List<Guid> roomFeatureIds = new List<Guid>();
+
+                    foreach (var roomFeature in roomFeatures)
+                    {
+                        if(roomFeature.RoomFeatureId.HasValue)
+                            roomFeatureIds.Add(roomFeature.RoomFeatureId.Value);
+                    }
+
+                    model.RoomFeatures = roomFeatureIds;
+                }
+
+                var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
+
                 ViewBag.RoomTypeList = roomTypeList;
                 ViewBag.FloorList = floorList;
+                ViewBag.RoomFeaturesList = roomFeaturesList;
 
                 return View(model);
             }
@@ -405,6 +458,52 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(roomId))
                 {
+                    #region Delete Room Features
+
+                    var roomFeatures = roomRepository.GetRoomFeaturesMapping(Guid.Parse(roomId), null);
+
+                    if (roomFeatures != null && roomFeatures.Count > 0)
+                    {
+                        List<Guid> mappingIds = new List<Guid>();
+                        foreach (var roomFeature in roomFeatures)
+                        {
+                            if (roomFeature.RoomFeatureId.HasValue)
+                            {
+                                if (!model.RoomFeatures.Contains(roomFeature.RoomFeatureId.Value))
+                                {
+                                    mappingIds.Add(roomFeature.Id);
+                                }
+                            }
+                        }
+
+                        //Delete Room Features
+                        if (mappingIds != null && mappingIds.Count > 0)
+                        {
+                            foreach (var id in mappingIds)
+                            {
+                                roomRepository.DeleteRoomFeaturesMapping(id, LogInManager.LoggedInUserId);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region Add / Update Room Features
+
+                    if (model.RoomFeatures != null && model.RoomFeatures.Count > 0)
+                    {
+                        foreach (var item in model.RoomFeatures)
+                        {
+                            RoomFeaturesMappingVM roomFeaturesMapping = new RoomFeaturesMappingVM();
+                            roomFeaturesMapping.RoomId = Guid.Parse(roomId);
+                            roomFeaturesMapping.RoomFeatureId = item;
+                            roomFeaturesMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            roomFeaturesMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            roomRepository.AddUpdateRoomFeaturesMapping(roomFeaturesMapping);
+                        }
+                    }
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

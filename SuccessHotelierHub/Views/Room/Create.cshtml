@@ -1,7 +1,16 @@
 ﻿@model SuccessHotelierHub.Models.RoomVM
+@using SuccessHotelierHub.Models
 @{
     ViewBag.Title = "Create Room";
+
+    var roomFeaturesList = (List<RoomFeatureVM>) ViewBag.RoomFeaturesList;
 }
+
+@section styles{
+    @Styles.Render("~/Content/css/AdminLTE/select2/select2.css")
+    @Styles.Render("~/Content/css/AdminLTE/select2/select2-bootstrap.css")
+}
+
 <section class="content-header">
     <h1>
         Room <small>Create</small>
@@ -61,6 +70,28 @@
                         </label>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>Room Features</h4>
+                        <hr />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="RoomFeatures">Select Room Features</label>
+                        <select id="RoomFeatures" name="RoomFeatures" class="form-control" multiple>
+                            @if (roomFeaturesList != null && roomFeaturesList.Count > 0)
+                            {
+                                foreach (var feature in roomFeaturesList)
+                                {
+                                    <option value="@feature.Id">@feature.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
             </div>
             <div class="box-footer text-right">
                 <button type="button" class="btn btn-success m-r-xs" onclick="return saveRoom();">Save</button>
@@ -71,6 +102,14 @@
 </section>
 
 <script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#RoomFeatures").select2({
+            placeholder: "Search Features",
+            allowClear: true
+        });
+    });
+
     function validateRoom() {
 
         var errorMessage = "";
@@ -120,4 +159,7 @@
     }
 </script>
 
+@section scripts{
+    @Scripts.Render("~/Scripts/AdminLTE/select2/select2.min.js")    
+}
 

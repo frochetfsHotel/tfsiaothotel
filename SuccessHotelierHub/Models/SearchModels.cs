@@ -433,6 +433,18 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Type")]
         public string Type { get; set; }
 
+        [DisplayName("Room Features")]
+        public List<Guid> RoomFeatures { get; set; }
+
+        [DisplayName("Clean")]
+        public bool IsClean { get; set; }
+
+        [DisplayName("Dirty")]
+        public bool IsDirty { get; set; }
+
+        [DisplayName("Inspected")]
+        public bool IsInspected { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -1290,6 +1302,9 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Floor #")]
         public int? FloorNo { get; set; }
+
+        [DisplayName("Room Features")]
+        public string RoomFeatures { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }

@@ -266,6 +266,7 @@
     <Compile Include="Models\ReservationStatusVM.cs" />
     <Compile Include="Models\ReservationTypeVM.cs" />
     <Compile Include="Models\ReservationVM.cs" />
+    <Compile Include="Models\RoomFeaturesMappingVM.cs" />
     <Compile Include="Models\RoomFeatureVM.cs" />
     <Compile Include="Models\RoomPlanVM.cs" />
     <Compile Include="Models\RoomStatusVM.cs" />
@@ -315,7 +316,12 @@
     <Compile Include="Utility\HotelierHubAuthorize.cs" />
     <Compile Include="Utility\LoginManager.cs" />
     <Compile Include="Utility\Utility.cs" />
+    <Content Include="Content\css\AdminLTE\select2\select2-bootstrap.css" />
+    <Content Include="Content\css\AdminLTE\select2\select2-spinner.gif" />
+    <Content Include="Content\css\AdminLTE\select2\select2.css" />
+    <Content Include="Content\css\AdminLTE\select2\select2.png" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>

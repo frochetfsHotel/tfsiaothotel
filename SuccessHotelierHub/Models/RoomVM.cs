@@ -32,6 +32,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Status")]
         public Guid? StatusId { get; set; }
 
+        public List<Guid> RoomFeatures { get; set; }
 
         public bool IsOccupied { get; set; }
 
@@ -41,6 +42,11 @@ namespace SuccessHotelierHub.Models
         public DateTime? UpdatedOn { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+
+        public RoomVM()
+        {
+            RoomFeatures = new List<Guid>();
+        }
     }
 
 }
