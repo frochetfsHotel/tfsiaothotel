@@ -1872,6 +1872,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\LocalSuccessHotelierHub.pubxml" />
+    <Content Include="Scripts\custom\dragdrop.plugin.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\custom\common.js" />
     <Content Include="Scripts\custom\jquery.validate.date.js" />

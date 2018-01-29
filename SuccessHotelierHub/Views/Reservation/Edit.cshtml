@@ -1121,6 +1121,10 @@
         var profileId = $('#ProfileId').val();
         var reservationId = $('#Id').val();
         if (!IsNullOrEmpty(profileId)) {
+
+            //reset the global varible for popup redirection.
+            data_needs_saving = false;
+
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=EditReservation&rid=" + reservationId;
             redirectTo(url);
         }      
@@ -1133,12 +1137,15 @@
         var lastName = $("#LastName").val();
         var firstName = $("#FirstName").val();
         var titleId = $("#TitleId").val();
+        var reservationId = $("#Id").val();
 
         if (!IsNullOrEmpty(lastName)) {
             //Show search results based on entered last name.
             $("form#frmAdvanceProfileSearch #LastName").val(trim(lastName));
             $("form#frmAdvanceProfileSearch #FirstName").val(trim(firstName));
             $("form#frmAdvanceProfileSearch #hdnTitleId").val(trim(titleId));
+            $("form#frmAdvanceProfileSearch #hdnReservationId").val(reservationId);
+
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }
         $('#profileSearchModal').modal('toggle');

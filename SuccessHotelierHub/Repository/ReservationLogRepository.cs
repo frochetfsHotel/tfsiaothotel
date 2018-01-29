@@ -92,7 +92,7 @@ namespace SuccessHotelierHub.Repository
             return reservationLogId;
         }
 
-        public string DeleteReservationLog(int id, int updatedBy)
+        public string DeleteReservationLog(Guid id, int updatedBy)
         {
             string reservationLogId = string.Empty;
 
@@ -106,6 +106,27 @@ namespace SuccessHotelierHub.Repository
 
             return reservationLogId;
         }
+
+        public List<ReservationLogVM> GetReservationLogByRoom(Guid? roomId, Guid? reservationId, Guid? roomStatusId, DateTime? arrivaldate, DateTime? departureDate)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@RoomStatusId", Value = roomStatusId },
+                    new SqlParameter { ParameterName = "@Arrivaldate", Value = arrivaldate },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = departureDate }
+
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationLogByRoom", parameters);
+
+            var reservationLog = new List<ReservationLogVM>();
+            reservationLog = DALHelper.CreateListFromTable<ReservationLogVM>(dt);
+
+            return reservationLog;
+        }
+
 
         #endregion
     }

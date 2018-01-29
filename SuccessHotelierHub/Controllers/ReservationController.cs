@@ -36,6 +36,7 @@ namespace SuccessHotelierHub.Controllers
         private ReservationSourceRepository reservationSourceRepository = new ReservationSourceRepository();
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
+        private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
 
         #endregion
 
@@ -232,6 +233,24 @@ namespace SuccessHotelierHub.Controllers
                                 reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+
+                                #region Remove Existing reservation if room status are dirty.
+
+                                var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+
+                                if (reservationLog != null)
+                                {
+                                    //Delete Reservation.
+                                    reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                    //Delete Reservation Room Mapping.
+                                    roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                    //Delete Reservation Log.
+                                    reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                                }
+
+                                #endregion Remove Existing reservation if room status are dirty.
                             }
                         }
                     }
@@ -457,6 +476,24 @@ namespace SuccessHotelierHub.Controllers
                                 reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+
+                                #region Remove Existing reservation if room status are dirty.
+
+                                var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+
+                                if (reservationLog != null)
+                                {
+                                    //Delete Reservation.
+                                    reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                    //Delete Reservation Room Mapping.
+                                    roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                    //Delete Reservation Log.
+                                    reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                                }
+
+                                #endregion Remove Existing reservation if room status are dirty.
                             }
                         }
                     }
@@ -514,6 +551,8 @@ namespace SuccessHotelierHub.Controllers
                     }
 
                     #endregion
+
+
 
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;

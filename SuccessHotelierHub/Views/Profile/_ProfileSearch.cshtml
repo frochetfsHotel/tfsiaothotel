@@ -13,6 +13,7 @@
     <input type="hidden" id="hdnTitleId" name="hdnTitleId" value=""/>
     <input type="hidden" id="hdnCountryId" name="hdnCountryId" value="" />
     <input type="hidden" id="hdnPhoneNo" name="hdnPhoneNo" value="" />
+    <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />
     <!-- Hidden Field -->
 
     <div class="col-xs-12 text-right m-b-sm padding-zero">        
@@ -236,6 +237,7 @@
         var titleId = $("form#frmAdvanceProfileSearch #hdnTitleId").val();
         var countryId = $("form#frmAdvanceProfileSearch #hdnCountryId").val();
         var phoneNo = $("form#frmAdvanceProfileSearch #hdnPhoneNo").val();
+        var reservationId = $("form#frmAdvanceProfileSearch #hdnReservationId").val();
 
         var url = '@Url.Content("~/Profile/CreateIndividualProfile")' + "?source=@sourceRedirectionParam";
 
@@ -257,6 +259,12 @@
         if (!IsNullOrEmpty(phoneNo)) {
             url += "&phoneNo=" + phoneNo + "";
         }
+        if (!IsNullOrEmpty(reservationId)) {
+            url += "&rid=" + reservationId + "";
+        }
+
+        //reset the global varible for popup redirection.
+        data_needs_saving = false;
 
         redirectTo(url);
     }
@@ -265,8 +273,14 @@
         var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');
 
         if (selectedProfile.val()) {
+            var reservationId = $("form#frmAdvanceProfileSearch #hdnReservationId").val();
             var profileId = $(selectedProfile).val();
-            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=@sourceRedirectionParam";
+
+            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=@sourceRedirectionParam" + "&rid=" + reservationId;
+
+            //reset the global varible for popup redirection.
+            data_needs_saving = false;
+
             redirectTo(url);
         } else {
             showToaster("Please select any one profile.", ToasterType.ERROR);

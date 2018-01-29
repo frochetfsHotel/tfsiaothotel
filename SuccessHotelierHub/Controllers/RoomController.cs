@@ -19,6 +19,7 @@ namespace SuccessHotelierHub.Controllers
         private RoomRepository roomRepository = new RoomRepository();
         private RoomStatusRepository roomStatusRepository = new RoomStatusRepository();
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
+        private ReservationRepository reservationRepository = new ReservationRepository();
 
         #endregion
 
@@ -593,6 +594,53 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public ActionResult ChangeRoomAndReservationMapping(Guid reservationId, Guid roomId, Guid roomTypeId, DateTime? date)
+        {
+            try
+            {
+                var reservationDetail = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+
+                if (reservationDetail != null)
+                {
+                    DateTime? arrivalDate = null, departureDate = null;
+                    if (date.HasValue)
+                    {
+                        var noOfNight = reservationDetail.NoOfNight;
+
+                        arrivalDate = date.Value;
+                        departureDate = date.Value.AddDays(noOfNight);
+
+                    }
+
+                    //Update dates in Reservation, ReservationLog, CheckInCheckOutDetail Tables & RoomId into ReservationLog, ReservationRoomMapping Tables.
+                    var id = roomRepository.ChangeRoomAndReservationMappingDetails(reservationId, roomId, roomTypeId, arrivalDate, departureDate, LogInManager.LoggedInUserId);
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        ReservationId = id
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Reservation details not exist"
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
         public bool CheckRoomNoAvailable(Guid? roomId, string roomNo)
         {
             bool blnAvailable = true;
@@ -606,6 +654,7 @@ namespace SuccessHotelierHub.Controllers
 
             return blnAvailable;
         }
+
 
         #endregion
     }

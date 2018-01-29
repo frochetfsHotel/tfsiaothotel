@@ -234,6 +234,25 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
+        public string ChangeRoomAndReservationMappingDetails(Guid reservationId, Guid roomId, Guid roomTypeId, DateTime? arrivalDate, DateTime? departureDate, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = arrivalDate },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = departureDate },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("ChangeRoomAndReservationMappingDetails", parameters));
+
+            return id;
+        }
+
         #endregion
 
         #region Reservation Room Mapping 

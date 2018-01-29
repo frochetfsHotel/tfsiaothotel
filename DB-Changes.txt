@@ -13236,8 +13236,7 @@ Date : 29-JAN-2018
 	SP Name : SearchAdvanceRoom
 	Comment : Changes in SP SearchAdvanceRoom	
 *******************************************************************************************************************/
-
-/****** Object:  StoredProcedure [dbo].[SearchAdvanceRoom]    Script Date: 1/29/2018 12:10:45 PM ******/
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceRoom]    Script Date: 1/29/2018 2:16:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13285,6 +13284,7 @@ BEGIN
 		,	[RoomTypeCode]			NVARCHAR(255)		NULL
 		,	[RoomTypeDescription]	NVARCHAR(255)		NULL		
 		,	[RoomFeatures]			NVARCHAR(MAX)		NULL
+		,	[ReservationId]			UNIQUEIDENTIFIER	NULL
 	)
 
 	
@@ -13301,7 +13301,8 @@ BEGIN
 			[RoomTypeId]			, 
 			[RoomTypeCode]			,
 			[RoomTypeDescription]	, 
-			[RoomFeatures]			
+			[RoomFeatures]			,
+			[ReservationId]		
 		)
 	SELECT 
 				ROW_NUMBER() OVER 
@@ -13327,17 +13328,20 @@ BEGIN
 						INNER JOIN RoomFeatures RF ON RF.Id = RFM.RoomFeatureId
 							AND ISNULL(RF.IsDeleted,0) = 0
 				WHERE	ISNULL(RFM.IsDeleted,0) = 0
-							AND RFM.RoomId = R.Id						
-			FOR XMl PATH('')),1,1,'')),'') AS RoomFeatures
-
+						AND RFM.RoomId = R.Id						
+						FOR XMl PATH('')),1,1,'')),'') AS RoomFeatures,
+				RL.ReservationId AS ReservationId
 		
 			FROM Room R
 					INNER JOIN  RoomType ROT ON R.RoomTypeId = ROT.Id 
 						AND ISNULL(ROT.IsDeleted,0) = 0  AND ISNULL(ROT.IsActive,0) = 1 
-					LEFT JOIN (SELECT DISTINCT RL.RoomId, RL.RoomStatusId
+					LEFT JOIN (SELECT DISTINCT RL.RoomId, RL.RoomStatusId, RL.ReservationId
 									FROM ReservationLog RL 
+										INNER JOIN Reservation R ON R.Id = RL.ReservationId
+											AND ISNULL(R.IsDeleted,0) = 0
 									WHERE ISNULL(RL.IsDeleted,0) = 0 
 										AND ISNULL(RL.IsActive,0) = 1 
+										AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
 										AND ((ISNULL(@ArrivalDate,'') = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS date) AND CAST(RL.CheckOutDate  AS date))
 												OR (ISNULL(@DepartureDate,'') = '' OR CAST(@DepartureDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS date) AND CAST(RL.CheckOutDate  AS date)))
 										) AS RL
@@ -13370,7 +13374,8 @@ BEGIN
 			temp.[RoomStatusColor],
 			temp.[RoomTypeId],
 			temp.[RoomTypeCode],
-			temp.[RoomFeatures]
+			temp.[RoomFeatures],
+			temp.[ReservationId]
 	FROM	
 		#tempRoom AS temp
 		LEFT JOIN RoomFeaturesMapping ON RoomFeaturesMapping.RoomId = temp.[RoomId]
@@ -13378,4 +13383,297 @@ BEGIN
 		WHERE ISNULL(@RoomFeatures,'') = '' OR 
 			RoomFeaturesMapping.RoomFeatureId IN (SELECT * FROM [dbo].[SplitStrings] (@RoomFeatures,',')) 
 END
+
+
+/*******************************************************************************************************************
+	SP Name : GetRoomTypeDetailsForRateSheet
+	Comment : Changes in SP GetRoomTypeDetailsForRateSheet	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomTypeDetailsForRateSheet]    Script Date: 1/29/2018 6:35:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetRoomTypeDetailsForRateSheet] '', '2018/01/30'
+*/
+
+ALTER PROCEDURE [dbo].[GetRoomTypeDetailsForRateSheet]
+	@RoomTypeCode	NVARCHAR(25)	=	NULL	,
+	@ArrivalDate	NVARCHAR(25)	=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT	RT.Id,
+			ISNULL(RT.RoomTypeCode,'') AS RoomTypeCode,
+			ISNULL(RT.[Description],'') AS [Description],
+			ISNULL(RT.RoomCapacity,'') AS [RoomCapacity],
+			(
+				(
+					SELECT COUNT(*) As TotalRooms
+					FROM Room 
+					WHERE ISNULL(IsDeleted,0) = 0 AND ISNULL(IsActive,0) = 1
+						AND RoomTypeId = RT.Id
+				)
+				 - 
+				(
+					SELECT COUNT(DISTINCT RL.Id) 
+					FROM Room R 
+					INNER JOIN ReservationLog RL ON R.Id = RL.RoomId 						
+						AND ISNULL(RL.IsDeleted,0) = 0  AND ISNULL(RL.IsActive,0) = 1
+						AND (ISNULL(@ArrivalDate,'')  = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate AS DATE) AND CAST(RL.CheckOutDate AS DATE))
+					INNER JOIN Reservation RE ON RE.Id = RL.ReservationId
+						AND ISNULL(RE.IsDeleted,0) = 0 
+						AND ISNULL(RE.IsCheckIn,0) = 1 AND ISNULL(RE.IsCheckOut,0) = 0
+					WHERE	ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsActive,0) = 1 AND  R.RoomTypeId = RT.Id
+				)
+			)  AS AvailableRooms
+		FROM RoomType RT
+		WHERE	ISNULL(RT.IsDeleted,0) = 0 
+				AND ISNULL(RT.IsActive,0) = 1
+				AND (ISNULL(@RoomTypeCode,'') = '' OR RT.RoomTypeCode = @RoomTypeCode)
+		ORDER BY RT.RoomTypeCode 
+END
+
+/*******************************************************************************************************************
+	SP Name : GetRoomDetailsForRoomPlan
+	Comment : Changes in SP GetRoomDetailsForRoomPlan	
+*******************************************************************************************************************/
+
+
+
+/****** Object:  StoredProcedure [dbo].[GetRoomDetailsForRoomPlan]    Script Date: 1/29/2018 1:06:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetRoomDetailsForRoomPlan]
+			@RoomTypeId			=	NULL ,
+			@RoomNo				=	'' ,
+			@StartDate			=	'2018/01/29',
+			@EndDate			=	'2018/01/31'
+*/
+ALTER PROCEDURE [dbo].[GetRoomDetailsForRoomPlan]
+	@RoomTypeId			UNIQUEIDENTIFIER	=	NULL,
+	@RoomNo				NVARCHAR(255)		=	NULL,
+	@StartDate			NVARCHAR(15)		=	NULL,
+	@EndDate			NVARCHAR(15)		=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  TRY_PARSE(R.[RoomNo] AS INT) ASC, RT.RoomTypeCode ASC
+
+				) AS RowNum,
+				R.Id AS Id,
+				R.RoomTypeId AS RoomTypeId,
+				ISNULL(RT.RoomTypeCode,'') AS RoomTypeCode,
+				ISNULL(R.RoomNo,'') AS RoomNo,
+				ISNULL(R.[Type],'') AS [Type],
+				ISNULL(R.[Description],'') AS [Description],
+				R.StatusId AS RoomStatusId,
+				ISNULL(RS.[Name],'') AS RoomStatus,
+				ISNULL(RS.ColorCode,'') AS RoomStatusColor,
+				ISNULL(R.IsOccupied,0) AS IsOccupied
+			FROM [dbo].[Room] R 
+					INNER JOIN [dbo].[RoomType] RT ON R.RoomTypeId = RT.Id AND ISNULL(RT.IsDeleted,0) = 0
+					LEFT JOIN (SELECT DISTINCT RL.RoomId, RL.RoomStatusId
+									FROM ReservationLog RL 
+										INNER JOIN Reservation R ON R.Id = RL.ReservationId
+											AND ISNULL(R.IsDeleted,0) = 0
+									WHERE ISNULL(RL.IsDeleted,0) = 0 
+										AND ISNULL(RL.IsActive,0) = 1 
+										AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+										AND (
+												( CAST(RL.CheckInDate  AS DATE) BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE) )
+												OR 
+												( CAST(RL.CheckOutDate AS DATE) BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE) )
+										)
+								) AS RL 
+						ON RL.RoomId = R.Id
+					LEFT JOIN [dbo].[RoomStatus] RS ON RS.Id = (CASE WHEN RL.RoomStatusId IS NOT NULL THEN RL.RoomStatusId ELSE R.StatusId END)					
+						AND ISNULL(RS.IsDeleted,0) = 0  AND ISNULL(RS.IsActive,0) = 1 
+
+			WHERE	ISNULL(R.IsDeleted,0) = 0
+					AND (@RoomTypeId IS NULL OR R.RoomTypeId = @RoomTypeId)
+					AND (ISNULL(@RoomNo,'') = '' OR R.RoomNo = @RoomNo)
+
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationDetailsForRoomPlan
+	Comment : Changes in SP GetReservationDetailsForRoomPlan	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationDetailsForRoomPlan]    Script Date: 1/29/2018 1:15:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetReservationDetailsForRoomPlan]
+			@RoomId				=	'014D170C-97F1-4876-BB45-E1F7FC690217' ,			
+			@StartDate			=	'2018/01/01',
+			@EndDate			=	'2018/01/07'
+*/
+ALTER PROCEDURE [dbo].[GetReservationDetailsForRoomPlan]
+	@RoomId				UNIQUEIDENTIFIER	=	NULL,	
+	@StartDate			NVARCHAR(15)		=	NULL,
+	@EndDate			NVARCHAR(15)		=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT DISTINCT
+				RL.ReservationId, 
+				RL.ProfileId, 
+				ISNULL(RE.FirstName,'') AS FirstName,
+				ISNULL(RE.LastName,'') AS LastName,
+				ISNULL(RE.NoOfNight,0) AS NoOfNight,
+				RL.RoomId, 
+				RL.RoomStatusId, 
+				ISNULL(RS.[Name],'') AS RoomStatus,
+				ISNULL(RS.ColorCode,'') AS RoomStatusColor,
+				CONVERT(varchar(12),RL.CheckInDate,103) AS CheckInDateString,
+				RL.CheckInDate,
+				CONVERT(varchar(12),RL.CheckOutDate,103) AS CheckOutDateString,
+				RL.CheckOutDate
+			FROM ReservationLog RL 
+				INNER JOIN Reservation RE ON RL.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0 
+				INNER JOIN Room R ON RL.RoomId = R.Id
+					AND ISNULL(R.IsDeleted,0) = 0  AND ISNULL(R.IsActive,0) = 1
+				INNER JOIN IndividualProfile IPR ON IPR.Id = RE.ProfileId
+					AND ISNULL(IPR.IsDeleted,0) = 0 AND ISNULL(IPR.IsActive,0) = 1
+				LEFT JOIN [dbo].[RoomStatus] RS ON RS.Id = (CASE WHEN RL.RoomStatusId IS NOT NULL THEN RL.RoomStatusId ELSE R.StatusId END)					
+					AND ISNULL(RS.IsDeleted,0) = 0  AND ISNULL(RS.IsActive,0) = 1 
+
+
+			WHERE ISNULL(RL.IsDeleted,0) = 0 AND ISNULL(RL.IsActive,0) = 1 
+				AND ISNULL(RE.IsCheckIn,0) = 1 AND ISNULL(RE.IsCheckOut,0) = 0
+				AND RL.RoomId = @RoomId
+				AND (
+						(CAST(RL.CheckInDate  AS DATE)  BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE))
+						OR (CAST(RL.CheckOutDate AS DATE)  BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE))
+					) 
+
+			ORDER BY RL.CheckInDate, RL.CheckOutDate ASC
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationLogByRoom
+	Comment : Create SP GetReservationLogByRoom	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationLogByRoom]    Script Date: 1/24/2018 5:54:10 PM ******/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationLogByRoom]    Script Date: 1/24/2018 5:54:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationLogByRoom]
+	@RoomId			UNIQUEIDENTIFIER				,
+	@RoomStatusId	UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationId	UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate	DATETIME			=	NULL	,
+	@DepartureDate	DATETIME			=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RL.* FROM [dbo].[ReservationLog] RL 
+			INNER JOIN Reservation R ON R.Id = RL.ReservationId
+			AND ISNULL(R.IsDeleted,0) = 0 
+		WHERE	ISNULL(RL.IsDeleted,0) = 0  AND ISNULL(RL.IsActive,0) = 1 
+				AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+				AND 
+				(
+					(ISNULL(@ArrivalDate,'') = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate  AS DATE))
+						OR 
+					(ISNULL(@DepartureDate,'') = '' OR CAST(@DepartureDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate  AS DATE))
+				)
+				AND RoomId = @RoomId
+				AND @RoomStatusId IS NULL OR RL.RoomStatusId = @RoomStatusId
+				AND @ReservationId IS NULL OR RL.ReservationId = @ReservationId
+
+END
+
+/*******************************************************************************************************************
+	SP Name : ChangeRoomAndReservationMappingDetails
+	Comment : Create SP ChangeRoomAndReservationMappingDetails	
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[ChangeRoomAndReservationMappingDetails]    Script Date: 1/29/2018 5:33:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[ChangeRoomAndReservationMappingDetails]
+	@ReservationId	UNIQUEIDENTIFIER				,
+	@RoomId			UNIQUEIDENTIFIER				,
+	@RoomTypeId		UNIQUEIDENTIFIER				,
+	@ArrivalDate	DATETIME			=	NULL	,
+	@DepartureDate	DATETIME			=	NULL	,
+	@UpdatedBy		INT						
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	--Update Reservation
+		UPDATE [dbo].[Reservation]
+		SET	[ArrivalDate] = (CASE WHEN @ArrivalDate IS NOT NULL THEN @ArrivalDate ELSE [ArrivalDate] END)    
+		   ,[DepartureDate] = (CASE WHEN @DepartureDate IS NOT NULL THEN @DepartureDate ELSE [DepartureDate] END)
+		   ,[RoomTypeId] = @RoomTypeId
+		   ,[UpdatedBy]	= @UpdatedBy		   
+		   ,[UpdatedOn]	= GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @ReservationId
+
+	--Update ReservationRoomMapping
+	UPDATE [dbo].[ReservationRoomMapping]
+		SET	[RoomId] = @RoomId      		        
+		   ,[UpdatedBy]	= @UpdatedBy		   
+		   ,[UpdatedOn]	= GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND ReservationId = @ReservationId
+
+	--Update ReservationLog
+	UPDATE [dbo].[ReservationLog]
+		SET	[RoomId] = @RoomId       
+		   ,[CheckInDate] = (CASE WHEN @ArrivalDate IS NOT NULL THEN @ArrivalDate ELSE [CheckInDate] END)    
+		   ,[CheckOutDate] = (CASE WHEN @DepartureDate IS NOT NULL THEN @DepartureDate ELSE [CheckOutDate] END)
+		   ,[UpdatedBy]	= @UpdatedBy		   
+		   ,[UpdatedOn]	= GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND ReservationId = @ReservationId
+
+
+	--Update CheckInCheckOutDetail
+	UPDATE [dbo].[CheckInCheckOutDetail] 
+		SET	[CheckInDate] = (CASE WHEN @ArrivalDate IS NOT NULL THEN @ArrivalDate ELSE [CheckInDate] END)    
+		   ,[CheckOutDate] = (CASE WHEN @DepartureDate IS NOT NULL THEN @DepartureDate ELSE [CheckOutDate] END)
+		   ,[UpdatedBy]	= @UpdatedBy		   
+		   ,[UpdatedOn]	= GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND ReservationId = @ReservationId
+	
+
+	SELECT @ReservationId AS Id    
+END
+
+
 

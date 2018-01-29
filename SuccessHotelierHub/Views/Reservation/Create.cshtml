@@ -761,7 +761,7 @@
                     $('#RoomNumbers').val(roomNumbers);
                     $('#RoomIds').val(roomIds);
 
-                    //Close Room Type Search Modal.
+                    //Close Room Search Modal.
                     $('#roomModal').modal('toggle');
 
                 }
@@ -1037,6 +1037,10 @@
     function GotoProfileEditPage() {
         var profileId = $('#ProfileId').val();
         if (!IsNullOrEmpty(profileId)) {
+
+            //reset the global varible for popup redirection.
+            data_needs_saving = false;
+
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=CreateReservation";
             redirectTo(url);
         }       
@@ -1059,6 +1063,7 @@
             $("form#frmAdvanceProfileSearch #hdnTitleId").val(trim(titleId));
             $("form#frmAdvanceProfileSearch #hdnCountryId").val(trim(countryId));
             $("form#frmAdvanceProfileSearch #hdnPhoneNo").val(trim(phoneNo));
+            $("form#frmAdvanceProfileSearch #hdnReservationId").val('');
 
             $("form#frmAdvanceProfileSearch #btnSearch").click();
         }

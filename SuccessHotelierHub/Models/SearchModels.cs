@@ -473,6 +473,8 @@ namespace SuccessHotelierHub.Models
 
         public string RoomFeatures { get; set; }
 
+        public Guid? ReservationId { get; set; }
+
 
     }
     #endregion

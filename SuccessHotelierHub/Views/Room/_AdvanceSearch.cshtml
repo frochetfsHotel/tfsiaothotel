@@ -233,6 +233,7 @@
                             var checked = "";
                             var statusColor = "#079438"
                             var statusName = "";
+                            var reservationId = '';
 
                             if (!IsNullOrEmpty(result[i].RoomStatusColor)) {
                                 statusColor = result[i].RoomStatusColor;
@@ -248,18 +249,21 @@
                                 }
                             }
 
-                            if (statusName != 'Dirty') {
-                                markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " /> <span class=\'checkmark\'></span></label></td>";
-                            } else {
-                                markup += "<td class=\'text-center\'></td>";
-                            }
+                            reservationId = result[i].ReservationId;
+                            
+                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " data-roomstatus=\'" + statusName + "\' data-reservationid=\'" + reservationId + "\' /> <span class=\'checkmark\'></span></label></td>";
+                            
 
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomNo + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Type + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomTypeCode + "</td>";
 
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomFeatures + "</td>";
-                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\"><span>" + result[i].RoomStatusName + "<i class=\'m-l-sm fa fa-circle\' style=\'color:" + statusColor + "\'> </i></span></td>";
+                            if (statusName != "Dirty") {
+                                markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\"><span>" + result[i].RoomStatusName + "<i class=\'m-l-sm fa fa-circle\' style=\'color:" + statusColor + "\'> </i></span></td>";
+                            } else {
+                                markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\"><span>" + result[i].RoomStatusName + "<i class=\'m-l-sm fa fa-circle\' style=\'color:" + statusColor + "\'></i> <i class=\'fa fa-info-circle\' title=\'If you select dirty room then existing allocation will be removed.\' data-toggle=\'tooltip\' data-original-title=\'If you select dirty room then existing allocation will be removed.\'></i></span></td>";
+                            }
 
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Description + "</td>";
 
