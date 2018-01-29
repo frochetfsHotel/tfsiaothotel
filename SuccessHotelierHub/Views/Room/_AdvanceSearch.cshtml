@@ -153,7 +153,7 @@
 
     function BindCheckBoxRoomChangeEvent() {
         $(".chkRoom").change(function () {
-            if (this.checked) {
+            if (this.checked) {                
                 selectedRooms.push($(this).attr("id"));
 
                 checkRecentlySelectedRoomCheckbox();
@@ -232,10 +232,13 @@
 
                             var checked = "";
                             var statusColor = "#079438"
+                            var statusName = "";
 
                             if (!IsNullOrEmpty(result[i].RoomStatusColor)) {
                                 statusColor = result[i].RoomStatusColor;
                             }
+
+                            statusName = result[i].RoomStatusName;
 
                             if (selectedRoomIdsArr != null && selectedRoomIdsArr.length > 0) {
                                 if (arrayContains(result[i].RoomId, selectedRoomIdsArr) == true) {
@@ -245,7 +248,12 @@
                                 }
                             }
 
-                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " /> <span class=\'checkmark\'></span></label></td>";
+                            if (statusName != 'Dirty') {
+                                markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " /> <span class=\'checkmark\'></span></label></td>";
+                            } else {
+                                markup += "<td class=\'text-center\'></td>";
+                            }
+
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomNo + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Type + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomTypeCode + "</td>";
@@ -276,6 +284,7 @@
         $('form#frmAdvanceRoomSearch #DepartureDate').val('');
         $('form#frmAdvanceRoomSearch #RoomNo').val('');
         $('form#frmAdvanceRoomSearch #Type').val('');
+        $("form#frmAdvanceRoomSearch #RoomFeatures").select2("val", "");
 
         $("form#frmAdvanceRoomSearch #tblRoom tbody").empty();
     }

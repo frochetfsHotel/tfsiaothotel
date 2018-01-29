@@ -550,8 +550,8 @@ namespace SuccessHotelierHub.Controllers
             model.FolioNumber = "";
             model.CashierNumber = "";
             model.PageNumber = "1";
-            model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd/MM/yyyy") : "";
-            model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd/MM/yyyy") : "";
+            model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
+            model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
             model.GSTRegistrationNumber = "";
 
             model.Transactions = transactions;
@@ -584,7 +584,7 @@ namespace SuccessHotelierHub.Controllers
             string html = Utility.Utility.RenderPartialViewToString((Controller)this, "Preview", model);
             byte[] pdfBytes = Utility.Utility.GetPDF(html);
 
-            //return File(pdfBytes, "application/pdf", "bill.pdf");
+            //return File(pdfBytes, "application/pdf", string.Format("bill_{0}.pdf", model.Id));
             return File(pdfBytes, "application/pdf");
 
             //return View(model);

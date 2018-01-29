@@ -733,7 +733,7 @@
         });
 
         //Room
-        $('.btnAdvanceSearchRoomOk').click(function (e) {
+        $('.btnAdvanceSearchRoomOk').click(function (e) {            
             var roomNumbers = "";
             var roomIds = "";
 
@@ -747,7 +747,7 @@
                     return false;
                 }
 
-                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {
+                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {                    
                     //get selected room.
                     roomNumbers += $(this).data("roomno") + Delimeter.COMMA + Delimeter.SPACE;
                     roomIds += $(this).val() + Delimeter.COMMA;

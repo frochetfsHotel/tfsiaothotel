@@ -18,7 +18,7 @@
         }
 
         th, td {
-            padding: 5px;
+            padding: 2px;
         }
 
         .text_bold {
@@ -68,6 +68,9 @@
         .img_margin {
             margin: auto;
             display: block;
+        }
+        .text-right {
+            text-align:right !important;
         }
     </style>
     <title></title>
@@ -156,7 +159,7 @@
                                 foreach (var transaction in Model.Transactions)
                                 {
                                     <tr>
-                                        <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("dd/MM/yyyy") : "")</td>
+                                        <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("MM-dd-yyyy") : "")</td>
                                         <td>@transaction.Description</td>
                                         <td>@transaction.Code</td>
                                         <td>@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value : 0)</td>
@@ -164,14 +167,13 @@
                                     </tr>
                                 }
                             }
-
                         </tbody>
                     </table>
                     <br />
                     <table style="border:none">
                         <tr>
                             <td style="width:50%;">
-                                <label class="">Guest Signature:_____________________ </label>
+                                <label class="">Guest Signature: ______________________________</label>
                                 <br />
                                 <table style="margin-top:10px;">
                                     <tr>
@@ -179,40 +181,39 @@
                                     </tr>
                                     <tr>
                                         <th style="width: 250px">Total</th>
-                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.Total)</td>
+                                        <td class="text-right">@Utility.FormatAmountWithTwoDecimal(Model.Total)</td>
                                     </tr>
                                     <tr>
                                         <th style="width: 250px">Room</th>
-                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.Room)</td>
+                                        <td class="text-right">@Utility.FormatAmountWithTwoDecimal(Model.Room)</td>
                                     </tr>
                                     <tr>
                                         <th style="width: 250px">F & B</th>
-                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.FandB)</td>
+                                        <td class="text-right">@Utility.FormatAmountWithTwoDecimal(Model.FandB)</td>
                                     </tr>
                                     <tr>
                                         <th style="width: 250px">Other</th>
-                                        <td>@Utility.FormatAmountWithTwoDecimal(Model.Other)</td>
+                                        <td class="text-right">@Utility.FormatAmountWithTwoDecimal(Model.Other)</td>
                                     </tr>
                                     <tr>
                                         <th>G.S.T. Registration Number: </th>
                                         <td>@Model.GSTRegistrationNumber</td>
                                     </tr>
-
                                 </table>
                             </td>
                             <td style="width:50%;">
                                 <table>
                                     <tr class="border_bottom">
                                         <td class="text_bold">Total</td>
-                                        <td class="text_bold">
+                                        <td class="text_bold" style="padding-left:100px;">
                                             @Utility.FormatAmountWithTwoDecimal(Model.TotalBalance)
                                         </td>
                                         <td class="text_bold">0.00</td>
                                     </tr>
                                     <tr>
-                                        <td><b>Balance Due</b></td>
-                                        <td><b>@Utility.FormatAmountWithTwoDecimal(Model.BalanceDue)</b></td>
-                                        <td></td>
+                                        <td class="text_bold" width="20%">Balance Due</td>
+                                        <td class="text_bold" style="padding-left:100px;">@Utility.FormatAmountWithTwoDecimal(Model.BalanceDue)</td>
+                                        <td class="text_bold"></td>
                                     </tr>
 
                                 </table>
