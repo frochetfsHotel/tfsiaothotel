@@ -368,6 +368,8 @@ namespace SuccessHotelierHub.Utility
 
         public static Guid LanguageId = Guid.Parse("0490AE29-FC46-42EA-BB8A-9674B4E8CCAE");
 
+        public static string EncryptionKey = System.Configuration.ConfigurationManager.AppSettings.Get("EncryptionKey");
+
         public static string Encrypt(string clearText,string encryptionKey)
         {
             byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);

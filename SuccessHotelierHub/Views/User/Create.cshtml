@@ -1,0 +1,122 @@
+﻿@model SuccessHotelierHub.Models.UserVM
+@{
+    ViewBag.Title = "Create User";
+}
+
+<section class="content-header">
+    <h1>
+        User <small>Create</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">User</li>
+        <li class="active">Create</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">User Details</h3>
+        </div>
+        @using (Html.BeginForm("Create", "User", FormMethod.Post, new { id = "frmUser", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.UserRoleId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.UserRoleId,
+                                (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- Select User Role --",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.UserRoleId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Email, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", type = "password", placeholder = "Password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", type= "password", placeholder = "Confirm Password" })
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveUser();">Save</button>
+                <a href="@Url.Action("List", "User")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateUser() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmUser").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function saveUser() {
+
+        if (validateUser()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/User/Create")',
+                type: 'POST',
+                data: $('#frmUser').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("User details saved successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/User/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

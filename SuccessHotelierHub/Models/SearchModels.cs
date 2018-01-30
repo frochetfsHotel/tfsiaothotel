@@ -1246,6 +1246,55 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search User Detail
+
+    public class SearchUserDetailParametersVM
+    {
+        public SearchUserDetailParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("User Role")]
+        public Guid? UserRoleId { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchUserDetailResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        [DisplayName("User Role")]
+        public Guid? UserRoleId { get; set; }
+
+        public string UserRoleName { get; set; }
+        public string UserRoleCode { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region Search Room Features
 
     public class SearchRoomFeatureParametersVM

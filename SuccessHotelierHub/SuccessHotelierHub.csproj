@@ -240,6 +240,7 @@
     <Compile Include="Controllers\RoomFeaturesController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Controllers\StateController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UserRoleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -248,6 +249,7 @@
     <Compile Include="Models\AdditionalChargeVM.cs" />
     <Compile Include="Models\BillingInfoVM.cs" />
     <Compile Include="Models\BillingTransactionReportVM.cs" />
+    <Compile Include="Models\ChangePasswordVM.cs" />
     <Compile Include="Models\CheckInCheckOutVM.cs" />
     <Compile Include="Models\CheckInPaymentMethodVM.cs" />
     <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
@@ -2036,6 +2038,10 @@
     <Content Include="Views\ReservationCharge\_PostReservationCharges.cshtml" />
     <Content Include="Views\Cashiering\Preview.cshtml" />
     <Content Include="Views\Home\Unauthorize.cshtml" />
+    <Content Include="Views\User\Create.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\User\List.cshtml" />
+    <Content Include="Views\User\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -13,7 +13,6 @@ namespace SuccessHotelierHub.Controllers
     {
         #region Declaration
 
-        private string EncryptionKey = System.Configuration.ConfigurationManager.AppSettings.Get("EncryptionKey");
         private UserRepository userRepository = new UserRepository();
 
         #endregion
@@ -52,7 +51,7 @@ namespace SuccessHotelierHub.Controllers
                     return View(model);
                 }
 
-                var result = LogInManager.Login(model.Email, Utility.Utility.Encrypt(model.Password, EncryptionKey));
+                var result = LogInManager.Login(model.Email, Utility.Utility.Encrypt(model.Password, Utility.Utility.EncryptionKey));
 
                 switch (result)
                 {
@@ -129,7 +128,7 @@ namespace SuccessHotelierHub.Controllers
                 model.CreatedBy = LogInManager.LoggedInUserId;
                 model.IsActive = true;
 
-                model.Password = Utility.Utility.Encrypt(model.Password, EncryptionKey);
+                model.Password = Utility.Utility.Encrypt(model.Password, Utility.Utility.EncryptionKey);
 
                 userId = userRepository.AddUserDetail(model);
 

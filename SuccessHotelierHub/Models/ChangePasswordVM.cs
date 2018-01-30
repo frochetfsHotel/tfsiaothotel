@@ -7,24 +7,14 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class UserVM
+    public class ChangePasswordVM
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
 
-        public int UserId { get; set; }
-
-        [DisplayName("Role")]
-        [Required(ErrorMessage = "Please select user role.")]
-        public Guid UserRoleId { get; set; }
-
-        [DisplayName("Name")]
-        [Required(ErrorMessage = "Please enter name.")]
-        public string Name { get; set; }
-
-        [DisplayName("Email")]
-        [Required(ErrorMessage = "Please enter email.")]
-        [RegularExpression("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$", ErrorMessage = "Please enter valid email address")]
-        public string Email { get; set; }
+        [DisplayName("Old Password")]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Please enter old password.")]
+        public string OldPassword { get; set; }
 
         [DisplayName("Password")]
         [DataType(DataType.Password)]
@@ -41,7 +31,6 @@ namespace SuccessHotelierHub.Models
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsDeleted { get; set; }
+
     }
 }
