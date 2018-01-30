@@ -375,6 +375,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Room Capacity")]
         public int RoomCapacity { get; set; }
 
+        public bool IsWeekEndPrice { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }

@@ -167,3 +167,4 @@ D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.Owin.Security.Twitter.xml
 D:\TSHH_Src\SuccessHotelierHub\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\TSHH_Src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.dll
 D:\TSHH_Src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.pdb
+D:\TSHH_Src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.csprojResolveAssemblyReference.cache

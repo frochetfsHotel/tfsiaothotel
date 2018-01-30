@@ -128,7 +128,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = model.RoomTypeCode },
                     new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@AvailableRooms", Value = model.AvailableRooms },
-                    new SqlParameter { ParameterName = "@RoomCapacity", Value = model.RoomCapacity }
+                    new SqlParameter { ParameterName = "@RoomCapacity", Value = model.RoomCapacity },
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = model.IsWeekEndPrice }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceRoomType", parameters);

@@ -13677,3 +13677,111 @@ END
 
 
 
+/********************************************************************************************************************/
+
+Name : Nilesh
+Date : 30-JAN-2018
+
+
+/*******************************************************************************************************************
+	SP Name : SearchAdvanceRoomType
+	Comment : Changes in SP SearchAdvanceRoomType	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceRoomType]    Script Date: 1/30/2018 11:20:35 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceRoomType]
+			@RateTypeId		=	'3518A524-6388-4632-80AF-118D2AFBD122'	,
+			@ArrivalDate	=	NULL	,
+			@NoOfNight		=	NULL	,
+			@DepartureDate	=	NULL	,
+			@RoomTypeCode	=	'KNGN'	,
+			@Description	=	''		,
+			@AvailableRooms	=	0		,
+			@RoomCapacity	=	NULL	,
+			@IsWeekEndPrice =	1
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceRoomType]
+	@RateTypeId			UNIQUEIDENTIFIER	=	NULL,
+	@ArrivalDate		DATETIME			=	NULL,
+	@NoOfNight			INT					=	NULL,
+	@DepartureDate		DATETIME			=	NULL,
+	@RoomTypeCode		NVARCHAR(25)		=	NULL,
+	@Description		NVARCHAR(1000)		=	NULL,
+	@AvailableRooms		INT					=	NULL,
+	@RoomCapacity		INT					=	NULL,
+	@IsWeekEndPrice		BIT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * FROM 
+	(
+		SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  ROT.RoomTypeCode ASC
+
+				) AS RowNum,
+				ROT.Id AS RoomTypeId,
+				ISNULL(ROT.RoomTypeCode,'') AS RoomTypeCode,				
+				ISNULL(ROT.[RoomCapacity],0) AS RoomCapacity,				
+				ISNULL(ROT.[Description],'') AS RoomTypeDescription,
+
+				(
+					(
+						SELECT COUNT(*) As TotalRooms
+						FROM Room 
+						WHERE ISNULL(IsDeleted,0) = 0 AND ISNULL(IsActive,0) = 1
+							AND RoomTypeId = ROT.Id
+					)
+					 - 
+					(
+						SELECT COUNT(DISTINCT RL.Id) 
+						FROM Room R 
+						INNER JOIN ReservationLog RL ON R.Id = RL.RoomId 						
+							AND ISNULL(RL.IsDeleted,0) = 0  AND ISNULL(RL.IsActive,0) = 1
+							--AND (ISNULL(@ArrivalDate,'')  = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate AS DATE) AND CAST(RL.CheckOutDate AS DATE))
+						INNER JOIN Reservation RE ON RE.Id = RL.ReservationId
+							AND ISNULL(RE.IsDeleted,0) = 0 AND ISNULL(RE.IsCheckOut,0) = 1
+							AND ISNULL(RE.IsCheckIn,0) = 1 AND ISNULL(RE.IsCheckOut,0) = 0
+						WHERE	ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsActive,0) = 1 AND  R.RoomTypeId = ROT.Id
+							AND (
+									(ISNULL(@ArrivalDate,'') = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate  AS DATE))
+									OR (ISNULL(@DepartureDate,'') = '' OR CAST(@DepartureDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate  AS DATE))
+								)
+					)
+				)  AS AvailableRooms,
+
+				RAT.Id AS RateTypeId,
+				ISNULL(RAT.RateTypeCode,'') AS RateTypeCode,
+				ISNULL(RAT.[Description],'') AS RateTypeDescription,
+
+				RTRTM.[Id] AS [RoomTypeRateTypeMappingId],
+				ISNULL(RTRTM.[Amount],0) AS Amount,
+				ISNULL(RTRTM.[Description],'') AS	[RoomTypeRateTypeMappingDescription]			
+				
+			FROM RoomType ROT 
+					LEFT JOIN RoomTypeRateTypeMapping RTRTM ON ROT.Id = RTRTM.RoomTypeId 
+						AND ISNULL(RTRTM.IsDeleted,0) = 0 AND ISNULL(RTRTM.IsActive,0) = 1
+						AND ISNULL(RTRTM.IsWeekEndPrice,0) = ISNULL(@IsWeekEndPrice,0)
+					LEFT JOIN RateType RAT ON RAT.Id = RTRTM.RateTypeId
+						AND ISNULL(RAT.IsDeleted,0) = 0 AND ISNULL(RAT.IsActive,0) = 1
+			WHERE	ISNULL(ROT.IsDeleted,0) = 0 AND ISNULL(ROT.IsActive,0) = 1						  
+					AND (@RateTypeId IS NULL OR RAT.Id = @RateTypeId)
+					AND (ISNULL(@RoomTypeCode,'') = '' OR ROT.RoomTypeCode LIKE '%' + @RoomTypeCode + '%')
+					AND (ISNULL(@Description,'') = '' OR ROT.[Description] LIKE '%' + @Description + '%')					
+					AND (ISNULL(@RoomCapacity,0) = 0 OR ROT.[RoomCapacity] = @RoomCapacity)
+					
+		) AS A	
+		WHERE ISNULL(@AvailableRooms,0) = 0 OR A.AvailableRooms = @AvailableRooms				
+						
+
+
+END
+

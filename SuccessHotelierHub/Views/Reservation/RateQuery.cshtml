@@ -27,7 +27,7 @@
 
             if (!string.IsNullOrWhiteSpace(lastName) && !string.IsNullOrWhiteSpace(firstName))
             {
-                name = (lastName + ", " + firstName);
+                name = (lastName + " " + firstName);
             }
         }
     }
@@ -69,6 +69,7 @@
                         <input type="hidden" id="RoomTypeId" name="RoomTypeId" value="" />
                         <input type="hidden" id="RoomTypeCode" name="RoomTypeCode" value="" />
                         <input type="hidden" id="Amount" name="Amount" />
+                        <input type="hidden" id="IsWeekEndPrice" name="IsWeekEndPrice" value="false" />
                         <input type="hidden" id="hdnRoomTypeRateTypeMappingId" name="hdnRoomTypeRateTypeMappingId" value="" />
                         <!-- HIDDEN FIELD -->
 
@@ -542,8 +543,8 @@
 
             lastName = name;
 
-            if (name.indexOf(',') != -1) {
-                var nameArr = name.split(',');
+            if (name.indexOf(' ') != -1) {
+                var nameArr = name.split(' ');
                 lastName = nameArr[0];
                 firstName = nameArr[1];
             }

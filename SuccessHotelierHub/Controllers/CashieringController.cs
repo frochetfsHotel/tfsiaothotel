@@ -318,13 +318,15 @@ namespace SuccessHotelierHub.Controllers
 
                         var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
 
+                        double totalAmount = model.Amount.HasValue ? model.Amount.Value : 0;
+
                         ReservationChargeVM reservationCharge = new ReservationChargeVM();
                         reservationCharge.ReservationId = reservation.Id;
                         reservationCharge.AdditionalChargeId = roomRentCharge.Id;
                         reservationCharge.Code = roomRentCharge.Code;
                         reservationCharge.Description = model.PaymentMethod;
                         reservationCharge.TransactionDate = model.CheckOutDate.Value;
-                        reservationCharge.Amount = -(model.Amount.Value);
+                        reservationCharge.Amount = -(totalAmount);
                         reservationCharge.Qty = 1;
                         reservationCharge.IsActive = true;
                         reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
@@ -419,13 +421,13 @@ namespace SuccessHotelierHub.Controllers
                         //reservation.DepartureDate = model.CheckOutDate.Value;
 
                         //Update Total Balance.
-                        if (model.Amount > reservation.TotalBalance)
+                        if (totalAmount > reservation.TotalBalance)
                         {
                             reservation.TotalBalance = 0;
                         }
                         else
                         {
-                            reservation.TotalBalance -= model.Amount;
+                            reservation.TotalBalance -= totalAmount;
                         }
 
                         reservation.UpdatedBy = LogInManager.LoggedInUserId;

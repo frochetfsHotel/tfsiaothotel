@@ -122,7 +122,8 @@
             <!-- HIDDEN FIELD -->
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.ProfileId)
-            @Html.HiddenFor(m => m.ConfirmationNumber);            
+            @Html.HiddenFor(m => m.ConfirmationNumber); 
+            @Html.HiddenFor(m => m.IsWeekEndPrice);
             <input type="hidden" id="PreferenceItems" name="PreferenceItems" value="@preferenceItems" />
             <!-- HIDDEN FIELD -->
 
@@ -781,15 +782,15 @@
                 telephoneNo = $(selectedProfile).data('telephoneno');
                 countryId = $(selectedProfile).data('countryid');
 
-                $('#ProfileId').val(profileId);
+                $('form#frmReservation #ProfileId').val(profileId);
 
-                $('#FirstName').val(firstName);
-                $('#LastName').val(lastName);
-                $('#TitleId').val(titleId);
-                $('#PhoneNo').val(telephoneNo);
+                $('form#frmReservation #FirstName').val(firstName);
+                $('form#frmReservation #LastName').val(lastName);
+                $('form#frmReservation #TitleId').val(titleId);
+                $('form#frmReservation #PhoneNo').val(telephoneNo);
 
                 if (!IsNullOrEmpty(countryId) && countryId != "0")
-                    $('#ddlCountry').val(countryId);
+                    $('form#frmReservation #ddlCountry').val(countryId);
 
                 //Close Profile Search Modal.
                 $('#profileSearchModal').modal('toggle');
@@ -838,12 +839,18 @@
         $('.btnAdvanceSearchRoomTypeOk').click(function (e) {
             var selectedRoomType = $('input[name=rbRoomType]:checked', '#frmAdvanceRoomTypeSearch');
             if (!IsNullOrEmpty(selectedRoomType.val())) {
-                var roomTypeId, roomTypeCode
+                var roomTypeId, roomTypeCode, rateTypeId, amount;
                 roomTypeCode = $(selectedRoomType).data('roomtype');
                 roomTypeId = $(selectedRoomType).data('roomtypeid');
+                rateTypeId = $(selectedRoomType).data('ratetypeid');
+                amount = $(selectedRoomType).data('amount');
 
-                $('#RoomTypeId').val(roomTypeId);
-                $('#RoomTypeCode').val(roomTypeCode);
+                $('form#frmReservation #RoomTypeId').val(roomTypeId);
+                $('form#frmReservation #RoomTypeCode').val(roomTypeCode);
+
+                $('form#frmReservation #RateCodeId').val(rateTypeId);
+
+                $('form#frmReservation #Rate').val(amount).trigger('blur'); // Call function calculateTotalPrice on blur event.
 
                 //Close Room Type Search Modal.
                 $('#roomTypeModal').modal('toggle');
@@ -859,7 +866,7 @@
             var roomIds = "";
 
             var selectedNoOfRooms = $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").length;
-            var noOfRoom = $('#NoOfRoom').val();
+            var noOfRoom = $('form#frmReservation #NoOfRoom').val();
 
             if (!IsNullOrEmpty(selectedNoOfRooms)) {
 
@@ -879,8 +886,8 @@
                     roomNumbers = RemoveLastCharacter(roomNumbers, Delimeter.COMMA);
                     roomIds = RemoveLastCharacter(roomIds, Delimeter.COMMA);
 
-                    $('#RoomNumbers').val(roomNumbers);
-                    $('#RoomIds').val(roomIds);
+                    $('form#frmReservation #RoomNumbers').val(roomNumbers);
+                    $('form#frmReservation #RoomIds').val(roomIds);
 
                     //Close Room Type Search Modal.
                     $('#roomModal').modal('toggle');
@@ -980,7 +987,7 @@
         var errorMessage = "";
         var blnValid = true;
 
-        var profileId = $('#ProfileId').val();
+        var profileId = $('form#frmReservation #ProfileId').val();
 
         if (IsNullOrEmpty(profileId)) {
             showToaster("Please search and select profile again.", ToasterType.ERROR);
@@ -1000,7 +1007,7 @@
 
             //Get Selected Preference Items.
             var preferenceIds = getSelectedPreferenceItemIds();
-            $('#PreferenceItems').val(preferenceIds);
+            $('form#frmReservation #PreferenceItems').val(preferenceIds);
 
             //Ajax Request to edit reservation.
             $.ajax({
@@ -1038,8 +1045,8 @@
     }
 
     function calculateNoOfNights() {
-        var arrivalDate = $('#ArrivalDate').val();
-        var departureDate = $('#DepartureDate').val();
+        var arrivalDate = $('form#frmReservation #ArrivalDate').val();
+        var departureDate = $('form#frmReservation #DepartureDate').val();
         var noOfNight = 1;
 
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
@@ -1057,13 +1064,13 @@
 
 
 
-            $('#NoOfNight').val(noOfNight);
+            $('form#frmReservation #NoOfNight').val(noOfNight);
         }
     }
 
     function calculateDepartureDate() {
-        var arrivalDate = $('#ArrivalDate').val();
-        var noOfNight = $('#NoOfNight').val();
+        var arrivalDate = $('form#frmReservation #ArrivalDate').val();
+        var noOfNight = $('form#frmReservation #NoOfNight').val();
         var departureDate = '';
 
         if (!IsNullOrEmpty(arrivalDate)) {
@@ -1080,14 +1087,14 @@
             if (dt != null) {
                 //dd/MM/yyyy
                 departureDate = GetDate(dt, DateFormat.DDMMYYYY);
-                $("#DepartureDate").datepicker("setDate", new Date(departureDate));
+                $("form#frmReservation #DepartureDate").datepicker("setDate", new Date(departureDate));
             }
         }
     }
 
-    function calculateTotalPrice() {
-        var noOfNights = $("#NoOfNight").val();
-        var rate = $('#Rate').val();
+    function calculateTotalPrice() {        
+        var noOfNights = $("form#frmReservation #NoOfNight").val();
+        var rate = $('form#frmReservation #Rate').val();
 
         var totalPrice = "0.00";
 
@@ -1110,7 +1117,16 @@
     function openRoomTypeSearchModal() {
         clearRoomTypeSearch();
 
-        $("form#frmAdvanceRoomTypeSearch #RoomTypeCode").val($('#RoomTypeCode').val());
+        $("form#frmAdvanceRoomTypeSearch #RoomTypeCode").val($('form#frmReservation #RoomTypeCode').val());
+        $("form#frmAdvanceRoomTypeSearch #RateTypeId").val($('form#frmReservation #RateCodeId').val());
+        $("form#frmAdvanceRoomTypeSearch #ArrivalDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
+        $("form#frmAdvanceRoomTypeSearch #DepartureDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
+
+        //$("form#frmAdvanceRoomTypeSearch #ArrivalDate").val($('form#frmReservation #ArrivalDate').val());
+        //$("form#frmAdvanceRoomTypeSearch #DepartureDate").val($('form#frmReservation #DepartureDate').val());
+
+        $("form#frmAdvanceRoomTypeSearch #NoOfNight").val($('form#frmReservation #NoOfNight').val());
+        $("form#frmAdvanceRoomTypeSearch #IsWeekEndPrice").val($('form#frmReservation #IsWeekEndPrice').val());
 
         $("form#frmAdvanceRoomTypeSearch #btnSearch").click();
 
@@ -1134,10 +1150,10 @@
     function openProfileSearchModal() {
         clearProfileSearch();
 
-        var lastName = $("#LastName").val();
-        var firstName = $("#FirstName").val();
-        var titleId = $("#TitleId").val();
-        var reservationId = $("#Id").val();
+        var lastName = $("form#frmReservation #LastName").val();
+        var firstName = $("form#frmReservation #FirstName").val();
+        var titleId = $("form#frmReservation #TitleId").val();
+        var reservationId = $("form#frmReservation #Id").val();
 
         if (!IsNullOrEmpty(lastName)) {
             //Show search results based on entered last name.
@@ -1161,12 +1177,15 @@
 
         clearRoomSearch();
 
-        $("form#frmAdvanceRoomSearch #RoomTypeId").val($('#RoomTypeId').val());
-        $("form#frmAdvanceRoomSearch #ArrivalDate").val($('#ArrivalDate').val());
-        $("form#frmAdvanceRoomSearch #DepartureDate").val($('#DepartureDate').val());
-        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('#RoomIds').val());
-        $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('#RoomNumbers').val());
-        $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val($('#NoOfRoom').val());
+        $("form#frmAdvanceRoomSearch #RoomTypeId").val($('form#frmReservation #RoomTypeId').val());
+        $("form#frmAdvanceRoomSearch #ArrivalDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
+        $("form#frmAdvanceRoomSearch #DepartureDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
+
+        //$("form#frmAdvanceRoomSearch #ArrivalDate").val($('form#frmReservation #ArrivalDate').val());
+        //$("form#frmAdvanceRoomSearch #DepartureDate").val($('form#frmReservation #DepartureDate').val());
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmReservation #RoomIds').val());
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('form#frmReservation #RoomNumbers').val());
+        $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val($('form#frmReservation #NoOfRoom').val());
 
         $("form#frmAdvanceRoomSearch #btnSearch").click();
 
@@ -1178,15 +1197,15 @@
         var roomIds = "@roomIds";
         var roomNumbers = "@roomNumbers";
 
-        $('#RoomIds').val('');
-        $('#RoomNumbers').val('');
+        $('form#frmReservation #RoomIds').val('');
+        $('form#frmReservation #RoomNumbers').val('');
 
         if (!IsNullOrEmpty(roomIds)) {
-            $('#RoomIds').val(roomIds);
+            $('form#frmReservation #RoomIds').val(roomIds);
         }
 
         if (!IsNullOrEmpty(roomNumbers)) {
-            $('#RoomNumbers').val(roomNumbers);
+            $('form#frmReservation #RoomNumbers').val(roomNumbers);
         }
     }
 

@@ -225,6 +225,8 @@ namespace SuccessHotelierHub.Models
 
         public Guid? ReservationStatusId { get; set; }
 
+        public bool IsWeekEndPrice { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

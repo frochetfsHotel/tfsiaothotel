@@ -100,6 +100,8 @@ namespace SuccessHotelierHub.Models
         [DisplayFormat(DataFormatString = "{0:C0}")]
         public float? Amount { get; set; }
 
+        public bool IsWeekEndPrice { get; set; }
+
     }
 
     public class RateSheetRoomTypeVM

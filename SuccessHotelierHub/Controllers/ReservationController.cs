@@ -93,6 +93,7 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomTypeId = rateQuery.RoomTypeId; //RoomTypeId
                 model.RoomTypeCode = rateQuery.RoomTypeCode; //RoomTypeCode
                 model.Rate = rateQuery.Amount; //Rate
+                model.IsWeekEndPrice = rateQuery.IsWeekEndPrice; // Week End Price.
 
                 model.PackageId = rateQuery.PackageId;
             }
@@ -318,6 +319,14 @@ namespace SuccessHotelierHub.Controllers
             if (reservation != null && reservation.Count > 0)
             {
                 model = reservation[0];
+
+                if (model.ArrivalDate.HasValue)
+                {
+                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Monday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        model.IsWeekEndPrice = true;
+                    }
+                }
 
                 #region Room Type
                 //Get Room Type Details.
