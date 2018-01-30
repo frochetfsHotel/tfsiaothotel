@@ -29,7 +29,7 @@ namespace SuccessHotelierHub
                 return LoginStatus.Failure;
             }
 
-            var userRoles = userRoleRepository.GetUserRoles();
+            var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
 
             LogInManager.UserName = user.Name;
             LogInManager.LoggedInUserId = user.UserId;
@@ -77,13 +77,13 @@ namespace SuccessHotelierHub
             }
         }
 
-        public static List<UserRoleVM> UsersRoles
+        public static List<CurrentUserRoleVM> UsersRoles
         {
             get
             {
                 if (HttpContext.Current.Session["UsersRoles"] != null)
                 {
-                    return (List<UserRoleVM>)HttpContext.Current.Session["UsersRoles"];
+                    return (List<CurrentUserRoleVM>)HttpContext.Current.Session["UsersRoles"];
                 }
                 else
                 {
@@ -113,6 +113,18 @@ namespace SuccessHotelierHub
             {
                 HttpContext.Current.Session["UserName"] = value;
             }
+        }
+
+        public static bool HasRights(string userRightsCode)
+        {
+            if (UsersRoles != null)
+            {
+                var returnVal = UsersRoles
+                                .Where(m => m.Code == userRightsCode)
+                                .Any();
+                return returnVal;
+            }
+            return false;
         }
 
     }

@@ -90,6 +90,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Email")]
         public string Email { get; set; }
 
+        public int? CreatedBy { get; set; }
+
+        public bool IsAdminUser { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -147,6 +151,10 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Corp #.")]
         public string CorpNo { get; set; }
+
+        public int? CreatedBy { get; set; }
+
+        public bool IsAdminUser { get; set; }
 
         public bool IsNegRates { get; set; }
         public bool IsShowInActive { get; set; }
@@ -240,6 +248,9 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Show Checked Out")]
         public bool IsShowCheckedOutReservation { get; set; }
+
+        public int? CreatedBy { get; set; }
+        public bool IsAdminUser { get; set; }
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
@@ -666,6 +677,10 @@ namespace SuccessHotelierHub.Models
 
         public bool IsShowCheckedIn { get; set; }
 
+        public int? CreatedBy { get; set; }
+
+        public bool IsAdminUser { get; set; }
+
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
@@ -736,6 +751,9 @@ namespace SuccessHotelierHub.Models
         public Guid? BlockCodeId { get; set; }
 
         public  bool IsShowCheckedOut { get; set; }
+
+        public int? CreatedBy { get; set; }
+        public bool IsAdminUser { get; set; }
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }

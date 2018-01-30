@@ -39,7 +39,7 @@
         Rate Query
     </h1>
     <ol class="breadcrumb m-r-xs">
-        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="">Reservation</li>
         <li class="active">Rate Query</li>
     </ol>
@@ -450,7 +450,8 @@
         .on('changeDate', departureDateChanged);
 
         //Default Arrival Date. (Set today's date).
-        $("#ArrivalDate").datepicker("setDate", new Date()); 
+        $("#ArrivalDate").datepicker("setDate", new Date());
+        $("#txtArrivalDate").datepicker("setDate", new Date());
 
         //Calculate Default Departure Date.
         calculateDepartureDate();
@@ -666,8 +667,8 @@
                 beforeSend: function (xhr) {
                     showLoader();
                 },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
                 },
                 complete: function () {
                     hideLoader();
@@ -705,8 +706,8 @@
             beforeSend: function (xhr) {
                 showLoader();
             },
-            error: function (result) {
-                showToaster(result.responseText, ToasterType.ERROR);
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
             },
             complete: function () {
                 hideLoader();
@@ -757,8 +758,8 @@
                 beforeSend: function (xhr) {
                     showLoader();
                 },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
                 },
                 complete: function () {
                     hideLoader();
@@ -832,8 +833,8 @@
                 beforeSend: function (xhr) {
                     showLoader();
                 },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
                 },
                 complete: function () {
                     hideLoader();

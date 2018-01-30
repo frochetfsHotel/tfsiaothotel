@@ -36,6 +36,10 @@ namespace SuccessHotelierHub
                 Context.Response.StatusCode = 401;
                 Context.Response.End();
             }
+            if (Context.Items["UnauthorizeRequest"] is bool)
+            {
+                Response.Redirect("~/Home/Unauthorize");
+            }
         }
 
         protected void Application_Error(object sender, EventArgs e)

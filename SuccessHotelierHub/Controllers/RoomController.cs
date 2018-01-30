@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    
     public class RoomController : Controller
     {
         #region Declaration 
@@ -25,6 +25,7 @@ namespace SuccessHotelierHub.Controllers
 
         #region Room
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Index()
         {
             var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
@@ -34,6 +35,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult ShowRoomList(Guid roomTypeId)
         {
             var roomType = roomTypeRepository.GetRoomTypeById(roomTypeId).FirstOrDefault();
@@ -59,6 +61,7 @@ namespace SuccessHotelierHub.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -117,6 +120,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult DeleteSelected(List<Guid> ids)
         {
@@ -179,6 +183,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult UpdateRooms(List<RoomVM> models)
         {
@@ -240,6 +245,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult SearchAdvanceRoom(SearchAdvanceRoomParametersVM model)
         {
             try
@@ -264,6 +270,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult ShowAddRoom(Guid? roomTypeId)
         {
             try
@@ -294,6 +301,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
@@ -307,6 +315,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(RoomVM model)
@@ -397,6 +406,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var room = roomRepository.GetRoomById(id);
@@ -437,6 +447,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("List");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(RoomVM model)
@@ -539,6 +550,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
@@ -550,6 +562,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Search(SearchRoomParametersVM model)
         {
@@ -594,6 +607,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult ChangeRoomAndReservationMapping(Guid reservationId, Guid roomId, Guid roomTypeId, DateTime? date)
         {
             try

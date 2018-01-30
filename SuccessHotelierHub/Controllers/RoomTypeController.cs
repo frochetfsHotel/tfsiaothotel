@@ -8,8 +8,7 @@ using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
-{
-    [HotelierHubAuthorize]
+{    
     public class RoomTypeController : Controller
     {
         #region Declaration
@@ -20,11 +19,13 @@ namespace SuccessHotelierHub.Controllers
         private RateRepository rateRepository = new RateRepository();
         #endregion
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(RoomTypeVM model)
@@ -101,6 +102,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var roomType = roomTypeRepository.GetRoomTypeById(id);
@@ -118,6 +120,7 @@ namespace SuccessHotelierHub.Controllers
 
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(RoomTypeVM model)
@@ -169,6 +172,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -204,7 +208,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult DeleteSelected(List<Guid> ids)
         {
@@ -243,11 +247,13 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Search(SearchRoomTypeParametersVM model)
         {
@@ -307,6 +313,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult SearchAdvanceRoomType(SearchAdvanceRoomTypeParametersVM model)
         {
             try
@@ -326,6 +333,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult RoomStatus(Guid roomTypeId)
         {
             try

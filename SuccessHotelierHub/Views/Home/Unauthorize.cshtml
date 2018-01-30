@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewBag.Title = "Unauthorize";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content-header">
+    <h1>
+        Unauthorize
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Unauthorize</li>
+    </ol>
+</section>
+<section class="content m-t-xxxl">
+
+    <div class="error-page m-t-xxxl">
+        <div class="error-content m-n">
+            <h3><i class="fa fa-warning text-red"></i> Oops! Something went wrong.</h3>
+
+            <p>
+                You are not authorize to access this page.
+                Meanwhile, you may <a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');">return to dashboard</a>.
+            </p>
+        </div>
+    </div>
+    <!-- /.error-page -->
+
+</section>
+

@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
     public class FrontDeskController : Controller
     {
         #region Declaration
@@ -68,6 +68,9 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.IsAdminUser = LogInManager.HasRights("ADMIN");
+
                 var reservations = checkInCheckOutRepository.SearchArrivals(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;

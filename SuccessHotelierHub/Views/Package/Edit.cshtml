@@ -8,7 +8,7 @@
         Package <small>Edit</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
-        <li><a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="">Package</li>
         <li class="active">Edit</li>
     </ol>
@@ -78,8 +78,8 @@
                 beforeSend: function (xhr) {
                     showLoader();
                 },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
                 },
                 complete: function () {
                     hideLoader();

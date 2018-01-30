@@ -9,23 +9,24 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
     public class PreferenceController : Controller
     {
         #region Declaration
 
         private PreferenceGroupRepository preferenceGroupRepository = new PreferenceGroupRepository();
-        private PreferenceRepository preferenceRepository = new PreferenceRepository();        
+        private PreferenceRepository preferenceRepository = new PreferenceRepository();
 
         #endregion
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         // GET: Preference
         public ActionResult Index()
         {
             return View();
         }
 
-        [HttpGet]
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpGet]       
         public ActionResult Create()
         {
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
@@ -38,6 +39,7 @@ namespace SuccessHotelierHub.Controllers
             return View(model);
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(PreferenceVM model)
@@ -75,6 +77,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var preference = preferenceRepository.GetPreferenceById(id);
@@ -96,6 +99,7 @@ namespace SuccessHotelierHub.Controllers
 
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(PreferenceVM model)
@@ -133,11 +137,13 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -173,6 +179,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult DeleteSelected(List<Guid> ids)
         {
@@ -211,6 +218,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Search(SearchPreferenceParametersVM model)
         {
@@ -256,6 +264,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult SearchAdvancePreference(SearchAdvancePreferenceParametersVM model)
         {
             try

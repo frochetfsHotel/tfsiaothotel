@@ -116,8 +116,8 @@
                 beforeSend: function (xhr) {
                     showLoader();
                 },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
                 },
                 complete: function () {
                     hideLoader();
@@ -228,8 +228,8 @@
                     beforeSend: function (xhr) {
                         showLoader();
                     },
-                    error: function (result) {
-                        showToaster(result.responseText, ToasterType.ERROR);
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
                     },
                     complete: function () {
                         hideLoader();

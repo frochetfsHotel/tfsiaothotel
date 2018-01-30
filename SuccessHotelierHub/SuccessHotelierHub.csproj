@@ -253,6 +253,7 @@
     <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
     <Compile Include="Models\CityVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
+    <Compile Include="Models\CurrentUserRoleVM.cs" />
     <Compile Include="Models\FloorVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
+    <Compile Include="Models\UserRoleMappingVM.cs" />
     <Compile Include="Models\UserRoleVM.cs" />
     <Compile Include="Models\UserVM.cs" />
     <Compile Include="Models\VipVM.cs" />
@@ -2033,6 +2035,7 @@
     <Content Include="Views\RoomFeatures\List.cshtml" />
     <Content Include="Views\ReservationCharge\_PostReservationCharges.cshtml" />
     <Content Include="Views\Cashiering\Preview.cshtml" />
+    <Content Include="Views\Home\Unauthorize.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

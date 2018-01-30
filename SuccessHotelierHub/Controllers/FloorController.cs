@@ -10,7 +10,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN")]
     public class FloorController : Controller
     {
         #region Declaration

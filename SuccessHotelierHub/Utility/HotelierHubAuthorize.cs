@@ -22,7 +22,7 @@ namespace SuccessHotelierHub
 
                 string[] split = Roles.Split(',');
 
-                foreach (UserRoleVM role in LogInManager.UsersRoles)
+                foreach (CurrentUserRoleVM role in LogInManager.UsersRoles)
                 {
                     if (split.Contains(role.Code))
                     {
@@ -39,7 +39,14 @@ namespace SuccessHotelierHub
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             filterContext.Result = new HttpUnauthorizedResult();
-            if (filterContext.HttpContext.Request.IsAjaxRequest()) filterContext.HttpContext.Items["AjaxPermissionDenied"] = true;
+            if (filterContext.HttpContext.Request.IsAjaxRequest())
+            {
+                filterContext.HttpContext.Items["AjaxPermissionDenied"] = true;
+            }
+            else
+            {
+                filterContext.HttpContext.Items["UnauthorizeRequest"] = true;
+            }
 
             base.HandleUnauthorizedRequest(filterContext);
         }

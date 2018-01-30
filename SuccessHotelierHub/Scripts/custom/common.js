@@ -65,6 +65,10 @@ var DateSeprator = {
     DOT: "."
 }
 
+var Messages = {
+    ERRORMESSAGE: "Unknown Error Occured. Server response not received."
+};
+
 function loadToastrSetting() {
     toastr.options = {
         closeButton: true,
@@ -433,3 +437,12 @@ function CloseModal(modelId) {
     $('#' + modelId).modal('hide');
 }
 
+
+
+function ShowErrorMessage(statusCode, errorMessage) {
+    if (statusCode == "401") {
+        showToaster("You are not authorize to perform this action", ToasterType.ERROR);
+    } else {
+        showToaster(errorMessage, ToasterType.ERROR);
+    }
+}

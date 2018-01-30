@@ -123,7 +123,9 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
-                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@IsAdminUser", Value = model.IsAdminUser }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchIndividualProfile", parameters);
@@ -151,7 +153,9 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@CorpNo", Value = model.CorpNo },
                     new SqlParameter { ParameterName = "@IATANo", Value = model.IATANo},
                     new SqlParameter { ParameterName = "@IsNegRates", Value = model.IsNegRates},
-                    new SqlParameter { ParameterName = "@IsShowInActive", Value = model.IsShowInActive }
+                    new SqlParameter { ParameterName = "@IsShowInActive", Value = model.IsShowInActive },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@IsAdminUser", Value = model.IsAdminUser }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceProfile", parameters);

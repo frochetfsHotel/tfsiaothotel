@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    
     public class AdditionalChargeController : Controller
     {
         #region Declaration 
@@ -19,16 +19,19 @@ namespace SuccessHotelierHub.Controllers
         #endregion
 
         // GET: AdditionalCharge
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Index()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(AdditionalChargeVM model)
@@ -77,6 +80,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var charge = additionalChargeRepository.GetAdditionalChargesById(id);
@@ -93,6 +97,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("List");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(AdditionalChargeVM model)
@@ -141,6 +146,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -176,6 +182,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult DeleteSelected(List<Guid> ids)
         {
@@ -214,11 +221,13 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult SearchAdditionalCharges(SearchAdditionalChargeParametersVM model)
         {
@@ -263,6 +272,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         [HttpPost]
         public ActionResult SearchAdvanceAdditionalCharge(SearchAdvanceAdditionalChargeParametersVM model)
         {

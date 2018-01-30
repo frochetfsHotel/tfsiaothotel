@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
     public class ReservationController : Controller
     {
         #region Declaration
@@ -655,6 +655,9 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.IsAdminUser = LogInManager.HasRights("ADMIN");
+
                 var reservations = reservationRepository.SearchReservation(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;
@@ -745,7 +748,7 @@ namespace SuccessHotelierHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(lastName) || !string.IsNullOrWhiteSpace(firstName))
             {
-                model.Name = (lastName + ", " + firstName);
+                model.Name = (lastName + " " + firstName);
             }
 
             //Default Values.

@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN")]
     public class MasterScreenController : Controller
     {
         // GET: MasterScreen

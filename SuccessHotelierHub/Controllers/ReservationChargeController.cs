@@ -10,7 +10,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
     public class ReservationChargeController : Controller
     {
         #region Declaration
@@ -26,6 +26,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        
         public ActionResult ShowAddReservationCharge()
         {
             return PartialView("_AddReservationCharges");

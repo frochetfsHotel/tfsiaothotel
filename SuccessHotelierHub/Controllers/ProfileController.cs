@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
     public class ProfileController : Controller
     {
         #region Declaration 
@@ -433,6 +433,9 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.IsAdminUser = LogInManager.HasRights("ADMIN");
+
                 var profiles = profileRepository.SearchIndividualProfile(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;
@@ -462,6 +465,8 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.IsAdminUser = LogInManager.HasRights("ADMIN");
                 var profiles = profileRepository.SearchAdvanceProfile(model);
                 
                 return Json(new

@@ -71,8 +71,8 @@
                 beforeSend: function (xhr) {
                     $('#btnLogin').html('<span>Processing <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>');
                 },
-                error: function (result) {
-                    showToaster(result.responseText, ToasterType.ERROR);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
                 },
                 complete: function () {
                     $('#btnLogin').html('Login');

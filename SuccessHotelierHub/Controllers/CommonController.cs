@@ -9,7 +9,7 @@ using SuccessHotelierHub.Utility;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
     public class CommonController : Controller
     {
         private CountryRepository countryRepository = new CountryRepository();

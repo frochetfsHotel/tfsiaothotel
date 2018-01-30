@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize]
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
     public class HomeController : Controller
     {
 
@@ -31,6 +31,11 @@ namespace SuccessHotelierHub.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            return View();
+        }
+
+        public ActionResult Unauthorize()
+        {
             return View();
         }
     }

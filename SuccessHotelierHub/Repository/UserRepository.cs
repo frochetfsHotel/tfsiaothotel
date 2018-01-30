@@ -65,6 +65,22 @@ namespace SuccessHotelierHub.Repository
             return userId;
         }
 
+        public List<CurrentUserRoleVM> GetUserRoleByUserId(Guid? userId, Guid? userRoleId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId },
+                    new SqlParameter { ParameterName = "@UserRoleId", Value = userRoleId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserRoleByUserId", parameters);
+
+            var currentUserRoles = new List<CurrentUserRoleVM>();
+            currentUserRoles = DALHelper.CreateListFromTable<CurrentUserRoleVM>(dt);
+
+            return currentUserRoles;
+        }
+
         #endregion
     }
 }

@@ -8,8 +8,7 @@ using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
-{
-    [HotelierHubAuthorize]
+{   
     public class ReservationCancellationReasonController : Controller
     {
         #region Declaration
@@ -18,6 +17,7 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
             ReservationCancellationReasonVM model = new ReservationCancellationReasonVM();
@@ -26,6 +26,7 @@ namespace SuccessHotelierHub.Controllers
             return View(model);
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(ReservationCancellationReasonVM model)
@@ -76,6 +77,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var reason = reservationCancellationReasonRepository.GetReservationCancellationReasonById(id);
@@ -92,6 +94,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("List");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(ReservationCancellationReasonVM model)
@@ -142,12 +145,13 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
             return View();
-        }   
+        }
 
-
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -183,6 +187,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult DeleteSelected(List<Guid> ids)
         {
@@ -221,6 +226,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Search(SearchReservationCancellationReasonParametersVM model)
         {
@@ -268,6 +274,7 @@ namespace SuccessHotelierHub.Controllers
 
 
         [HttpPost]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult SearchAdvanceReservationCancellationReasons(SearchAdvanceReservationCancellationReasonParametersVM model)
         {
             try

@@ -274,7 +274,9 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
-                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@IsAdminUser", Value = model.IsAdminUser }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchReservation", parameters);
