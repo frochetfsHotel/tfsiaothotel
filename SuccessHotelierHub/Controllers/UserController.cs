@@ -66,8 +66,10 @@ namespace SuccessHotelierHub.Controllers
                     UserRoleMappingVM userRoleMapping = new UserRoleMappingVM();
                     userRoleMapping.UserId = Guid.Parse(userId);
                     userRoleMapping.UserRoleId = model.UserRoleId;
+                    userRoleMapping.IsActive = true;
                     userRoleMapping.CreatedBy = LogInManager.LoggedInUserId;
                     userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
 
                     userRepository.AddUpdateUserRoleMapping(userRoleMapping);
 
@@ -152,6 +154,7 @@ namespace SuccessHotelierHub.Controllers
                     UserRoleMappingVM userRoleMapping = new UserRoleMappingVM();
                     userRoleMapping.UserId = Guid.Parse(userId);
                     userRoleMapping.UserRoleId = model.UserRoleId;
+                    userRoleMapping.IsActive = true;
                     userRoleMapping.CreatedBy = LogInManager.LoggedInUserId;
                     userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
 

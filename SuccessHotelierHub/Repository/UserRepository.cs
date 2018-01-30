@@ -179,6 +179,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
                     new SqlParameter { ParameterName = "@UserRoleId", Value = model.UserRoleId } ,
+                    new SqlParameter { ParameterName = "@IsActive", Value = model.IsActive } ,
                     new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
                 };
