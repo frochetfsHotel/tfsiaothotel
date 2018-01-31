@@ -17,7 +17,7 @@ using iTextSharp.text;
 using iTextSharp.text.html.simpleparser;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
-
+using System.Net;
 
 namespace SuccessHotelierHub.Utility
 {
@@ -472,6 +472,32 @@ namespace SuccessHotelierHub.Utility
                 ip = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
             }
             return ip;
+        }
+
+        public static string GetIpAddress_V2()
+        {
+            try
+            {
+                string ipAddressString = HttpContext.Current.Request.UserHostAddress;
+
+                if (ipAddressString == null)
+                    return null;
+
+                IPAddress ipAddress;
+                IPAddress.TryParse(ipAddressString, out ipAddress);
+
+                if (ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+                {
+                    ipAddress = System.Net.Dns.GetHostEntry(ipAddress).AddressList
+                        .First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                }
+
+                return ipAddress.ToString();
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
         }
 
         public static string GetCurrentPageURL()

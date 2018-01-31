@@ -23,7 +23,7 @@ namespace SuccessHotelierHub.Utility
                 usersActivityLog.Url = Utility.GetCurrentPageURL();
                 usersActivityLog.PageName = pageName;
                 usersActivityLog.Description = description;                
-                usersActivityLog.IpAddress = Utility.GetIpAddress();
+                usersActivityLog.IpAddress = Utility.GetIpAddress_V2();
                 usersActivityLog.CreatedBy = LogInManager.LoggedInUserId;
                 usersActivityLog.IsActive = true;
                 usersActivityLog.RecordedOn = DateTime.Now;
