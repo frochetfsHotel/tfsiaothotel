@@ -500,6 +500,16 @@ namespace SuccessHotelierHub.Utility
             }
         }
 
+        public static string GetIpAddress_V3()
+        {
+            string ip = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            if (string.IsNullOrWhiteSpace(ip))
+            {
+                ip = System.Web.HttpContext.Current.Request.UserHostAddress;
+            }
+            return  ip;
+        }
+
         public static string GetCurrentPageURL()
         {
             return System.Web.HttpContext.Current.Request.Url.AbsoluteUri; 
