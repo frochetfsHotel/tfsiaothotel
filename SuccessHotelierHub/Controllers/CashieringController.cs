@@ -38,6 +38,12 @@ namespace SuccessHotelierHub.Controllers
         {
             var charges = additionalChargeRepository.GetAdditionalCharges();            
             ViewBag.AdditionalChargeList = charges;
+
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.SEARCH_GUESTS, "Goes to search guest page.");
+            #endregion
+
             return View();
         }
 
@@ -71,6 +77,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.SEARCH_GUESTS, "Searched data in search guest page.");
+                #endregion
 
                 return Json(new
                 {
@@ -450,6 +460,10 @@ namespace SuccessHotelierHub.Controllers
 
                         #endregion
 
+                        #region Record Activity Log
+                        RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                        #endregion
+
                         return Json(new
                         {
                             IsSuccess = true,
@@ -584,6 +598,10 @@ namespace SuccessHotelierHub.Controllers
             model.Room = roomRent;
             model.TotalBalance = totalBalance;
             model.BalanceDue = balanceDue;
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated folio report.");
+            #endregion
 
             //HTML to PDF
             string html = Utility.Utility.RenderPartialViewToString((Controller)this, "Preview", model);

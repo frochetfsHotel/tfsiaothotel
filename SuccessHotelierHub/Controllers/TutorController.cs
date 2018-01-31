@@ -16,6 +16,7 @@ namespace SuccessHotelierHub.Controllers
 
         private UserRoleRepository userRoleRepository = new UserRoleRepository();
         private UserRepository userRepository = new UserRepository();
+        private UsersActivityLogRepository usersActivityLogRepository = new UsersActivityLogRepository();
 
         #endregion
 
@@ -216,6 +217,68 @@ namespace SuccessHotelierHub.Controllers
                     PageSize = Constants.PAGESIZE,
                     TotalRecords = totalRecords,
                     data = students
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        public ActionResult ViewActivity(Guid id)
+        {
+
+            if (id == null)
+            {
+                return HttpNotFound();
+            }
+
+            SearchUsersActivityLogParametersVM model = new SearchUsersActivityLogParametersVM();
+            model.UserId = id;
+            model.ActivityDate = DateTime.Now;
+
+            return View(model);
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        [HttpPost]
+        public ActionResult SearchActivityLog(SearchUsersActivityLogParametersVM model)
+        {
+            try
+            {
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;                
+
+                var activities = usersActivityLogRepository.SearchUsersActivityLog(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+
+                int totalRecords = 0;
+                var dbRecords = activities.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = activities
                 }, JsonRequestBehavior.AllowGet);
 
             }

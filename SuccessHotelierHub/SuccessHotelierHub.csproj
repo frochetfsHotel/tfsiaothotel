@@ -298,6 +298,7 @@
     <Compile Include="Models\TutorStudentMappingVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
     <Compile Include="Models\UserRoleVM.cs" />
+    <Compile Include="Models\UsersActivityLogVM.cs" />
     <Compile Include="Models\UserVM.cs" />
     <Compile Include="Models\VipVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -330,12 +331,14 @@
     <Compile Include="Repository\TitleRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Repository\UserRoleRepository.cs" />
+    <Compile Include="Repository\UsersActivityLogRepository.cs" />
     <Compile Include="Repository\VipRepository.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utility\DALHelper.cs" />
     <Compile Include="Utility\HMTLHelperExtensions.cs" />
     <Compile Include="Utility\HotelierHubAuthorize.cs" />
     <Compile Include="Utility\LoginManager.cs" />
+    <Compile Include="Utility\RecordActivityLog.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Content Include="Content\css\AdminLTE\select2\select2-bootstrap.css" />
     <Content Include="Content\css\AdminLTE\select2\select2-spinner.gif" />
@@ -2049,6 +2052,7 @@
     <Content Include="Views\Tutor\List.cshtml" />
     <Content Include="Views\Tutor\Edit.cshtml" />
     <Content Include="Views\Tutor\ViewStudent.cshtml" />
+    <Content Include="Views\Tutor\ViewActivity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -100,9 +100,11 @@
 
     function SearchRoomTypeParameters(d) {
         var roomTypeCode = $('#RoomTypeCode').val();
+        var roomCapacity = $('#RoomCapacity').val();
 
         d.PageNum = currentPage;
         d.RoomTypeCode = roomTypeCode;
+        d.RoomCapacity = roomCapacity;
     }
 
     function RoomTypeGridDataBound(response) {
@@ -244,6 +246,7 @@
 
     function clearRoomType() {
         $('#RoomTypeCode').val('');
+        $('#RoomCapacity').val('');
 
         searchRoomType();
     }

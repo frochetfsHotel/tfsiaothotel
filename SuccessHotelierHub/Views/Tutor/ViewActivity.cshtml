@@ -1,0 +1,216 @@
+﻿@model SuccessHotelierHub.Models.SearchUsersActivityLogParametersVM
+@{
+    ViewBag.Title = "Search Activity Log";
+}
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+@{
+    var PagerName = "ActivityLogGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Activity Log <small>List</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Activity Log</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Activity Log</h3>
+        </div>
+        <form class="frmActivityLogList" enctype="multipart/form-data" method="post">
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.UserId)
+            <!--HIDDEN FIELD-->
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.ActivityDate, new { @class = "required-label" })
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ActivityDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchActivityLog()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger m-r-xs" onclick="clearActivityLog()">Clear</button>
+                            <a href="@Url.Action("ViewStudent", "Tutor")" class="btn btn-primary">Back</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-md">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblActivityLog">
+                            <thead>
+                                <tr>
+                                    <th class="width_15">Recorded On</th>
+                                    <th class="width_30">Url</th>
+                                    <th class="width_10">Page Name</th>
+                                    <th class="width_30">Description</th>
+                                    <th class="width_10">Ip Address</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "ActivityLogGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdActivityLog;
+
+    $(document).ready(function () {
+
+
+        //Date picker
+        $('#ActivityDate').datepicker({            
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(activityDateChanged)
+        .on('changeDate', activityDateChanged);
+
+        setTimeout(InitializeActivityLogGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+    function activityDateChanged(e) {
+        var selectedDate = $(this).val();
+        searchActivityLog();
+    }
+
+    function SearchActivityLogParameters(d) {
+        var activityDate = $('#ActivityDate').val();
+        var userId = $('#UserId').val();
+
+        d.PageNum = currentPage;
+        d.ActivityDate = activityDate;
+        d.UserId = userId;
+    }
+
+    function ActivityLogGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadActivityLogGrid() {
+        grdActivityLog.ajax.url("@Url.Content("~/Tutor/SearchActivityLog")").load();
+    }
+
+    function ActivityLogGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadActivityLogGrid();
+    }
+
+
+    function InitializeActivityLogGrid() {
+        grdActivityLog = $('#tblActivityLog').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Tutor/SearchActivityLog")',
+                data: SearchActivityLogParameters,
+                dataSrc: ActivityLogGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [            
+            {
+                targets: 0,
+                data: "RecordedOn",
+                orderable: true
+            },
+            {
+                targets: 1,
+                data: "Url",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "PageName",
+                orderable: true
+            },
+            {
+                targets: 3,
+                data: "Description",
+                orderable: false
+            },
+            {
+                targets: 4,
+                data: "IpAddress",
+                orderable: true
+            }
+            ],
+            order: [[0, "desc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+
+    function searchActivityLog() {
+        currentPage = 1;
+        ReloadActivityLogGrid();
+    }
+
+    function clearActivityLog() {
+        $('#ActivityDate').val('');
+
+        searchActivityLog();
+    }
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

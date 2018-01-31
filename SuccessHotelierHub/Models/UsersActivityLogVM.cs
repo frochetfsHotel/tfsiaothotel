@@ -7,24 +7,31 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class RoomTypeVM
+    public class UsersActivityLogVM
     {
         public Guid Id { get; set; }
 
-        [DisplayName("Room Type Code")]
-        [Required(ErrorMessage = "Please enter room type code.")]
-        public string RoomTypeCode { get; set; }
+        public Guid UserId { get; set; }
 
+        [DisplayName("Url")]        
+        public string Url { get; set; }
+
+        [DisplayName("Page Name")]        
+        public string PageName { get; set; }
+
+        [DisplayName("Description")]
         public string Description { get; set; }
 
-        [DisplayName("Room Capacity")]
-        public int? RoomCapacity { get; set; }
+        [DisplayName("Ip Address")]
+        public string IpAddress { get; set; }
 
-        public bool IsActive { get; set; }
+        public DateTime? RecordedOn { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
+        public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
     }
 }

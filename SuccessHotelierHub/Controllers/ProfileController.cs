@@ -95,6 +95,9 @@ namespace SuccessHotelierHub.Controllers
                     }
                     #endregion
 
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.INDIVIDUAL_PROFILE, string.Format("Created new profile of {0} {1}.", model.LastName, model.FirstName));
+                    #endregion
 
                     #region  Check Source Parameters
                     if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
@@ -162,6 +165,8 @@ namespace SuccessHotelierHub.Controllers
                         }
                     }
                     #endregion
+
+
 
                     return Json(new
                     {
@@ -281,6 +286,10 @@ namespace SuccessHotelierHub.Controllers
                     }
                     #endregion
 
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.INDIVIDUAL_PROFILE, string.Format("Updated profile of {0} {1}.", model.LastName, model.FirstName));
+                    #endregion
+
                     #region  Check Source Parameters
                     if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
                     {
@@ -384,6 +393,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(profileId))
                 {
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.INDIVIDUAL_PROFILE, "Deleted profile.");
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -443,6 +456,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.INDIVIDUAL_PROFILE, "Searched profile.");
+                #endregion
 
                 return Json(new
                 {

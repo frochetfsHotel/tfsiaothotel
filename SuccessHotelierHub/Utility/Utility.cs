@@ -463,6 +463,21 @@ namespace SuccessHotelierHub.Utility
         }
 
         #endregion
+
+        public static string GetIpAddress()
+        {
+            string ip = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (string.IsNullOrWhiteSpace(ip))
+            {
+                ip = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+            }
+            return ip;
+        }
+
+        public static string GetCurrentPageURL()
+        {
+            return System.Web.HttpContext.Current.Request.Url.AbsoluteUri; 
+        }
     }
 
 
@@ -573,5 +588,50 @@ namespace SuccessHotelierHub.Utility
     {
         public const string ROOM_RENT = "1000";
         public const string CHECK_OUT = "9004";
+    }
+
+    public static class Pages
+    {
+        public const string LOGIN = "Login";
+        public const string LOGOUT = "Logout";
+        public const string INDIVIDUAL_PROFILE = "Individual Profile";
+        public const string RATEQUERY = "Rate Query";
+        public const string RESERVATION = "Reservation";
+        public const string ROOMPLAN = "Room Plan";
+        public const string FLOORPLAN = "Floor Plan";
+        public const string CALENDAR = "Calendar";
+        public const string SEARCH_ARRIVALS = "Search Arrivals";
+        public const string CHECKIN = "Check In";
+        public const string SEARCH_GUESTS = "Search Guests";
+        public const string BILLING_TRANSACTION = "Billing Transaction";
+        public const string CHECKOUT = "Check Out";
+
+        //Master
+        public const string PREFERENCEGROUP = "Preference Group";
+        public const string PREFERENCE = "Preference";
+        public const string RATETYPE = "Rate Type";
+        public const string FLOOR = "Floor";
+        public const string ROOMTYPE = "Room Type";
+        public const string ROOM = "Room";
+        public const string ROOMFEATURES = "Room Features";
+        public const string WEEKDAYPRICE = "Week Day Price";
+        public const string WEEKENDPRICE = "Week End Price";
+        public const string RESERVATIONTYPE = "Reservation Type";
+        public const string PACKAGE = "Package";
+        public const string MARKET = "Market";
+        public const string RESERVATIONSOURCE = "Reservation Source";
+        public const string PAYMENTMETHOD = "Payment Method";
+        public const string CANCELLATION_REASON = "Cancellation Reason";
+        public const string ADDITIONAL_CHARGES = "Additional Charges";
+        public const string NATIONALITY = "Nationality";
+        public const string COUNTRY = "Country";
+        public const string STATE = "State";
+        public const string CITY = "City";
+        public const string USERROLE = "User Role";
+        public const string User = "User";
+        public const string TUTOR_STUDENT_MAPPING = "Tutor Student Mapping";
+        public const string SEARCHTUTOR = "Search Tutor";
+        public const string SEARCHSTUDENT = "Search Student";
+        public const string VIEWSTUDENT_ACTIVITY = "View Student Activity";
     }
 }

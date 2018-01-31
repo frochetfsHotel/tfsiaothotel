@@ -40,7 +40,6 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
-
         #region Reservation 
 
         public ActionResult Create()
@@ -150,6 +149,10 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.RESERVATION, "Goes to create new reservation page.");
+            #endregion
 
             return View(model);
         }
@@ -282,7 +285,11 @@ namespace SuccessHotelierHub.Controllers
                         }
                     }
                     #endregion
-                    
+
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Created new reservation, Confirmation# : {0}", model.ConfirmationNumber));
+                    #endregion
+
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
 
@@ -561,7 +568,9 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
-
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Updated reservation, Confirmation# : {0}", model.ConfirmationNumber));
+                    #endregion
 
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
@@ -602,6 +611,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.RESERVATION, "Deleted reservation");
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -666,6 +679,10 @@ namespace SuccessHotelierHub.Controllers
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
 
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.RESERVATION, "Searched reservation");
+                #endregion
+
                 return Json(new
                 {
                     IsSuccess = true,
@@ -694,6 +711,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Cancelled reservation due to {0}", comment));
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -756,6 +777,9 @@ namespace SuccessHotelierHub.Controllers
             model.NoOfNight = 1;
             model.NoOfRoom = 1;
 
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.RATEQUERY, "Goes to rate query page.");
+            #endregion
 
             return View(model);
         }
@@ -782,6 +806,10 @@ namespace SuccessHotelierHub.Controllers
                 ViewData["RateType"] = rateTypeList;
                 ViewData["RateSheetRoomType"] = rateSheetRoomTypeList;
                 ViewData["IsShowWeekEndPrice"] = blnShowWeekEndPrice;
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.RATEQUERY, "Searched rate sheet matrix.");
+                #endregion
 
                 return PartialView("_RateSheet");
             }
@@ -821,6 +849,10 @@ namespace SuccessHotelierHub.Controllers
 
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.FloorList = floorList;
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.ROOMPLAN, "Goes to room plan");
+            #endregion
 
             return View();
         }
@@ -870,6 +902,10 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.NextDate = nextDate;
                 ViewBag.PrevDate = prevDate;
 
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.ROOMPLAN, "Searched room plan detail");
+                #endregion
+
                 return PartialView("_RoomPlanView");
             }
             catch (Exception e)
@@ -890,6 +926,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(id))
                 {
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.ROOMPLAN, "Changed room allocation of reservation.");
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

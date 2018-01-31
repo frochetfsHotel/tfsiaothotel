@@ -1471,6 +1471,47 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Users Activity Log
+
+    public class SearchUsersActivityLogParametersVM
+    {
+        public SearchUsersActivityLogParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("User")]
+        public Guid? UserId { get; set; }
+
+        [DisplayName("Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ActivityDate { get; set; }        
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchUsersActivityLogResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public string Url { get; set; }
+        public string PageName { get; set; }
+        public string Description { get; set; }
+        public string IpAddress { get; set; }
+        public string RecordedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

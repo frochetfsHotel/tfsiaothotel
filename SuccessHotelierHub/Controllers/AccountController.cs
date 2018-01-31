@@ -13,7 +13,7 @@ namespace SuccessHotelierHub.Controllers
     {
         #region Declaration
 
-        private UserRepository userRepository = new UserRepository();
+        private UserRepository userRepository = new UserRepository();        
 
         #endregion
 
@@ -33,6 +33,8 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult SignOut()
         {
+            RecordActivityLog.RecordActivity(Pages.LOGOUT, "Loggedout successfully.");
+
             System.Web.HttpContext.Current.Session.Abandon();
             System.Web.HttpContext.Current.Session.Clear();
 
@@ -56,6 +58,8 @@ namespace SuccessHotelierHub.Controllers
                 switch (result)
                 {
                     case LoginStatus.Success:
+                        RecordActivityLog.RecordActivity(Pages.LOGIN, "Loggedin successfully.");
+
                         return Json(new
                         {
                             IsSuccess = true,
@@ -66,6 +70,7 @@ namespace SuccessHotelierHub.Controllers
                         }, JsonRequestBehavior.AllowGet);
                     case LoginStatus.Failure:
                     default:
+                        RecordActivityLog.RecordActivity(Pages.LOGIN, "Login fail.");
                         return Json(new
                         {
                             IsSuccess = false,

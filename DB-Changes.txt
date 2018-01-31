@@ -16303,3 +16303,290 @@ BEGIN
 	-- PAGING COMPLETED
 
 END
+
+
+
+/******************* Create new table UsersActivityLog *************/
+
+
+/****** Object:  Table [dbo].[UsersActivityLog]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UsersActivityLog](
+	[Id] 			[uniqueidentifier] 	NOT NULL	,
+	[UserId]		[uniqueidentifier] 	NOT NULL	,		
+	[Url]			[nvarchar](1000)	NULL		,
+	[PageName]		[nvarchar](500)		NULL		,
+	[Description]	[nvarchar](MAX)		NULL		,
+	[IpAddress]		[nvarchar](500)		NULL		,
+	[RecordedOn]	[datetime]			NULL		,
+	[CreatedBy] 	[int] 				NULL		,
+	[CreatedOn] 	[datetime] 			NULL		,
+	[UpdatedBy] 	[int] 				NULL		,
+	[UpdatedOn] 	[datetime] 			NULL		,
+	[IsActive] 		[bit] 				NULL		,
+	[IsDeleted] 	[bit] 				NULL		,
+ CONSTRAINT [PK_UsersActivityLog] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddUsersActivityLog
+	Comment : Create SP AddUsersActivityLog
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddUsersActivityLog]    Script Date: 1/31/2018 5:51:12 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUsersActivityLog]	
+	@UserId				UNIQUEIDENTIFIER				,	
+	@Url				NVARCHAR(1000)		=	NULL	,		
+	@PageName			NVARCHAR(500)		=	NULL	,		
+	@Description		NVARCHAR(MAX)		=	NULL	,
+	@IpAddress			NVARCHAR(500)		=	NULL	,
+	@RecordedOn			DATETIME			=	NULL	,	
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UsersActivityLog]
+           ([Id]           		   
+           ,[UserId]		
+		   ,[Url]
+		   ,[PageName]
+		   ,[Description]	
+		   ,[IpAddress]	   
+		   ,[RecordedOn]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id					      
+			   ,@UserId		
+			   ,@Url
+			   ,@PageName
+			   ,@Description	   
+			   ,@IpAddress
+			   ,@RecordedOn
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetUsersActivityLog
+	Comment : Create SP GetUsersActivityLog
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUsersActivityLog]    Script Date: 1/31/2018 5:59:43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUsersActivityLog]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[UsersActivityLog]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY RecordedOn DESC
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteUsersActivityLog
+	Comment : Create SP DeleteUsersActivityLog
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteUsersActivityLog]    Script Date: 1/31/2018 6:00:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteUsersActivityLog]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UsersActivityLog] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchUsersActivityLog
+	Comment : Create SP SearchUsersActivityLog
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[SearchUsersActivityLog]    Script Date: 1/31/2018 6:03:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchUsersActivityLog] NULL, '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchUsersActivityLog]					
+	@UserId			UNIQUEIDENTIFIER	=	NULL	,			
+	@ActivityDate	NVARCHAR(50)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempActivityLog
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,	[UserId]				UNIQUEIDENTIFIER	NOT NULL	
+		,   [Url]					NVARCHAR(1000)		NULL	
+		,   [PageName]				NVARCHAR(500)		NULL	
+		,   [Description]			NVARCHAR(MAX)		NULL	
+		,   [IpAddress]				NVARCHAR(500)		NULL				
+		,	[RecordedOn]			NVARCHAR(50)			NULL
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+		,   [IsRecordActivity]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UAL.Id) 
+						FROM [dbo].[UsersActivityLog] UAL
+								INNER JOIN [dbo].[UserDetail] UD ON UD.Id = UAL.UserId
+									AND ISNULL(UD.IsDeleted,0) = 0
+						WHERE	ISNULL(UAL.IsDeleted,0) = 0								
+								AND (ISNULL(@ActivityDate,'') = '' OR CAST(UAL.RecordedOn AS DATE) = CAST(@ActivityDate AS DATE)) 								
+								AND (@UserId IS NULL OR UAL.[UserId] = @UserId)								
+						)
+
+
+		INSERT INTO #tempActivityLog 
+		(
+			[RowNum], 
+			[Id], 
+			[UserId],
+			[Url], 
+			[PageName], 
+			[Description],
+			[IpAddress], 
+			[RecordedOn],
+			[CreatedOn], 
+			[IsActive]			
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UAL.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UAL.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Url' and @SortDirection = 'asc'
+							THEN UAL.[Url] END ASC,
+						CASE WHEN @SortColumn = 'Url' and @SortDirection = 'desc'
+							THEN UAL.[Url] END DESC,
+
+						CASE WHEN @SortColumn = 'PageName' and @SortDirection = 'asc'
+							THEN UAL.[PageName] END ASC,
+						CASE WHEN @SortColumn = 'PageName' and @SortDirection = 'desc'
+							THEN UAL.[PageName] END DESC,
+
+						CASE WHEN @SortColumn = 'IpAddress' and @SortDirection = 'asc'
+							THEN UAL.[IpAddress] END ASC,
+						CASE WHEN @SortColumn = 'IpAddress' and @SortDirection = 'desc'
+							THEN UAL.[IpAddress] END DESC,
+
+						CASE WHEN @SortColumn = 'RecordedOn' and @SortDirection = 'asc'
+							THEN UAL.[RecordedOn] END ASC,
+						CASE WHEN @SortColumn = 'RecordedOn' and @SortDirection = 'desc'
+							THEN UAL.[RecordedOn] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UAL.[Id],		
+				UAL.[UserId],
+				ISNULL(UAL.[Url],'') AS [Url],
+				ISNULL(UAL.[PageName],'') AS [PageName],
+				ISNULL(UAL.[Description],'') AS [Description],
+				ISNULL(UAL.[IpAddress],'') AS [IpAddress],					
+				CONVERT(VARCHAR(10), UAL.[RecordedOn], 103) + ' '  + convert(VARCHAR(8), UAL.[RecordedOn], 14) AS [RecordedOn],
+				UAL.[CreatedOn],
+				ISNULL(UAL.[IsActive],0) AS [IsActive]				
+		FROM [dbo].[UsersActivityLog] UAL
+				INNER JOIN [dbo].[UserDetail] UD ON UD.Id = UAL.UserId
+					AND ISNULL(UD.IsDeleted,0) = 0
+		WHERE	ISNULL(UAL.IsDeleted,0) = 0								
+				AND (ISNULL(@ActivityDate,'') = '' OR CAST(UAL.RecordedOn AS DATE) = CAST(@ActivityDate AS DATE)) 								
+				AND (@UserId IS NULL OR UAL.[UserId] = @UserId)		
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[UserId],	
+			temp.[Url],				
+			temp.[PageName],
+			temp.[Description],			
+			temp.[IpAddress],			
+			temp.[RecordedOn],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			temp.IsRecordActivity,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempActivityLog AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END

@@ -69,6 +69,10 @@ namespace SuccessHotelierHub.Controllers
                     var transaction = new List<ReservationChargeVM>();
                     transaction.Add(model);
 
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.BILLING_TRANSACTION, "Added new biling transaction.");
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

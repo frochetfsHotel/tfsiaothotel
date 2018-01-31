@@ -127,6 +127,18 @@ namespace SuccessHotelierHub
             return false;
         }
 
+        public static bool IsAllowToRecordActivity
+        {
+            get
+            {
+                if (LoggedInUser != null)
+                {
+                    return LoggedInUser.IsRecordActivity;
+                }
+                return false;
+            }
+        }
+
     }
 
     public enum LoginStatus

@@ -32,6 +32,7 @@ namespace SuccessHotelierHub.Controllers
         {
             return View();
         }
+
         public ActionResult CheckIn()
         {
             return View();
@@ -44,6 +45,10 @@ namespace SuccessHotelierHub.Controllers
 
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.SEARCH_ARRIVALS, "Goes to arrivals page.");
+            #endregion
 
             return View();
         }
@@ -78,6 +83,10 @@ namespace SuccessHotelierHub.Controllers
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.SEARCH_ARRIVALS, "Searched data in arrivals page.");
+                #endregion
 
                 return Json(new
                 {
@@ -354,6 +363,10 @@ namespace SuccessHotelierHub.Controllers
 
                     reservationRepository.UpdateReservationStatus(model.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDIN), LogInManager.LoggedInUserId);
 
+                    #endregion
+
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.CHECKIN, string.Format("Checked in profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));                    
                     #endregion
 
                     return Json(new
