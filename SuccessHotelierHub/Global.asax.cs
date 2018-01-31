@@ -31,6 +31,10 @@ namespace SuccessHotelierHub
 
         protected void Application_EndRequest(Object sender, EventArgs e)
         {
+            if (Context.Items["SessionExpired"] is bool)
+            {
+                Response.Redirect("~/Account/Login");
+            }
             if (Context.Items["AjaxPermissionDenied"] is bool)
             {
                 Context.Response.StatusCode = 401;

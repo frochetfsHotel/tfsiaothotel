@@ -8,8 +8,7 @@ using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
-{
-    [HotelierHubAuthorize(Roles = "ADMIN")]
+{   
     public class UserController : Controller
     {
         #region Declaration
@@ -25,6 +24,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
             var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
@@ -34,6 +34,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(UserVM model)
@@ -103,6 +104,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var user = userRepository.GetUserDetailById(id);
@@ -123,6 +125,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("List");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(UserVM model)
@@ -190,6 +193,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -231,6 +235,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
         public ActionResult List()
         {
             var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
@@ -240,6 +245,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
         [HttpPost]
         public ActionResult Search(SearchUserDetailParametersVM model)
         {
@@ -284,6 +290,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult ChangePassword(Guid id)
         {
             if (id == null)
@@ -297,6 +304,7 @@ namespace SuccessHotelierHub.Controllers
             return View(model);
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(ChangePasswordVM model)

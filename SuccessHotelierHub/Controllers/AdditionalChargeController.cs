@@ -272,7 +272,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult SearchAdvanceAdditionalCharge(SearchAdvanceAdditionalChargeParametersVM model)
         {

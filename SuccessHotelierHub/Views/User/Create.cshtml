@@ -54,10 +54,17 @@
                         @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", type= "password", placeholder = "Confirm Password" })
                         @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group m-t-lg">
+                    <div class="col-md-2 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-2 form-group m-t-lg m-r-none padding-zero">
+                        <label class="container1" for="IsRecordActivity">
+                            Record User's Activity
+                            @Html.CheckBoxFor(m => m.IsRecordActivity, new { @checked = "checked" })
                             <span class="checkmark"></span>
                         </label>
                     </div>

@@ -274,7 +274,7 @@ namespace SuccessHotelierHub.Controllers
 
 
         [HttpPost]
-        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult SearchAdvanceReservationCancellationReasons(SearchAdvanceReservationCancellationReasonParametersVM model)
         {
             try

@@ -26,10 +26,13 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Search User</h3>
-            <div class="pull-right box-tools">
-                <a href="@Url.Action("Create","User")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add User</a>
-            </div>
+            @if (LogInManager.HasRights("ADMIN"))
+            {
+                <div class="pull-right box-tools">
+                    <a href="@Url.Action("Create", "User")"
+                       class="btn btn-info btn-sm" style="color: #fff">Add User</a>
+                </div>
+            }
         </div>
         <form class="frmUserList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
@@ -39,14 +42,14 @@
                             @Html.LabelFor(m => m.UserRoleId)
                             @Html.DropDownListFor(m => m.UserRoleId,
                                 (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- Select User Role --",
-                                htmlAttributes: new { @class = "form-control" })                            
+                                htmlAttributes: new { @class = "form-control" })
                         </div>
                         <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
                         <div class="col-md-3 form-group">
-                           @Html.LabelFor(m => m.Email)
+                            @Html.LabelFor(m => m.Email)
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         </div>
                         <div class="col-md-3 form-group mt_25">
@@ -63,12 +66,13 @@
                         <table class="table table-bordered table-hover table-striped" id="tblUser">
                             <thead>
                                 <tr>
-                                    <th class="width_10"></th>
-                                    <th class="width_20">Name</th>
-                                    <th class="width_20">Email</th>
-                                    <th class="width_20">User Role</th>
-                                    <th class="width_10">Status</th>
-                                    <th class="width_20">Action</th>
+                                    <th class="width_5"></th>
+                                    <th class="width_15">Name</th>
+                                    <th class="width_25">Email</th>
+                                    <th class="width_10">User Role</th>
+                                    <th class="width_5">Status</th>
+                                    <th class="width_10">Record Activity</th>
+                                    <th class="width_30">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -196,9 +200,23 @@
             },
             {
                 targets: 5,
+                data: "IsRecordActivity",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isRecordActivity = full.IsRecordActivity;
+                    if (isRecordActivity == true) {
+                        return "Yes";
+                    } else {
+                        return "No";
+                    }
+                }
+            },
+            {
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
+                "visible": @((bool)LogInManager.HasRights("ADMIN") ? 1: 0),
                 render: function (data, type, full, meta) {
                     return '<a href="javascript:void(0);" onclick="GotoUserEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
@@ -209,7 +227,7 @@
                 }
             }
             ],
-            order: [[2, "asc"]],
+            order: [[1, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }

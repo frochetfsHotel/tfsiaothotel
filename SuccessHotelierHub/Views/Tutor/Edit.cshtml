@@ -1,0 +1,196 @@
+﻿@using SuccessHotelierHub.Models.StoredProcedure;
+@{
+    ViewBag.Title = "Map Tutor Student";
+
+    var students = (List<StudentDetailsForTutorMappingResultVM>)ViewBag.Students;
+}
+
+<section class="content-header">
+    <h1>
+
+        Tutor <small>Mapping</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Tutor</li>
+        <li class="active">Mapping</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Student Details</h3>
+        </div>
+        @using (Html.BeginForm("Edit", "Tutor", FormMethod.Post, new { id = "frmTutor", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            <input type="hidden" id="TutorId" name="TutorId" value="@ViewBag.TutorId" />
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="col-xs-12 padding-zero m-t-md">
+                    <div class="table-responsive">
+                        @if (students != null && students.Count > 0)
+                        {
+                            <table class="table table-bordered table-hover table-striped" id="tblStudents">
+                                <thead>
+                                    <tr>
+                                        <th class="width_5 text-center"></th>
+                                        <th class="width_20">Name</th>
+                                        <th class="width_20">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var student in students)
+                                    {
+                                        <tr data-id="@student.UserGUID" class="cursor-P">
+                                            <td>
+                                                <label class="container1" for="@("IsMapped" + "_" + student.UserGUID)">
+                                                    <input type="checkbox" id="@("IsMapped" + "_" + student.UserGUID)"
+                                                           name="@("IsMapped" + "_" + student.UserGUID)"
+                                                           value="@student.UserGUID"
+                                                           @(student.IsMapped ? "checked" : "") />
+                                                    <span class="checkmark"></span>
+                                                </label>
+
+                                                <input type="hidden" id="@("UserId" + "_" + student.UserGUID)"
+                                                       name="@("UserId" + "_" + student.UserGUID)" value="@student.UserId" />
+
+                                                <input type="hidden" id="@("TutorStudentMappingId" + "_" + student.UserGUID)"
+                                                       name="@("TutorStudentMappingId" + "_" + student.UserGUID)"                       
+                                                       value="@student.TutorStudentMappingId" />
+                                            </td>
+                                            <td onclick="onSelectStudent('@("IsMapped" + "_" + student.UserGUID)');">
+                                                @student.UserName
+                                            </td>
+                                            <td onclick="onSelectStudent('@("IsMapped" + "_" + student.UserGUID)');">
+                                                @student.UserEmail
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="col-md-12 form-group">
+                                <h3>No students found.</h3>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateMapping();">Update</button>
+                <a href="@Url.Action("List", "Tutor")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateMapping() {
+
+        var errorMessage = "";
+        var blnValid = false;
+
+        $("form#frmTutor #tblStudents tbody tr").each(function () {
+            var id = $(this).attr("data-id");
+            console.log(id);
+            if (!IsNullOrEmpty(id)) {
+
+                var isMapped = $('#IsMapped_' + id).prop("checked");
+
+                if (isMapped == true) {
+                    blnValid = true;
+                    return false;
+                }
+            }
+        });
+
+        if (blnValid == false) {
+            showToaster("Please select at least one student.", ToasterType.ERROR);
+            return false;
+        }
+
+        return blnValid;
+    }
+
+    function onSelectStudent(element) {
+        var isChecked = $('#' + element).prop("checked");
+        $('#' + element).prop("checked", !isChecked);
+    }
+
+
+    function updateMapping() {
+
+        if (validateMapping()) {
+
+            var lstTutorStudentMapping = [];
+
+            var tutorId = $('#TutorId').val();
+
+            $("form#frmTutor #tblStudents tbody tr").each(function () {
+                var id = $(this).attr("data-id");
+
+                if (!IsNullOrEmpty(id)) {
+                    var isMapped = $('#IsMapped_' + id).prop("checked");
+
+                    if (isMapped) {
+                        var modelTutorStudentMapping = {};
+
+                        var studentId = $('#IsMapped_' + id).val();
+
+                        modelTutorStudentMapping.Id = $('#TutorStudentMappingId_' + id).val();
+                        modelTutorStudentMapping.TutorId = tutorId;
+                        modelTutorStudentMapping.StudentId = studentId;
+                        modelTutorStudentMapping.UserId = $('#UserId_' + id).val();                        
+                        modelTutorStudentMapping.IsActive = true;
+
+                        lstTutorStudentMapping.push(modelTutorStudentMapping);
+                    }
+                }
+            });
+
+            if (lstTutorStudentMapping != null && lstTutorStudentMapping.length > 0) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/Tutor/Edit")',
+                    type: 'POST',
+                    //data: $('#frmTutor').serialize(),
+                    data: { tutorId: tutorId, models: lstTutorStudentMapping },
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+
+                            showToaster("Tutor Student Mapping details updated successfully.", ToasterType.SUCCESS);
+
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/Tutor/List")');
+                            }, 1000);
+                        }
+                        return false;
+                    }
+                });
+            } else {
+                showToaster("Please select at least one student.", ToasterType.ERROR);
+                return false;
+            }
+
+            return false;
+        }
+    }
+</script>

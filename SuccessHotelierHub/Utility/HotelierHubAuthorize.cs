@@ -39,13 +39,20 @@ namespace SuccessHotelierHub
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             filterContext.Result = new HttpUnauthorizedResult();
-            if (filterContext.HttpContext.Request.IsAjaxRequest())
+            if (LogInManager.LoggedInUser != null)
             {
-                filterContext.HttpContext.Items["AjaxPermissionDenied"] = true;
+                if (filterContext.HttpContext.Request.IsAjaxRequest())
+                {
+                    filterContext.HttpContext.Items["AjaxPermissionDenied"] = true;
+                }
+                else
+                {
+                    filterContext.HttpContext.Items["UnauthorizeRequest"] = true;
+                }
             }
             else
             {
-                filterContext.HttpContext.Items["UnauthorizeRequest"] = true;
+                filterContext.HttpContext.Items["SessionExpired"] = true;
             }
 
             base.HandleUnauthorizedRequest(filterContext);

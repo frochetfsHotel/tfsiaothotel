@@ -22,21 +22,30 @@
                     <i class="fa fa-th font_20 m-b-xs"></i><br /> <span class="span_none">Dashboard</span> <span class="sr-only">(current)</span>
                 </a>
             </li>
-            <li class="text-center topMenu" id="menuReservation">
-                <a href="javascript:void(0);" onclick="setCurrentMenu('Reservation','@Url.Content("~/Home/Default")');">
-                    <i class="fa fa-ticket font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reservations</span>
-                </a>
-            </li>
-            <li class="text-center topMenu" id="menuFrontDesk">
-                <a href="javascript:void(0);"  onclick="setCurrentMenu('FrontDesk','@Url.Content("~/Home/Default")');">
-                    <i class="fa fa-building-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Front Desk</span>
-                </a>
-            </li>
-            <li class="text-center topMenu" id="menuCashiering">
-                <a href="javascript:void(0);" onclick="setCurrentMenu('Cashiering','@Url.Content("~/Home/Default")');">
-                    <i class="fa fa-money font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Cashiering</span>
-                </a>
-            </li>   
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
+            {
+                <li class="text-center topMenu" id="menuReservation">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('Reservation','@Url.Content("~/Home/Default")');">
+                        <i class="fa fa-ticket font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reservations</span>
+                    </a>
+                </li>
+            }
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
+            {
+                <li class="text-center topMenu" id="menuFrontDesk">
+                    <a href="javascript:void(0);"  onclick="setCurrentMenu('FrontDesk','@Url.Content("~/Home/Default")');">
+                        <i class="fa fa-building-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Front Desk</span>
+                    </a>
+                </li>
+            }
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
+            {
+                <li class="text-center topMenu" id="menuCashiering">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('Cashiering','@Url.Content("~/Home/Default")');">
+                        <i class="fa fa-money font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Cashiering</span>
+                    </a>
+                </li>
+            }
             @if (LogInManager.HasRights("ADMIN"))
             {
                 <li class="text-center topMenu" id="menuEndOfDayScreen">
@@ -53,7 +62,7 @@
                     </a>
                 </li>
             }
-            @if (LogInManager.HasRights("ADMIN"))
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("TUTOR"))
             {
                 <li class="text-center topMenu" id="menuMasterScreen">
                     <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Home/Default")');">

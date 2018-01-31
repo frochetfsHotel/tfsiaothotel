@@ -5,6 +5,7 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Models.StoredProcedure;
 
 
 namespace SuccessHotelierHub.Repository
@@ -69,7 +70,8 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
-                    new SqlParameter { ParameterName = "@Password", Value = user.Password },                    
+                    new SqlParameter { ParameterName = "@Password", Value = user.Password },
+                    new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = user.CreatedBy }
                 };
@@ -88,6 +90,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Id", Value = user.Id },
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
+                    new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = user.UpdatedBy }
                 };
@@ -220,5 +223,135 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
+
+        #region Tutor Student Mapping
+
+        public List<SearchTutorDetailResultVM> SearchTutorDetail(SearchTutorDetailParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchTutorDetail", parameters);
+
+            var tutors = new List<SearchTutorDetailResultVM>();
+            tutors = DALHelper.CreateListFromTable<SearchTutorDetailResultVM>(dt);
+
+            return tutors;
+        }
+
+        public List<SearchStudentDetailResultVM> SearchStudentDetail(SearchStudentDetailParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchStudentDetail", parameters);
+
+            var students = new List<SearchStudentDetailResultVM>();
+            students = DALHelper.CreateListFromTable<SearchStudentDetailResultVM>(dt);
+
+            return students;
+        }
+
+
+        public string AddUpdateTutorStudentMapping(TutorStudentMappingVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@StudentId", Value = model.StudentId } ,
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId } ,
+                    new SqlParameter { ParameterName = "@IsActive", Value = model.IsActive } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUpdateTutorStudentMapping", parameters));
+
+            return id;
+        }
+
+
+        public string DeleteTutorStudentMappingByTutor(Guid tutorId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteTutorStudentMappingByTutor", parameters));
+
+            return id;
+        }
+
+        public string DeleteTutorStudentMapping(Guid mappingId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = mappingId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteTutorStudentMapping", parameters));
+
+            return id;
+        }
+
+        public List<TutorStudentMappingByTutorResultVM> GetTutorStudentMappingByTutor(Guid? tutorId, Guid? studentId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId },
+                    new SqlParameter { ParameterName = "@StudentId", Value = studentId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTutorStudentMappingByTutor", parameters);
+
+            var results = new List<TutorStudentMappingByTutorResultVM>();
+            results = DALHelper.CreateListFromTable<TutorStudentMappingByTutorResultVM>(dt);
+
+            return results;
+        }
+
+
+        public List<StudentDetailsForTutorMappingResultVM> GetStudentDetailsForTutorMapping(Guid? tutorId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetStudentDetailsForTutorMapping", parameters);
+
+            var results = new List<StudentDetailsForTutorMappingResultVM>();
+            results = DALHelper.CreateListFromTable<StudentDetailsForTutorMappingResultVM>(dt);
+
+            return results;
+        }
+
+        #endregion
+
+        
     }
 }

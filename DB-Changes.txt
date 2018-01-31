@@ -15408,3 +15408,898 @@ BEGIN
 	SELECT @Id AS Id
     
 END
+
+
+
+/******************************************************************************************************/
+
+Name : Nilesh
+Date : 31-JAN-2018
+
+/******************* Create new table TutorStudentMapping *************/
+
+
+/****** Object:  Table [dbo].[TutorStudentMapping]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TutorStudentMapping](
+	[Id] [uniqueidentifier] NOT NULL,
+	[TutorId] [uniqueidentifier] NOT NULL,
+	[StudentId] [uniqueidentifier] NOT NULL,
+	[UserId]	[int] NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_TutorStudentMapping] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddUpdateTutorStudentMapping
+	Comment : Create SP AddUpdateTutorStudentMapping	
+*******************************************************************************************************************/
+
+
+
+/****** Object:  StoredProcedure [dbo].[AddUpdateTutorStudentMapping]    Script Date: 1/30/2018 6:13:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUpdateTutorStudentMapping]
+	@TutorId			UNIQUEIDENTIFIER				,	
+	@StudentId			UNIQUEIDENTIFIER				,
+	@UserId				INT					=	NULL	,
+	@IsActive			BIT					=	NULL	,
+	@CreatedBy			INT					=	NULL	,
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	IF NOT EXISTS (SELECT * FROM [TutorStudentMapping] 
+						WHERE	ISNULL(IsDeleted,0) = 0 
+								AND [TutorId] = @TutorId 
+								AND [StudentId] = @StudentId)
+	BEGIN		
+		INSERT INTO [dbo].[TutorStudentMapping]
+			   ([Id]
+			   ,[TutorId]			   
+			   ,[StudentId]
+			   ,[UserId]
+			   ,[IsActive]
+			   ,[CreatedBy]
+			   ,[CreatedOn])
+		 VALUES
+				(
+					@Id
+					,@TutorId					
+					,@StudentId
+					,@UserId
+					,@IsActive
+					,@CreatedBy
+					,GETDATE()
+				)
+	END
+	ELSE
+	BEGIN
+		UPDATE [dbo].[TutorStudentMapping]
+			SET		[UpdatedBy] = @UpdatedBy
+					,[UpdatedOn]	= GETDATE()
+			WHERE	ISNULL(IsDeleted,0) = 0 
+					AND [TutorId] = @TutorId 
+					AND [StudentId] = @StudentId					
+	END
+			
+	SELECT @Id AS Id
+    
+END
+
+/*******************************************************************************************************************
+	SP Name : DeleteTutorStudentMappingByTutor
+	Comment : Create SP DeleteTutorStudentMappingByTutor	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteTutorStudentMappingByTutor]    Script Date: 1/30/2018 6:16:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteTutorStudentMappingByTutor]	
+	@TutorId		UNIQUEIDENTIFIER				,
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[TutorStudentMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND TutorId = @TutorId
+	
+
+	SELECT @TutorId AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteTutorStudentMapping
+	Comment : Create SP DeleteTutorStudentMapping	
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteTutorStudentMapping]    Script Date: 1/30/2018 6:16:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteTutorStudentMapping]	
+	@Id			UNIQUEIDENTIFIER				,
+	@UpdatedBy	INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[TutorStudentMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+/*******************************************************************************************************************
+	SP Name : SearchTutorDetail
+	Comment : Create SP SearchTutorDetail
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[SearchTutorDetail]    Script Date: 1/31/2018 1:55:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchTutorDetail]  '', '', 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchTutorDetail]					
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@Email			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempTutorDetail
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(500)		NULL	
+		,   [Email]			NVARCHAR(500)		NULL							
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+						FROM [dbo].[UserDetail] UD 
+								INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+									AND ISNULL(URM.IsDeleted,0) = 0
+								INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+									AND ISNULL(UR.IsDeleted,0) = 0
+									AND UR.[Code] = 'TUTOR'	
+						WHERE	ISNULL(UD.IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 								
+						)
+
+
+		INSERT INTO #tempTutorDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UD.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UD.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],				
+				UD.[CreatedOn],
+				UD.[IsActive]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+					AND UR.[Code] = 'TUTOR'	
+		WHERE	ISNULL(UD.IsDeleted,0) = 0								
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 				
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempTutorDetail AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/*******************************************************************************************************************
+	SP Name : GetTutorStudentMappingByTutor
+	Comment : Create SP GetTutorStudentMappingByTutor	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetTutorStudentMappingByTutor]    Script Date: 1/30/2018 1:59:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetTutorStudentMappingByTutor]
+	@TutorId 	UNIQUEIDENTIFIER = NULL		,
+	@StudentId 	UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT TSM.*,UD.Id AS UserGUID, UD.[Name] AS UserName, UD.Email AS UserEmail
+			FROM [dbo].[UserDetail] UD
+			INNER JOIN [dbo].[TutorStudentMapping] TSM ON UD.Id = TSM.TutorId
+				AND ISNULL(TSM.IsDeleted,0) = 0  			
+				
+		WHERE	ISNULL(UD.IsDeleted,0) = 0  
+				AND (@StudentId IS NULL OR TSM.StudentId = @StudentId)
+				AND (@TutorId IS NULL OR TSM.TutorId = @TutorId)		
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetStudentDetailsForTutorMapping
+	Comment : Create SP GetStudentDetailsForTutorMapping	
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetStudentDetailsForTutorMapping]    Script Date: 1/30/2018 1:59:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetStudentDetailsForTutorMapping]
+	@TutorId 	UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT UD.Id AS UserGUID, UD.UserId, UD.[Name] AS UserName, UD.Email AS UserEmail,
+		CASE WHEN TSM.Id IS NOT NULL THEN 1 ELSE 0 END AS IsMapped,
+		TSM.Id AS TutorStudentMappingId
+		FROM 	[dbo].[UserDetail] UD
+				INNER JOIN [dbo].[UserRoleMapping] URM ON  URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId 
+					AND ISNULL(UR.IsDeleted,0) = 0
+					AND UR.[Code] = 'STUDENT'					
+				LEFT JOIN [dbo].[TutorStudentMapping] TSM ON UD.Id = TSM.StudentId
+					AND ISNULL(TSM.IsDeleted,0) = 0  			
+					AND (@TutorId IS NULL OR TSM.TutorId = @TutorId)	
+				
+		WHERE	ISNULL(UD.IsDeleted,0) = 0  								
+					
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchStudentDetail
+	Comment : Create SP SearchStudentDetail
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[SearchStudentDetail]    Script Date: 1/31/2018 1:55:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchStudentDetail]  'D4878B1D-C234-43FB-9D5F-CC4FA40CCAD0','', '', 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchStudentDetail]			
+	@TutorId		UNIQUEIDENTIFIER				,
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@Email			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempStudentDetail
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]			NVARCHAR(500)		NULL	
+		,   [Email]			NVARCHAR(500)		NULL							
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+						FROM [dbo].[UserDetail] UD 
+								INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+									AND ISNULL(URM.IsDeleted,0) = 0									
+
+								INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+									AND ISNULL(UR.IsDeleted,0) = 0
+									AND ISNULL(UR.Code,'') = 'STUDENT'
+
+								INNER JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+									AND ISNULL(TSM.IsDeleted,0) = 0
+									AND TSM.TutorId = @TutorId
+									
+									
+						WHERE	ISNULL(UD.IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')
+						)
+
+
+		INSERT INTO #tempStudentDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UD.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UD.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],				
+				UD.[CreatedOn],
+				UD.[IsActive]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0									
+
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+					AND ISNULL(UR.Code,'') = 'STUDENT'
+
+				INNER JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+					AND ISNULL(TSM.IsDeleted,0) = 0
+					AND TSM.TutorId = @TutorId
+									
+									
+		WHERE	ISNULL(UD.IsDeleted,0) = 0								
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')				
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempStudentDetail AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/********************** Add new column "IsRecordActivity" to UserDetail Table. **************/
+
+ALTER TABLE UserDetail ADD IsRecordActivity BIT NULL
+GO
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddUserDetail
+	Comment : Changes in SP AddUserDetail
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddUserDetail]    Script Date: 1/31/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddUserDetail]		
+	@Name				NVARCHAR(500)					,		
+	@Email				NVARCHAR(500)					,		
+	@Password			NVARCHAR(2000)					,
+	@IsRecordActivity	BIT					=	NULL	,
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	DECLARE @UserId AS INT = 0
+	SET @UserId = (SELECT ISNULL(MAX(UserId),0) AS MaxUserId FROM [dbo].[UserDetail])
+
+	SET @UserId = (@UserId + 1)
+
+	INSERT INTO [dbo].[UserDetail]
+           ([Id]           		   
+           ,[Name]		
+		   ,[Email]
+		   ,[Password]   
+		   ,[UserId]	
+		   ,[IsRecordActivity]	   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id					      
+			   ,@Name		
+			   ,@Email
+			   ,@Password
+			   ,@UserId	   
+			   ,@IsRecordActivity
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateUserDetail
+	Comment : Changes in SP UpdateUserDetail
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateUserDetail]    Script Date: 1/31/2018 4:30:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateUserDetail]
+	@Id					UNIQUEIDENTIFIER				,	
+	@Name				NVARCHAR(500)					,		
+	@Email				NVARCHAR(500)					,
+	@IsRecordActivity	BIT					=	NULL	,			
+	@IsActive			BIT					=	NULL	,	
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserDetail] 
+		SET	[Name]				=	@Name		   
+		   ,[Email]				=	@Email
+		   ,[IsRecordActivity]	=	@IsRecordActivity
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[IsActive]			=	@IsActive
+		   ,[UpdatedOn]			=	 GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+/*******************************************************************************************************************
+	SP Name : GetUserDetailById
+	Comment : Changes in SP GetUserDetailById
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserDetailById]    Script Date: 1/31/2018 4:33:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetUserDetailById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT UD.Id,UD.UserId,UD.Name,UD.Email,UD.Password,UD.CreatedBy,UD.CreatedOn,UD.UpdatedBy, UD.UpdatedOn, UD.IsActive, UD.IsRecordActivity, URM.UserRoleId 
+		FROM [dbo].[UserDetail] UD 
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+				AND ISNULL(URM.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 
+				AND Ud.[Id] = @Id		
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchUserDetail
+	Comment : Changes in SP SearchUserDetail
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[SearchUserDetail]    Script Date: 1/31/2018 4:37:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchUserDetail] NULL, '', '', 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchUserDetail]					
+	@UserRoleId		UNIQUEIDENTIFIER	=	NULL	,		
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@Email			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempUserDetail
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(500)		NULL	
+		,   [Email]					NVARCHAR(500)		NULL	
+		,	[UserRoleId]			UNIQUEIDENTIFIER	NULL		
+		,   [UserRoleName]			NVARCHAR(500)		NULL	
+		,   [UserRoleCode]			NVARCHAR(255)		NULL
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+		,   [IsRecordActivity]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+						FROM [dbo].[UserDetail] UD 
+								INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+									AND ISNULL(URM.IsDeleted,0) = 0
+								INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+									AND ISNULL(UR.IsDeleted,0) = 0
+						WHERE	ISNULL(UD.IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 
+								AND (@UserRoleId IS NULL OR URM.[UserRoleId] = @UserRoleId)								
+						)
+
+
+		INSERT INTO #tempUserDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 
+			[UserRoleId],
+			[UserRoleName], 
+			[UserRoleCode],
+			[CreatedOn], 
+			[IsActive],
+			[IsRecordActivity]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UD.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UD.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN @SortColumn = 'UserRoleName' and @SortDirection = 'asc'
+							THEN UR.[Name] END ASC,
+						CASE WHEN @SortColumn = 'UserRoleName' and @SortDirection = 'desc'
+							THEN UR.[Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],
+				UR.Id AS [UserRoleId],
+				UR.[Name] AS [UserRoleName],
+				UR.[Code] AS [UserRoleCode],				
+				UD.[CreatedOn],
+				ISNULL(UD.[IsActive],0) AS [IsActive],
+				ISNULL(UD.[IsRecordActivity],0) AS  [IsRecordActivity]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0								
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 
+				AND (@UserRoleId IS NULL OR URM.[UserRoleId] = @UserRoleId)	
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],
+			temp.[UserRoleId],			
+			temp.[UserRoleName],			
+			temp.[UserRoleCode],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			temp.IsRecordActivity,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempUserDetail AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchStudentDetail
+	Comment : Changes in SP SearchStudentDetail
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[SearchStudentDetail]    Script Date: 1/31/2018 4:46:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchStudentDetail]  'D4878B1D-C234-43FB-9D5F-CC4FA40CCAD0','', '', 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchStudentDetail]			
+	@TutorId		UNIQUEIDENTIFIER				,
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@Email			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempStudentDetail
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(500)		NULL	
+		,   [Email]					NVARCHAR(500)		NULL							
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+		,   [IsRecordActivity]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+						FROM [dbo].[UserDetail] UD 
+								INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+									AND ISNULL(URM.IsDeleted,0) = 0									
+
+								INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+									AND ISNULL(UR.IsDeleted,0) = 0
+									AND ISNULL(UR.Code,'') = 'STUDENT'
+
+								INNER JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+									AND ISNULL(TSM.IsDeleted,0) = 0
+									AND TSM.TutorId = @TutorId
+									
+									
+						WHERE	ISNULL(UD.IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')
+						)
+
+
+		INSERT INTO #tempStudentDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 
+			[CreatedOn], 
+			[IsActive],
+			[IsRecordActivity]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UD.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UD.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],				
+				UD.[CreatedOn],
+				ISNULL(UD.[IsActive],0) AS [IsActive],
+				ISNULL(UD.[IsRecordActivity],0) AS  [IsRecordActivity]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0									
+
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+					AND ISNULL(UR.Code,'') = 'STUDENT'
+
+				INNER JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+					AND ISNULL(TSM.IsDeleted,0) = 0
+					AND TSM.TutorId = @TutorId
+									
+									
+		WHERE	ISNULL(UD.IsDeleted,0) = 0								
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')				
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			temp.IsRecordActivity,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempStudentDetail AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END

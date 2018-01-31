@@ -245,7 +245,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
-        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult SearchAdvanceRoom(SearchAdvanceRoomParametersVM model)
         {
             try
@@ -270,7 +270,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult ShowAddRoom(Guid? roomTypeId)
         {
             try
@@ -607,7 +607,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult ChangeRoomAndReservationMapping(Guid reservationId, Guid roomId, Guid roomTypeId, DateTime? date)
         {
             try

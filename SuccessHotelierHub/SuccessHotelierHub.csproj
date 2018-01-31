@@ -240,6 +240,7 @@
     <Compile Include="Controllers\RoomFeaturesController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Controllers\StateController.cs" />
+    <Compile Include="Controllers\TutorController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UserRoleController.cs" />
     <Compile Include="Global.asax.cs">
@@ -291,7 +292,10 @@
     <Compile Include="Models\RoomVM.cs" />
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
+    <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
+    <Compile Include="Models\TutorStudentMappingVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
     <Compile Include="Models\UserRoleVM.cs" />
     <Compile Include="Models\UserVM.cs" />
@@ -2042,6 +2046,9 @@
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\List.cshtml" />
     <Content Include="Views\User\ChangePassword.cshtml" />
+    <Content Include="Views\Tutor\List.cshtml" />
+    <Content Include="Views\Tutor\Edit.cshtml" />
+    <Content Include="Views\Tutor\ViewStudent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

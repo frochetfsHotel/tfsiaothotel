@@ -37,6 +37,9 @@ namespace SuccessHotelierHub.Models
         [Compare("Password", ErrorMessage = "Confirm password and password must be same. ")]
         public string ConfirmPassword { get; set; }
 
+        [DisplayName("Record User's Activity")]
+        public bool IsRecordActivity { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }
