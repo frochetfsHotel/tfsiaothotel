@@ -573,31 +573,56 @@ namespace SuccessHotelierHub.Controllers
             model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
             model.GSTRegistrationNumber = "";
 
+            model.VATTax = 9; //Default 9%.
+
             model.Transactions = transactions;
 
             //Get Amount.
 
+            double checkOutPaidPayment = 0;
             foreach (var item in transactions)
             {
-                totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
+                int qty = 1;
+
+                if (item.Qty.HasValue)
+                    qty = item.Qty.Value;
+
+                if (item.Code != "9004")  //Check out
+                {
+                    totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                }
+                else
+                {
+                    checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
+                }
+
+                //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
 
                 //Room Rent
                 if(item.Code == "1000")
                     roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
-
-                //Balance Due
-                if (item.Code == "9004") //Check out
-                    balanceDue = item.Amount.HasValue ? item.Amount.Value : 0;
                 
             }
-        
+
+
+            //Balance Due
+            balanceDue = totalBalance - Math.Abs(checkOutPaidPayment);
 
             model.FandB = 0;
             model.Other = 0;
             model.Total = total;
             model.Room = roomRent;
-            model.TotalBalance = totalBalance;
-            model.BalanceDue = balanceDue;
+            model.TotalBalance = Math.Round(totalBalance,2);
+            model.BalanceDue = Math.Round(balanceDue,2);
+
+            if (totalBalance > 0)
+            {
+                double netAmount = 0;
+                netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)),2);
+
+                model.VATAmount = Math.Round((totalBalance - netAmount),2);
+                model.NetAmount = netAmount;
+            }
 
             #region Record Activity Log
             RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated folio report.");

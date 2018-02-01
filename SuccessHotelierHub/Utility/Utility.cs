@@ -359,10 +359,10 @@ namespace SuccessHotelierHub.Utility
         #region 'Format Amount with exact two decimal places'
         public static string FormatAmountWithTwoDecimal(double amount)
         {
-            if (amount > 0)
-                return string.Format("{0:0.00}", amount);
-            else
+            if (amount == 0)
                 return "0.00";
+            else
+                return string.Format("{0:0.00}", amount);
         }
         #endregion
 

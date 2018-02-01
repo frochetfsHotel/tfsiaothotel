@@ -386,10 +386,12 @@ textarea {
 .box-footer {
     /*padding: 15px 0 20px;*/
 }
-/*.table-responsive {
-    overflow-x: auto;
+
+/*Avoid scroll bar issue.*/
+.table-responsive {
+    overflow-x: hidden;
     overflow-y: auto;
-}*/
+}
 .cursor-P{
         cursor: pointer !important;
 }

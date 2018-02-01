@@ -158,6 +158,7 @@
                                 <td class="text_bold" style="border-left:1px solid #000;">Date</td>
                                 <td class="text_bold">Description</td>
                                 <td class="text_bold">Additional Information</td>
+                                <td class="text_bold">Qty</td>
                                 <td class="text_bold">Charges</td>
                                 <td class="text_bold" style="border-right:1px solid #000;">Credit</td>
                             </tr>
@@ -172,6 +173,7 @@
                                         <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("MM-dd-yyyy") : "")</td>
                                         <td>@transaction.Description</td>
                                         <td>@transaction.Code</td>
+                                        <td>@(transaction.Qty.HasValue ? transaction.Qty.Value : 1)</td>                                        
                                         <td>@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value : 0)</td>
                                         <td></td>
                                     </tr>
@@ -213,6 +215,20 @@
                             </td>
                             <td style="width:50%;">
                                 <table>
+                                    <tr class="">
+                                        <td class="">Net</td>
+                                        <td class="" style="padding-left:100px;">
+                                            @Utility.FormatAmountWithTwoDecimal(Model.NetAmount)
+                                        </td>
+                                        <td class="">0.00</td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="">@(Model.VATTax)% VAT</td>
+                                        <td class="" style="padding-left:100px;">
+                                            @Utility.FormatAmountWithTwoDecimal(Model.VATAmount)
+                                        </td>
+                                        <td class="">0.00</td>
+                                    </tr>
                                     <tr class="border_bottom">
                                         <td class="text_bold">Total</td>
                                         <td class="text_bold" style="padding-left:100px;">

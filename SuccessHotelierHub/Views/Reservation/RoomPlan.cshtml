@@ -25,6 +25,7 @@
         {
             <!-- HIDDEN FIELD -->
             @Html.HiddenFor(m => m.StartDate)
+            <input type="hidden" id="hdnRoomTableRowIdToScroll" name="hdnRoomTableRowIdToScroll" value="" />
             <!-- HIDDEN FIELD-->
 
             <div class="box-body">
@@ -137,6 +138,7 @@
     });
 
     function search() {
+        $('#hdnRoomTableRowIdToScroll').val('');
         searchRoomPlan($('#Date').val());
     }
 
@@ -168,6 +170,10 @@
                 else {
                     $('#divRoomPlanView').html('');
                     $('#divRoomPlanView').html(response);
+
+                    if (!IsNullOrEmpty($('#hdnRoomTableRowIdToScroll').val())) {
+                        goToSpecificRoomDetail($('#hdnRoomTableRowIdToScroll').val());
+                    }
                 }
             }
         });
@@ -182,6 +188,7 @@
         $('#FloorId').val('');
         $('#FeatureId').val('');
         $('#Smoking').val('');
+        $('#hdnRoomTableRowIdToScroll').val('');
 
         $('#IsVerticalZoom').prop('checked', false);
         $('#IsHorizontalZoom').prop('checked', false);
@@ -189,6 +196,17 @@
 
 
         search();
+    }
+
+    function goToSpecificRoomDetail(id) {
+        //var tblRoomPlan = document.getElementById(id);
+        //var topPos = tblRoomPlan.offsetTop;
+
+        //document.getElementById('tblRoomPlan').scrollTop = topPos - 10;
+
+        $('html, body').animate({
+            scrollTop: ($('#' + id).first().offset().top)
+        }, 500);
     }
 </script>
 

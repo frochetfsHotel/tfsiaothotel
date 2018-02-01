@@ -16590,3 +16590,141 @@ BEGIN
 	-- PAGING COMPLETED
 
 END
+
+/*************************************************************************************/
+
+Name : Nilesh
+Date : 01-FEB-2018
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetRateSheetDetail
+	Comment   Changes in SP GetRateSheetDetail
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRateSheetDetail]    Script Date: 2/1/2018 1:22:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetRateSheetDetail] 
+		@RateTypeId = '0853E143-6F2B-48CC-B322-4714142D9A00',
+		@RoomTypeId = '488FE9ED-4AA6-45D9-88F6-67FE6D5886D6',
+		@IsShowWeekEndPrice = 0
+*/
+ALTER PROCEDURE [dbo].[GetRateSheetDetail]
+	@RateTypeId				UNIQUEIDENTIFIER,
+	@RoomTypeId				UNIQUEIDENTIFIER,
+	@IsShowWeekEndPrice		BIT = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Amount AS DECIMAL(10,2)
+	SET @Amount = 0
+
+	CREATE TABLE #tempRoomTypeRateTypeMapping
+	(
+		Id				UNIQUEIDENTIFIER	NULL,
+		RoomTypeId		UNIQUEIDENTIFIER	NULL,
+		RateTypeId		UNIQUEIDENTIFIER	NULL,
+		Amount			DECIMAL(18,2)		NULL,
+		[Description]	NVARCHAR(1000)		NULL
+	) 
+
+	IF ISNULL(@IsShowWeekEndPrice,0) = 0
+	BEGIN
+		--1.) Get amount from mapping table. (Show WeekDay Price)
+			INSERT INTO #tempRoomTypeRateTypeMapping (Id, RoomTypeId, RateTypeId, Amount, [Description])
+			SELECT TOP 1 RTRTM.Id, RTRTM.RoomTypeId, RTRTM.RateTypeId, ISNULL(RTRTM.Amount,0) AS Amount, 
+					ISNULL(RT.[Description],'') AS [Description]
+			FROM [RoomTypeRateTypeMapping] RTRTM 
+				INNER JOIN [dbo].[RateType] RT ON RTRTM.RateTypeId = RT.Id 
+					AND ISNULL(RT.IsDeleted,0) = 0
+			WHERE	ISNULL(RTRTM.IsDeleted,0) = 0 AND ISNULL(RTRTM.IsActive,0) = 1
+					AND RTRTM.RateTypeId = @RateTypeId 
+					AND RTRTM.RoomTypeId = @RoomTypeId
+					AND ISNULL(RTRTM.IsWeekEndPrice,0) = 0
+			ORDER BY RTRTM.CreatedOn DESC
+		--END
+	END
+	ELSE
+	BEGIN
+
+		--2.) Get amount from mapping table. (Show WeekEnd Price)
+		INSERT INTO #tempRoomTypeRateTypeMapping (Id, RoomTypeId, RateTypeId, Amount, [Description])
+		SELECT TOP 1 RTRTM.Id, RTRTM.RoomTypeId, RTRTM.RateTypeId, ISNULL(RTRTM.Amount,0) AS Amount, 
+				ISNULL(RT.[Description],'') AS [Description]
+		FROM [RoomTypeRateTypeMapping] RTRTM 
+				INNER JOIN [dbo].[RateType] RT ON RTRTM.RateTypeId = RT.Id 
+					AND ISNULL(RT.IsDeleted,0) = 0
+			WHERE	ISNULL(RTRTM.IsDeleted,0) = 0 AND ISNULL(RTRTM.IsActive,0) = 1
+					AND RTRTM.RateTypeId = @RateTypeId 
+					AND RTRTM.RoomTypeId = @RoomTypeId
+					AND ISNULL(RTRTM.IsWeekEndPrice,0) = 1
+		ORDER BY RTRTM.CreatedOn DESC
+		
+	END
+
+
+	SELECT * FROM #tempRoomTypeRateTypeMapping
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationCharges
+	Comment   Changes in SP GetReservationCharges
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 2/1/2018 2:21:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId		UNIQUEIDENTIFIER = NULL,
+	@AdditionalChargeId	UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.*, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+
+	UNION
+
+	SELECT RC.*, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+	UNION
+		SELECT RC.*, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+
+
+	ORDER BY SortOrder
+
+END

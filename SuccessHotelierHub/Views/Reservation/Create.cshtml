@@ -908,6 +908,37 @@
             blnValid = false;
         }
 
+        if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
+            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
+
+            if (paymentMethod != 'Cash') {
+                var creditCardNo = $('form#frmReservation #CreditCardNo').val();
+                var cardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
+                var cvvNo = $('form#frmReservation #CVVNo').val();
+
+                var errorText = "";
+                if (IsNullOrEmpty(creditCardNo)) {
+                    errorText += "Please enter credit card number." + Delimeter.BREAKLINE;                    
+                    blnValid = false;
+                }
+
+                if (IsNullOrEmpty(cardExpiryDate)) {
+                    errorText += "Please enter card expiry date." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                }
+
+                if (IsNullOrEmpty(cvvNo)) {
+                    errorText += "Please enter CVV No." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                }
+                
+                if (blnValid == false) {
+                    showToaster(errorText, ToasterType.ERROR);
+                    return false;
+                }
+            }
+        }
+
         if ($("#frmReservation").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;

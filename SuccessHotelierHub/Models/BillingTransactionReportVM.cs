@@ -28,6 +28,11 @@ namespace SuccessHotelierHub.Models
         public double TotalBalance { get; set; }
         public double BalanceDue { get; set; }
 
+        public double NetAmount { get; set; }
+        public double VATTax { get; set; }
+        public double VATAmount { get; set; }
+        
+
         public string GSTRegistrationNumber { get; set; }
 
         public List<ReservationChargeVM> Transactions { get; set; }

@@ -124,7 +124,12 @@ namespace SuccessHotelierHub.Controllers
                         if (!string.IsNullOrWhiteSpace(chargeId))
                         {
                             //Calculate total Amount.
-                            totalAmount = totalAmount + (model.Amount.HasValue ? model.Amount.Value : 0);
+                            int qty = 1;
+
+                            if (model.Qty.HasValue)
+                                qty = model.Qty.Value;
+
+                            totalAmount = totalAmount + (model.Amount.HasValue ? (model.Amount.Value * qty) : 0);
 
                             model.Id = Guid.Parse(chargeId);
 

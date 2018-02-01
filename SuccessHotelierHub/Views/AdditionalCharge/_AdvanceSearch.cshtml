@@ -135,7 +135,7 @@
                             markup += "<td class=\'text-center\'><label class=\'container_radio\'><input type=\'radio\' class=\'rbAdditionalCharge cursor-P\' id=\'rbAdditionalCharge_" + result[i].Id + "\' name=\'rbAdditionalCharge\' value=\'" + result[i].Id + "\'  data-code=\'" + result[i].Code + "\'  data-description=\'" + result[i].Description + "\' data-price=\'" + result[i].Price + "\' /><span class=\'checkmark_radio\'></span></label></td>";
                             markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + result[i].Code + "</td>";
                             markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + result[i].Description + "</td>";
-                            markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + result[i].Price + "</td>";
+                            markup += "<td onclick=\"onSelectAdditionalCharge('rbAdditionalCharge_" + result[i].Id + "');\">" + FormatNumberWithTwoDecimal(result[i].Price) + "</td>";
 
                             markup += "</tr>";
                         }
