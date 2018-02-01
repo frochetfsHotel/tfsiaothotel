@@ -35,6 +35,7 @@ namespace SuccessHotelierHub
             LogInManager.LoggedInUserId = user.UserId;
             LogInManager.LoggedInUser = user;
             LogInManager.UsersRoles = userRoles;
+            LogInManager.UserRoleName = GetUserRoleName(userRoles);
 
             return LoginStatus.Success;
         }
@@ -115,6 +116,25 @@ namespace SuccessHotelierHub
             }
         }
 
+        public static string UserRoleName
+        {
+            get
+            {
+                if (HttpContext.Current.Session["UserRoleName"] != null)
+                {
+                    return (string)HttpContext.Current.Session["UserRoleName"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["UserRoleName"] = value;
+            }
+        }
+
         public static bool HasRights(string userRightsCode)
         {
             if (UsersRoles != null)
@@ -137,6 +157,29 @@ namespace SuccessHotelierHub
                 }
                 return false;
             }
+        }
+
+        public static string GetUserRoleName(List<CurrentUserRoleVM> currentUserRoles)
+        {
+            string userRoleName = string.Empty;
+
+            if(currentUserRoles != null && currentUserRoles.Count > 0 )
+            {
+                if (currentUserRoles.Where(m => m.Code == "ADMIN").FirstOrDefault() != null)
+                {
+                    userRoleName = currentUserRoles.Where(m => m.Code == "ADMIN").FirstOrDefault().Name;
+                }
+                else if (currentUserRoles.Where(m => m.Code == "TUTOR").FirstOrDefault() != null)
+                {
+                    userRoleName = currentUserRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Name;
+                }
+                else if (currentUserRoles.Where(m => m.Code == "STUDENT").FirstOrDefault() != null)
+                {
+                    userRoleName = currentUserRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Name;
+                }
+            }
+
+            return userRoleName;
         }
 
     }
