@@ -115,7 +115,7 @@ function closeAlert() {
 }
 
 // Fuction for scroll body at given element
-function scrollToControl(control) {    
+function scrollToControl(control) {
     $('html,body').animate({ scrollTop: $('#' + control).offset().top }, 500);
 }
 
@@ -158,7 +158,7 @@ function onlyDigits(e) {
 
     if (!((key == 9) || (key == 8) || (key == 46) || (key >= 35 && key <= 40) || (key >= 48 && key <= 57) || (key >= 96 && key <= 105))) {
         e.preventDefault();
-    }  
+    }
 }
 
 function onlyNumeric(event) {
@@ -226,7 +226,7 @@ function ConvertDDMMYYYY_To_MMDDYYYY(inputDate, dateSeparator) {
     return trim(MM + dateSeparator + dd + dateSeparator + yyyy);
 }
 
-function GetDateObject(inputDateString, dateSeparator) {    
+function GetDateObject(inputDateString, dateSeparator) {
     if (IsNullOrEmpty(inputDateString)) { return null; }
 
     var dateParts = inputDateString.split(dateSeparator)
@@ -244,8 +244,7 @@ function GetDateObject(inputDateString, dateSeparator) {
 
 function GetDayOfWeek(day) {
     var weekDay = "";
-    switch (day)
-    {
+    switch (day) {
         case 0:
             weekDay = "Sunday";
             break;
@@ -279,7 +278,7 @@ function ParseJsonDate(date) {
     if (!IsNullOrEmpty(date)) {
         var dt = new Date(parseInt(date.substr(6)));
 
-       return GetDate(dt, DateFormat.DDMMYYYY);
+        return GetDate(dt, DateFormat.DDMMYYYY);
     }
     return "";
 }
@@ -297,7 +296,7 @@ function RemoveLastCharacter(item, char) {
     if (!IsNullOrEmpty(item)) {
         var lastChar = trim(item).slice(-1);
         if (lastChar == char) {
-            item = trim(item).slice(0, -1);            
+            item = trim(item).slice(0, -1);
         }
     }
 
@@ -306,9 +305,9 @@ function RemoveLastCharacter(item, char) {
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
-    d.setTime(d.getTime() +(exdays*24*60*60*1000));
-    var expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" +cvalue + ";" + expires + ";path=/";
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
 function getCookie(cname) {
@@ -335,11 +334,11 @@ function setCurrentMenu(menu, redirectUrl) {
 
     setTimeout(function () {
         redirectTo(redirectUrl);
-    },200);
-    
+    }, 200);
+
 }
 
-function LoadLeftSideMenu() {    
+function LoadLeftSideMenu() {
     var menu = getCookie('TopMenu');
 
     if (!IsNullOrEmpty(menu)) {
@@ -449,4 +448,8 @@ function ShowErrorMessage(statusCode, errorMessage) {
     } else {
         showToaster(errorMessage, ToasterType.ERROR);
     }
+}
+
+function openPageInNewWindow(url) {
+    window.open(url, "_blank");
 }
