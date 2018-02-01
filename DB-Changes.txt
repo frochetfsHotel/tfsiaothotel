@@ -16728,3 +16728,82 @@ BEGIN
 	ORDER BY SortOrder
 
 END
+
+/******************************************************************************************/
+
+
+/*******************************************************************************************************************
+	SP Name : GetRoomDetailsForRoomPlan
+	Comment   Changes in SP GetRoomDetailsForRoomPlan
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetRoomDetailsForRoomPlan]    Script Date: 2/1/2018 5:39:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetRoomDetailsForRoomPlan]
+			@RoomTypeId			=	NULL ,
+			@FloorId			=	'CF5B413D-BE1F-46EE-9267-DF6AFE5FAACC' ,
+			@RoomNo				=	'' ,
+			@StartDate			=	'',
+			@EndDate			=	''
+*/
+ALTER PROCEDURE [dbo].[GetRoomDetailsForRoomPlan]
+	@RoomTypeId			UNIQUEIDENTIFIER	=	NULL,
+	@FloorId			UNIQUEIDENTIFIER	=	NULL,
+	@RoomNo				NVARCHAR(255)		=	NULL,
+	@StartDate			NVARCHAR(15)		=	NULL,
+	@EndDate			NVARCHAR(15)		=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  TRY_PARSE(R.[RoomNo] AS INT) ASC, RT.RoomTypeCode ASC
+
+				) AS RowNum,
+				R.Id AS Id,
+				R.RoomTypeId AS RoomTypeId,
+				ISNULL(RT.RoomTypeCode,'') AS RoomTypeCode,
+				ISNULL(R.RoomNo,'') AS RoomNo,
+				ISNULL(R.[Type],'') AS [Type],
+				ISNULL(R.[Description],'') AS [Description],
+				R.StatusId AS RoomStatusId,
+				ISNULL(RS.[Name],'') AS RoomStatus,
+				ISNULL(RS.ColorCode,'') AS RoomStatusColor,
+				ISNULL(R.IsOccupied,0) AS IsOccupied
+			FROM [dbo].[Room] R 
+					INNER JOIN [dbo].[RoomType] RT ON R.RoomTypeId = RT.Id AND ISNULL(RT.IsDeleted,0) = 0
+					LEFT JOIN (SELECT DISTINCT RL.RoomId, RL.RoomStatusId
+									FROM ReservationLog RL 
+										INNER JOIN Reservation R ON R.Id = RL.ReservationId
+											AND ISNULL(R.IsDeleted,0) = 0
+									WHERE ISNULL(RL.IsDeleted,0) = 0 
+										AND ISNULL(RL.IsActive,0) = 1 
+										AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+										AND (
+												( CAST(RL.CheckInDate  AS DATE) BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE) )
+												OR 
+												( CAST(RL.CheckOutDate AS DATE) BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE) )
+										)
+								) AS RL 
+						ON RL.RoomId = R.Id
+					LEFT JOIN [dbo].[RoomStatus] RS ON RS.Id = (CASE WHEN RL.RoomStatusId IS NOT NULL THEN RL.RoomStatusId ELSE R.StatusId END)					
+						AND ISNULL(RS.IsDeleted,0) = 0  AND ISNULL(RS.IsActive,0) = 1 
+
+			WHERE	ISNULL(R.IsDeleted,0) = 0
+					AND (@RoomTypeId IS NULL OR R.RoomTypeId = @RoomTypeId)
+					AND (@FloorId IS NULL OR R.FloorId = @FloorId)
+					AND (ISNULL(@RoomNo,'') = '' OR R.RoomNo = @RoomNo)
+
+
+END
+
+
+
+

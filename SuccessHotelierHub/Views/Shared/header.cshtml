@@ -62,11 +62,19 @@
                     </a>
                 </li>
             }
-            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("TUTOR"))
+            @if (LogInManager.HasRights("ADMIN"))
             {
                 <li class="text-center topMenu" id="menuMasterScreen">
                     <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Home/Default")');">
                         <i class="fa fa-cc-mastercard font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Master Screens</span>
+                    </a>
+                </li>
+            }
+            @if (LogInManager.HasRights("TUTOR"))
+            {
+                <li class="text-center topMenu" id="menuManageStudents">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('ManageStudents','@Url.Content("~/Home/Default")');">
+                        <i class="fa fa-user-md font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Manage Students</span>
                     </a>
                 </li>
             }

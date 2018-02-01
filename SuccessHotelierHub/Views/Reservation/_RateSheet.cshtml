@@ -54,26 +54,27 @@
                     colorClass = "text-red";
                 }
 
-                nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\">{0}</td>",
+                nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\" data-availablerooms=\"{9}\">{0}</td>",
                     Utility.FormatAmountWithTwoDecimal(rateSheetDetail.Amount), rateType.Id, roomType.Id,
                     rateSheetDetail.Description,
                     rateSheetDetail.Id,
                     Utility.FormatAmountWithTwoDecimal(rateSheetDetail.Amount),
                     rateType.RateTypeCode,
                     roomType.RoomTypeCode,
-                    colorClass));
+                    colorClass,
+                    roomType.AvailableRooms));
             }
             else
             {
                 colorClass = "text-red";
-                nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\">{0}</td>",
+                nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\" data-availablerooms=\"{9}\">{0}</td>",
                     Utility.FormatAmountWithTwoDecimal(0), rateType.Id, roomType.Id,
                     string.Empty,
                     string.Empty,
                     Utility.FormatAmountWithTwoDecimal(0),
                     rateType.RateTypeCode,
                     roomType.RoomTypeCode,
-                    colorClass));
+                    colorClass, 0));
             }
         }
 

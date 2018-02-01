@@ -449,7 +449,7 @@
                         @Html.DropDownListFor(m => m.PaymentMethodId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
                                 "--Select Payment Method--",
-                                new { @class = "form-control" })
+                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
 
                         @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
                     </div>
@@ -995,8 +995,7 @@
         }
         
         if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
-
+            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();            
             if (paymentMethod != 'Cash') {
                 var creditCardNo = $('form#frmReservation #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
@@ -1417,6 +1416,25 @@
         //Remarks
         if (!IsNullOrEmpty('@Model.Remarks'))
             $('label[for="Remarks"]').addClass("label-bold");
+
+    }
+
+    function SelectPaymentMethod() {
+        if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
+            var paymentMethod = $('#PaymentMethodId option:selected').text();
+
+            if (paymentMethod == 'Cash') {
+                //Remove Label Bold.
+                $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
+                $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");
+                $('form#frmReservation label[for="CVVNo"]').removeClass("label-bold");
+            } else {
+                //Set Label Bold.
+                $('form#frmReservation label[for="CreditCardNo"]').addClass("label-bold");
+                $('form#frmReservation label[for="CardExpiryDate"]').addClass("label-bold");
+                $('form#frmReservation label[for="CVVNo"]').addClass("label-bold");
+            }
+        }
 
     }
 

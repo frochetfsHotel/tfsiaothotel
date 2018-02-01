@@ -143,11 +143,12 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
-        public List<RoomPlanRoomVM> GetRoomDetailsForRoomPlan(Guid? roomTypeId, string roomNo, string startDate, string endDate)
+        public List<RoomPlanRoomVM> GetRoomDetailsForRoomPlan(Guid? roomTypeId, Guid? floorId, string roomNo, string startDate, string endDate)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@FloorId", Value = floorId },
                     new SqlParameter { ParameterName = "@RoomNo", Value = roomNo },
                     new SqlParameter { ParameterName = "@StartDate", Value = startDate },
                     new SqlParameter { ParameterName = "@EndDate", Value = endDate }

@@ -377,7 +377,7 @@
                         @Html.DropDownListFor(m => m.PaymentMethodId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
                                 "--Select Payment Method--",
-                                new { @class = "form-control" })
+                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
                         @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
                     </div>
 
@@ -918,7 +918,7 @@
 
                 var errorText = "";
                 if (IsNullOrEmpty(creditCardNo)) {
-                    errorText += "Please enter credit card number." + Delimeter.BREAKLINE;                    
+                    errorText += "Please enter credit card number." + Delimeter.BREAKLINE;
                     blnValid = false;
                 }
 
@@ -931,12 +931,12 @@
                     errorText += "Please enter CVV No." + Delimeter.BREAKLINE;
                     blnValid = false;
                 }
-                
+
                 if (blnValid == false) {
                     showToaster(errorText, ToasterType.ERROR);
                     return false;
                 }
-            }
+            } 
         }
 
         if ($("#frmReservation").valid() == false) {
@@ -1138,6 +1138,25 @@
         $("form#frmAdvanceRoomSearch #btnSearch").click();
 
         $('#roomModal').modal('toggle');
+    }
+
+    function SelectPaymentMethod() {
+        if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
+            var paymentMethod = $('#PaymentMethodId option:selected').text();
+
+            if (paymentMethod == 'Cash') {
+                //Remove Label Bold.
+                $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
+                $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");
+                $('form#frmReservation label[for="CVVNo"]').removeClass("label-bold");
+            } else {
+                //Set Label Bold.
+                $('form#frmReservation label[for="CreditCardNo"]').addClass("label-bold");
+                $('form#frmReservation label[for="CardExpiryDate"]').addClass("label-bold");
+                $('form#frmReservation label[for="CVVNo"]').addClass("label-bold");
+            }
+        }
+
     }
 
     window.onbeforeunload = function () {

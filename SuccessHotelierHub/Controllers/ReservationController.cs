@@ -893,7 +893,7 @@ namespace SuccessHotelierHub.Controllers
                     prevDate = model.StartDate.Value.AddDays(-7).ToString("dd/MM/yyyy");
                 }
 
-                var roomDetails = roomRepository.GetRoomDetailsForRoomPlan(model.RoomTypeId, model.Rooms, startDate, endDate);
+                var roomDetails = roomRepository.GetRoomDetailsForRoomPlan(model.RoomTypeId, model.FloorId, model.Rooms, startDate, endDate);
                 ViewBag.RoomDetail = roomDetails;
 
                 ViewBag.Dates = dates;

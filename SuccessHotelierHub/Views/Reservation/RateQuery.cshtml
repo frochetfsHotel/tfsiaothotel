@@ -574,24 +574,38 @@
     function showRateInfo(element) {
         if (element) {
 
-            var rateTypeId = $(element).data("ratetypeid");
-            var roomTypeId = $(element).data("roomtypeid");
-            var id = $(element).data("id");
-            var description = $(element).data("description");
-            var amount = $(element).data("amount");
-            var ratetypecode = $(element).data("ratetypecode");
-            var roomtypecode = $(element).data("roomtypecode");
+            var availableRooms = $(element).data("availablerooms");
+            if (!IsNullOrEmpty(availableRooms) && parseInt(availableRooms) > 0) {
 
-            $('#RateTypeId').val(rateTypeId);
-            $('#RoomTypeId').val(roomTypeId);
-            $('#hdnRoomTypeRateTypeMappingId').val(id);
-            $('#txtRateInfo').val(description);
-            $('#lblSelectedPrice').html(amount);
-            $('#Amount').val(amount);
-            $('#RateTypeCode').val(ratetypecode);
-            $('#RoomTypeCode').val(roomtypecode);
+                var rateTypeId = $(element).data("ratetypeid");
+                var roomTypeId = $(element).data("roomtypeid");
+                var id = $(element).data("id");
+                var description = $(element).data("description");
+                var amount = $(element).data("amount");
+                var ratetypecode = $(element).data("ratetypecode");
+                var roomtypecode = $(element).data("roomtypecode");
 
-            goToByScroll("divRateInfo");
+
+                $('#RateTypeId').val(rateTypeId);
+                $('#RoomTypeId').val(roomTypeId);
+                $('#hdnRoomTypeRateTypeMappingId').val(id);
+                $('#txtRateInfo').val(description);
+                $('#lblSelectedPrice').html(amount);
+                $('#Amount').val(amount);
+                $('#RateTypeCode').val(ratetypecode);
+                $('#RoomTypeCode').val(roomtypecode);
+
+                goToByScroll("divRateInfo");
+            } else {
+                $('#RateTypeId').val('');
+                $('#RoomTypeId').val('');
+                $('#hdnRoomTypeRateTypeMappingId').val('');
+                $('#txtRateInfo').val('');
+                $('#lblSelectedPrice').html('');
+                $('#Amount').val('');
+                $('#RateTypeCode').val('');
+                $('#RoomTypeCode').val('');
+            }
         }
     }
 

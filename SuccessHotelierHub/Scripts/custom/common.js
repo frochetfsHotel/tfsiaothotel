@@ -366,6 +366,10 @@ function LoadLeftSideMenu() {
             $('#MenusMasterScreens').show();
             $('#menuMasterScreen').addClass('active');
         }
+        else if (menu == "ManageStudents") {
+            $('#MenusManageStudents').show();
+            $('#menuManageStudents').addClass('active');
+        }
     }
 }
 

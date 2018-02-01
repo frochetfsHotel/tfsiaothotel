@@ -70,329 +70,330 @@
             <li><a href="@Url.Action("SearchGuest","Cashiering")"><i class="fa fa-credit-card"></i>Billing</a></li>
         </ul>
 
-        @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("TUTOR"))
+        @if (LogInManager.HasRights("ADMIN"))
         {
             <ul class="sidebar-menu tree leftsidemenu" id="MenusMasterScreens" data-widget="tree" style="display:none;">
-                @if (LogInManager.HasRights("ADMIN"))
-                {
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-group" aria-hidden="true"></i> Preference Group
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("Create", "PreferenceGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                            <li><a href="@Url.Action("List", "PreferenceGroup")"><i class="fa fa-search"></i> Search </a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-cog" aria-hidden="true"></i> Preference
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("Create", "Preference")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                            <li><a href="@Url.Action("List", "Preference")"><i class="fa fa-search"></i> Search </a></li>
-                        </ul>
-                    </li>
+                
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-group" aria-hidden="true"></i> Preference Group
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "PreferenceGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "PreferenceGroup")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-cog" aria-hidden="true"></i> Preference
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "Preference")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "Preference")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-circle-o"></i> Rate Type
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("Create", "RateType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                            <li><a href="@Url.Action("List", "RateType")"><i class="fa fa-search"></i> Search</a></li>
-                        </ul>
-                    </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-circle-o"></i> Rate Type
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "RateType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "RateType")"><i class="fa fa-search"></i> Search</a></li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-building-o" aria-hidden="true"></i> Floor
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("Create", "Floor")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                            <li><a href="@Url.Action("List", "Floor")"><i class="fa fa-search"></i> Search </a></li>
-                        </ul>
-                    </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-building-o" aria-hidden="true"></i> Floor
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "Floor")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "Floor")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-sitemap"></i> Room Master
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-bed" aria-hidden="true"></i> Room Type
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "RoomType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "RoomType")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-bath" aria-hidden="true"></i> Room
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "Room")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "Room")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-500px" aria-hidden="true"></i> Room Features
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "RoomFeatures")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "RoomFeatures")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-sitemap"></i> Room Master
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-bed" aria-hidden="true"></i> Room Type
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "RoomType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "RoomType")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-bath" aria-hidden="true"></i> Room
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "Room")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "Room")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-500px" aria-hidden="true"></i> Room Features
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "RoomFeatures")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "RoomFeatures")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
 
-                    <li>
-                        <a href="@Url.Action("ManagePrice", "Rate")">
-                            <i class="fa fa-money" aria-hidden="true"></i> Manage Price
-                        </a>
-                    </li>
+                <li>
+                    <a href="@Url.Action("ManagePrice", "Rate")">
+                        <i class="fa fa-money" aria-hidden="true"></i> Manage Price
+                    </a>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-book"></i> Reservations Master
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-book" aria-hidden="true"></i> Reservation Type
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "ReservationType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "ReservationType")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-cube" aria-hidden="true"></i> Package
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "Package")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "Package")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-book"></i> Reservations Master
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-book" aria-hidden="true"></i> Reservation Type
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "ReservationType")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "ReservationType")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-cube" aria-hidden="true"></i> Package
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "Package")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "Package")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
 
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-map-pin" aria-hidden="true"></i> Market
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "Market")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "Market")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-map-pin" aria-hidden="true"></i> Market
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "Market")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "Market")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
 
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-ticket" aria-hidden="true"></i> Reservation Source
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "ReservationSource")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "ReservationSource")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-ticket" aria-hidden="true"></i> Reservation Source
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "ReservationSource")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "ReservationSource")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
 
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-credit-card" aria-hidden="true"></i> Payment Method
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "PaymentMethod")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "PaymentMethod")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-times-circle-o" aria-hidden="true"></i> Cancellation Reason
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "ReservationCancellationReason")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "ReservationCancellationReason")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-credit-card" aria-hidden="true"></i> Payment Method
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "PaymentMethod")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "PaymentMethod")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-times-circle-o" aria-hidden="true"></i> Cancellation Reason
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "ReservationCancellationReason")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "ReservationCancellationReason")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-plus-circle" aria-hidden="true"></i> Additional Charges
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("Create", "AdditionalCharge")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                            <li><a href="@Url.Action("List", "AdditionalCharge")"><i class="fa fa-search"></i> Search </a></li>
-                        </ul>
-                    </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> Additional Charges
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "AdditionalCharge")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "AdditionalCharge")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-flag-checkered" aria-hidden="true"></i> Nationality
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("Create", "Nationality")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                            <li><a href="@Url.Action("List", "Nationality")"><i class="fa fa-search"></i> Search </a></li>
-                        </ul>
-                    </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-flag-checkered" aria-hidden="true"></i> Nationality
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "Nationality")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "Nationality")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-location-arrow"></i> Locations
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-flag" aria-hidden="true"></i> Country
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "Country")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "Country")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-location-arrow"></i> Locations
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-flag" aria-hidden="true"></i> Country
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "Country")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "Country")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
 
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-flag-o" aria-hidden="true"></i> State
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "State")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "State")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-flag-o" aria-hidden="true"></i> State
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "State")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "State")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
 
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-building" aria-hidden="true"></i> City
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "City")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "City")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-building" aria-hidden="true"></i> City
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "City")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "City")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
 
-                        </ul>
-                    </li>
+                    </ul>
+                </li>
 
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-user-md"></i> User Settings
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-cogs" aria-hidden="true"></i> User Role
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "UserRole")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "UserRole")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-user-o" aria-hidden="true"></i> User
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="@Url.Action("Create", "User")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                    <li><a href="@Url.Action("List", "User")"><i class="fa fa-search"></i> Search </a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="@Url.Action("List", "Tutor")">
-                                    <i class="fa fa-graduation-cap" aria-hidden="true"></i> Tutor
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                }
-            
-                @if (LogInManager.HasRights("TUTOR"))
-                {
-                    <li>
-                        <a href="@Url.Action("ViewStudent", "Tutor")">
-                            <i class="fa fa-user-o" aria-hidden="true"></i> View Student
-                        </a>
-                    </li>
-                }
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-user-md"></i> User Settings
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-cogs" aria-hidden="true"></i> User Role
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "UserRole")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "UserRole")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-user-o" aria-hidden="true"></i> User
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "User")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "User")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("List", "Tutor")">
+                                <i class="fa fa-graduation-cap" aria-hidden="true"></i> Tutor
+                            </a>
+                        </li>
+                    </ul>
+                </li>                
 
             </ul>
         }
+        @if (LogInManager.HasRights("TUTOR"))
+        {
+            <ul class="sidebar-menu tree leftsidemenu" id="MenusManageStudents" data-widget="tree" style="display:none;">
+                <li>
+                    <a href="@Url.Action("ViewStudent", "Tutor")">
+                        <i class="fa fa-user-o" aria-hidden="true"></i> View Student
+                    </a>
+                </li>
+            </ul>
+        }
+            
+        
     </section>
     <!-- /.sidebar -->
 </aside>
