@@ -231,6 +231,45 @@ namespace SuccessHotelierHub.Controllers
                     dtDepartureDate = model.CheckInDate.Value.AddDays(reservation.NoOfNight);
                     reservation.DepartureDate = dtDepartureDate;
 
+                    #region Check Room Availability
+
+                    if (!string.IsNullOrWhiteSpace(model.RoomNumbers))
+                    {
+                        var roomNumbers = model.RoomNumbers.Split(',');
+
+                        if (roomNumbers != null)
+                        {
+                            //Remove Duplication.
+                            roomNumbers = roomNumbers.Distinct().ToArray();
+
+                            foreach (var roomNo in roomNumbers)
+                            {
+                                SearchAdvanceRoomParametersVM searchRoomModel = new SearchAdvanceRoomParametersVM();
+                                searchRoomModel.ArrivalDate = reservation.ArrivalDate;
+                                searchRoomModel.DepartureDate = reservation.DepartureDate;
+                                searchRoomModel.RoomNo = roomNo;
+                                searchRoomModel.IsClean = true;
+
+                                var availableRoomList = roomRepository.SearchAdvanceRoom(searchRoomModel);
+
+                                if (availableRoomList == null || availableRoomList.Count == 0)
+                                {
+                                    return Json(new
+                                    {
+                                        IsSuccess = false,
+                                        errorMessage = string.Format("Selected Room # : {0} already booked. Please select other room.", roomNo)
+                                    }, JsonRequestBehavior.AllowGet);
+                                }
+
+                            }
+                        }
+                    }
+
+                   
+
+                    #endregion
+
+
                     string CheckInTimeText = model.CheckInTimeText;
                     TimeSpan checkInTime = new TimeSpan();
                     if (!string.IsNullOrWhiteSpace(CheckInTimeText))

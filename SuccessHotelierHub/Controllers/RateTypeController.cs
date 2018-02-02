@@ -324,6 +324,25 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public ActionResult GetRateTypeDetailsByRoomType(Guid roomTypeId, bool isWeekEndPrice = false)
+        {
+            try
+            {
+                var rateTypes = rateTypeRepository.GetRateTypeDetailsByRoomType(roomTypeId, isWeekEndPrice);
+
+                return Json(new
+                {
+                    IsSuccess = true,                    
+                    data = rateTypes
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         public bool CheckRateTypeCodeAvailable(Guid? rateTypeId, string rateTypeCode)
         {
             bool blnAvailable = true;

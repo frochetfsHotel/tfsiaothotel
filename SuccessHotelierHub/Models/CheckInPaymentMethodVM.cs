@@ -38,7 +38,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Expiration Date")]
         public string CardExpiryDate { get; set; }
 
-        [DisplayName("Room")]
+        [DisplayName("Room #")]
         public string RoomNumbers { get; set; }
 
         public string RoomIds { get; set; }

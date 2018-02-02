@@ -250,6 +250,7 @@
     <Compile Include="Models\AdditionalChargeVM.cs" />
     <Compile Include="Models\BillingInfoVM.cs" />
     <Compile Include="Models\BillingTransactionReportVM.cs" />
+    <Compile Include="Models\BulkReservationVM.cs" />
     <Compile Include="Models\ChangePasswordVM.cs" />
     <Compile Include="Models\CheckInCheckOutVM.cs" />
     <Compile Include="Models\CheckInPaymentMethodVM.cs" />
@@ -292,6 +293,7 @@
     <Compile Include="Models\RoomVM.cs" />
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
+    <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
@@ -2053,11 +2055,12 @@
     <Content Include="Views\Tutor\Edit.cshtml" />
     <Content Include="Views\Tutor\ViewStudent.cshtml" />
     <Content Include="Views\Tutor\ViewActivity.cshtml" />
+    <Content Include="Views\Common\BulkReservation.cshtml" />
+    <Content Include="Views\Common\_ShowBulkReservationList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\AccountController\" />
-    <Folder Include="Views\Common\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

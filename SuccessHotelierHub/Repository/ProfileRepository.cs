@@ -165,5 +165,22 @@ namespace SuccessHotelierHub.Repository
 
             return profiles;
         }
+
+        public List<IndividualProfileVM> GetIndividualProfiles(string lastName, string firstName)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@LastName", Value = lastName },
+                    new SqlParameter { ParameterName = "@FirstName", Value = firstName },
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetIndividualProfiles", parameters);
+
+
+            var profiles = new List<IndividualProfileVM>();
+            profiles = DALHelper.CreateListFromTable<IndividualProfileVM>(dt);
+
+            return profiles;
+        }
     }
 }

@@ -163,133 +163,12 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                string reservationId = string.Empty;
-
-                model.CreatedBy = LogInManager.LoggedInUserId;
-
-                string ETAText = model.ETAText;
-                if (!string.IsNullOrWhiteSpace(ETAText))
-                {
-                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                    string date = (todayDate + " " + ETAText);
-                    DateTime time = Convert.ToDateTime(date);
-
-                    model.ETA = time.TimeOfDay;
-                }
-
-                #region Generate Confirmation No
                 string confirmationNo = string.Empty;
-                Int64 confirmationSuffix = 1;
 
-                var lastReservation = reservationRepository.GetLastReservationByDate(null);
+                confirmationNo = CreateReservation(model);
 
-                if (lastReservation != null)
+                if (!string.IsNullOrWhiteSpace(confirmationNo))
                 {
-                    string lastConfirmationNo = lastReservation.ConfirmationNumber;
-                    if (!string.IsNullOrWhiteSpace(lastConfirmationNo))
-                    {
-                        confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : DefaultConfirmationNo;
-
-                        confirmationNo = confirmationSuffix.ToString();
-                    }
-                    else
-                    {
-                        confirmationNo = DefaultConfirmationNo.ToString();
-                    }
-                }
-                else
-                {
-                    //Default confirmation no.
-                    confirmationNo = DefaultConfirmationNo.ToString();
-                }
-
-                model.ConfirmationNumber = confirmationNo;
-
-                #endregion
-
-                double totalPrice = (double)(model.Rate * model.NoOfNight);
-                model.TotalPrice = Math.Round(totalPrice,2);
-                model.TotalBalance = Math.Round(totalPrice, 2);
-
-                reservationId = reservationRepository.AddReservation(model);
-
-                if (!string.IsNullOrWhiteSpace(reservationId))
-                {
-                    #region Save Reservation Room Mapping
-                    var roomIds = model.RoomIds;
-
-                    if (!string.IsNullOrWhiteSpace(roomIds))
-                    {
-                        var roomIdsArr = roomIds.Split(',');
-
-                        if (roomIdsArr != null)
-                        {
-                            //Remove Duplication.
-                            roomIdsArr = roomIdsArr.Distinct().ToArray();
-
-                            foreach (var item in roomIdsArr)
-                            {
-                                //Save Reservation Room Mapping.
-                                ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
-                                reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
-                                reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
-                                reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
-                                reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
-
-                                roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
-
-                                #region Remove Existing reservation if room status are dirty.
-
-                                var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
-
-                                if (reservationLog != null)
-                                {
-                                    //Delete Reservation.
-                                    reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
-
-                                    //Delete Reservation Room Mapping.
-                                    roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
-
-                                    //Delete Reservation Log.
-                                    reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
-                                }
-
-                                #endregion Remove Existing reservation if room status are dirty.
-                            }
-                        }
-                    }
-                    #endregion
-
-                    #region Save Reservation Preference Mapping
-                    var preferenceItems = model.PreferenceItems;
-
-                    if (!string.IsNullOrWhiteSpace(preferenceItems))
-                    {
-                        var preferenceItemsArr = preferenceItems.Split(',');
-
-                        if (preferenceItemsArr != null)
-                        {
-                            //Remove Duplication.
-                            preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
-
-                            foreach (var item in preferenceItemsArr)
-                            {
-                                //Save Reservation Preference Mapping.
-                                ReservationPreferenceMappingVM reservationPreferenceMapping = new ReservationPreferenceMappingVM();
-                                reservationPreferenceMapping.PreferenceId = Guid.Parse(item);
-                                reservationPreferenceMapping.ReservationId = Guid.Parse(reservationId);
-                                reservationPreferenceMapping.CreatedBy = LogInManager.LoggedInUserId;
-
-                                preferenceRepository.AddReservationPreferenceMapping(reservationPreferenceMapping);
-                            }
-                        }
-                    }
-                    #endregion
-
-                    #region Record Activity Log
-                    RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Created new reservation, Confirmation# : {0}", model.ConfirmationNumber));
-                    #endregion
-
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
 
@@ -739,6 +618,142 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public string CreateReservation(ReservationVM model)
+        {
+            string reservationId = string.Empty;
+            string confirmationNo = string.Empty;
+
+            model.CreatedBy = LogInManager.LoggedInUserId;
+
+            string ETAText = model.ETAText;
+            if (!string.IsNullOrWhiteSpace(ETAText))
+            {
+                string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                string date = (todayDate + " " + ETAText);
+                DateTime time = Convert.ToDateTime(date);
+
+                model.ETA = time.TimeOfDay;
+            }
+
+            #region Generate Confirmation No            
+            Int64 confirmationSuffix = 1;
+
+            var lastReservation = reservationRepository.GetLastReservationByDate(null);
+
+            if (lastReservation != null)
+            {
+                string lastConfirmationNo = lastReservation.ConfirmationNumber;
+                if (!string.IsNullOrWhiteSpace(lastConfirmationNo))
+                {
+                    confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : DefaultConfirmationNo;
+
+                    confirmationNo = confirmationSuffix.ToString();
+                }
+                else
+                {
+                    confirmationNo = DefaultConfirmationNo.ToString();
+                }
+            }
+            else
+            {
+                //Default confirmation no.
+                confirmationNo = DefaultConfirmationNo.ToString();
+            }
+
+            model.ConfirmationNumber = confirmationNo;
+
+            #endregion
+
+            double totalPrice = (double)(model.Rate * model.NoOfNight);
+            model.TotalPrice = Math.Round(totalPrice, 2);
+            model.TotalBalance = Math.Round(totalPrice, 2);
+
+            reservationId = reservationRepository.AddReservation(model);
+
+            if (!string.IsNullOrWhiteSpace(reservationId))
+            {
+                model.Id = Guid.Parse(reservationId);
+
+                #region Save Reservation Room Mapping
+                var roomIds = model.RoomIds;
+
+                if (!string.IsNullOrWhiteSpace(roomIds))
+                {
+                    var roomIdsArr = roomIds.Split(',');
+
+                    if (roomIdsArr != null)
+                    {
+                        //Remove Duplication.
+                        roomIdsArr = roomIdsArr.Distinct().ToArray();
+
+                        foreach (var item in roomIdsArr)
+                        {
+                            //Save Reservation Room Mapping.
+                            ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
+                            reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
+                            reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+
+                            #region Remove Existing reservation if room status are dirty.
+
+                            var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+
+                            if (reservationLog != null)
+                            {
+                                //Delete Reservation.
+                                reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                //Delete Reservation Room Mapping.
+                                roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                //Delete Reservation Log.
+                                reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                            }
+
+                            #endregion Remove Existing reservation if room status are dirty.
+                        }
+                    }
+                }
+                #endregion
+
+                #region Save Reservation Preference Mapping
+                var preferenceItems = model.PreferenceItems;
+
+                if (!string.IsNullOrWhiteSpace(preferenceItems))
+                {
+                    var preferenceItemsArr = preferenceItems.Split(',');
+
+                    if (preferenceItemsArr != null)
+                    {
+                        //Remove Duplication.
+                        preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+
+                        foreach (var item in preferenceItemsArr)
+                        {
+                            //Save Reservation Preference Mapping.
+                            ReservationPreferenceMappingVM reservationPreferenceMapping = new ReservationPreferenceMappingVM();
+                            reservationPreferenceMapping.PreferenceId = Guid.Parse(item);
+                            reservationPreferenceMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationPreferenceMapping.CreatedBy = LogInManager.LoggedInUserId;
+
+                            preferenceRepository.AddReservationPreferenceMapping(reservationPreferenceMapping);
+                        }
+                    }
+                }
+                #endregion
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Created new reservation, Confirmation# : {0}", model.ConfirmationNumber));
+                #endregion
+                
+            }
+
+            return confirmationNo;
+        }
+        
         #endregion
 
         #region Rate Query

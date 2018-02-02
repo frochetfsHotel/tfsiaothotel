@@ -1,0 +1,275 @@
+﻿@using SuccessHotelierHub.Models
+@using SuccessHotelierHub.Repository
+@{
+    var sourceRedirectionParam = "";
+
+    sourceRedirectionParam = (string)ViewData["Source"];
+
+    PreferenceRepository preferenceRepository = new PreferenceRepository();
+
+    var profiles = (List<IndividualProfileVM>)ViewData["ProfileList"];
+}
+
+@if (profiles != null && profiles.Count > 0)
+{
+    int rowNumber = 0;
+    <div class="table-responsive" id="divReservationList">
+        <table class="table table-bordered table-hover table-striped" id="tblBulkReservation">
+            <thead>
+                <tr>
+                    <th class="width_3">#</th>
+                    <th class="width_2"></th>
+                    <th class="width_10">Last Name</th>
+                    <th class="width_10">First Name</th>
+                    <th class="width_15">Arrival</th>
+                    <th class="width_15">Departure</th>
+                    <th class="width_8">No. Of Nights</th>
+                    <th class="width_12">Room #</th>
+                    <th class="width_15">Rate Type</th>
+                    <th class="width_10">Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var profile in profiles)
+                {
+                    rowNumber = rowNumber + 1;
+                    var preferenceItems = "";
+
+                    #region Preference Mapping
+                    //Get Preference Mapping
+                    var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(profile.ProfileTypeId, profile.Id, null);
+
+                    if (selectedPreferences != null && selectedPreferences.Count > 0)
+                    {
+                        preferenceItems = String.Join(",", selectedPreferences.Select(m => m.PreferenceId).ToArray());
+                    }
+
+                    #endregion
+
+                    <tr data-row-id="@profile.Id" data-lastname="@profile.LastName" data-firstname="@profile.FirstName"
+                        data-titleid="@profile.TitleId" data-countryid="@profile.CountryId">
+                        <td>@rowNumber</td>
+                        <td>
+                            <label class="container1" for="@("chkIsAddReservation_" + profile.Id)">
+                                <input type="checkbox" id="@("chkIsAddReservation_" + profile.Id)"
+                                       name="@("chkIsAddReservation_" + profile.Id)" checked value="@profile.Id" />
+                                <span class="checkmark"></span>
+                            </label>
+                            <input type="hidden" id="@("PreferenceItems_"+ profile.Id)" name="@("PreferenceItems_"+ profile.Id)" value="@preferenceItems" />
+                        </td>
+                        <td>@profile.LastName</td>
+                        <td>@profile.FirstName</td>
+                        <td>
+                            <div class="input-group date">
+                                <input type="text" id="@("ArrivalDate_"+ profile.Id)"
+                                       name="@("ArrivalDate_"+ profile.Id)"
+                                       class="form-control arrivalDatePicker" placeholder="dd/MM/yyyy" 
+                                       onchange="arrivalDateChanged(this);"/>
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group date">
+                                <input type="text" id="@("DepartureDate_"+ profile.Id)"
+                                       name="@("DepartureDate_"+ profile.Id)"
+                                       class="form-control departureDatePicker" placeholder="dd/MM/yyyy"
+                                       onchange="departureDateChanged(this);" />
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" id="@("NoOfNight_" + profile.Id)" name="@("NoOfNight_" + profile.Id)"
+                                   class="form-control" value="1" onkeydown="onlyDigits(event)"
+                                   onchange="noOfNightsChanged(this);" />
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" id="@("RoomNumber_" + profile.Id)" name="@("RoomNumber_" + profile.Id)"
+                                       class="form-control" placeholder="Room #" readonly="readonly" />
+                                <div class="input-group-addon cursor-P" onclick="openRoomSearchModal('@profile.Id');">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                            </div>
+                            <input type="hidden" id="@("RoomId_" + profile.Id)" name="@("RoomId_" + profile.Id)" />
+                            <input type="hidden" id="@("RoomTypeId_" + profile.Id)" name="@("RoomTypeId_" + profile.Id)" />
+                            <input type="hidden" id="@("IsWeekEndPrice_" + profile.Id)" name="@("IsWeekEndPrice_" + profile.Id)" />
+                        </td>
+                        <td>
+                            <select class="form-control" id="@("RateType_" + profile.Id)"
+                                    name="@("RateType_" + profile.Id)" onchange="GetRateTypeAmount(this);">
+                                <option value="" data-ratecode="" data-rateamount="0">--Select Rate Type--</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" id="@("Rate_" + profile.Id)" name="@("Rate_" + profile.Id)"
+                                   class="form-control" placeholder="Rate" />
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h4>No profiles found.</h4>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //Date picker
+        $('.arrivalDatePicker').datepicker({
+            startDate: new Date(),
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+
+
+        $('.departureDatePicker').datepicker({
+            startDate: new Date(),
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+
+        //Default Date.
+        //$(".arrivalDatePicker").datepicker("setDate", new Date());
+        setDefaultArrivalAndDepartureDates();
+
+    });
+
+    function setDefaultArrivalAndDepartureDates() {
+        var dt = new Date();
+
+        $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
+            var rowId = $(this).attr("data-row-id");
+            debugger;
+            if (!IsNullOrEmpty(rowId)) {
+                $('#ArrivalDate_' + rowId).datepicker("setDate", dt);
+            }
+            dt.setDate(dt.getDate() + 2);
+        });
+    }
+
+    function arrivalDateChanged(element) {
+        debugger;
+        var selectedDate = $(element).val();
+        var rowId = $(element).closest("td").closest("tr").attr("data-row-id");
+
+        console.log("arrivalDateChanged : " + selectedDate);
+
+        if(!IsNullOrEmpty(rowId)) {
+            var noOfNight = $('#NoOfNight_' + rowId).val();
+
+            if (IsNullOrEmpty(noOfNight) || parseInt(noOfNight) == 0) {
+                noOfNight = 1;
+                $('#NoOfNight_' + rowId).val(noOfNight);
+            }
+
+            var objSelectedArrivalDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            var weekDay = objSelectedArrivalDate.getDay();
+            var dayOfWeek = GetDayOfWeek(weekDay);
+
+            //Is Week End.
+            if (dayOfWeek == 'Sunday' || dayOfWeek == 'Monday') {
+                $('#IsWeekEndPrice_' + rowId).val(true);
+            } else {
+                $('#IsWeekEndPrice_' + rowId).val(false);
+            }
+            
+
+            var dt = objSelectedArrivalDate;
+            if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
+                dt.setDate(objSelectedArrivalDate.getDate() + parseInt(noOfNight));
+            } else {
+                dt.setDate(objSelectedArrivalDate.getDate() + 1);
+            }
+
+            if (dt != null) {
+                $("#DepartureDate_" + rowId).datepicker("setDate", dt);
+            }
+        }
+    }
+
+    function departureDateChanged(element) {        
+        var selectedDate = $(element).val();
+
+        var rowId = $(element).closest("td").closest("tr").attr("data-row-id");
+        if (!IsNullOrEmpty(rowId)) {
+
+            var arrivalDate = $('#ArrivalDate_' + rowId).val();
+            var departureDate = $('#DepartureDate_' + rowId).val();
+
+            var noOfNight = 1;
+            if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
+
+                var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+                var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
+
+
+                var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());
+                var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                if (!IsNullOrEmpty(diffDays)) {
+                    noOfNight = diffDays > 0 ? diffDays : 1;
+                }
+
+                $('#NoOfNight_' + rowId).val(noOfNight);
+            }
+        }
+    }
+
+    function noOfNightsChanged(element) {        
+        var rowId = $(element).closest("td").closest("tr").attr("data-row-id");
+        if (!IsNullOrEmpty(rowId)) {
+            var arrivalDate = $('#ArrivalDate_' + rowId).val();
+            var noOfNight = $('#NoOfNight_' + rowId).val();
+
+            var departureDate = '';
+            if (!IsNullOrEmpty(arrivalDate)) {
+
+                //Get Date Objects from dd/MM/yyyy date.
+                var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+
+                var dt = objArrivalDate;
+                if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
+                    dt.setDate(objArrivalDate.getDate() + parseInt(noOfNight));
+                } else {
+                    dt.setDate(objArrivalDate.getDate() + 1);
+                }
+
+                if (dt != null) {
+                    //$("#DepartureDate_" + rowId).datepicker("minDate", objArrivalDate);
+                    $("#DepartureDate_" + rowId).datepicker("setDate", dt);
+                }
+            }
+        }
+    }
+
+    function GetRateTypeAmount(element) {        
+        var rateTypeId = $(element).val();
+
+
+        if (!IsNullOrEmpty(rateTypeId)) {
+
+            var rowId = $(element).closest("td").closest("tr").attr("data-row-id");
+
+            var rateCode = $("#RateType_" + rowId + " option:selected").attr("data-ratecode");
+            var rateAmount = $("#RateType_" + rowId + " option:selected").attr("data-rateamount");
+            
+            $('#Rate_' + rowId).val(rateAmount);
+        }
+    }
+
+</script>

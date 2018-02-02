@@ -20,6 +20,7 @@
     <input type="hidden" id="hdnNoOfRoomsUptoSelect" name="hdnNoOfRoomsUptoSelect" />
     <input type="hidden" id="hdnSelectedRoomIds" name="hdnSelectedRoomIds" value="" />
     <input type="hidden" id="hdnSelectedRoomNumbers" name="hdnSelectedRoomNumbers" value="" />
+    <input type="hidden" id="hdnRowNumber" name="hdnRowNumber" value="" />
     <!-- Hidden Field-->
 
 
@@ -250,7 +251,7 @@
 
                             reservationId = result[i].ReservationId;
                             
-                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " data-roomstatus=\'" + statusName + "\' data-reservationid=\'" + reservationId + "\' /> <span class=\'checkmark\'></span></label></td>";
+                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " data-roomstatus=\'" + statusName + "\' data-reservationid=\'" + reservationId + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/> <span class=\'checkmark\'></span></label></td>";
                             
 
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomNo + "</td>";

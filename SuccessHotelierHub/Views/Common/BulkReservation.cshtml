@@ -1,0 +1,386 @@
+﻿@using SuccessHotelierHub.Models
+@{
+    ViewBag.Title = "Bulk Reservation";
+}
+
+<section class="content-header">
+    <h1>
+        Bulk Reservation <small>Add</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Bulk Reservation</li>
+        <li class="active">Add</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Bulk Reservation Details</h3>
+        </div>
+        <form class="frmBulkReservation" id="frmBulkReservation" name="frmBulkReservation"
+              nctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label for="LastName" class="">Last Name</label>
+                            <input type="text" id="LastName" name="LastName" class="form-control" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="FirstName" class="">First Name</label>
+                            <input type="text" id="FirstName" name="FirstName" class="form-control" />
+                        </div>
+                        <div class="col-md-4 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchBulkReservationList();">
+                                Search
+                            </button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearData()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+
+                <div class="col-xs-12 padding-zero m-t" id="divBulkReservationList">
+               
+                </div>
+                <div class="col-xs12 text-right m-t-lg m-b-sm" style="display:none;" id="divButtons">
+                    <button type="button" class="btn btn-success" id="btnSave" onclick="createBulkReservation();">Create Bulk Reservations</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Room Modal Popup START -->
+<div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Search</h4>
+            </div>
+            <div class="modal-body modal-body_padding">
+                @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "BulkReservation" },
+                                    { "RoomType", ViewBag.RoomTypeList },
+                                    { "RoomFeatures", ViewBag.RoomFeaturesList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Room Modal Popup END -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        searchBulkReservationList();
+
+        //Room
+        $('.btnAdvanceSearchRoomOk').click(function (e) {
+            var roomNumbers = "";
+            var roomIds = "";
+            var roomTypeId = "";
+
+            var selectedNoOfRooms = $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").length;
+            var noOfRoom = 1;
+            var rowNumber = $('form#frmAdvanceRoomSearch #hdnRowNumber').val();
+
+            if (!IsNullOrEmpty(selectedNoOfRooms)) {
+
+                if (noOfRoom != selectedNoOfRooms) {
+                    showToaster("Please select only " + noOfRoom + " room details.", ToasterType.ERROR);
+                    return false;
+                }
+
+                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {
+                    //get selected room.
+                    roomNumbers = $(this).data("roomno");
+                    roomIds = $(this).val();
+                    roomTypeId = $(this).data("roomtypeid");
+                });
+
+                if (!IsNullOrEmpty(roomNumbers)) {
+
+                    $('form#frmBulkReservation #RoomNumber_' + rowNumber).val(roomNumbers);
+                    $('form#frmBulkReservation #RoomId_' + rowNumber).val(roomIds);
+                    $('form#frmBulkReservation #RoomTypeId_' + rowNumber).val(roomTypeId);
+
+                    //Popuplate Rate Types.
+                    BindRateType(rowNumber);
+
+                    //Close Room Search Modal.
+                    CloseModal("roomModal");
+                }
+            }
+        });
+    });
+
+    function searchBulkReservationList() {
+        var firstName = $('#FirstName').val();
+        var lastName = $('#LastName').val();
+
+        //Ajax request to get bulk reservation details.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Common/SearchBulkReservationList")',
+            type: 'GET',
+            data: { lastName: lastName, firstName: firstName },
+            success: function (response) {
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    $('form#frmBulkReservation #divBulkReservationList').html();
+                    $('form#frmBulkReservation #divBulkReservationList').html(response);
+                    $('form#frmBulkReservation #divButtons').show();
+                }
+            }
+        });
+    }
+
+    function clearData() {
+        $('#FirstName').val('');
+        $('#LastName').val('');
+
+        searchBulkReservationList();
+    }
+
+    function openRoomSearchModal(id) {
+
+        clearRoomSearch();
+
+        $("form#frmAdvanceRoomSearch #ArrivalDate").datepicker("setDate", GetDateObject($('form#frmBulkReservation #ArrivalDate_' + id).val(), DateSeprator.SLASH));
+        $("form#frmAdvanceRoomSearch #DepartureDate").datepicker("setDate", GetDateObject($('form#frmBulkReservation #DepartureDate_' + id).val(), DateSeprator.SLASH));
+
+        $("form#frmAdvanceRoomSearch #NoOfNight").val($('form#frmBulkReservation #NoOfNight_' + id).val());
+
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmBulkReservation #RoomId_' + id).val());
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('form#frmBulkReservation #RoomNumber_' + id).val());
+        $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val(1);
+        $("form#frmAdvanceRoomSearch #hdnRowNumber").val(id);
+
+        $("form#frmAdvanceRoomSearch #btnSearch").click();
+
+        OpenModal("roomModal", true);
+    }
+
+    function BindRateType(id) {
+        if (!IsNullOrEmpty(id)) {
+                        
+            var roomTypeId = $('form#frmBulkReservation #RoomTypeId_' + id).val();
+            var isWeekEndPrice = $('form#frmBulkReservation #IsWeekEndPrice_' + id).val();
+
+            if (isWeekEndPrice == 'true' || isWeekEndPrice == 'True') { isWeekEndPrice = true; } else { isWeekEndPrice = false; }
+
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RateType/GetRateTypeDetailsByRoomType")',
+                type: 'GET',
+                data: {
+                    roomTypeId: roomTypeId,
+                    isWeekEndPrice: isWeekEndPrice
+                },
+                success: function (result) {                    
+                    if (!IsNullOrEmpty(result)) {
+                        
+                        var optionHtml = "";
+                        optionHtml += "<option value='' data-ratecode='' data-rateamount='0'>-- Select Rate Type --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].RateTypeId + "' data-ratecode='" + result.data[i].RateTypeCode + "' data-rateamount='" + result.data[i].Amount + "'>" + result.data[i].RateTypeCode + "</option>";
+                            }
+                        }
+
+                        $('form#frmBulkReservation #RateType_' + id).html(optionHtml);
+                    }
+                }
+            });
+        }
+    }
+
+    function validateBulkReservation() {        
+        var blnValid = true;
+        var errorText = "";
+
+        var rowNumber = 0;
+
+        $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
+            var rowId = $(this).attr("data-row-id");
+
+            rowNumber = rowNumber + 1;
+            
+
+            if (!IsNullOrEmpty(rowId)) {
+                var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
+
+                if (isAddReservation) {
+
+                    var errorMessage = "";
+
+                    var arrivalDate = $('#ArrivalDate_' + rowId).val();
+                    var departureDate = $('#DepartureDate_' + rowId).val();
+                    var roomNumber = $('#RoomNumber_' + rowId).val();
+                    var roomId = $('#RoomId_' + rowId).val();
+                    var rateTypeId = $('#RateType_' + rowId).val();
+                    var rate = $('#Rate_' + rowId).val();
+
+                    if (IsNullOrEmpty(arrivalDate)) {
+                        errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
+                    else if (IsNullOrEmpty(departureDate)) {
+                        errorMessage += "Please select departure date." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    } 
+                    else {
+                        var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+                        var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
+
+                        if (objDepartureDate < objArrivalDate) {
+                            errorMessage += "Arrival date should be less than departure date." + Delimeter.BREAKLINE;
+                            blnValid = false;
+                        }
+                    }
+
+                    if (IsNullOrEmpty(roomNumber) || IsNullOrEmpty(roomId)) {
+                        errorMessage += "Please select room number." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
+
+                    if (IsNullOrEmpty(rateTypeId)) {
+                        errorMessage += "Please select rate type." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
+
+                    if (IsNullOrEmpty(rate)) {
+                        errorMessage += "Please select rate." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
+
+                    if (blnValid == false) {
+                        errorText += "Row # : " + rowNumber + Delimeter.BREAKLINE;
+                        errorText += "------------" + Delimeter.BREAKLINE;
+                        errorText += errorMessage;
+                        errorText += Delimeter.BREAKLINE;
+                    }
+                }
+            }
+        });
+
+        if (blnValid == false) {
+            showToaster(errorText, ToasterType.ERROR);
+            return false;
+        }
+
+        return blnValid;
+    }
+
+    function createBulkReservation() {
+
+        if (validateBulkReservation()) {
+            var listReservation = [];
+
+            $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
+                var rowId = $(this).attr("data-row-id");
+                var lastName = $(this).attr("data-lastname");
+                var firstName = $(this).attr("data-firstname");
+                var titleId = $(this).attr("data-titleid");
+                var countryId = $(this).attr("data-countryid");
+
+                if (!IsNullOrEmpty(rowId)) {
+
+                    var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
+                    if (isAddReservation) {
+                        var isWeekEndPrice = $('#IsWeekEndPrice_' + rowId).val();
+
+                        if (isWeekEndPrice == 'true' || isWeekEndPrice == 'True') { isWeekEndPrice = true; } else { isWeekEndPrice = false; }
+
+                        var modelReservation = {};
+
+                        modelReservation.ProfileId = rowId;
+                        modelReservation.LastName = lastName;
+                        modelReservation.FirstName = firstName;
+                        modelReservation.TitleId = titleId;
+                        modelReservation.CountryId = countryId;
+
+                        modelReservation.ArrivalDate = $('#ArrivalDate_' + rowId).val();
+                        modelReservation.DepartureDate = $('#DepartureDate_' + rowId).val();
+                        modelReservation.NoOfNight = $('#NoOfNight_' + rowId).val();
+                        modelReservation.RoomNumber = $('#RoomNumber_' + rowId).val();
+                        modelReservation.RoomId = $('#RoomId_' + rowId).val();
+                        modelReservation.RoomTypeId = $('#RoomTypeId_' + rowId).val();
+                        modelReservation.IsWeekEndPrice = isWeekEndPrice;
+                        modelReservation.RateTypeId = $('#RateType_' + rowId).val();
+                        modelReservation.Rate = $('#Rate_' + rowId).val();
+                        modelReservation.PreferenceItems = $('#PreferenceItems_' + rowId).val();
+                        modelReservation.IsActive = true;
+
+                        listReservation.push(modelReservation);
+                    }
+
+                }
+            });
+
+            if (listReservation != null && listReservation.length > 0) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/Common/BulkReservation")',
+                    type: 'POST',
+                    data: { models: listReservation },
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            console.log("BulkReservation : OnSuccess() = " + response.data);
+                           
+                            showToaster("Bulk reservation created successfully.", ToasterType.SUCCESS);
+
+                            $('#divBulkReservationList').html('');
+                            $('#divButtons').hide();
+                        }
+                        return false;
+                    }
+                });
+            } else {
+                showToaster("Please select at lease one profile to create reservation.", ToasterType.ERROR);
+                return false;
+            }
+        }
+        
+    }
+
+    
+
+</script>

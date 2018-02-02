@@ -5,6 +5,7 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Models.StoredProcedure;
 
 namespace SuccessHotelierHub.Repository
 {
@@ -129,6 +130,22 @@ namespace SuccessHotelierHub.Repository
             rateType = DALHelper.CreateListFromTable<RateTypeVM>(dt);
 
             return rateType;
+        }
+
+        public List<RateTypeDetailsByRoomTypeResultVM> GetRateTypeDetailsByRoomType(Guid roomTypeId, bool isWeekEndPrice)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = isWeekEndPrice }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRateTypeDetailsByRoomType", parameters);
+
+            var rateTypes = new List<RateTypeDetailsByRoomTypeResultVM>();
+            rateTypes = DALHelper.CreateListFromTable<RateTypeDetailsByRoomTypeResultVM>(dt);
+
+            return rateTypes;
         }
 
         #endregion

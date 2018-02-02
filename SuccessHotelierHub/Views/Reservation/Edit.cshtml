@@ -655,7 +655,7 @@
             <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/RoomType/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
-                                    { "Source", "CreateReservation" },
+                                    { "Source", "EditReservation" },
                                     { "RateType", ViewBag.RateTypeList }
                                 })
             </div>
@@ -677,7 +677,7 @@
             <div class="modal-body modal-body_padding">
                 @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
                         new ViewDataDictionary {
-                                    { "Source", "CreateReservation" },
+                                    { "Source", "EditReservation" },
                                     { "RoomType", ViewBag.RoomTypeList },
                                     { "RoomFeatures", ViewBag.RoomFeaturesList }
                                 })
@@ -1213,9 +1213,12 @@
 
         //$("form#frmAdvanceRoomSearch #ArrivalDate").val($('form#frmReservation #ArrivalDate').val());
         //$("form#frmAdvanceRoomSearch #DepartureDate").val($('form#frmReservation #DepartureDate').val());
-        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmReservation #RoomIds').val());
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmReservation #RoomIds').val());        
         $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('form#frmReservation #RoomNumbers').val());
         $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val($('form#frmReservation #NoOfRoom').val());
+
+        $("form#frmAdvanceRoomSearch #IsClean").prop("checked", false);
+        $("form#frmAdvanceRoomSearch #IsDirty").prop("checked", false);
 
         $("form#frmAdvanceRoomSearch #btnSearch").click();
 

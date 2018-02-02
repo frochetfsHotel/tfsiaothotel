@@ -16805,5 +16805,66 @@ BEGIN
 END
 
 
+/*****************************************************************************************************/
 
+Name : Nilesh
+Date : 02-FEB-2018
+
+
+/*******************************************************************************************************************
+	SP Name : GetIndividualProfiles
+	Comment   Create SP GetIndividualProfiles
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetIndividualProfiles]    Script Date: 2/2/2018 12:00:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetIndividualProfiles]
+	@LastName	NVARCHAR(1000)	=	NULL,
+	@FirstName	NVARCHAR(1000)	=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[IndividualProfile]
+		WHERE	ISNULL(IsDeleted,0) = 0 AND ISNULL(IsActive,0) = 1
+				AND (ISNULL(@LastName,'') = '' OR [LastName] LIKE '%' + @LastName + '%')
+				AND (ISNULL(@FirstName,'') = '' OR [FirstName] LIKE '%' + @FirstName + '%')
+				
+		
+END
+
+/*******************************************************************************************************************
+	SP Name : GetRateTypeDetailsByRoomType
+	Comment   Create SP GetRateTypeDetailsByRoomType
+*******************************************************************************************************************/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetRateTypeDetailsByRoomType]
+	@RoomTypeId			UNIQUEIDENTIFIER				,
+	@IsWeekEndPrice		BIT					=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT	RAT.Id AS RateTypeId, RAT.RateTypeCode,ISNULL(RAT.[Description],'') AS RateTypeDescription,
+			ISNULL(RTRTM.Amount,0) AS Amount
+
+	FROM [dbo].[RoomTypeRateTypeMapping] RTRTM
+		INNER JOIN [dbo].[RoomType] ROT ON RTRTM.RoomTypeId = ROT.Id
+			AND ISNULL(ROT.IsDeleted,0) = 0 
+		INNER JOIN [dbo].[RateType] RAT ON RTRTM.RateTypeId = RAT.Id
+			AND ISNULL(RAT.IsDeleted,0) = 0 
+
+	WHERE ISNULL(RTRTM.IsDeleted,0) = 0
+		AND RTRTM.RoomTypeId = @RoomTypeId
+		AND ISNULL(RTRTM.IsWeekEndPrice,0) = ISNULL(@IsWeekEndPrice,0)
+				
+		
+END
 
