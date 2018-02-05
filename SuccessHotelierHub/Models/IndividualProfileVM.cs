@@ -54,7 +54,10 @@ namespace SuccessHotelierHub.Models
 
         [Display(Name = "Passport #")]
         public string PassportNo { get; set; }
-        
+
+        [DisplayName("Date of Birth")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DOB { get; set; }
         public bool IsMailingList { get; set; }
         public string Remarks { get; set; }

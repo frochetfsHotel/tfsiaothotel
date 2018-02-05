@@ -564,7 +564,7 @@ namespace SuccessHotelierHub.Controllers
             model.ProfileId = reservation.ProfileId;
             model.Title = title.Title;
             model.Name = (profile.FirstName + ' ' + profile.LastName);
-            model.Address = "";
+            model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
             model.RoomNumer = roomNumbers;
             model.FolioNumber = "";
             model.CashierNumber = "";
