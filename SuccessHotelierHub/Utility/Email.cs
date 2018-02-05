@@ -17,7 +17,7 @@ namespace SuccessHotelierHub.Utility
 {
     public class Email
     {
-        public static void sendMail(string mTo, string mSubject, string mBody, string attachmentName = "", bool hasAttachment = false, byte[] pdfBytes = null)
+        public static bool sendMail(string mTo, string mSubject, string mBody, string attachmentName = "", bool hasAttachment = false, byte[] pdfBytes = null)
         {
             try
             {
@@ -70,10 +70,13 @@ namespace SuccessHotelierHub.Utility
                 smtp.Credentials = basicAuthenticationInfo;
 
                 smtp.Send(mailObject);
+
+                return true;
             }
             catch (Exception ex)
             {
                 Utility.LogError(ex, "sendMail");
+                return false;
             }
         }
 
@@ -116,6 +119,7 @@ namespace SuccessHotelierHub.Utility
             catch (Exception ex)
             {   
                 Utility.LogError(ex, "sendMailTemplate");
+                throw ex;
             }
         }
 

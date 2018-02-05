@@ -807,13 +807,24 @@ namespace SuccessHotelierHub.Controllers
                 {
                     string fileName = string.Format("FolioReport-Reservation-{0}.pdf", model.ConfirmationNo);
 
-                    SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg, fileName, true, pdfBytes);
+                    bool blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg, fileName, true, pdfBytes);
 
-                    return Json(new
+                    if (blnMailSend)
                     {
-                        IsSuccess = true,
-                        SuccessMsg = result
-                    });
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            SuccessMsg = result
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = "Email sending fail."
+                        });
+                    }
                 }
                 else
                 {
