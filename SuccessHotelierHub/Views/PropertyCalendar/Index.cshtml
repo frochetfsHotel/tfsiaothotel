@@ -1,0 +1,200 @@
+﻿@using SuccessHotelierHub.Utility
+@{
+    ViewBag.Title = "Index";
+    
+    var currentMonthNo = DateTime.Now.Month;
+    var currentYear = DateTime.Now.Year;
+
+    var monthName = Utility.GetShortMonthName(currentMonthNo);
+}
+
+<style type="text/css">
+    #tblCalendar td{
+        /*padding:20px;*/
+        text-align:center;
+    }
+    .currentDay{
+        background-color:#f5f5f5;
+    }
+</style>
+
+
+<section class="content-header">
+    <h1>
+        Calendar <small>View</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Calendar</li>
+        <li class="active">View</li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Property Calendar Details</h3>
+        </div>
+        <form class="frmCalendar" id="frmCalendar" name="frmCalendar"
+              nctype="multipart/form-data" method="post">
+            <!-- HIDDEN FIELD -->
+            <input type="hidden" id="hdnPrevYear" name="hdnPrevYear" value="@(currentYear - 1)" />
+            <input type="hidden" id="hdnNextYear" name="hdnNextYear" value="@(currentYear + 1)" />
+            <input type="hidden" id="hdnYear" name="hdnYear" value="@(currentYear)" />
+            <input type="hidden" id="hdnMonthNo" name="hdnMonthNo" value="@(currentMonthNo)" />
+            <!-- HIDDEN FIELD -->
+
+
+            <div class="box-body box-body-list">
+                
+                <div class="pt_10 pl_10 pr_10">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="tblCalendarHeader">
+                                    <tr>
+                                        <td colspan="12" class="text-center">
+                                            <span id="spnMonthAndYear">@monthName @currentYear</span>
+                                        </td>
+                                        <td colspan="2" class="text-center">
+                                            Year
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center" data-monthno="1" >
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(1);">Jan</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="2">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(2);">Feb</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="3">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(3);">Mar</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="4">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(4);">Apr</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="5">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(5);">May</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="6">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(6);">Jun</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="7">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(7);">Jul</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="8">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(8);">Aug</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="9">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(9);">Sep</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="10">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(10);">Oct</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="11">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(11);">Nov</a> 
+                                        </td>
+                                        <td class="text-center" data-monthno="12">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(12);">Dec</a> 
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0);" title="Prev"><i class="fa fa-angle-left next_prev_btn" onclick="ShowPrevYearCalendar();"></i></a>
+                                            
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0);" title="Next"><i class="fa fa-angle-right next_prev_btn" onclick="ShowNextYearCalendar();"></i></a>
+                                            
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="divCalendar">
+                        @Html.Partial("_Calendar",
+                                new ViewDataDictionary {
+                                    { "Month", currentMonthNo },
+                                    { "Year", currentYear }
+                                })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table#tblCalendarHeader tr td[data-monthno='@currentMonthNo'").addClass("label-bold");        
+    });
+
+    function ShowPrevYearCalendar() {
+        var year = $('#hdnPrevYear').val();
+        var month = 1;
+
+        loadCalendar(year, month, false);
+    }
+
+    function ShowNextYearCalendar() {
+        var year = $('#hdnNextYear').val();
+        var month = 1;
+
+        loadCalendar(year, month, false);
+    }
+
+    function ShowMonthCalendar(monthNo) {
+        var year = $('#hdnYear').val();
+        var month = monthNo;
+
+        loadCalendar(year, month, true);
+    }
+
+    function loadCalendar(year, month, isCurrentYear) {
+        //Ajax Request to fetch Property Calendar.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/PropertyCalendar/ShowCalendar")',
+            type: 'POST',
+            data: { year: year, month: month },
+            success: function (response) {                
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    $('#divCalendar').html('');
+                    $('#divCalendar').html(response);
+
+                    //Remove bold label.
+                    $("table#tblCalendarHeader tr td[data-monthno!='" + month + "']").removeClass("label-bold");
+
+                    //Add bold label to current selected month.
+                    $("table#tblCalendarHeader tr td[data-monthno='" + month + "']").addClass("label-bold");
+
+                    var monthName = GetShortMonthName(month);
+
+                    $('#spnMonthAndYear').html(monthName + Delimeter.SPACE + year);
+
+                    if (isCurrentYear == false) {
+                        //For Prev. & Next Years.
+                        $('#hdnPrevYear').val(parseInt(year) - 1);
+                        $('#hdnNextYear').val(parseInt(year) + 1);
+                        $('#hdnYear').val(parseInt(year));
+                        $('#hdnMonthNo').val(parseInt(month));
+                    } else {
+                        //For Current Year.
+                        $('#hdnMonthNo').val(parseInt(month));
+                    }
+                }
+            }
+        });
+    }
+</script>
