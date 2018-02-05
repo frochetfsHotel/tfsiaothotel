@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
+using System.IO;
 
 namespace SuccessHotelierHub.Controllers
 {
@@ -36,7 +37,7 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult SearchGuest()
         {
-            var charges = additionalChargeRepository.GetAdditionalCharges();            
+            var charges = additionalChargeRepository.GetAdditionalCharges();
             ViewBag.AdditionalChargeList = charges;
 
 
@@ -97,7 +98,7 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
-        
+
 
         [HttpPost]
         public ActionResult GetBillingInfo(Guid reservationId, string source = "")
@@ -144,7 +145,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Rate Type
 
                 var rateType = new RateTypeVM();
-                if(reservation.RateCodeId.HasValue)
+                if (reservation.RateCodeId.HasValue)
                     rateType = rateTypeRepository.GetRateTypeById(reservation.RateCodeId.Value).FirstOrDefault();
 
                 #endregion
@@ -171,13 +172,13 @@ namespace SuccessHotelierHub.Controllers
                 model.Company = string.Empty;
                 model.GroupId = reservation.GroupId;
                 model.Group = string.Empty;
-                
+
                 model.RoomIds = roomIds;
                 model.RoomNumbers = roomNumbers;
 
                 model.RateCodeId = reservation.RateCodeId;
                 model.RateCode = rateType.RateTypeCode;
-                model.Rate= reservation.Rate;
+                model.Rate = reservation.Rate;
                 model.RoomRent = reservation.TotalPrice;
 
                 model.RoomTypeId = reservation.RoomTypeId;
@@ -217,7 +218,7 @@ namespace SuccessHotelierHub.Controllers
                     model.IsCheckedOut = false;
                     //model.Status = "DUE OUT";
                 }
-                
+
                 model.Transactions = transactions;
 
 
@@ -269,7 +270,7 @@ namespace SuccessHotelierHub.Controllers
                         roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
                     }
                 }
-                
+
                 #endregion
 
                 CheckOutPaymentMethodVM model = new CheckOutPaymentMethodVM();
@@ -277,7 +278,7 @@ namespace SuccessHotelierHub.Controllers
                 model.ReservationId = reservation.Id;
                 model.ProfileId = reservation.ProfileId;
 
-                model.CheckOutDate = reservation.DepartureDate;                
+                model.CheckOutDate = reservation.DepartureDate;
 
                 model.NoOfRoom = reservation.NoOfRoom;
                 model.Name = Convert.ToString(reservation.LastName + " " + reservation.FirstName).Trim();
@@ -309,11 +310,11 @@ namespace SuccessHotelierHub.Controllers
 
                 var checkInDetails = checkInCheckOutRepository.GetCheckInDetails(model.ReservationId, model.ProfileId.Value).FirstOrDefault();
 
-                if(checkInDetails != null)
+                if (checkInDetails != null)
                 {
                     string CheckOutTimeText = model.CheckOutTimeText;
                     TimeSpan checkOutTime = new TimeSpan();
-                    
+
                     if (!string.IsNullOrWhiteSpace(CheckOutTimeText))
                     {
                         string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
@@ -364,7 +365,7 @@ namespace SuccessHotelierHub.Controllers
                                 {
                                     ////Update Room Occupied Flag.
                                     //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
-                                    
+
                                     ////Update Room Status DIRTY to CLEAN.
                                     //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
 
@@ -523,7 +524,7 @@ namespace SuccessHotelierHub.Controllers
                     roomIds += string.Format("{0},", room.RoomId);
                     roomNumbers += string.Format("{0}, ", room.RoomNo);
                 }
-                
+
                 if (!string.IsNullOrWhiteSpace(roomNumbers))
                 {
                     //Remove Last Comma.
@@ -542,7 +543,7 @@ namespace SuccessHotelierHub.Controllers
 
             var profile = new IndividualProfileVM();
 
-            if(reservation.ProfileId.HasValue)
+            if (reservation.ProfileId.HasValue)
                 profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value).FirstOrDefault();
 
             #endregion
@@ -550,17 +551,18 @@ namespace SuccessHotelierHub.Controllers
             #region Title 
 
             var title = new TitleVM();
-            if(profile.TitleId.HasValue)
+            if (profile.TitleId.HasValue)
                 title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
 
             #endregion
 
             double total = 0;
-            double roomRent = 0;            
+            double roomRent = 0;
             double totalBalance = 0;
             double balanceDue = 0;
 
             model.Id = reservation.Id;
+            model.ConfirmationNo = reservation.ConfirmationNumber;
             model.ProfileId = reservation.ProfileId;
             model.Title = title.Title;
             model.Name = (profile.FirstName + ' ' + profile.LastName);
@@ -599,9 +601,9 @@ namespace SuccessHotelierHub.Controllers
                 //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
 
                 //Room Rent
-                if(item.Code == "1000")
+                if (item.Code == "1000")
                     roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
-                
+
             }
 
 
@@ -612,15 +614,15 @@ namespace SuccessHotelierHub.Controllers
             model.Other = 0;
             model.Total = total;
             model.Room = roomRent;
-            model.TotalBalance = Math.Round(totalBalance,2);
-            model.BalanceDue = Math.Round(balanceDue,2);
+            model.TotalBalance = Math.Round(totalBalance, 2);
+            model.BalanceDue = Math.Round(balanceDue, 2);
 
             if (totalBalance > 0)
             {
                 double netAmount = 0;
-                netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)),2);
+                netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
 
-                model.VATAmount = Math.Round((totalBalance - netAmount),2);
+                model.VATAmount = Math.Round((totalBalance - netAmount), 2);
                 model.NetAmount = netAmount;
             }
 
@@ -637,5 +639,198 @@ namespace SuccessHotelierHub.Controllers
 
             //return View(model);
         }
+
+        #region SEND EMAIL
+
+        public ActionResult SendEmail(Guid? Id, string email)
+        {
+            try
+            {
+                string result = "Email sent successfully!";
+                if (Id == null)
+                {
+                    result = "No GUID found";
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = result
+                    });
+                }
+
+
+                BillingTransactionReportVM model = new BillingTransactionReportVM();
+
+                var reservation = reservationRepository.GetReservationById(Id.Value).FirstOrDefault();
+
+                #region Room Mapping
+
+                //Get Room Mapping
+                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null);
+                var roomIds = string.Empty;
+                var roomNumbers = string.Empty;
+
+                if (selectedRooms != null && selectedRooms.Count > 0)
+                {
+                    foreach (var room in selectedRooms)
+                    {
+                        roomIds += string.Format("{0},", room.RoomId);
+                        roomNumbers += string.Format("{0}, ", room.RoomNo);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(roomNumbers))
+                    {
+                        //Remove Last Comma.
+                        roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                    }
+                }
+                #endregion
+
+                #region Reservation Charges
+
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null);
+
+                #endregion
+
+                #region Profile
+
+                var profile = new IndividualProfileVM();
+
+                if (reservation.ProfileId.HasValue)
+                    profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value).FirstOrDefault();
+
+                #endregion
+
+                #region Title 
+
+                var title = new TitleVM();
+                if (profile.TitleId.HasValue)
+                    title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
+
+                #endregion
+
+                double total = 0;
+                double roomRent = 0;
+                double totalBalance = 0;
+                double balanceDue = 0;
+
+                model.Id = reservation.Id;
+                model.ConfirmationNo = reservation.ConfirmationNumber;
+                model.ProfileId = reservation.ProfileId;
+                model.Title = title.Title;
+                model.Name = (profile.FirstName + ' ' + profile.LastName);
+                model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+                model.RoomNumer = roomNumbers;
+                model.FolioNumber = "";
+                model.CashierNumber = "";
+                model.PageNumber = "1";
+                model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
+                model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
+                model.GSTRegistrationNumber = "";
+
+                model.VATTax = 9; //Default 9%.
+
+                model.Transactions = transactions;
+
+                //Get Amount.
+
+                double checkOutPaidPayment = 0;
+                foreach (var item in transactions)
+                {
+                    int qty = 1;
+
+                    if (item.Qty.HasValue)
+                        qty = item.Qty.Value;
+
+                    if (item.Code != "9004")  //Check out
+                    {
+                        totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+                    else
+                    {
+                        checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
+                    }
+
+                    //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
+
+                    //Room Rent
+                    if (item.Code == "1000")
+                        roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
+
+                }
+
+
+                //Balance Due
+                balanceDue = totalBalance - Math.Abs(checkOutPaidPayment);
+
+                model.FandB = 0;
+                model.Other = 0;
+                model.Total = total;
+                model.Room = roomRent;
+                model.TotalBalance = Math.Round(totalBalance, 2);
+                model.BalanceDue = Math.Round(balanceDue, 2);
+
+                if (totalBalance > 0)
+                {
+                    double netAmount = 0;
+                    netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
+
+                    model.VATAmount = Math.Round((totalBalance - netAmount), 2);
+                    model.NetAmount = netAmount;
+                }
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Send folio report email.");
+                #endregion
+
+
+                //HTML generation
+                string html = Utility.Utility.RenderPartialViewToString((Controller)this, "Preview", model);
+
+                //HTML to PDF
+                byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+                string bodyMsg = "";
+                using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/SendFolioReport.html")))
+                {
+                    bodyMsg = sr.ReadToEnd();
+                    bodyMsg = bodyMsg.Replace("[@UserName]", model.Name);
+                    bodyMsg = bodyMsg.Replace("[@ConfirmationNo]", model.ConfirmationNo);
+                }
+
+                //Send Email.
+                string EmailSubject = "Folio Report for Reservation - " + model.ConfirmationNo;
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    string fileName = string.Format("FolioReport-Reservation-{0}.pdf", model.ConfirmationNo);
+
+                    SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg, fileName, true, pdfBytes);
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        SuccessMsg = result
+                    });
+                }
+                else
+                {
+                    result = "No Email found";
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = result
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = ex.Message
+                });
+            }
+        }
+
+        #endregion
     }
 }

@@ -17055,3 +17055,13 @@ BEGIN
 		
 END
 
+/************** Email Config Setting (Add below setting inside "appSettings" tag) ************/
+
+<!-- Email Setting -->    
+<add key="mailAccount" value="admin@tfshotelierhub.com" />
+<add key="mailPassword" value="123456" />
+<add key="SmtpServer" value="mail.tfshotelierhub.com" />
+<add key="MailFrom" value="admin@tfshotelierhub.com" />
+<add key="Admin" value="nilesh.sonkusare@techavidus.com" />
+<!-- Email Setting -->
+

@@ -339,6 +339,7 @@
     <Compile Include="Repository\VipRepository.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utility\DALHelper.cs" />
+    <Compile Include="Utility\Email.cs" />
     <Compile Include="Utility\HMTLHelperExtensions.cs" />
     <Compile Include="Utility\HotelierHubAuthorize.cs" />
     <Compile Include="Utility\LoginManager.cs" />
@@ -350,6 +351,7 @@
     <Content Include="Content\css\AdminLTE\select2\select2.png" />
     <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Content\img\invoice_logo.jpg" />
+    <Content Include="HtmlTemplates\SendFolioReport.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>
@@ -1902,7 +1904,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

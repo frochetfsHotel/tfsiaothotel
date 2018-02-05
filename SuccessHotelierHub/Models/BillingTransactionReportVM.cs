@@ -32,6 +32,7 @@ namespace SuccessHotelierHub.Models
         public double VATTax { get; set; }
         public double VATAmount { get; set; }
         
+        public string ConfirmationNo { get; set; }
 
         public string GSTRegistrationNumber { get; set; }
 
