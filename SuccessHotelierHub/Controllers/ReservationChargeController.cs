@@ -95,6 +95,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Create");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             } 
        }
@@ -180,6 +181,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "AddCharges");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

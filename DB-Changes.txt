@@ -17065,3 +17065,213 @@ END
 <add key="Admin" value="nilesh.sonkusare@techavidus.com" />
 <!-- Email Setting -->
 
+
+/****************** Create new table : ErrorLog ****************/
+
+/****** Object:  Table [dbo].[ErrorLog]    Script Date: 2/5/2018 5:54:42 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ErrorLog](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PageUrl]	[nvarchar](max) NULL,
+	[MethodName] [nvarchar](max) NULL,
+	[ErrorMessage] [nvarchar](max) NULL,
+	[TargetSite] [nvarchar](max) NULL,
+	[CreatedDateTime] [datetime] NULL,
+	[StackTrace] [nvarchar](max) NULL,
+	[InnerException] [nvarchar](max) NULL,
+ CONSTRAINT [PK_ErrorLog] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ErrorLog] SET (LOCK_ESCALATION = AUTO)
+GO
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddErrorLog
+	Comment   Create SP AddErrorLog
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddErrorLog]    Script Date: 1/31/2018 5:51:12 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddErrorLog]	
+	@PageUrl			NVARCHAR(MAX)		=	NULL	,		
+	@MethodName			NVARCHAR(MAX)		=	NULL	,		
+	@ErrorMessage		NVARCHAR(MAX)		=	NULL	,
+	@TargetSite			NVARCHAR(MAX)		=	NULL	,
+	@StackTrace			NVARCHAR(MAX)		=	NULL	,
+	@InnerException		NVARCHAR(MAX)		=	NULL	,
+	@CreatedDateTime	DATETIME			=	NULL		
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ErrorLog]
+           ([PageUrl]           		   
+           ,[MethodName]		
+		   ,[ErrorMessage]
+		   ,[TargetSite]
+		   ,[StackTrace]	
+		   ,[InnerException]	   
+		   ,[CreatedDateTime])
+     VALUES
+           (
+			   @PageUrl					      
+			   ,@MethodName		
+			   ,@ErrorMessage
+			   ,@TargetSite
+			   ,@StackTrace	   
+			   ,@InnerException
+			   ,@CreatedDateTime
+           )
+		   
+   SELECT SCOPE_IDENTITY() AS Id
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchErroLog
+	Comment   Create SP SearchErroLog
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[SearchErroLog]    Script Date: 2/5/2018 6:18:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchErroLog] '', NULL, 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchErroLog]			
+	@Error			NVARCHAR(MAX)	=	NULL	,	
+	@Date			DATETIME	=	NULL	,			
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempErrorLog
+	(
+			[RowNum]			INT					NOT NULL
+		,	[Id]				INT					NULL		
+		,   [PageUrl]			NVARCHAR(MAX)		NULL	
+		,   [MethodName]		NVARCHAR(MAX)		NULL
+		,   [ErrorMessage]		NVARCHAR(MAX)		NULL
+		,   [TargetSite]		NVARCHAR(MAX)		NULL
+		,   [StackTrace]		NVARCHAR(MAX)		NULL
+		,   [InnerException]	NVARCHAR(MAX)		NULL			
+		,	[CreatedDateTime]	NVARCHAR(25)		NULL		
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[ErrorLog]
+						WHERE	 (ISNULL(@Error,'') = '' OR CONCAT([ErrorMessage],[InnerException]) LIKE '%'+ @Error +'%')  
+								AND (@Date IS NULL OR CAST([CreatedDateTime] AS DATE)= CAST(@Date AS DATE))  
+						)
+
+
+		INSERT INTO #tempErrorLog 
+		(
+			[RowNum]			, 
+			[Id]				, 
+			[PageUrl]			, 
+			[MethodName]		,
+			[ErrorMessage]		, 
+			[TargetSite]		, 
+			[StackTrace]		, 
+			[InnerException]	, 
+			[CreatedDateTime]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedDateTime' and @SortDirection = 'asc'
+							THEN [CreatedDateTime] END ASC,
+						CASE WHEN @SortColumn = 'CreatedDateTime' and @SortDirection = 'desc'
+							THEN [CreatedDateTime] END DESC,
+
+						CASE WHEN @SortColumn = 'PageUrl' and @SortDirection = 'asc'
+							THEN [PageUrl] END ASC,
+						CASE WHEN @SortColumn = 'PageUrl' and @SortDirection = 'desc'
+							THEN [PageUrl] END DESC,
+
+						CASE WHEN @SortColumn = 'MethodName' and @SortDirection = 'asc'
+							THEN [MethodName] END ASC,
+						CASE WHEN @SortColumn = 'MethodName' and @SortDirection = 'desc'
+							THEN [MethodName] END DESC,
+
+						CASE WHEN @SortColumn = 'ErrorMessage' and @SortDirection = 'asc'
+							THEN [ErrorMessage] END ASC,
+						CASE WHEN @SortColumn = 'ErrorMessage' and @SortDirection = 'desc'
+							THEN [ErrorMessage] END DESC,
+
+						CASE WHEN @SortColumn = 'InnerException' and @SortDirection = 'asc'
+							THEN [InnerException] END ASC,
+						CASE WHEN @SortColumn = 'InnerException' and @SortDirection = 'desc'
+							THEN [InnerException] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Id] END DESC
+
+				) AS RowNum,
+				[Id]				,								
+				[PageUrl]			, 
+				[MethodName]		,
+				[ErrorMessage]		, 
+				[TargetSite]		, 
+				[StackTrace]		, 
+				[InnerException]	, 
+				CONVERT(varchar(12),[CreatedDateTime],103) AS [CreatedDateTime]
+		FROM [dbo].[ErrorLog]
+			WHERE	 (ISNULL(@Error,'') = '' OR CONCAT([ErrorMessage],[InnerException]) LIKE '%'+ @Error +'%')  
+					AND (@Date IS NULL OR CAST([CreatedDateTime] AS DATE)= CAST(@Date AS DATE))  
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]				,														
+			temp.[PageUrl]			, 
+			temp.[MethodName]		,
+			temp.[ErrorMessage]		, 
+			temp.[TargetSite]		, 
+			temp.[StackTrace]		, 
+			temp.[InnerException]	, 
+			temp.[CreatedDateTime]	,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempErrorLog AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+END

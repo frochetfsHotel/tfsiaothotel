@@ -62,6 +62,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Create");
                 return Json(new
                 {
                     IsSuccess = false,
@@ -118,6 +119,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Edit");
                 return Json(new
                 {
                     IsSuccess = false,
@@ -157,6 +159,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Delete");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -206,6 +209,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Search");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

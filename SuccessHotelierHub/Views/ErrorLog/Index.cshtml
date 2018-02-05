@@ -1,0 +1,206 @@
+﻿@model SuccessHotelierHub.Models.SearchErrorLogParametersVM
+@{
+    ViewBag.Title = "Search Error Log";
+}
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "ErrorLogGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Error Log <small>Search</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Error Log</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Error Log</h3>           
+        </div>
+        <form class="frmErrorLogList" enctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Date)
+                            @Html.TextBoxFor(m => m.Date, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                        </div>
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Error)
+                            @Html.TextBoxFor(m => m.Error, new { @class = "form-control", placeholder = "Error" })
+                        </div>
+                        <div class="col-md-4 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchErrorLog()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearErrorLog()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+
+
+                <div class="col-xs-12 padding-zero m-t-md">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblErrorLog">
+                            <thead>
+                                <tr>
+                                    <th>Created On</th>
+                                    <th>Page Url</th>
+                                    <th>Method Name</th>
+                                    <th>Error Message</th>
+                                    <th>Inner Exception</th>                                    
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "ErrorLogGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdErrorLog;
+
+    $(document).ready(function () {
+
+        $('#Date').datepicker("setDate", new Date());
+
+        setTimeout(InitializeErrorLogGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+
+    function SearchErrorLogParameters(d) {
+        var date = $('#Date').val();
+        var error = $('#Error').val();
+
+        d.PageNum = currentPage;
+        d.Date = date;
+        d.Error = error;
+    }
+
+    function ErrorLogGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadErrorLogGrid() {
+        grdErrorLog.ajax.url("@Url.Content("~/ErrorLog/Search")").load();
+    }
+
+    function ErrorLogGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadErrorLogGrid();
+    }
+
+
+    function InitializeErrorLogGrid() {
+        grdErrorLog = $('#tblErrorLog').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/ErrorLog/Search")',
+                data: SearchErrorLogParameters,
+                dataSrc: ErrorLogGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedDateTime",
+                orderable: true
+            },
+            {
+                targets: 1,
+                data: "PageUrl",
+                orderable: true                
+            },
+            {
+                targets: 2,
+                data: "MethodName",
+                orderable: true
+            },
+            {
+                targets: 3,
+                data: "ErrorMessage",
+                orderable: true
+            },
+            {
+                targets: 4,
+                data: "InnerException",
+                orderable: true
+            }
+            ],
+            order: [[0, "desc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function searchErrorLog() {
+        currentPage = 1;
+        ReloadErrorLogGrid();
+    }
+
+    function clearErrorLog() {
+        $('#Date').val('');
+        $('#Error').val('');
+
+        searchErrorLog();
+    }
+
+    
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

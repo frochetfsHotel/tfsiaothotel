@@ -80,6 +80,8 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Login POST");
+
                 return Json(new
                 {
                     IsSuccess = false,
@@ -159,6 +161,8 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Register POST");
+
                 return Json(new
                 {
                     IsSuccess = false,

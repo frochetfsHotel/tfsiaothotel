@@ -95,6 +95,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchGuest");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -231,6 +232,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "GetBillingInfo");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -297,6 +299,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "ShowCheckOutPaymentMethod");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -495,6 +498,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "CheckOut");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -823,6 +827,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception ex)
             {
+                Utility.Utility.LogError(ex, "SendEmail");
                 return Json(new
                 {
                     IsSuccess = false,

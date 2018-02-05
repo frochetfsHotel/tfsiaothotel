@@ -188,6 +188,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "CreateIndividualProfile");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -377,6 +378,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "EditIndividualProfile");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -417,6 +419,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "DeleteIndividualProfile");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -473,6 +476,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchIndividualProfile");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -495,6 +499,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchAdvanceProfile");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -526,6 +531,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "GetPreferencesByProfile");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

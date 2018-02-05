@@ -17,11 +17,11 @@ namespace SuccessHotelierHub.Utility
 {
     public class Email
     {
-        public static void sendMail(string mTo, string mSubject, string mBody,string attachmentName = "",  bool hasAttachment = false, byte[] pdfBytes = null)
+        public static void sendMail(string mTo, string mSubject, string mBody, string attachmentName = "", bool hasAttachment = false, byte[] pdfBytes = null)
         {
             try
             {
-                
+
                 string mailBody = "";
                 mailBody = mailBody + mBody;
 
@@ -52,19 +52,19 @@ namespace SuccessHotelierHub.Utility
 
                 mailObject.To.Add(new MailAddress(mTo));
 
-                mailObject.From = new MailAddress(mFrom, "HotelierHub");                
+                mailObject.From = new MailAddress(mFrom, "HotelierHub");
 
                 mailObject.Subject = mSubject;
                 mailObject.IsBodyHtml = true;
-                mailObject.Body = mailBody;                
+                mailObject.Body = mailBody;
                 mailObject.BodyEncoding = System.Text.Encoding.UTF8;
                 mailObject.SubjectEncoding = System.Text.Encoding.UTF8;
 
                 SmtpClient smtp = new SmtpClient();
 
-                smtp.Host = mailServer;                
+                smtp.Host = mailServer;
                 smtp.Port = 25;
-                smtp.EnableSsl = false;                
+                smtp.EnableSsl = false;
                 System.Net.NetworkCredential basicAuthenticationInfo = new System.Net.NetworkCredential(mailUser, mailPassword);
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = basicAuthenticationInfo;
@@ -73,8 +73,7 @@ namespace SuccessHotelierHub.Utility
             }
             catch (Exception ex)
             {
-                throw ex;
-                //Utility.LogError(ex);
+                Utility.LogError(ex, "sendMail");
             }
         }
 
@@ -115,9 +114,8 @@ namespace SuccessHotelierHub.Utility
                 smtp.Send(mailObject);
             }
             catch (Exception ex)
-            {
-                throw ex;
-                //Utility.LogError(ex);
+            {   
+                Utility.LogError(ex, "sendMailTemplate");
             }
         }
 
@@ -146,6 +144,7 @@ namespace SuccessHotelierHub.Utility
             }
             catch (Exception ex)
             {
+                Utility.LogError(ex, "SendRegistrationMail");
                 return false;
             }
             return true;

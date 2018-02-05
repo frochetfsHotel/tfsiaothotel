@@ -193,6 +193,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Create");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -475,6 +476,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Edit");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -515,6 +517,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "Delete");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -575,6 +578,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchReservation");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -615,6 +619,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "CancelReservation");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -832,6 +837,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "ViewRateSheet");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -851,6 +857,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "ShowReservation");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -927,6 +934,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchRoomPlan");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -967,6 +975,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "ChangeRoomAllocation");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

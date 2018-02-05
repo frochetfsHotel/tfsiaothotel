@@ -53,7 +53,7 @@ namespace SuccessHotelierHub.Utility
             }
             catch (Exception Ex)
             {
-                Utility.LogError(Ex);
+                Utility.LogError(Ex, "ScaleImage");
                 return null;
             }
         }
@@ -84,7 +84,7 @@ namespace SuccessHotelierHub.Utility
             }
             catch (Exception Ex)
             {
-                Utility.LogError(Ex);
+                Utility.LogError(Ex, "MailDateFormat");
                 return null;
             }
         }
@@ -113,7 +113,7 @@ namespace SuccessHotelierHub.Utility
             }
             catch (Exception Ex)
             {
-                Utility.LogError(Ex);
+                Utility.LogError(Ex, "MailDateFullFormat");
                 return null;
             }
         }
@@ -140,18 +140,21 @@ namespace SuccessHotelierHub.Utility
         /// Log Error for exception class
         /// </summary>
         /// <param name="ex"></param>
-        public static void LogError(Exception ex)
+        public static void LogError(Exception ex, string methodName = "")
         {
-            SqlParameter[] parameters = {
-                                    new SqlParameter { ParameterName = "@InnerException",  Value = ex.InnerException != null ? ex.InnerException.ToString() : "" },
-                                    new SqlParameter { ParameterName = "@Message",  Value = ex.Message != null ? ex.Message.ToString() : ""},
-                                    new SqlParameter { ParameterName = "@StackTrace",  Value = ex.StackTrace != null ? ex.StackTrace.ToString() : "" },
-                                    new SqlParameter { ParameterName = "@TargetSite",  Value = ex.TargetSite != null ? ex.TargetSite.ToString() : "" },
-                                    new SqlParameter { ParameterName = "@Source",  Value = ex.Source != null ? ex.Source.ToString() : "" }
-                                };
+            SuccessHotelierHub.Repository.ErrorLogRepository errorLogRepository = new SuccessHotelierHub.Repository.ErrorLogRepository();
 
-            DataSet ds = DALHelper.GetDataSetWithExtendedTimeOut("CreateNewErrorLogEntry", parameters);
-            
+            ErrorLogVM errorLog = new ErrorLogVM();
+            errorLog.CreatedDateTime = DateTime.Now;
+            errorLog.StackTrace = ex.StackTrace != null ? ex.StackTrace.ToString() : "Empty StackTrace.";
+            errorLog.ErrorMessage = ex.Message != null ? ex.Message.ToString() : "Empty Message Exception.";
+            errorLog.TargetSite = ex.TargetSite != null ? ex.TargetSite.ToString() : "Empty Target Site";
+            errorLog.InnerException = ex.InnerException != null ? ex.InnerException.ToString() : "Empty InnerException";
+            errorLog.PageUrl = GetCurrentPageURL();
+            errorLog.MethodName = methodName;
+
+            errorLogRepository.AddErrorLog(errorLog);
+
         }
 
         #endregion
@@ -592,6 +595,7 @@ namespace SuccessHotelierHub.Utility
             }
             catch (Exception ex)
             {
+                Utility.LogError(ex, "GetIpAddress_V2");
                 return string.Empty;
             }
         }

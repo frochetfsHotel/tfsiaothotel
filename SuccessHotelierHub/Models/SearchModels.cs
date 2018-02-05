@@ -1512,6 +1512,56 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Error Log
+
+    public class SearchErrorLogParametersVM
+    {
+        public SearchErrorLogParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+        public string Error { get; set; }
+        public DateTime? Date { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchErrorLogResultVM
+    {
+        public int RowNum { get; set; }
+
+        public int? Id { get; set; }
+
+        [DisplayName("Page Url")]
+        public string PageUrl { get; set; }
+
+        [DisplayName("Method Name")]
+        public string MethodName { get; set; }
+
+        [DisplayName("Error Message")]
+        public string ErrorMessage { get; set; }
+
+        [DisplayName("Target Site")]
+        public string TargetSite { get; set; }
+
+        [DisplayName("Stack Trace")]
+        public string StackTrace { get; set; }
+
+        [DisplayName("Inner Exception")]
+        public string InnerException { get; set; }
+
+        [DisplayName("Created DateTime")]
+        public string CreatedDateTime { get; set; }
+
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

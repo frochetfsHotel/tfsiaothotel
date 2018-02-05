@@ -33,36 +33,61 @@ namespace SuccessHotelierHub.Controllers
 
         [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult GetCountry()
-        {   
-            var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
+        {
+            try
+            {
+                var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
 
-            if (countryList != null && countryList.Count() > 0)
-                return Json(new { IsSuccess = true, data = countryList.ToList() }, JsonRequestBehavior.AllowGet);
-            else
-                return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
+                if (countryList != null && countryList.Count() > 0)
+                    return Json(new { IsSuccess = true, data = countryList.ToList() }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetCountry");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
 
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult GetState(int countryId)
         {
-            var stateList = new SelectList(stateRepository.GetStates(countryId), "Id", "Name").ToList();
+            try
+            {
+                var stateList = new SelectList(stateRepository.GetStates(countryId), "Id", "Name").ToList();
 
-            if (stateList != null && stateList.Count() > 0)
-                return Json(new { IsSuccess = true, data = stateList.ToList() }, JsonRequestBehavior.AllowGet);
-            else
-                return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
+                if (stateList != null && stateList.Count() > 0)
+                    return Json(new { IsSuccess = true, data = stateList.ToList() }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetState");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult GetCity(int? countryId, int? stateId)
         {
-            var cityList = new SelectList(cityRepository.GetCities(countryId, stateId), "Id", "Name").ToList();
+            try
+            {
+                var cityList = new SelectList(cityRepository.GetCities(countryId, stateId), "Id", "Name").ToList();
 
-            if (cityList != null && cityList.Count() > 0)
-                return Json(new { IsSuccess = true, data = cityList.ToList() }, JsonRequestBehavior.AllowGet);
-            else
-                return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
+                if (cityList != null && cityList.Count() > 0)
+                    return Json(new { IsSuccess = true, data = cityList.ToList() }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { IsSuccess = false, data = "" },
+                        JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetCity");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
@@ -147,6 +172,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "BulkReservation");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -165,6 +191,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchBulkReservationList");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

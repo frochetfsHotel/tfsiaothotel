@@ -218,6 +218,7 @@
     <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\CountryController.cs" />
+    <Compile Include="Controllers\ErrorLogController.cs" />
     <Compile Include="Controllers\FloorController.cs" />
     <Compile Include="Controllers\FrontDeskController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Models\CityVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\CurrentUserRoleVM.cs" />
+    <Compile Include="Models\ErrorLogVM.cs" />
     <Compile Include="Models\FloorVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -310,6 +312,7 @@
     <Compile Include="Repository\CheckInCheckOutRepository.cs" />
     <Compile Include="Repository\CityRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
+    <Compile Include="Repository\ErrorLogRepository.cs" />
     <Compile Include="Repository\FloorRepository.cs" />
     <Compile Include="Repository\MarketRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
@@ -2065,6 +2068,7 @@
     <Content Include="Views\Common\_ShowBulkReservationList.cshtml" />
     <Content Include="Views\PropertyCalendar\Index.cshtml" />
     <Content Include="Views\PropertyCalendar\_Calendar.cshtml" />
+    <Content Include="Views\ErrorLog\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

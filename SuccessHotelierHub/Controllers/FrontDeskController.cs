@@ -100,6 +100,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "SearchArrivals");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -206,6 +207,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "ShowCheckInPaymentMethod");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
@@ -429,6 +431,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
+                Utility.Utility.LogError(e, "CheckIn");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
