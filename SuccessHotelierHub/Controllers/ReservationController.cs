@@ -326,6 +326,7 @@ namespace SuccessHotelierHub.Controllers
                 string reservationId = string.Empty;
 
                 model.UpdatedBy = LogInManager.LoggedInUserId;
+                model.IsActive = true;
 
                 string ETAText = model.ETAText;
                 if (!string.IsNullOrWhiteSpace(ETAText))
@@ -624,6 +625,7 @@ namespace SuccessHotelierHub.Controllers
             string confirmationNo = string.Empty;
 
             model.CreatedBy = LogInManager.LoggedInUserId;
+            model.IsActive = true;
 
             string ETAText = model.ETAText;
             if (!string.IsNullOrWhiteSpace(ETAText))

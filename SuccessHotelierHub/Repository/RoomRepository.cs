@@ -5,6 +5,7 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Models.StoredProcedure;
 
 namespace SuccessHotelierHub.Repository
 {
@@ -375,5 +376,26 @@ namespace SuccessHotelierHub.Repository
 
 
         #endregion
+
+        #region Property Calendar
+
+        public List<TotalRoomAvailableByCalendarResultVM> GetTotalRoomAvailableByCalendar(int month, int year)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Month", Value = month },
+                    new SqlParameter { ParameterName = "@Year", Value = year }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTotalRoomAvailableByCalendar", parameters);
+
+            var results = new List<TotalRoomAvailableByCalendarResultVM>();
+            results = DALHelper.CreateListFromTable<TotalRoomAvailableByCalendarResultVM>(dt);
+
+            return results;
+        }
+
+        #endregion
+
     }
 }

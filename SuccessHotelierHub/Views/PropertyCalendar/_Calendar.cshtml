@@ -1,0 +1,91 @@
+﻿@using SuccessHotelierHub.Repository
+@{
+    var month = (int)ViewData["Month"];
+    var year = (int)ViewData["Year"];
+
+    var firstDateOfMonth = new DateTime(year, month, 1);
+    var lastDateOfMonth = firstDateOfMonth.AddMonths(1).AddDays(-1);
+
+    var firstDayOfWeek = (int)firstDateOfMonth.DayOfWeek;
+    var lastDate = (int)lastDateOfMonth.Day;
+
+    int day = 1;
+
+    var currentDay = DateTime.Now.Day;
+    var currentMonth = DateTime.Now.Month;
+    var currentYear = DateTime.Now.Year;
+
+    bool isWeekEnd = false;
+
+    RoomRepository roomRepository = new RoomRepository();
+
+    var results = roomRepository.GetTotalRoomAvailableByCalendar(month, year);
+
+}
+
+<div class="col-md-12 form-group">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="tblCalendar">
+            <tr>
+                <td><p class="text-weekend-bgcolor text-bold">Sunday</p></td>
+                <td><p class="text-weekend-bgcolor text-bold">Monday</p></td>
+                <td><p class="text-bold">Tuesday</p></td>
+                <td><p class="text-bold">Wednesday</p></td>
+                <td><p class="text-bold">Thursday</p></td>
+                <td><p class="text-bold">Friday</p></td>
+                <td><p class="text-bold">Saturday</p></td>
+
+                @for (int intI = 0; intI < 42; intI++)
+                {
+                    isWeekEnd = false;
+                    if (intI % 7 == 0)
+                    {
+                        @Html.Raw("</tr><tr>")
+
+                        isWeekEnd = true;
+                    }
+
+                    if ((intI - 1) % 7 == 0)
+                    {
+                        isWeekEnd = true;
+                    }
+
+                    if ((intI >= firstDayOfWeek) && (day <= lastDate))
+                    {
+                        var totalAvailableRooms = results.Where(m => m.day == day).FirstOrDefault().AvailableRooms;
+
+                        //Check current date.
+                        if (currentMonth == month && currentYear == year && currentDay == day)
+                        {
+                            if (isWeekEnd)
+                            {
+                                @Html.Raw(string.Format("<td class='currentDay'><p class='text-weekend-bgcolor text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                            }
+                            else
+                            {   
+                                @Html.Raw(string.Format("<td class='currentDay'><p class='text-weekend-bgcolor text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                            }
+                        }
+                        else
+                        {
+                            if (isWeekEnd)
+                            {
+                                @Html.Raw(string.Format("<td><p class='text-weekend-bgcolor text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                            }
+                            else
+                            {
+                                @Html.Raw(string.Format("<td><p class='text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                            }
+                        }
+                        day = day + 1;
+                    }
+                    else
+                    {
+                        @Html.Raw("<td></td>")
+                    }
+                }
+        </table>
+    </div>
+
+</div>
+<div class="clearfix"></div>

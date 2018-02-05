@@ -229,6 +229,7 @@
     <Compile Include="Controllers\PreferenceController.cs" />
     <Compile Include="Controllers\PreferenceGroupController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\PropertyCalendarController.cs" />
     <Compile Include="Controllers\RateController.cs" />
     <Compile Include="Controllers\RateTypeController.cs" />
     <Compile Include="Controllers\ReservationCancellationReasonController.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
@@ -2057,6 +2059,8 @@
     <Content Include="Views\Tutor\ViewActivity.cshtml" />
     <Content Include="Views\Common\BulkReservation.cshtml" />
     <Content Include="Views\Common\_ShowBulkReservationList.cshtml" />
+    <Content Include="Views\PropertyCalendar\Index.cshtml" />
+    <Content Include="Views\PropertyCalendar\_Calendar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
