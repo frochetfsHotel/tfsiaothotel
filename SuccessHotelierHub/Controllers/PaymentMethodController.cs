@@ -96,6 +96,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 string paymentMethodId = string.Empty;
                 model.UpdatedBy = LogInManager.LoggedInUserId;
+                model.Code = !string.IsNullOrWhiteSpace(model.Code) ? model.Code.ToUpper() : model.Code;
                 paymentMethodId = paymentMethodRepository.UpdatePaymentMethod(model);
 
                 if (!string.IsNullOrWhiteSpace(paymentMethodId))
