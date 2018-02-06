@@ -262,7 +262,6 @@
                             showToaster(response.errorMessage, ToasterType.ERROR);
                         }
                         else {
-                            console.log("saveReservationCharges : OnSuccess() = " + response.data);
                             var transactions = response.data.Transactions;
 
                             if (transactions != null) {

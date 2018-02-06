@@ -79,15 +79,11 @@
     });
 
     function selectDeSelectPreference(element) {
-        console.log("check box change event called.")
         if (element) {
 
             var isChecked = $(element).prop("checked");
             var id = $(element).val();
             var preference = $(element).attr("data-preference");
-
-            console.log("isChecked : " + isChecked);
-            console.log("id : " + id);
 
             if (isChecked) {
                 var html = generatePreferenceItemButton(id, preference);
@@ -213,8 +209,7 @@
 
     function getCheckedPreferenceIds() {
         var preferenceIds = "";
-        $("form#frmAdvancePreferenceSearch #selectedPreferences span i").each(function () {
-            console.log($(this).data("preferenceid"));
+        $("form#frmAdvancePreferenceSearch #selectedPreferences span i").each(function () {            
             preferenceIds += $(this).data("preferenceid") + ",";
         });
 

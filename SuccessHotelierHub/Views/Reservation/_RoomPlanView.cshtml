@@ -26,7 +26,14 @@
 
         foreach (var date in dates)
         {
-            firstHeaderRowHtml += string.Format("<th>{0}</th>", date.DayOfTheWeek);
+            if (date.Date.HasValue && (date.Date.Value.DayOfWeek == DayOfWeek.Friday || date.Date.Value.DayOfWeek == DayOfWeek.Saturday))
+            {
+                firstHeaderRowHtml += string.Format("<th class='text-weekend-bgcolor'>{0}</th>", date.DayOfTheWeek);
+            }
+            else
+            {
+                firstHeaderRowHtml += string.Format("<th>{0}</th>", date.DayOfTheWeek);
+            }
             secondHeaderRowHtml += string.Format("<th data-date='{1}'>{0}</th>", date.DateString, date.Date);
         }
 
@@ -95,22 +102,15 @@
                                 for (int intI = 0; intI < dates.Count;)
                                 {
                                     cardColspan = 0;
-                                    //var reservationInfo = reservationDetail.Where(i => i.CheckInDateString == dates[intI].DateString).FirstOrDefault();
+
                                     var reservationInfo = reservationDetail.Where(i => (i.CheckInDate.Value.Date <= dates[intI].Date.Value.Date) && (i.CheckOutDate.Value.Date >= dates[intI].Date.Value.Date)).FirstOrDefault();
                                     if (reservationInfo != null)
                                     {
-                                        //cardColspan = reservationInfo.NoOfNight > 1 ? (reservationInfo.NoOfNight + 1) : reservationInfo.NoOfNight;
                                         cardColspan = (reservationInfo.NoOfNight + 1);
 
-                                        @*<td colspan="@(cardColspan)" class="text-center cursor-move bg-orange spnReservation"  id="@("tdReservation_" + reservationInfo.ReservationId)">*@
-                                        @*<td class="text-center cursor-move bg-orange spnReservation" id="@("tdReservation_" + reservationInfo.ReservationId)" data-reservationid="@(reservationInfo.ReservationId)">
-                                                <button type="button" class="btn btn-xs bg-orange m-r-xs" id="@("spnReservation_" + reservationInfo.ReservationId)">
-                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
-                                                </button>
-                                            </td>*@
-
                                         <td class="text-center cursor-move assigned">
-                                            <span class="btn item btn-xs bg-orange m-r-xs spnReservation" id="@("spnReservation_" + reservationInfo.ReservationId)" data-reservationid="@(reservationInfo.ReservationId)">
+                                            <span class="btn item btn-xs bg-orange m-r-xs spnReservation" id="@("spnReservation_" + reservationInfo.ReservationId)" data-reservationid="@(reservationInfo.ReservationId)" ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')" 
+                                                  title="Double click here to view reservation detail.">
                                                 @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
                                             </span>
                                         </td>
@@ -331,5 +331,10 @@ else
                 }
             });
         }
+    }
+
+    function GotoReservationEdit(Id) {
+        var url = '@Url.Content("~/Reservation/Edit/")' + Id + "?source=RoomPlan";
+        redirectTo(url);
     }
 </script>

@@ -48,6 +48,11 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.CashierNumber, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.CashierNumber, new { @class = "form-control", placeholder = "Cashier #" })
+                        @Html.ValidationMessageFor(m => m.CashierNumber, "", new { @class = "text-danger" })
+                    </div>
                     <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active

@@ -32,6 +32,7 @@ namespace SuccessHotelierHub
             var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
 
             LogInManager.UserName = user.Name;
+            LogInManager.CashierNumber = user.CashierNumber;
             LogInManager.LoggedInUserId = user.UserId;
             LogInManager.LoggedInUser = user;
             LogInManager.UsersRoles = userRoles;
@@ -113,6 +114,25 @@ namespace SuccessHotelierHub
             set
             {
                 HttpContext.Current.Session["UserName"] = value;
+            }
+        }
+
+        public static string CashierNumber
+        {
+            get
+            {
+                if (HttpContext.Current.Session["CashierNumber"] != null)
+                {
+                    return (string)HttpContext.Current.Session["CashierNumber"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["CashierNumber"] = value;
             }
         }
 

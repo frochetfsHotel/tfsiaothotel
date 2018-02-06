@@ -30,7 +30,7 @@ namespace SuccessHotelierHub.Controllers
             var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
 
             ViewBag.UserRoleList = userRoleList;
-
+            
             return View();
         }
 
@@ -57,6 +57,18 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 #endregion
+
+                
+                //Get Max. User Id.
+                var newUserId = (userRepository.GetMaxUserId()) + 1;
+                model.UserId = newUserId;
+
+                #region Generate Cashier Number
+
+                var firstTwoCharactersOfName = !string.IsNullOrWhiteSpace(model.Name) ? model.Name.Substring(0, 2) : "";
+                model.CashierNumber = (firstTwoCharactersOfName + newUserId).ToUpper();
+
+                #endregion Generate Cashier Number
 
                 userId = userRepository.AddUserDetail(model);
 
@@ -145,6 +157,22 @@ namespace SuccessHotelierHub.Controllers
                         IsSuccess = false,
                         errorMessage = string.Format("Email : {0} already exist.", model.Email)
                     }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                #region Check Cashier Number Exist.
+
+                if (!string.IsNullOrWhiteSpace(model.CashierNumber))
+                {
+                    if (this.CheckCashierNumberExist(model.Id, model.CashierNumber) == false)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = string.Format("Cashier Number : {0} already exist.", model.Email)
+                        }, JsonRequestBehavior.AllowGet);
+                    }
                 }
 
                 #endregion
@@ -383,6 +411,20 @@ namespace SuccessHotelierHub.Controllers
             bool blnAvailable = true;
 
             var user = userRepository.CheckUserEmailExist(userId, email);
+
+            if (user.Any())
+            {
+                blnAvailable = false;
+            }
+
+            return blnAvailable;
+        }
+
+        public bool CheckCashierNumberExist(Guid? userId, string cashierNumber)
+        {
+            bool blnAvailable = true;
+
+            var user = userRepository.CheckCashierNumberExist(userId, cashierNumber);
 
             if (user.Any())
             {

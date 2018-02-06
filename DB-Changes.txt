@@ -17275,3 +17275,1263 @@ BEGIN
 	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
 	-- PAGING COMPLETED
 END
+
+
+/********************************************************************************************************/
+
+Name : Nilesh
+Date : 06-FEB-2018
+
+/**********************************************************************************************************/
+
+/*******************************************************************************************************************
+	SP Name : UpdateIndividualProfile
+	Comment   Changes in SP UpdateIndividualProfile
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateIndividualProfile]    Script Date: 2/6/2018 12:39:24 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateIndividualProfile]
+	@Id						UNIQUEIDENTIFIER				,
+	@ProfileTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@TelephoneNo			NVARCHAR(50)		=	NULL	,
+	@BusinessTelephoneNo	NVARCHAR(20)		=	NULL	,
+	@Email					NVARCHAR(500)		=	NULL	,
+	@Address				NVARCHAR(MAX)		=	NULL	,
+	@HomeAddress			NVARCHAR(MAX)		=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@StateId				INT					=	NULL	,
+	@CityId					INT					=	NULL	,
+	@ZipCode				NVARCHAR(50)		=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@NationalityId			UNIQUEIDENTIFIER	=	NULL	,
+	@CarRegistrationNo		NVARCHAR(255)		=	NULL	,
+	@PassportNo				NVARCHAR(255)		=	NULL	,
+	@DOB					DateTime			=	NULL	,
+	@IsMailingList			BIT					=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@IsActive				BIT					=	NULL	,
+	@UpdatedBy				INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+
+	UPDATE [dbo].[IndividualProfile]
+           SET	[ProfileTypeId]				= @ProfileTypeId
+				,[FirstName]				= @FirstName
+				,[LastName]					= @LastName
+				,[TitleId]					= @TitleId
+				,[TelephoneNo]				= @TelephoneNo
+				,[BusinessTelephoneNo]		= @BusinessTelephoneNo
+				,[Email]					= @Email
+				,[Address]					= @Address
+				,[HomeAddress]				= @HomeAddress
+				,[CountryId]				= @CountryId
+				,[StateId]					= @StateId
+				,[CityId]					= @CityId
+				,[ZipCode]					= @ZipCode
+				,[VipId]					= @VipId
+				,[NationalityId]			= @NationalityId
+				,[CarRegistrationNo]		= @CarRegistrationNo
+				,[PassportNo]				= @PassportNo
+				,[DOB]						= @DOB
+				,[IsMailingList]			= @IsMailingList
+				,[Remarks]					= @Remarks
+				,[UpdatedOn]				= GETDATE()
+				,[UpdatedBy]				= @UpdatedBy
+				,[IsActive]					= @IsActive
+			WHERE	ISNULL(IsDeleted,0) = 0 
+					AND [Id]= @Id
+
+		SELECT @Id AS ProfileId
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : AddIndividualProfile
+	Comment   Changes in SP AddIndividualProfile
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddIndividualProfile]    Script Date: 2/6/2018 12:42:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddIndividualProfile]
+	@ProfileTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@TelephoneNo			NVARCHAR(50)		=	NULL	,
+	@BusinessTelephoneNo	NVARCHAR(20)		=	NULL	,
+	@Email					NVARCHAR(500)		=	NULL	,
+	@Address				NVARCHAR(MAX)		=	NULL	,
+	@HomeAddress			NVARCHAR(MAX)		=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@StateId				INT					=	NULL	,
+	@CityId					INT					=	NULL	,
+	@ZipCode				NVARCHAR(50)		=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@NationalityId			UNIQUEIDENTIFIER	=	NULL	,
+	@CarRegistrationNo		NVARCHAR(255)		=	NULL	,
+	@PassportNo				NVARCHAR(255)		=	NULL	,
+	@DOB					DateTime			=	NULL	,
+	@IsMailingList			BIT					=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@IsActive				BIT					=	NULL	,
+	@CreatedBy				INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @ProfileId UNIQUEIDENTIFIER
+	SET @ProfileId = NEWID()
+
+	INSERT INTO [dbo].[IndividualProfile]
+           ([Id]
+           ,[ProfileTypeId]
+           ,[FirstName]
+           ,[LastName]
+           ,[TitleId]
+           ,[TelephoneNo]
+           ,[BusinessTelephoneNo]
+           ,[Email]
+           ,[Address]
+           ,[HomeAddress]
+           ,[CountryId]
+           ,[StateId]
+           ,[CityId]
+           ,[ZipCode]
+           ,[VipId]
+		   ,[NationalityId]
+           ,[CarRegistrationNo]
+           ,[PassportNo]
+           ,[DOB]
+           ,[IsMailingList]
+		   ,[Remarks]
+           ,[CreatedOn]
+           ,[CreatedBy]
+           ,[IsActive])
+     VALUES
+           (
+			   @ProfileId
+			   ,@ProfileTypeId
+			   ,@FirstName
+			   ,@LastName
+			   ,@TitleId
+			   ,@TelephoneNo
+			   ,@BusinessTelephoneNo
+			   ,@Email
+			   ,@Address
+			   ,@HomeAddress
+			   ,@CountryId
+			   ,@StateId
+			   ,@CityId
+			   ,@ZipCode
+			   ,@VipId
+			   ,@NationalityId
+			   ,@CarRegistrationNo
+			   ,@PassportNo
+			   ,@DOB
+			   ,@IsMailingList
+			   ,@Remarks
+			   ,GETDATE()
+			   ,@CreatedBy
+			   ,@IsActive
+           )
+
+		SELECT @ProfileId AS ProfileId
+    
+END
+
+
+/***************** Add CashierNumber column to UserDetail table ****/
+
+ALTER TABLE UserDetail ADD CashierNumber NVARCHAR(255) NULL
+GO
+
+/*******************************************************************************************************************
+	SP Name : GetMaxUserId
+	Comment   Create SP GetMaxUserId
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetMaxUserId]    Script Date: 2/6/2018 12:57:20 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetMaxUserId]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	DECLARE @UserId AS INT = 0
+	SET @UserId = (SELECT ISNULL(MAX(UserId),0) AS MaxUserId FROM [dbo].[UserDetail])
+
+	SELECT @UserId AS Id
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddUserDetail
+	Comment   Changes in SP AddUserDetail
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddUserDetail]    Script Date: 2/6/2018 12:55:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddUserDetail]		
+	@Name				NVARCHAR(500)					,		
+	@Email				NVARCHAR(500)					,		
+	@Password			NVARCHAR(2000)					,
+	@IsRecordActivity	BIT					=	NULL	,
+	@UserId				INT					=	NULL	,
+	@CashierNumber		NVARCHAR(255)		=	NULL	,
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UserDetail]
+           ([Id]           		   
+           ,[Name]		
+		   ,[Email]
+		   ,[Password]   
+		   ,[UserId]	
+		   ,[IsRecordActivity]	   
+		   ,[CashierNumber]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id					      
+			   ,@Name		
+			   ,@Email
+			   ,@Password
+			   ,@UserId	   
+			   ,@IsRecordActivity
+			   ,@CashierNumber
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateUserDetail
+	Comment   Changes in SP UpdateUserDetail
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[UpdateUserDetail]    Script Date: 2/6/2018 1:05:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateUserDetail]
+	@Id					UNIQUEIDENTIFIER				,	
+	@Name				NVARCHAR(500)					,		
+	@Email				NVARCHAR(500)					,
+	@IsRecordActivity	BIT					=	NULL	,	
+	@CashierNumber		NVARCHAR(255)		=	NULL	,		
+	@IsActive			BIT					=	NULL	,	
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserDetail] 
+		SET	[Name]				=	@Name		   
+		   ,[Email]				=	@Email
+		   ,[IsRecordActivity]	=	@IsRecordActivity
+		   ,[CashierNumber]		=	@CashierNumber
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[IsActive]			=	@IsActive
+		   ,[UpdatedOn]			=	 GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : CheckCashierNumberExist
+	Comment   Create SP CheckCashierNumberExist
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckCashierNumberExist]    Script Date: 2/6/2018 1:07:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckCashierNumberExist] 
+		@Id				=	NULL,
+		@CashierNumber	=	''
+*/
+
+CREATE PROCEDURE [dbo].[CheckCashierNumberExist]
+	@Id					UNIQUEIDENTIFIER	=	NULL,
+	@CashierNumber		NVARCHAR(255)		=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[UserDetail]
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND [CashierNumber] = @CashierNumber
+		ORDER BY [Name]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetUserDetailById
+	Comment   Changes in SP GetUserDetailById
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserDetailById]    Script Date: 2/6/2018 1:14:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetUserDetailById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT UD.Id,UD.UserId,UD.Name,UD.Email,UD.Password,UD.CreatedBy,UD.CreatedOn,UD.UpdatedBy, UD.UpdatedOn, UD.IsActive, UD.IsRecordActivity,
+		ISNULL(UD.CashierNumber,'') AS CashierNumber, URM.UserRoleId 
+		FROM [dbo].[UserDetail] UD 
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+				AND ISNULL(URM.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 
+				AND Ud.[Id] = @Id		
+END
+
+
+/**************** Add FolioNumber column in Reservation table ****************/
+
+ALTER TABLE Reservation ADD FolioNumber BIGINT NULL
+GO
+
+/************ Update FolioNumber Of Existing Reservation **********/
+
+UPDATE Reservation SET FolioNumber =  (100 + RIGHT(ConfirmationNumber,3))
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddReservation
+	Comment   Changes in SP AddReservation
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddReservation]    Script Date: 2/6/2018 2:04:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservation]	
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@ProfileId				UNIQUEIDENTIFIER	=	NULL	,
+	@MemberTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@LanguageId				UNIQUEIDENTIFIER	=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@PhoneNo				NVARCHAR(50)		=	NULL	,
+	@MemberNo				NVARCHAR(255)		=	NULL	,
+	@MemberLvt				NVARCHAR(255)		=	NULL	,
+	@AgentId				UNIQUEIDENTIFIER	=	NULL	,
+	@CompanyId				UNIQUEIDENTIFIER	=	NULL	,
+	@GroupId				UNIQUEIDENTIFIER	=	NULL	,
+	@SourceId				UNIQUEIDENTIFIER	=	NULL	,
+	@ContactId				UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate			DATETIME			=	NULL	,
+	@NoOfNight				INT					=	NULL	,
+	@DepartureDate			DATETIME			=	NULL	,
+	@NoOfAdult				INT					=	NULL	,
+	@NoOfChildren			INT					=	NULL	,
+	@NoOfRoom				INT					=	NULL	,
+	@RoomTypeId				UNIQUEIDENTIFIER	=	NULL	,
+	@RtcId					UNIQUEIDENTIFIER	=	NULL	,	
+	@ExtnId					UNIQUEIDENTIFIER	=	NULL	,
+	@RateCodeId				UNIQUEIDENTIFIER	=	NULL	,
+	@IsFixedRate			BIT					=	NULL	,
+	@Rate					DECIMAL(18,2)		=	NULL	,
+	@CurrencyId				UNIQUEIDENTIFIER	=	NULL	,
+	@PackageId				UNIQUEIDENTIFIER	=	NULL	,
+	@BlockCodeId			UNIQUEIDENTIFIER	=	NULL	,
+	@ETA					TIME(7)				=	NULL	,
+	@ReservationTypeId		UNIQUEIDENTIFIER	=	NULL	,
+	@MarketId				UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationSourceId	UNIQUEIDENTIFIER	=	NULL	,
+	@OriginId				UNIQUEIDENTIFIER	=	NULL	,
+	@PaymentMethodId		UNIQUEIDENTIFIER	=	NULL	,
+	@CreditCardNo			NVARCHAR(255)		=	NULL	,
+	@CardExpiryDate			NVARCHAR(50)		=	NULL	,
+	@CVVNo					NVARCHAR(255)		=	NULL	,
+	@ApprovalCode			NVARCHAR(255)		=	NULL	,
+	@ApprovalAmount			DECIMAL(18,2)		=	NULL	,
+	@SuitWith				NVARCHAR(255)		=	NULL	,
+	@IsEmailConfirmation	BIT					=	NULL	,
+	@GuestBalance			DECIMAL(18,2)		=	NULL	,
+	@DiscountAmount			DECIMAL(18,2)		=	NULL	,
+	@DiscountPercentage		DECIMAL(18,2)		=	NULL	,
+	@DiscountReasonId		UNIQUEIDENTIFIER	=	NULL	,
+	@TARecordLocator		NVARCHAR(255)		=	NULL	,
+	@SpecialsId				UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationComments	NVARCHAR(MAX)		=	NULL	,
+	@InHouseComments		NVARCHAR(MAX)		=	NULL	,
+	@CashieringComments		NVARCHAR(MAX)		=	NULL	,
+	@HouseKeepingComments	NVARCHAR(MAX)		=	NULL	,
+	@ItemInventoryId		UNIQUEIDENTIFIER	=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@ConfirmationNumber		NVARCHAR(255)					,
+	@TotalPrice				DECIMAL(18,2)		=	NULL	,
+	@TotalBalance			DECIMAL(18,2)		=	NULL	,
+	@FolioNumber			BIGINT				=	NULL	,
+	@IsActive				BIT					=	NULL	,
+	@CreatedBy				INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @ReservationId UNIQUEIDENTIFIER
+	SET @ReservationId = NEWID()
+
+	DECLARE @ETATime TIME(7) = NULL
+
+	--IF ISNULL(@ETA,'') <> ''
+	--BEGIN
+	--	SET @ETATime = CAST(@ETA AS TIME(7))
+	--END
+
+	SET @ETATime = @ETA
+
+	INSERT INTO [dbo].[Reservation]
+           ([Id]
+           ,[TitleId]
+           ,[LastName]
+           ,[FirstName]
+           ,[ProfileId]
+           ,[MemberTypeId]
+           ,[CountryId]
+           ,[LanguageId]
+           ,[VipId]
+           ,[PhoneNo]
+           ,[MemberNo]
+           ,[MemberLvt]
+           ,[AgentId]
+           ,[CompanyId]
+           ,[GroupId]
+           ,[SourceId]
+           ,[ContactId]
+           ,[ArrivalDate]
+           ,[NoOfNight]
+           ,[DepartureDate]
+           ,[NoOfAdult]
+           ,[NoOfChildren]
+           ,[NoOfRoom]
+           ,[RoomTypeId]
+           ,[RtcId]           
+           ,[ExtnId]
+           ,[RateCodeId]
+           ,[IsFixedRate]
+           ,[Rate]
+           ,[CurrencyId]
+           ,[PackageId]
+           ,[BlockCodeId]
+           ,[ETA]
+           ,[ReservationTypeId]
+           ,[MarketId]
+           ,[ReservationSourceId]
+           ,[OriginId]
+           ,[PaymentMethodId]
+           ,[CreditCardNo]
+           ,[CardExpiryDate]
+           ,[CVVNo]
+           ,[ApprovalCode]
+           ,[ApprovalAmount]
+           ,[SuitWith]
+           ,[IsEmailConfirmation]
+           ,[GuestBalance]
+           ,[DiscountAmount]
+           ,[DiscountPercentage]
+           ,[DiscountReasonId]
+           ,[TARecordLocator]
+           ,[SpecialsId]
+           ,[ReservationComments]
+		   ,[InHouseComments]
+		   ,[CashieringComments]
+		   ,[HouseKeepingComments]
+           ,[ItemInventoryId]
+           ,[Remarks]
+		   ,[ConfirmationNumber]
+		   ,[TotalPrice]
+		   ,[TotalBalance]
+		   ,[FolioNumber]
+           ,[CreatedBy]
+           ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+				@ReservationId
+				, @TitleId							
+				, @LastName						
+				, @FirstName						
+				, @ProfileId			
+				, @MemberTypeId		
+				, @CountryId			
+				, @LanguageId			
+				, @VipId				
+				, @PhoneNo			
+				, @MemberNo			
+				, @MemberLvt			
+				, @AgentId			
+				, @CompanyId			
+				, @GroupId			
+				, @SourceId			
+				, @ContactId			
+				, @ArrivalDate		
+				, @NoOfNight			
+				, @DepartureDate		
+				, @NoOfAdult			
+				, @NoOfChildren
+    			, @NoOfRoom			
+				, @RoomTypeId			
+				, @RtcId								
+				, @ExtnId				
+				, @RateCodeId			
+				, @IsFixedRate		
+				, @Rate				
+				, @CurrencyId			
+				, @PackageId			
+				, @BlockCodeId		
+				, @ETATime				
+				, @ReservationTypeId	
+				, @MarketId			
+				, @ReservationSourceId
+				, @OriginId			
+				, @PaymentMethodId	
+				, @CreditCardNo		
+				, @CardExpiryDate		
+				, @CVVNo				
+				, @ApprovalCode		
+				, @ApprovalAmount		
+				, @SuitWith			
+				, @IsEmailConfirmation
+				, @GuestBalance		
+				, @DiscountAmount		
+				, @DiscountPercentage	
+				, @DiscountReasonId	
+				, @TARecordLocator	
+				, @SpecialsId			
+				, @ReservationComments			
+				, @InHouseComments
+				, @CashieringComments
+				, @HouseKeepingComments
+				, @ItemInventoryId	
+				, @Remarks		
+			    , @ConfirmationNumber	
+				, @TotalPrice
+				, @TotalBalance
+				, @FolioNumber
+				, @CreatedBy
+				, GETDATE()
+				, @IsActive		
+			)	
+			
+			
+		SELECT @ReservationId AS ReservationId				
+
+END
+
+
+
+/********* Add session state time out seeting in web.config ************/
+
+<sessionState timeout="60"></sessionState>
+
+/************ Add Code Column into PaymentMethod Table ********/
+
+ALTER TABLE PaymentMethod ADD Code NVARCHAR(25) NULL
+GO
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddPaymentMethod
+	Comment   Changes in SP AddPaymentMethod
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddPaymentMethod]    Script Date: 2/6/2018 3:15:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddPaymentMethod]	
+	@Code			NVARCHAR(25)	= NULL	,
+	@Name			NVARCHAR(500)			,
+	@Description	NVARCHAR(MAX)	= NULL	,
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[PaymentMethod]
+           ([Id]           
+		   ,[Code]
+           ,[Name]		   		
+		   ,[Description]   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id	
+			   ,@Code		   
+			   ,@Name	
+			   ,@Description		   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdatePaymentMethod
+	Comment   Changes in SP UpdatePaymentMethod
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[UpdatePaymentMethod]    Script Date: 2/6/2018 3:16:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdatePaymentMethod]
+	@Id				UNIQUEIDENTIFIER				,	
+	@Code			NVARCHAR(25)		=	NULL	,
+	@Name			NVARCHAR(500)					,	
+	@Description	NVARCHAR(MAX)		=	NULL	,
+	@IsActive		BIT					=	NULL	,	
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[PaymentMethod]
+		SET	[Name]			=	@Name		
+		   ,[Code]			=	@Code
+		   ,[Description]	=	@Description   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchPaymentMethod
+	Comment   Changes in SP SearchPaymentMethod
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchPaymentMethod]    Script Date: 2/6/2018 3:17:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchPaymentMethod] '', '', '',  1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchPaymentMethod]					
+	@Code			NVARCHAR(25)	=	NULL	,
+	@Name			NVARCHAR(500)	=	NULL	,
+	@Description	NVARCHAR(MAX)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempPaymentMethod
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL		
+		,	[Code]			NVARCHAR(255)		NULL
+		,   [Name]			NVARCHAR(255)		NOT NULL
+		,	[Description]	NVARCHAR(MAX)		NULL
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[PaymentMethod]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+						)
+
+
+		INSERT INTO #tempPaymentMethod 
+		(
+			[RowNum]		, 
+			[Id]			,	 
+			[Code]			,
+			[Name]			, 
+			[Description]	, 
+			[CreatedOn]		, 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+						
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN [Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN [Code] END DESC,
+						
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],	
+				ISNULL([Code],'') AS [Code],					
+				ISNULL([Name],'') AS [Name],
+				ISNULL([Description],'') AS [Description],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[PaymentMethod]
+			WHERE	ISNULL(IsDeleted,0) = 0			
+					AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  					
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Code],
+			temp.[Name],	
+			temp.[Description],		
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempPaymentMethod AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddTitle
+	Comment   Create SP AddTitle
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddTitle]    Script Date: 2/6/2018 4:46:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddTitle]	
+	@Title			NVARCHAR(100)			,
+	@Salutation		NVARCHAR(255)	= NULL	,	
+	@IsActive		BIT				= NULL	,	
+	@CreatedBy		INT				= NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Title]
+           ([Id]           
+		   ,[Title]
+           ,[Salutation]		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id	
+			   ,@Title		   
+			   ,@Salutation				   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateTitle
+	Comment   Create SP UpdateTitle
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateTitle]    Script Date: 2/6/2018 4:48:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateTitle]
+	@Id				UNIQUEIDENTIFIER				,	
+	@Title			NVARCHAR(100)					,
+	@Salutation		NVARCHAR(255)		=	NULL	,	
+	@IsActive		BIT					=	NULL	,	
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Title]
+		SET	[Title]			=	@Title		
+		   ,[Salutation]	=	@Salutation		      
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteTitle
+	Comment   Create SP DeleteTitle
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteTitle]    Script Date: 2/6/2018 4:49:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteTitle]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Title]
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchTitle
+	Comment   Create SP SearchTitle
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchTitle]    Script Date: 2/6/2018 5:09:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchTitle]  '', '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchTitle]					
+	@Title			NVARCHAR(100)	=	NULL	,
+	@Salutation		NVARCHAR(255)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempTitle
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL		
+		,	[Title]			NVARCHAR(100)		NULL
+		,   [Salutation]	NVARCHAR(255)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Title]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Title,'') = '' OR [Title] LIKE '%'+ @Title +'%')  
+								AND (ISNULL(@Salutation,'') = '' OR [Salutation] LIKE '%'+ @Salutation +'%')  								
+						)
+
+
+		INSERT INTO #tempTitle 
+		(
+			[RowNum]		, 
+			[Id]			,	 
+			[Title]			,
+			[Salutation]	, 
+			[CreatedOn]		, 
+			[IsActive]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN [CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN [CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Title' and @SortDirection = 'asc'
+						THEN [Title] END ASC,
+					CASE WHEN @SortColumn = 'Title' and @SortDirection = 'desc'
+						THEN [Title] END DESC,
+						
+					CASE WHEN @SortColumn = 'Salutation' and @SortDirection = 'asc'
+						THEN [Salutation] END ASC,
+					CASE WHEN @SortColumn = 'Salutation' and @SortDirection = 'desc'
+						THEN [Salutation] END DESC,
+						
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN [Title] END ASC
+
+			) AS RowNum,
+			[ID],			
+			ISNULL([Title],'') AS [Title],
+			ISNULL([Salutation],'') AS [Salutation],
+			[CreatedOn],
+			[IsActive]
+		FROM [dbo].[Title]
+		WHERE	ISNULL(IsDeleted,0) = 0								
+				AND (ISNULL(@Title,'') = '' OR [Title] LIKE '%'+ @Title +'%')  
+				AND (ISNULL(@Salutation,'') = '' OR [Salutation] LIKE '%'+ @Salutation +'%')  								
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Title],
+			temp.[Salutation],				
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempTitle AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/***** Remove NOT NULL constraint from Salutation column ***********/
+
+
+ALTER TABLE Title ALTER COLUMN Salutation NVARCHAR(255) NULL
+GO
+
+/*******************************************************************************************************************
+	SP Name : SearchAdvanceRoom
+	Comment   Changes in SP SearchAdvanceRoom
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceRoom]    Script Date: 2/6/2018 5:31:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceRoom]
+			@RoomTypeId		=	NULL	,
+			@ArrivalDate	=	''		,
+			@NoOfNight		=	NULL	,
+			@DepartureDate	=	NULL	,
+			@RoomNo			=	''		,
+			@Type			=	''		,
+			@RoomFeatures	=	''		,
+			@IsClean		=	NULL	,
+			@IsDirty		=	NULL	,
+			@IsInspected	=	NULL	
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceRoom]
+	@RoomTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate		DATETIME			=	NULL	,
+	@NoOfNight			INT					=	NULL	,
+	@DepartureDate		DATETIME			=	NULL	,
+	@RoomNo				NVARCHAR(255)		=	NULL	,
+	@Type				NVARCHAR(255)		=	NULL	,
+	@RoomFeatures		NVARCHAR(MAX)		=	NULL	,
+	@IsClean			BIT					=	NULL	,
+	@IsDirty			BIT					=	NULL	,
+	@IsInspected		BIT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	--- POPULATE ROOM STATUS TEMP TABLE : START
+	CREATE TABLE #tempStatus
+	(
+		[Id]			UNIQUEIDENTIFIER	NOT NULL	,
+		[StatusCode]	NVARCHAR(255)		NULL
+	);
+
+	IF ISNULL(@IsClean,0) = 1
+	BEGIN
+		INSERT INTO #tempStatus ([Id], [StatusCode])
+		SELECT Id,	[Code] FROM [dbo].[RoomStatus] 
+			WHERE	ISNULL(IsDeleted,0) = 0
+					AND [Code] = 'CLEAN'
+	END
+
+	IF ISNULL(@IsDirty,0) = 1
+	BEGIN
+		INSERT INTO #tempStatus ([Id], [StatusCode])
+		SELECT Id,	[Code] FROM [dbo].[RoomStatus] 
+			WHERE	ISNULL(IsDeleted,0) = 0
+					AND [Code] = 'DIRTY'
+	END
+
+	IF ISNULL(@IsInspected,0) = 1
+	BEGIN
+		INSERT INTO #tempStatus ([Id], [StatusCode])
+		SELECT Id,	[Code] FROM [dbo].[RoomStatus] 
+			WHERE	ISNULL(IsDeleted,0) = 0
+					AND [Code] = 'INSPECTED'
+	END
+
+	--- POPULATE ROOM STATUS TEMP TABLE : END
+
+	CREATE TABLE #tempRoom
+	(
+			[RowNum]				INT					NOT NULL
+		,	[RoomId]				UNIQUEIDENTIFIER	NOT NULL		
+		,   [Type]					NVARCHAR(50)		NULL	
+		,   [RoomNo]				NVARCHAR(255)		NOT NULL
+		,	[Description]			NVARCHAR(2000)		NULL
+		,	[RoomStatusId]			UNIQUEIDENTIFIER	NULL
+		,	[RoomStatusName]		NVARCHAR(255)		NULL
+		,	[RoomStatusColor]		NVARCHAR(255)		NULL
+		,	[RoomTypeId]			UNIQUEIDENTIFIER	NULL
+		,	[RoomTypeCode]			NVARCHAR(255)		NULL
+		,	[RoomTypeDescription]	NVARCHAR(255)		NULL		
+		,	[RoomFeatures]			NVARCHAR(MAX)		NULL
+		,	[ReservationId]			UNIQUEIDENTIFIER	NULL
+	)
+
+	
+	INSERT INTO #tempRoom 
+		(
+			[RowNum]				, 
+			[RoomId]				, 
+			[Type]					, 
+			[RoomNo]				, 
+			[Description]			, 
+			[RoomStatusId]			,
+			[RoomStatusName]		,
+			[RoomStatusColor]		,
+			[RoomTypeId]			, 
+			[RoomTypeCode]			,
+			[RoomTypeDescription]	, 
+			[RoomFeatures]			,
+			[ReservationId]		
+		)
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  TRY_PARSE(R.[RoomNo] AS INT) ASC
+
+				) AS RowNum,
+				R.Id AS RoomId,				
+				ISNULL(R.[Type],'') AS [Type],
+				ISNULL(R.RoomNo,'') AS RoomNo,
+				ISNULL(R.[Description],'') AS [Description],				
+				
+				RS.Id AS RoomStatusId,
+				RS.[Name] AS RoomStatusName,
+				RS.[ColorCode] AS RoomStatusColor,
+
+				ROT.Id AS RoomTypeId,
+				ISNULL(ROT.RoomTypeCode,'') AS RoomTypeCode,
+				ISNULL(ROT.[Description],'') AS RoomTypeDescription,
+
+				ISNULL((STUFF(( SELECT ', '+ CAST(RF.[Name] AS varchar(MAX))					
+				FROM RoomFeaturesMapping RFM						
+						INNER JOIN RoomFeatures RF ON RF.Id = RFM.RoomFeatureId
+							AND ISNULL(RF.IsDeleted,0) = 0
+				WHERE	ISNULL(RFM.IsDeleted,0) = 0
+						AND RFM.RoomId = R.Id						
+						FOR XMl PATH('')),1,1,'')),'') AS RoomFeatures,
+				RL.ReservationId AS ReservationId
+		
+			FROM Room R
+					INNER JOIN  RoomType ROT ON R.RoomTypeId = ROT.Id 
+						AND ISNULL(ROT.IsDeleted,0) = 0  AND ISNULL(ROT.IsActive,0) = 1 
+					LEFT JOIN (SELECT DISTINCT RL.RoomId, RL.RoomStatusId, RL.ReservationId
+									FROM ReservationLog RL 
+										INNER JOIN Reservation R ON R.Id = RL.ReservationId
+											AND ISNULL(R.IsDeleted,0) = 0
+									WHERE ISNULL(RL.IsDeleted,0) = 0 
+										AND ISNULL(RL.IsActive,0) = 1 
+										AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+										AND ((ISNULL(@ArrivalDate,'') = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS date) AND CAST(RL.CheckOutDate  AS date))
+												OR (ISNULL(@DepartureDate,'') = '' OR CAST(@DepartureDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS date) AND CAST(RL.CheckOutDate  AS date)))
+										) AS RL
+						ON RL.RoomId = R.Id
+					LEFT JOIN RoomStatus RS ON RS.Id = (CASE WHEN RL.RoomStatusId IS NOT NULL THEN RL.RoomStatusId ELSE R.StatusId END)					
+						AND ISNULL(RS.IsDeleted,0) = 0  AND ISNULL(RS.IsActive,0) = 1 
+					LEFT JOIN RoomFeaturesMapping RFM ON RFM.RoomId = R.Id
+						AND ISNULL(RFM.IsDeleted,0) = 0  AND ISNULL(RFM.IsActive,0) = 1 
+					LEFT JOIN RoomFeatures RF ON RF.Id = RFM.RoomFeatureId
+						AND ISNULL(RF.IsDeleted,0) = 0  AND ISNULL(RF.IsActive,0) = 1 
+			WHERE	ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsActive,0) = 1										
+					AND 
+					(
+						 (SELECT COUNT(*) FROM #tempStatus) = 0
+							OR 
+						 RS.Id IN (SELECT Id FROM #tempStatus)
+					)					
+					--AND RS.[Name] = 'Clean'										  
+					AND (@RoomTypeId IS NULL OR R.RoomTypeId= @RoomTypeId)
+					AND (ISNULL(@RoomNo,'') = '' OR R.RoomNo LIKE '%' + @RoomNo + '%')
+					AND (ISNULL(@Type,'') = '' OR R.RoomNo LIKE '%' + @Type + '%')
+					
+		
+	--Room Features.		
+	SELECT 
+			DISTINCT
+			temp.RowNum,
+			temp.[RoomId],			
+			temp.[Type],			
+			temp.[RoomNo],		
+			temp.[Description],	
+			temp.[RoomStatusId],
+			temp.[RoomStatusName],
+			temp.[RoomStatusColor],
+			temp.[RoomTypeId],
+			temp.[RoomTypeCode],
+			temp.[RoomFeatures],
+			temp.[ReservationId]
+	FROM	
+		#tempRoom AS temp
+		LEFT JOIN RoomFeaturesMapping ON RoomFeaturesMapping.RoomId = temp.[RoomId]
+			AND ISNULL(RoomFeaturesMapping.IsDeleted,0) = 0
+		WHERE ISNULL(@RoomFeatures,'') = '' OR 
+			RoomFeaturesMapping.RoomFeatureId IN (SELECT * FROM [dbo].[SplitStrings] (@RoomFeatures,',')) 
+END
+

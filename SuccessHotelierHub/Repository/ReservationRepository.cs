@@ -118,6 +118,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ConfirmationNumber", Value = reservation.ConfirmationNumber },
                     new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
                     new SqlParameter { ParameterName = "@TotalBalance", Value = reservation.TotalBalance },
+                    new SqlParameter { ParameterName = "@FolioNumber", Value = reservation.FolioNumber },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = reservation.CreatedBy }
                 };

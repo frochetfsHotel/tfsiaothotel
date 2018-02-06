@@ -112,7 +112,16 @@ namespace SuccessHotelierHub.Controllers
             {
                 var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
 
-                var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                var paymentMethodList = new SelectList(
+                    paymentMethodRepository.GetPaymentMethods()
+                    .Select(
+                        m => new SelectListItem()
+                        {
+                            Value = m.Id.ToString(),
+                            Text = (m.Code + " - " + m.Name)
+                        }
+                ), "Value", "Text").ToList();
 
                 #region Room Mapping
 

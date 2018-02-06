@@ -1,6 +1,6 @@
-﻿@model SuccessHotelierHub.Models.SearchPaymentMethodParametersVM
+﻿@model SuccessHotelierHub.Models.SearchTitleParametersVM
 @{
-    ViewBag.Title = "Search Payment Method";
+    ViewBag.Title = "Search Title";
 }
 @section styles{
     <!-- DataTables -->
@@ -8,16 +8,16 @@
 }
 
 @{
-    var PagerName = "PaymentMethodGrid";
+    var PagerName = "TitleGrid";
 }
 
 <section class="content-header">
     <h1>
-        Payment Method <small>List</small>
+        Title <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Payment Method</li>
+        <li class="">Title</li>
         <li class="active">Search</li>
     </ol>
 </section>
@@ -25,54 +25,51 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search Payment Method</h3>
+            <h3 class="box-title">Search Title</h3>
             <div class="pull-right box-tools">
-                <a href="@Url.Action("Create","PaymentMethod")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add Payment Method</a>
+                <a href="@Url.Action("Create","Title")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Title</a>
             </div>
         </div>
-        <form class="frmPaymentMethodList" enctype="multipart/form-data" method="post">
+        <form class="frmTitleList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
-                        <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.Code)
-                            @Html.TextBoxFor(m => m.Code, new { @class = "form-control text-uppercase", placeholder = "Code" })
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Title)
+                            @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Title" })
                         </div>
-                        <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.Name)
-                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Salutation)
+                            @Html.TextAreaFor(m => m.Salutation, new { @class = "form-control", row = "3", placeholder = "Salutation" })
                         </div>
-                        <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.Description)
-                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                        <div class="col-md-4 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchTitle()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearTitle()">Clear</button>
                         </div>
-                        <div class="col-md-3 form-group mt_25">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchPaymentMethod()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearPaymentMethod()">Clear</button>
-                        </div>
+                        <div class="clearfix"></div>
                     </div>
                 </div>
 
 
+
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped" id="tblPaymentMethod">
+                        <table class="table table-bordered table-hover table-striped" id="tblTitle">
                             <thead>
                                 <tr>
-                                    <th class="width_10"></th>
-                                    <th class="width_10">Code</th>
-                                    <th class="width_20">Name</th>
-                                    <th class="width_30">Description</th>
-                                    <th class="width_10">Status</th>
-                                    <th class="width_20">Action</th>
+                                    <th>CreatedOn</th>
+                                    <th>Title</th>
+                                    <th>Salutation</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
                     <div class="clearfix"></div>
                     <div class="text-left">
-                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "PaymentMethodGridPageChange" })
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "TitleGridPageChange" })
                     </div>
                 </div>
             </div>
@@ -83,10 +80,10 @@
 
 <script type="text/javascript">
     var currentPage = 1;
-    var grdPaymentMethod;
+    var grdTitle;
 
     $(document).ready(function () {
-        setTimeout(InitializePaymentMethodGrid, 200);
+        setTimeout(InitializeTitleGrid, 200);
 
         $("input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
@@ -96,18 +93,16 @@
     });
 
 
-    function SearchPaymentMethodParameters(d) {
-        var code = $('#Code').val();
-        var name = $('#Name').val();
-        var description = $('#Description').val();
+    function SearchTitleParameters(d) {
+        var title = $('#Title').val();
+        var salutation = $('#Salutation').val();
 
         d.PageNum = currentPage;
-        d.Code = code;
-        d.Name = name;
-        d.Description = description;
+        d.Title = title;
+        d.Salutation = salutation;
     }
 
-    function PaymentMethodGridDataBound(response) {
+    function TitleGridDataBound(response) {
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
             return response.data;
@@ -118,18 +113,18 @@
     }
 
 
-    function ReloadPaymentMethodGrid() {
-        grdPaymentMethod.ajax.url("@Url.Content("~/PaymentMethod/Search")").load();
+    function ReloadTitleGrid() {
+        grdTitle.ajax.url("@Url.Content("~/Title/Search")").load();
     }
 
-    function PaymentMethodGridPageChange(cPage) {
+    function TitleGridPageChange(cPage) {
         currentPage = cPage;
-        ReloadPaymentMethodGrid();
+        ReloadTitleGrid();
     }
 
 
-    function InitializePaymentMethodGrid() {
-        grdPaymentMethod = $('#tblPaymentMethod').DataTable({
+    function InitializeTitleGrid() {
+        grdTitle = $('#tblTitle').DataTable({
             serverSide: true,
             ajax: {
                 beforeSend: function (xhr) {
@@ -141,9 +136,9 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/PaymentMethod/Search")',
-                data: SearchPaymentMethodParameters,
-                dataSrc: PaymentMethodGridDataBound,
+                url: '@Url.Content("~/Title/Search")',
+                data: SearchTitleParameters,
+                dataSrc: TitleGridDataBound,
                 type: "POST"
             },
             scrollCollapse: true,
@@ -165,21 +160,20 @@
             },
             {
                 targets: 1,
-                data: "Code",
+                data: "Title",
                 orderable: true
             },
             {
                 targets: 2,
-                data: "Name",
-                orderable: true
+                data: "Salutation",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var salutation = full.Salutation;
+                    return "<span>" + html_entity_decode(salutation) + "</span>";
+                }
             },
             {
                 targets: 3,
-                data: "Description",
-                orderable: false
-            },
-            {
-                targets: 4,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -192,15 +186,15 @@
                 }
             },
             {
-                targets: 5,
+                targets: 4,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoPaymentMethodEdit(\'' + full.Id + '\')" '
+                    return '<a href="javascript:void(0);" onclick="GotoTitleEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
                         + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deletePaymentMethod(this,event,\'' + full.Id + '\')">Delete</button>';
+                        + ' onclick="deleteTitle(this,event,\'' + full.Id + '\')">Delete</button>';
                 }
             }
             ],
@@ -211,24 +205,24 @@
         })
     }
 
-    function GotoPaymentMethodEdit(Id) {
-        var url = '@Url.Content("~/PaymentMethod/Edit/")' + Id;
+    function GotoTitleEdit(Id) {
+        var url = '@Url.Content("~/Title/Edit/")' + Id;
         redirectTo(url);
     }
 
-    function searchPaymentMethod() {
+    function searchTitle() {
         currentPage = 1;
-        ReloadPaymentMethodGrid();
+        ReloadTitleGrid();
     }
 
-    function clearPaymentMethod() {
-        $('#Code').val('');
-        $('#Name').val('');
-        $('#Description').val('');
-        searchPaymentMethod();
+    function clearTitle() {
+        $('#Title').val('');
+        $('#Salutation').val('');
+
+        searchTitle();
     }
 
-    function deletePaymentMethod(item, e, id) {
+    function deleteTitle(item, e, id) {
 
         swal({
             title: 'Are you sure you want to delete?',
@@ -250,17 +244,17 @@
                     complete: function () {
                         hideLoader();
                     },
-                    url: '@Url.Content("~/PaymentMethod/Delete")',
+                    url: '@Url.Content("~/Title/Delete")',
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
                         if (response.IsSuccess == true) {
 
-                            var tr = $('#tblPaymentMethod  tbody tr#' + id)
-                            var row = grdPaymentMethod.row(tr);
+                            var tr = $('#tblTitle  tbody tr#' + id)
+                            var row = grdTitle.row(tr);
                             var rowNode = row.node();
                             row.remove();
-                            grdPaymentMethod.draw();
+                            grdTitle.draw();
 
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }

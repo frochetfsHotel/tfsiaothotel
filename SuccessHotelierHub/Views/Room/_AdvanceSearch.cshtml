@@ -83,9 +83,14 @@
         </div>
        <div class="col-md-2 row">
            <div class="col-md-12 col-xs-12 form-group">
+               <label class="container1" for="IsAll">
+                   All
+                   @Html.CheckBoxFor(m => m.IsAll, new { @checked = "checked" })
+                   <span class="checkmark"></span>
+               </label>
                <label class="container1" for="IsClean">
                    Clean
-                   @Html.CheckBoxFor(m => m.IsClean, new { @checked = "checked" })
+                   @Html.CheckBoxFor(m => m.IsClean)
                    <span class="checkmark"></span>
                </label>
                <label class="container1" for="IsDirty">
@@ -144,9 +149,22 @@
             searchRoom();
         });
 
-        $("form#frmAdvanceRoomSearch input").blur(function () {
+        $("form#frmAdvanceRoomSearch input[type='text']").blur(function () {
             if (!IsNullOrEmpty($(this).val())) {
                 searchRoom();
+            }
+        });
+
+        //IsAll Check box.
+        $('#IsAll').change(function () {
+            if (this.checked) {
+                $('#IsClean').prop("checked", true);
+                $('#IsDirty').prop("checked", true);
+                $('#IsInspected').prop("checked", true);
+            } else {
+                $('#IsClean').prop("checked", false);
+                $('#IsDirty').prop("checked", false);
+                $('#IsInspected').prop("checked", false);
             }
         });
     });
@@ -288,6 +306,7 @@
         $('form#frmAdvanceRoomSearch #RoomNo').val('');
         $('form#frmAdvanceRoomSearch #Type').val('');
         $("form#frmAdvanceRoomSearch #RoomFeatures").select2("val", "");
+        $('form#frmAdvanceRoomSearch #IsAll').prop('checked', true).trigger("change");
 
         $("form#frmAdvanceRoomSearch #tblRoom tbody").empty();
     }

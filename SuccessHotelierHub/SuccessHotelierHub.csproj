@@ -242,6 +242,7 @@
     <Compile Include="Controllers\RoomFeaturesController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
     <Compile Include="Controllers\StateController.cs" />
+    <Compile Include="Controllers\TitleController.cs" />
     <Compile Include="Controllers\TutorController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UserRoleController.cs" />
@@ -2069,6 +2070,9 @@
     <Content Include="Views\PropertyCalendar\Index.cshtml" />
     <Content Include="Views\PropertyCalendar\_Calendar.cshtml" />
     <Content Include="Views\ErrorLog\Index.cshtml" />
+    <Content Include="Views\Title\Create.cshtml" />
+    <Content Include="Views\Title\Edit.cshtml" />
+    <Content Include="Views\Title\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

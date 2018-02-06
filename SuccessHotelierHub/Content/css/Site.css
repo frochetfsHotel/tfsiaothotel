@@ -852,5 +852,14 @@ width:100% !important;
 }
 
 .text-weekend-bgcolor{
-    background-color:#fff000;
+    /*background-color:#fff000 !important;*/
+    background-color: #bf7fbf !important;
+}
+
+.text-uppercase{
+    text-transform:uppercase !important;
+}
+
+.text-lowercase{
+    text-transform:lowercase !important;
 }

@@ -47,6 +47,22 @@ namespace SuccessHotelierHub.Repository
             return user;
         }
 
+        public List<UserVM> CheckCashierNumberExist(Guid? id, string cashierNumber)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@CashierNumber", Value = cashierNumber }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("CheckCashierNumberExist", parameters);
+
+            var user = new List<UserVM>();
+            user = DALHelper.CreateListFromTable<UserVM>(dt);
+
+            return user;
+        }
+
         public List<UserVM> GetUserDetailById(Guid userId)
         {
             SqlParameter[] parameters =
@@ -72,6 +88,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
                     new SqlParameter { ParameterName = "@Password", Value = user.Password },
                     new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
+                    new SqlParameter { ParameterName = "@UserId", Value = user.UserId },
+                    new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = user.CreatedBy }
                 };
@@ -91,6 +109,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
                     new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
+                    new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = user.UpdatedBy }
                 };
@@ -152,7 +171,16 @@ namespace SuccessHotelierHub.Repository
             return userId;
         }
 
+        public int GetMaxUserId()
+        {
+            int userId = 0;
 
+            var objId = DALHelper.ExecuteScalar("GetMaxUserId");
+
+            int.TryParse(Convert.ToString(objId), out userId);
+
+            return userId;
+        }
 
         #endregion
 

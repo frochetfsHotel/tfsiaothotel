@@ -351,8 +351,7 @@
 
     function getSelectedPreferenceItemIds() {
         var preferenceIds = "";
-        $("#ListOfSelectedPreferences span i").each(function () {
-            console.log($(this).data("preferenceid"));
+        $("#ListOfSelectedPreferences span i").each(function () {            
             preferenceIds += $(this).data("preferenceid") + ",";
         });
 
@@ -385,8 +384,7 @@
                     countryId: parseInt(country)
                 },
                 success: function (result) {
-                    if (!IsNullOrEmpty(result)) {
-                        console.log(result);
+                    if (!IsNullOrEmpty(result)) {                        
                         var optionHtml = "";
                         optionHtml += "<option value=''>-- Select State --</option>";
                         if (result.IsSuccess == true) {
@@ -424,8 +422,7 @@
                     stateId: parseInt(state)
                 },
                 success: function (result) {
-                    if (!IsNullOrEmpty(result)) {
-                        console.log(result);
+                    if (!IsNullOrEmpty(result)) {                        
                         var optionHtml = "";
                         optionHtml += "<option value=''>-- Select City --</option>";
                         if (result.IsSuccess == true) {

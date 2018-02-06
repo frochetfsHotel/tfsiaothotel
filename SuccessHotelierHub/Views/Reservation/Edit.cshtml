@@ -84,6 +84,19 @@
 
     #endregion
 
+    #region Manage Source Parameter
+    var sourceParam = Convert.ToString(Request.QueryString["source"]);
+    var qid = string.Empty;
+    var btnCancelUrl = Url.Action("List", "Reservation");
+
+    if (!string.IsNullOrWhiteSpace(sourceParam))
+    {
+        if (sourceParam == "RoomPlan")
+        {
+            btnCancelUrl = Url.Action("RoomPlan", "Reservation");
+        }
+    }
+    #endregion
 }
 
 
@@ -125,6 +138,7 @@
             @Html.HiddenFor(m => m.ConfirmationNumber); 
             @Html.HiddenFor(m => m.IsWeekEndPrice);
             <input type="hidden" id="PreferenceItems" name="PreferenceItems" value="@preferenceItems" />
+            <input type="hidden" id="Source" name="Source" value="@sourceParam" />
             <!-- HIDDEN FIELD -->
 
             <div class="box-body pt_10 pb-0">
@@ -589,7 +603,7 @@
             <!-- /.box-body -->
             <div class="box-footer text-right">
                 <button type="button" class="btn btn-success" onclick="updateReservation();">Update</button>
-                <a href="@Url.Action("List","Reservation")" class="btn btn-danger">Cancel</a>
+                <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>
             </div>
             <!-- /.box-footer -->
         }
@@ -898,8 +912,7 @@
     });
 
     function arrivalDateChanged(e) {
-        var selectedDate = $(this).val();
-        console.log("arrivalDateChanged : " + selectedDate);
+        var selectedDate = $(this).val();        
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -910,13 +923,11 @@
                 dayOfWeek = GetDayOfWeek(weekDay);
             }
         }
-        console.log("dayOfWeek : " + dayOfWeek);
         $('#ArrivalDayOfWeek').html(dayOfWeek);
     }
 
     function departureDateChanged(e) {
         var selectedDate = $(this).val();
-        console.log("departureDateChanged : " + selectedDate);
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -927,7 +938,6 @@
                 dayOfWeek = GetDayOfWeek(weekDay);
             }
         }
-        console.log("dayOfWeek : " + dayOfWeek);
         $('#DepartureDayOfWeek').html(dayOfWeek);
     }
 
@@ -969,8 +979,7 @@
 
     function getSelectedPreferenceItemIds() {
         var preferenceIds = "";
-        $("#ListOfSelectedPreferences span i").each(function () {
-            console.log($(this).data("preferenceid"));
+        $("#ListOfSelectedPreferences span i").each(function () {            
             preferenceIds += $(this).data("preferenceid") + ",";
         });
 
@@ -995,8 +1004,14 @@
         }
         
         if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();            
-            if (paymentMethod != 'Cash') {
+            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
+
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+            
+            if (trim(paymentMethodName) != 'Cash') {
                 var creditCardNo = $('form#frmReservation #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
                 var cvvNo = $('form#frmReservation #CVVNo').val();
@@ -1064,9 +1079,13 @@
 
                         showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/Reservation/List")');
-                        }, 1000);
+                        if (response.IsExternalUrl) {
+                            redirectTo(response.data);
+                        } else {
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/Reservation/List")');
+                            }, 1000);
+                        }
 
                     }
                 }
@@ -1426,7 +1445,12 @@
         if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
             var paymentMethod = $('#PaymentMethodId option:selected').text();
 
-            if (paymentMethod == 'Cash') {
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) == 'Cash') {
                 //Remove Label Bold.
                 $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
                 $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");

@@ -26,6 +26,9 @@ namespace SuccessHotelierHub.Controllers
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
         private TitleRepository titleRepository = new TitleRepository();
+        private CityRepository cityRepository = new CityRepository();
+        private StateRepository stateRepository = new StateRepository();
+        private CountryRepository countryRepository = new CountryRepository();
 
         #endregion
 
@@ -188,6 +191,20 @@ namespace SuccessHotelierHub.Controllers
 
                 model.StatusId = reservation.ReservationStatusId;
 
+                #region Payment Method
+                if (reservation.PaymentMethodId.HasValue)
+                {
+                    var paymentMethod = paymentMethodRepository.GetPaymentMethodById(reservation.PaymentMethodId.Value).FirstOrDefault();
+
+                    if (paymentMethod != null)
+                    {
+                        model.PaymentMethodId = paymentMethod.Id;
+                        model.PaymentMethodCode = paymentMethod.Code;
+                        model.PaymentMethodName = paymentMethod.Name;
+                    }
+                }
+                #endregion
+
                 if (model.StatusId.HasValue)
                 {
                     //Get Reservation Status Detail.
@@ -243,7 +260,16 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
-                var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                var paymentMethodList = new SelectList(
+                     paymentMethodRepository.GetPaymentMethods()
+                     .Select(
+                         m => new SelectListItem()
+                         {
+                             Value = m.Id.ToString(),
+                             Text = (m.Code + " - " + m.Name)
+                         }
+                ), "Value", "Text").ToList();
 
                 #region Room Mapping
 
@@ -570,10 +596,54 @@ namespace SuccessHotelierHub.Controllers
             model.ProfileId = reservation.ProfileId;
             model.Title = title.Title;
             model.Name = (profile.FirstName + ' ' + profile.LastName);
+
+            #region Fetch Address
             model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+
+            if (profile.CityId.HasValue)
+            {
+                var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
+
+                if (city != null)
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
+                }
+            }
+
+            if (profile.StateId.HasValue)
+            {
+                var state = stateRepository.GetStateById(profile.StateId.Value).FirstOrDefault();
+
+                if (state != null)
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + state.Name) : state.Name;
+                }
+            }
+
+            if (profile.CountryId.HasValue)
+            {
+                var country = countryRepository.GetCountryById(profile.CountryId.Value).FirstOrDefault();
+
+                if (country != null)
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
+                }
+            }
+            #endregion
+
+            if (profile.CityId.HasValue)
+            {
+                var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
+
+                if (city != null)
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
+                }
+            }
+
             model.RoomNumer = roomNumbers;
-            model.FolioNumber = "";
-            model.CashierNumber = "";
+            model.FolioNumber = Convert.ToString(reservation.FolioNumber);
+            model.CashierNumber = LogInManager.CashierNumber;
             model.PageNumber = "1";
             model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
             model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
@@ -722,10 +792,44 @@ namespace SuccessHotelierHub.Controllers
                 model.ProfileId = reservation.ProfileId;
                 model.Title = title.Title;
                 model.Name = (profile.FirstName + ' ' + profile.LastName);
+
+                #region Fetch Address
                 model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+
+                if (profile.CityId.HasValue)
+                {
+                    var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
+
+                    if (city != null)
+                    {
+                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
+                    }
+                }
+
+                if (profile.StateId.HasValue)
+                {
+                    var state = stateRepository.GetStateById(profile.StateId.Value).FirstOrDefault();
+
+                    if (state != null)
+                    {
+                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + state.Name) : state.Name;
+                    }
+                }
+
+                if (profile.CountryId.HasValue)
+                {
+                    var country = countryRepository.GetCountryById(profile.CountryId.Value).FirstOrDefault();
+
+                    if (country != null)
+                    {
+                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
+                    }
+                }
+                #endregion
+
                 model.RoomNumer = roomNumbers;
-                model.FolioNumber = "";
-                model.CashierNumber = "";
+                model.FolioNumber = Convert.ToString(reservation.FolioNumber); ;
+                model.CashierNumber = LogInManager.CashierNumber;
                 model.PageNumber = "1";
                 model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
                 model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";

@@ -338,7 +338,7 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.ReservationTypeId,
-                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationTypeList, 
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationTypeList,
                                                 "Value", "Text"),
                                                 "--Select Reservation Type--",
                                                 new { @class = "form-control" })
@@ -515,17 +515,16 @@
 
                                 </div>
             <!-- /.box-body -->
-            <div class="box-footer text-right">
-                <button type="button" class="btn btn-success" onclick="saveReservation();">Save</button>
-                <a href="@Url.Action("List","Reservation")" class="btn btn-danger">Cancel</a>
-            </div>
+                                <div class="box-footer text-right">
+                                    <button type="button" class="btn btn-success" onclick="saveReservation();">Save</button>
+                                    <a href="@Url.Action("List","Reservation")" class="btn btn-danger">Cancel</a>
+                                </div>
             <!-- /.box-footer -->
         }
     </div>
 </section>
 
 <!-- This is the add reservation form-->
-
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -547,7 +546,6 @@
     </div>
 </div>
 <!-- Preference Modal Popup END -->
-
 <!-- Advance Profile Search Modal START -->
 <div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -570,7 +568,6 @@
     </div>
 </div>
 <!-- Advance Profile Search Modal END -->
-
 <!-- RoomType Modal Popup START -->
 <div class="modal fade" id="roomTypeModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -592,7 +589,6 @@
     </div>
 </div>
 <!-- RoomType Modal Popup END -->
-
 <!-- Room Modal Popup START -->
 <div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl">
@@ -664,6 +660,8 @@
         $('#ETAText').timepicker({
             showInputs: false
         });
+
+        $('#ETAText').val('');
 
         //Preference
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {
@@ -740,7 +738,7 @@
         });
 
         //Room
-        $('.btnAdvanceSearchRoomOk').click(function (e) {            
+        $('.btnAdvanceSearchRoomOk').click(function (e) {
             var roomNumbers = "";
             var roomIds = "";
 
@@ -754,7 +752,7 @@
                     return false;
                 }
 
-                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {                    
+                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {
                     //get selected room.
                     roomNumbers += $(this).data("roomno") + Delimeter.COMMA + Delimeter.SPACE;
                     roomIds += $(this).val() + Delimeter.COMMA;
@@ -785,7 +783,6 @@
 
     function arrivalDateChanged(e) {
         var selectedDate = $(this).val();
-        console.log("arrivalDateChanged : " + selectedDate);
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -796,13 +793,11 @@
                 dayOfWeek = GetDayOfWeek(weekDay);
             }
         }
-        console.log("dayOfWeek : " + dayOfWeek);
         $('#ArrivalDayOfWeek').html(dayOfWeek);
     }
 
     function departureDateChanged(e) {
         var selectedDate = $(this).val();
-        console.log("departureDateChanged : " + selectedDate);
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -813,7 +808,6 @@
                 dayOfWeek = GetDayOfWeek(weekDay);
             }
         }
-        console.log("dayOfWeek : " + dayOfWeek);
         $('#DepartureDayOfWeek').html(dayOfWeek);
     }
 
@@ -884,7 +878,6 @@
     function getSelectedPreferenceItemIds() {
         var preferenceIds = "";
         $("#ListOfSelectedPreferences span i").each(function () {
-            console.log($(this).data("preferenceid"));
             preferenceIds += $(this).data("preferenceid") + ",";
         });
 
@@ -911,7 +904,12 @@
         if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
             var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
 
-            if (paymentMethod != 'Cash') {
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) != 'Cash') {
                 var creditCardNo = $('form#frmReservation #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
                 var cvvNo = $('form#frmReservation #CVVNo').val();
@@ -976,19 +974,54 @@
                         //reset the global varible once the data is saved
                         data_needs_saving = false;
 
-                        swal({
-                            title: 'Confirmation# : <span class="text-blue">'+ response.data.ConfirmationNo + '</span>',
-                            type: 'success',
-                            html:'Reservation details saved successfully.',
-                            showCloseButton: true,
-                            showCancelButton: false,
-                            focusConfirm: false,
-                            confirmButtonText: 'OK',
-                        }).then((result) => {                            
-                            if (result.value) {
-                                redirectTo('@Url.Content("~/Reservation/List")');
-                            }
-                        })
+                        var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
+
+                        var paymentMethodName = paymentMethod;
+                        if (Contains(paymentMethod, '-')) {
+                            paymentMethodName = trim(paymentMethod.split('-')[1]);
+                        }
+
+                        if (trim(paymentMethodName) == 'Cash') {
+
+                            swal({
+                                title: '<span>Reservation type Non Guranteed requires an arrival time.</span>',
+                                type: 'warning',
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                focusConfirm: false,
+                                confirmButtonText: 'OK',
+                            }).then((result) => {
+                                if (result.value) {
+                                    swal({
+                                        title: 'Confirmation# : <span class="text-blue">' + response.data.ConfirmationNo + '</span>',
+                                        type: 'success',
+                                        html: 'Reservation details saved successfully.',
+                                        showCloseButton: true,
+                                        showCancelButton: false,
+                                        focusConfirm: false,
+                                        confirmButtonText: 'OK',
+                                    }).then((result) => {
+                                        if (result.value) {
+                                            redirectTo('@Url.Content("~/Reservation/List")');
+                                        }
+                                    })
+                                }
+                            });
+                        } else {
+                            swal({
+                                title: 'Confirmation# : <span class="text-blue">' + response.data.ConfirmationNo + '</span>',
+                                type: 'success',
+                                html: 'Reservation details saved successfully.',
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                focusConfirm: false,
+                                confirmButtonText: 'OK',
+                            }).then((result) => {
+                                if (result.value) {
+                                    redirectTo('@Url.Content("~/Reservation/List")');
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -1040,7 +1073,7 @@
         }
     }
 
-    function calculateTotalPrice() {        
+    function calculateTotalPrice() {
         var noOfNights = $("form#frmReservation #NoOfNight").val();
         var rate = $('form#frmReservation #Rate').val();
 
@@ -1088,7 +1121,7 @@
 
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=CreateReservation";
             redirectTo(url);
-        }       
+        }
     }
 
     //Advance Profile Search
@@ -1144,7 +1177,12 @@
         if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
             var paymentMethod = $('#PaymentMethodId option:selected').text();
 
-            if (paymentMethod == 'Cash') {
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) == 'Cash') {
                 //Remove Label Bold.
                 $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
                 $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");

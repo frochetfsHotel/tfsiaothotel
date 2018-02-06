@@ -208,6 +208,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Confirmation #")]
         public string ConfirmationNumber { get; set; }
 
+        [DisplayName("Folio #")]
+        public long FolioNumber { get; set; }
+
         public Guid? CancellationReasonId { get; set; }
         public string CancellationReasonComment { get; set; }
         public bool IsReservationCancel { get; set; }

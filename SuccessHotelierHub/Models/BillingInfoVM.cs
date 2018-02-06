@@ -59,6 +59,15 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Status")]
         public string Status { get; set; }
 
+        [DisplayName("Payment Method")]
+        public Guid? PaymentMethodId { get; set; }
+
+        [DisplayName("Payment Method Code")]
+        public string PaymentMethodCode { get; set; }
+
+        [DisplayName("Method Of Payment")]
+        public string PaymentMethodName { get; set; }
+
         public bool IsCheckedOut { get; set; }
 
         public List<ReservationChargeVM> Transactions { get; set; }

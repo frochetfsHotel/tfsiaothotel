@@ -43,6 +43,7 @@ namespace SuccessHotelierHub.Repository
 
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@Code", Value = paymentMethod.Code },
                     new SqlParameter { ParameterName = "@Name", Value = paymentMethod.Name },
                     new SqlParameter { ParameterName = "@Description", Value = paymentMethod.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = paymentMethod.IsActive },
@@ -61,6 +62,7 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = paymentMethod.Id },
+                    new SqlParameter { ParameterName = "@Code", Value = paymentMethod.Code },
                     new SqlParameter { ParameterName = "@Name", Value = paymentMethod.Name },
                     new SqlParameter { ParameterName = "@Description", Value = paymentMethod.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = paymentMethod.IsActive },
@@ -91,6 +93,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@Code", Value = model.Code },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },

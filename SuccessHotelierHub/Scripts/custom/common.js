@@ -547,3 +547,19 @@ function ShowErrorMessage(statusCode, errorMessage) {
 function openPageInNewWindow(url) {
     window.open(url, "_blank");
 }
+
+function Contains(string, searchText) {
+    return string.includes(searchText);
+}
+
+function html_entity_decode(message) {
+    return message.replace(/[<>'"]/g, function (m) {
+        return '&' + {
+            '\'': 'apos',
+            '"': 'quot',
+            '&': 'amp',
+            '<': 'lt',
+            '>': 'gt',
+        }[m] + ';';
+    });
+}

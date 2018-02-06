@@ -217,7 +217,11 @@
                                 <h4><span class="spnGuestName"></span></h4>
                             </div>
                             <div class="col-md-6 text-right">
-                                VA
+                                <input type="hidden" id="hdnPaymentMethodId" name="hdnPaymentMethodId" />
+                                <input type="hidden" id="hdnPaymentMethodCode" name="hdnPaymentMethodCode" />
+                                <input type="hidden" id="hdnPaymentMethodName" name="hdnPaymentMethodName" />
+                                
+                                <span class="spnPaymentMethodCode">VA</span>
                                 <span class="spnTotalBalance"></span>
                                 <button class="m-l-md btn btn-sm btn-info" type="button" id="btnAddCharge" onclick="openReservationChargeModal();">Post</button>
                             </div>
@@ -249,7 +253,7 @@
                     <hr/>
                     <div class="row">
                         <div class="col-md-12 text-right">
-                            <input type="button" class="btn btn-sm btn-primary m-r-sm" id="btnBillingOk" onclick="OpenFolioReport();"
+                            <input type="button" class="btn btn-sm btn-primary m-r-sm" id="btnBillingOk" data-dismiss="modal"
                                    value="OK" />
                             <input type="button" class="btn btn-sm btn-success" id="btnCheckOut" onclick="CheckOut();" 
                                    value="Check Out" />
@@ -741,6 +745,12 @@
                         $("form#frmBillingInfo #RoomRent").val(FormatNumberWithTwoDecimal(result.RoomRent));
                         $("form#frmBillingInfo #RoomTypeCode").val(result.RoomTypeCode);
 
+                        //Payment Method
+                        $("form#frmBillingInfo .spnPaymentMethodCode").html(result.PaymentMethodCode);
+                        $("form#frmBillingInfo #hdnPaymentMethodCode").val(result.PaymentMethodCode);
+                        $("form#frmBillingInfo #hdnPaymentMethodId").val(result.PaymentMethodId);
+                        $("form#frmBillingInfo #hdnPaymentMethodName").val(result.PaymentMethodName);
+                        
 
                         $("form#frmBillingInfo .spnTotalBalance").html(FormatNumberWithTwoDecimal(result.Balance));
                         $(".spnGuestName").html(result.Name);
@@ -864,9 +874,10 @@
 
         var reservationId = $("form#frmBillingInfo #hdnReservationId").val();
         if (!IsNullOrEmpty(reservationId)) {
+
             swal({
                 title: 'Are you sure you want to checkout ?',
-                type: 'info',
+                type: 'info',            
                 showCancelButton: true,
                 showCloseButton: true,
                 confirmButtonColor: '#3085d6',

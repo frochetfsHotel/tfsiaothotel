@@ -15,6 +15,7 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration
 
         private const Int64 DefaultConfirmationNo = 100001;
+        private const Int64 DefaultFolioNumber = 101;
 
         private ProfileRepository profileRepository = new ProfileRepository();
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
@@ -54,7 +55,17 @@ namespace SuccessHotelierHub.Controllers
             var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
             var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
             var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
-            var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+            //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+            var paymentMethodList = new SelectList(
+                    paymentMethodRepository.GetPaymentMethods()
+                    .Select(
+                        m => new SelectListItem()
+                        {
+                            Value = m.Id.ToString(),
+                            Text = (m.Code + " - " + m.Name)
+                        }
+            ), "Value", "Text").ToList();
+
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
 
@@ -209,7 +220,7 @@ namespace SuccessHotelierHub.Controllers
 
                 if (model.ArrivalDate.HasValue)
                 {
-                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Monday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Sunday)
+                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Friday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Saturday)
                     {
                         model.IsWeekEndPrice = true;
                     }
@@ -229,7 +240,7 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 #region Room Mapping
-                
+
                 //Get Room Mapping
                 var selectedRooms = roomRepository.GetReservationRoomMapping(model.Id, null);
 
@@ -296,7 +307,16 @@ namespace SuccessHotelierHub.Controllers
                 var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
                 var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
                 var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
-                var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                var paymentMethodList = new SelectList(
+                    paymentMethodRepository.GetPaymentMethods()
+                    .Select(
+                        m => new SelectListItem()
+                        {
+                            Value = m.Id.ToString(),
+                            Text = (m.Code + " - " + m.Name)
+                        }
+                    ), "Value", "Text").ToList();
                 var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
                 ViewBag.TitleList = titleList;
@@ -348,6 +368,12 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
+                    var source = string.Empty;
+                    if (Request.Form["Source"] != null && !string.IsNullOrWhiteSpace(Convert.ToString(Request.Form["Source"])))
+                    {
+                        source = Convert.ToString(Request.Form["Source"]);
+                    }
+
                     #region Save Reservation Room Mapping
                     var roomIds = model.RoomIds;
 
@@ -373,24 +399,29 @@ namespace SuccessHotelierHub.Controllers
                                 reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+                                
 
-                                #region Remove Existing reservation if room status are dirty.
-
-                                var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
-
-                                if (reservationLog != null)
+                                if (source != "RoomPlan")
                                 {
-                                    //Delete Reservation.
-                                    reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+                                    #region Remove Existing reservation if room status are dirty.
 
-                                    //Delete Reservation Room Mapping.
-                                    roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+                                    var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
 
-                                    //Delete Reservation Log.
-                                    reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                                    if (reservationLog != null)
+                                    {
+                                        //Delete Reservation.
+                                        reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                        //Delete Reservation Room Mapping.
+                                        roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                        //Delete Reservation Log.
+                                        reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                                    }
+
+                                    #endregion Remove Existing reservation if room status are dirty.
                                 }
 
-                                #endregion Remove Existing reservation if room status are dirty.
                             }
                         }
                     }
@@ -455,6 +486,29 @@ namespace SuccessHotelierHub.Controllers
 
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
+
+                    #region  Check Source Parameters
+                    if (!string.IsNullOrWhiteSpace(source))
+                    {
+                        string url = string.Empty;
+                        string qid = string.Empty;
+
+                        if (source == "RoomPlan")
+                        {
+                            url = Url.Action("RoomPlan", "Reservation");
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            return Json(new
+                            {
+                                IsSuccess = true,
+                                IsExternalUrl = true,
+                                data = url
+                            }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    #endregion
 
                     return Json(new
                     {
@@ -628,6 +682,7 @@ namespace SuccessHotelierHub.Controllers
         {
             string reservationId = string.Empty;
             string confirmationNo = string.Empty;
+            long folioNo = 0;
 
             model.CreatedBy = LogInManager.LoggedInUserId;
             model.IsActive = true;
@@ -642,10 +697,11 @@ namespace SuccessHotelierHub.Controllers
                 model.ETA = time.TimeOfDay;
             }
 
-            #region Generate Confirmation No            
-            Int64 confirmationSuffix = 1;
 
             var lastReservation = reservationRepository.GetLastReservationByDate(null);
+
+            #region Generate Confirmation No            
+            Int64 confirmationSuffix = 1;
 
             if (lastReservation != null)
             {
@@ -668,6 +724,34 @@ namespace SuccessHotelierHub.Controllers
             }
 
             model.ConfirmationNumber = confirmationNo;
+
+            #endregion
+
+
+            #region Generate Folio Number
+            Int64 folioSuffix = 1;
+
+            if (lastReservation != null)
+            {
+                long lastFolioNumber = lastReservation.FolioNumber;
+                if (lastFolioNumber > 0)
+                {
+                    folioSuffix = Convert.ToInt64(lastFolioNumber) + 1;
+
+                    folioNo = folioSuffix;
+                }
+                else
+                {
+                    folioNo = DefaultFolioNumber;
+                }
+            }
+            else
+            {
+                //Default confirmation no.
+                folioNo = DefaultFolioNumber;
+            }
+
+            model.FolioNumber = folioNo;
 
             #endregion
 
@@ -755,12 +839,12 @@ namespace SuccessHotelierHub.Controllers
                 #region Record Activity Log
                 RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Created new reservation, Confirmation# : {0}", model.ConfirmationNumber));
                 #endregion
-                
+
             }
 
             return confirmationNo;
         }
-        
+
         #endregion
 
         #region Rate Query
@@ -789,6 +873,9 @@ namespace SuccessHotelierHub.Controllers
                 model.ProfileId = Guid.Parse(profileId);
             }
 
+            model.FirstName = firstName;
+            model.LastName = lastName;
+
             if (!string.IsNullOrWhiteSpace(lastName) || !string.IsNullOrWhiteSpace(firstName))
             {
                 model.Name = (lastName + " " + firstName);
@@ -815,7 +902,7 @@ namespace SuccessHotelierHub.Controllers
 
                 if (model.ArrivalDate.HasValue)
                 {
-                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Monday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Sunday)
+                    if (model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Friday || model.ArrivalDate.Value.DayOfWeek == DayOfWeek.Saturday)
                     {
                         blnShowWeekEndPrice = true;
                     }
@@ -824,7 +911,7 @@ namespace SuccessHotelierHub.Controllers
                 //var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
                 var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, model.ArrivalDate.Value.ToString("MM/dd/yyyy"));
                 var rateTypeList = rateTypeRepository.GetRateType(model.RateTypeCode);
-                
+
                 ViewData["RateType"] = rateTypeList;
                 ViewData["RateSheetRoomType"] = rateSheetRoomTypeList;
                 ViewData["IsShowWeekEndPrice"] = blnShowWeekEndPrice;
@@ -892,12 +979,12 @@ namespace SuccessHotelierHub.Controllers
 
                 if (model.StartDate.HasValue)
                 {
-                    
+
                     DateTime dtEndDate = model.StartDate.Value.AddDays(6);
 
                     startDate = model.StartDate.Value.ToString("MM/dd/yyyy");
                     endDate = dtEndDate.ToString("MM/dd/yyyy");
-                    
+
                     for (DateTime dt = model.StartDate.Value; dt <= dtEndDate; dt = dt.AddDays(1))
                     {
                         dates.Add(new RoomPlanDateRangeVM()

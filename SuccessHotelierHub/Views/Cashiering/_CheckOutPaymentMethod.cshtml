@@ -120,7 +120,7 @@
         });
 
         //CheckOut
-        $('form#frmCheckOutPayment .btnCheckOutOk').click(function (e) {            
+        $('form#frmCheckOutPayment .btnCheckOutOk').click(function (e) {
             if (validateCheckOut()) {
 
                 //Ajax request to check out.
@@ -143,9 +143,12 @@
                         }
                         else {
 
+                            var reservationId = $('#ReservationId').val();
+                            var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' + reservationId;
                             swal({
                                 title: '' + response.data.Name + ' checked out successfully.',
                                 type: 'success',
+                                html: "<a href='" + url + "' target='_blank'>Click here to see folio report.</a>",
                                 showCloseButton: true,
                                 showCancelButton: false,
                                 focusConfirm: false,
@@ -180,7 +183,12 @@
         if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
             var paymentMethod = $('#PaymentMethodId option:selected').text();
 
-            if (paymentMethod == 'Cash') {
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) == 'Cash') {
                 $('.divCreditCardInfo').hide();
             } else {
                 $('.divCreditCardInfo').show();

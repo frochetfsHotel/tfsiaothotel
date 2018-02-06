@@ -184,7 +184,12 @@
         if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
             var paymentMethod = $('#PaymentMethodId option:selected').text();
 
-            if (paymentMethod == 'Cash') {
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) == 'Cash') {
                 $('.divCreditCardInfo').hide();
             } else {
                 $('.divCreditCardInfo').show();

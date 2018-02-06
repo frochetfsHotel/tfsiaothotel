@@ -1,15 +1,15 @@
-﻿@model SuccessHotelierHub.Models.PaymentMethodVM
+﻿@model SuccessHotelierHub.Models.TitleVM
 @{
-    ViewBag.Title = "Edit Payment Method";
+    ViewBag.Title = "Edit Title";
 }
 
 <section class="content-header">
     <h1>
-        Payment Method <small>Edit</small>
+        Title <small>Edit</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Payment Method</li>
+        <li class="">Title</li>
         <li class="active">Edit</li>
     </ol>
 </section>
@@ -17,9 +17,9 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Payment Method Details</h3>
+            <h3 class="box-title">Title Details</h3>
         </div>
-        @using (Html.BeginForm("Edit", "PaymentMethod", FormMethod.Post, new { id = "frmPaymentMethod", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Edit", "Title", FormMethod.Post, new { id = "frmTitle", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
 
@@ -29,45 +29,40 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Code, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control text-uppercase", placeholder = "Code" })
-                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Title, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Title" })
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
-                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Salutation)
+                        @Html.TextAreaFor(m => m.Salutation, new { @class = "form-control", row = "3", placeholder = "Salutation" })
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Description)
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group m-t-lg">
+                    <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
-                            @Html.CheckBoxFor(m => m.IsActive)
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
                             <span class="checkmark"></span>
                         </label>
                     </div>
                 </div>
             </div>
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success m-r-xs" onclick="return updatePaymentMethod();">Update</button>
-                <a href="@Url.Action("List", "PaymentMethod")" class="btn btn-danger">Cancel</a>
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateTitle();">Update</button>
+                <a href="@Url.Action("List", "Title")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
 </section>
 
 <script type="text/javascript">
-    function validatePaymentMethod() {
+    function validateTitle() {
 
         var errorMessage = "";
         var blnValid = true;
 
 
-        if ($("#frmPaymentMethod").valid() == false) {
+        if ($("#frmTitle").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
@@ -76,9 +71,9 @@
     }
 
 
-    function updatePaymentMethod() {
+    function updateTitle() {
 
-        if (validatePaymentMethod()) {
+        if (validateTitle()) {
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -89,18 +84,18 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/PaymentMethod/Edit")',
+                url: '@Url.Content("~/Title/Edit")',
                 type: 'POST',
-                data: $('#frmPaymentMethod').serialize(),
+                data: $('#frmTitle').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        showToaster("Payment Method details updated successfully", ToasterType.SUCCESS);
+                        showToaster("Title details updated successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('@Url.Content("~/PaymentMethod/List")');
+                            redirectTo('@Url.Content("~/Title/List")');
                         }, 1000);
                     }
                 }

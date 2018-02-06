@@ -40,6 +40,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Record User's Activity")]
         public bool IsRecordActivity { get; set; }
 
+        [DisplayName("Cashier #")]
+        [Required(ErrorMessage = "Please enter cashier number.")]
+        public string CashierNumber { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

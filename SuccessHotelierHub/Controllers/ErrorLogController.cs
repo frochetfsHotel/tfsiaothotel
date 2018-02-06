@@ -9,6 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
+    [HotelierHubAuthorize(Roles = "ADMIN")]
     public class ErrorLogController : Controller
     {
 

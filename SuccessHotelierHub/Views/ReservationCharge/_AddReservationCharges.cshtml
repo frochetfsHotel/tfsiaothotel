@@ -123,7 +123,6 @@
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {                        
-                        console.log("saveReservationCharges : OnSuccess() = " + response.data);
                         var lastTransaction = response.data.Transaction;
 
                         if (lastTransaction != null)

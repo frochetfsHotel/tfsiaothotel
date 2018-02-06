@@ -329,8 +329,7 @@
                     countryId: parseInt(country)
                 },
                 success: function (result) {
-                    if (!IsNullOrEmpty(result)) {
-                        console.log(result);
+                    if (!IsNullOrEmpty(result)) {                        
                         var optionHtml = "";
                         optionHtml += "<option value=''>-- Select State --</option>";
                         if (result.IsSuccess == true) {

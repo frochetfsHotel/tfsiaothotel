@@ -14,6 +14,10 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please enter name.")]
         public string Name { get; set; }
 
+        [DisplayName("Code")]
+        [Required(ErrorMessage = "Please enter code.")]
+        public string Code { get; set; }
+
         [DisplayName("Description")]        
         public string Description { get; set; }
 

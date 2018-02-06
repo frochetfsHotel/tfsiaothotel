@@ -451,6 +451,9 @@ namespace SuccessHotelierHub.Models
 
         public string RoomFeaturesIds { get; set; }
 
+        [DisplayName("All")]
+        public bool IsAll { get; set; }
+
         [DisplayName("Clean")]
         public bool IsClean { get; set; }
 
@@ -1185,6 +1188,9 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
         [DisplayName("Name")]
         public string Name { get; set; }
 
@@ -1199,6 +1205,7 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -1558,6 +1565,46 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Created DateTime")]
         public string CreatedDateTime { get; set; }
 
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search Title
+
+    public class SearchTitleParametersVM
+    {
+        public SearchTitleParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Title")]        
+        public string Title { get; set; }
+
+        [DisplayName("Salutation")]
+        public string Salutation { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchTitleResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Title")]
+        public string Title { get; set; }
+
+        [DisplayName("Salutation")]
+        public string Salutation { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }
     #endregion

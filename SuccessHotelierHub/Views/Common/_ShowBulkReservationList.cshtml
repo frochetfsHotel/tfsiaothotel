@@ -152,8 +152,7 @@ else
         var dt = new Date();
 
         $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
-            var rowId = $(this).attr("data-row-id");
-            debugger;
+            var rowId = $(this).attr("data-row-id");            
             if (!IsNullOrEmpty(rowId)) {
                 $('#ArrivalDate_' + rowId).datepicker("setDate", dt);
             }
@@ -161,12 +160,10 @@ else
         });
     }
 
-    function arrivalDateChanged(element) {
-        debugger;
+    function arrivalDateChanged(element) {        
         var selectedDate = $(element).val();
         var rowId = $(element).closest("td").closest("tr").attr("data-row-id");
 
-        console.log("arrivalDateChanged : " + selectedDate);
 
         if(!IsNullOrEmpty(rowId)) {
             var noOfNight = $('#NoOfNight_' + rowId).val();
@@ -182,7 +179,7 @@ else
             var dayOfWeek = GetDayOfWeek(weekDay);
 
             //Is Week End.
-            if (dayOfWeek == 'Sunday' || dayOfWeek == 'Monday') {
+            if (dayOfWeek == 'Friday' || dayOfWeek == 'Saturday') {
                 $('#IsWeekEndPrice_' + rowId).val(true);
             } else {
                 $('#IsWeekEndPrice_' + rowId).val(false);

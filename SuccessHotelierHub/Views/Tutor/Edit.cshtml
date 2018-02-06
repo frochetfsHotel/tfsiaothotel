@@ -98,8 +98,7 @@
         var blnValid = false;
 
         $("form#frmTutor #tblStudents tbody tr").each(function () {
-            var id = $(this).attr("data-id");
-            console.log(id);
+            var id = $(this).attr("data-id");            
             if (!IsNullOrEmpty(id)) {
 
                 var isMapped = $('#IsMapped_' + id).prop("checked");

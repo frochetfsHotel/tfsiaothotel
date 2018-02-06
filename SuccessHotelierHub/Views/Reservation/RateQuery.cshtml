@@ -485,8 +485,7 @@
     }
 
     function showArrivalWeekDay(element) {
-        var selectedDate = $(element).val();
-        console.log("showArrivalWeekDay : " + selectedDate);
+        var selectedDate = $(element).val();        
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -499,8 +498,7 @@
 
             $('#txtArrivalDate').val(selectedDate);
             $('#ArrivalDate').val(selectedDate);
-        }
-        console.log("dayOfWeek : " + dayOfWeek);
+        }        
         $('#ArrivalDayOfWeek').html(dayOfWeek);
     }
 
@@ -517,8 +515,7 @@
 
 
     function departureDateChanged(e) {
-        var selectedDate = $(this).val();
-        console.log("departureDateChanged : " + selectedDate);
+        var selectedDate = $(this).val();        
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -528,8 +525,7 @@
                 var weekDay = objSelectedDepartureDate.getDay();
                 dayOfWeek = GetDayOfWeek(weekDay);
             }
-        }
-        console.log("dayOfWeek : " + dayOfWeek);
+        }        
         $('#DepartureDayOfWeek').html(dayOfWeek);
     }
 
