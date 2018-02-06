@@ -17891,7 +17891,7 @@ END
 
 /********* Add session state time out seeting in web.config ************/
 
-<sessionState timeout="60"></sessionState>
+<sessionState timeout="60" mode="InProc"></sessionState>
 
 /************ Add Code Column into PaymentMethod Table ********/
 

@@ -92,16 +92,18 @@
                 url: '@Url.Content("~/PaymentMethod/Edit")',
                 type: 'POST',
                 data: $('#frmPaymentMethod').serialize(),
-                success: function (response) {
-                    if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                    else {
-                        showToaster("Payment Method details updated successfully", ToasterType.SUCCESS);
+                success: function (response) {                    
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("Payment Method details updated successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/PaymentMethod/List")');
-                        }, 1000);
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/PaymentMethod/List")');
+                            }, 1000);
+                        }
                     }
                 }
             });

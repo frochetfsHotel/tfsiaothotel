@@ -83,16 +83,18 @@
                 url: '@Url.Content("~/Title/Create")',
                 type: 'POST',
                 data: $('#frmTitle').serialize(),
-                success: function (response) {
-                    if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                    else {
-                        showToaster("Title details saved successfully", ToasterType.SUCCESS);
+                success: function (response) {                    
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("Title details saved successfully", ToasterType.SUCCESS);
 
-                        setTimeout(function () {
-                            redirectTo('@Url.Content("~/Title/List")');
-                        }, 1000);
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/Title/List")');
+                            }, 1000);
+                        }
                     }
                 }
             });

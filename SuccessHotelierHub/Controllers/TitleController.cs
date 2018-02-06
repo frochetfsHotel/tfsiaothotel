@@ -88,6 +88,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(TitleVM model)
         {
