@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
+using System.IO;
+using System.Text;
 
 namespace SuccessHotelierHub.Controllers
 {
@@ -182,6 +184,83 @@ namespace SuccessHotelierHub.Controllers
                 {
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
+
+                    #region Send Email 
+
+                    if (model.IsEmailConfirmation)
+                    {
+                        if (model.ProfileId.HasValue)
+                        {
+                            var profile = profileRepository.GetIndividualProfileById(model.ProfileId.Value).FirstOrDefault();
+
+                            if (profile != null)
+                            {
+                                var profileName = (profile.FirstName + ' ' + profile.LastName);
+                                var email = profile.Email;
+
+                                if (!string.IsNullOrWhiteSpace(email))
+                                {
+                                    StringBuilder bodyMsg = new StringBuilder();
+                                    using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/ReservationConfirmationEmail.html")))
+                                    {
+                                        bodyMsg.Append(sr.ReadToEnd());
+                                        bodyMsg.Replace("[@UserName]", profileName);
+                                        bodyMsg.Replace("[@ConfirmationNo]", model.ConfirmationNumber);
+                                        if (model.ArrivalDate.HasValue)
+                                        {
+                                            bodyMsg.Replace("[@ArrivalDate]", model.ArrivalDate.Value.ToString("dd/MM/yyyy"));
+                                        }
+                                        else
+                                        {
+                                            bodyMsg.Replace("[@ArrivalDate]", string.Empty);
+                                        }
+                                        if (model.DepartureDate.HasValue)
+                                        {
+                                            bodyMsg.Replace("[@DepartureDate]", model.DepartureDate.Value.ToString("dd/MM/yyyy"));
+                                        }
+                                        else
+                                        {
+                                            bodyMsg.Replace("[@DepartureDate]", string.Empty);
+                                        }
+
+                                       bodyMsg.Replace("[@NoOfNights]", Convert.ToString(model.NoOfNight));
+                                       bodyMsg.Replace("[@NoOfAdults]", Convert.ToString(model.NoOfAdult));
+                                       bodyMsg.Replace("[@NoOfChildren]", Convert.ToString(model.NoOfChildren));
+                                       bodyMsg.Replace("[@RoomNo]", Utility.Utility.RemoveLastCharcter(model.RoomNumbers, ','));
+                                       bodyMsg.Replace("[@Rent]", Utility.Utility.FormatAmountWithTwoDecimal(((double)model.Rate)));
+                                       bodyMsg.Replace("[@Total]", Utility.Utility.FormatAmountWithTwoDecimal((double)(model.Rate * model.NoOfNight)));
+                                        
+
+                                        if (model.PaymentMethodId.HasValue)
+                                        {
+                                            var paymentMethod = paymentMethodRepository.GetPaymentMethodById(model.PaymentMethodId.Value).FirstOrDefault();
+
+                                            if (paymentMethod != null)
+                                            {
+                                                bodyMsg.Replace("[@MethodOfPayment]", paymentMethod.Name);
+                                            }
+                                            else
+                                            {
+                                                bodyMsg.Replace("[@MethodOfPayment]", string.Empty);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            bodyMsg.Replace("[@MethodOfPayment]", string.Empty);
+                                        }
+                                    }
+
+                                    //Send Email.
+                                    string EmailSubject = "Confirmed Reservation - " + model.ConfirmationNumber;
+
+                                    bool blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, Convert.ToString(bodyMsg));
+                                }
+
+                            }
+                        }
+                    }
+
+                    #endregion
 
                     return Json(new
                     {
@@ -399,7 +478,7 @@ namespace SuccessHotelierHub.Controllers
                                 reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
-                                
+
 
                                 if (source != "RoomPlan")
                                 {

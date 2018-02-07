@@ -563,3 +563,10 @@ function html_entity_decode(message) {
         }[m] + ';';
     });
 }
+function parseBoolean(value) {
+    if (value == 'True' || value == 'true') {
+        return true;
+    } else {
+        return false;
+    }
+}

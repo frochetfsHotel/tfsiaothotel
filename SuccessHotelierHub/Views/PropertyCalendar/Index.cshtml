@@ -1,25 +1,36 @@
 ﻿@using SuccessHotelierHub.Utility
 @{
     ViewBag.Title = "Index";
-    
+
     var currentMonthNo = DateTime.Now.Month;
     var currentYear = DateTime.Now.Year;
 
     var monthName = Utility.GetShortMonthName(currentMonthNo);
+
+    var IsAdminUser = LogInManager.HasRights("ADMIN");
 }
 
 <style type="text/css">
     #tblCalendar {
-        border-collapse:initial !important;
+        border-collapse: initial !important;
     }
-    #tblCalendar td{
-        /*padding:20px;*/
-        text-align:center;
-    }
-    .currentDay{
+
+        #tblCalendar td {
+            /*padding:20px;*/
+            text-align: center;
+            vertical-align:top;
+        }
+
+    .currentDay {
         /*background-color:#f5f5f5;*/
-        border:1px solid #3B3EF1 !important;
-        border-collapse:initial;
+        border: 1px solid #3B3EF1 !important;
+        border-collapse: initial;
+    }
+
+    .clickableDate {
+        cursor: pointer !important;
+        width: 100px;
+        word-break:break-word;
     }
 </style>
 
@@ -52,7 +63,7 @@
 
 
             <div class="box-body box-body-list">
-                
+
                 <div class="pt_10 pl_10 pr_10">
                     <div class="row">
                         <div class="col-md-12">
@@ -67,49 +78,49 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="text-center" data-monthno="1" >
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(1);">Jan</a> 
+                                        <td class="text-center" data-monthno="1">
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(1);">Jan</a>
                                         </td>
                                         <td class="text-center" data-monthno="2">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(2);">Feb</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(2);">Feb</a>
                                         </td>
                                         <td class="text-center" data-monthno="3">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(3);">Mar</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(3);">Mar</a>
                                         </td>
                                         <td class="text-center" data-monthno="4">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(4);">Apr</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(4);">Apr</a>
                                         </td>
                                         <td class="text-center" data-monthno="5">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(5);">May</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(5);">May</a>
                                         </td>
                                         <td class="text-center" data-monthno="6">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(6);">Jun</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(6);">Jun</a>
                                         </td>
                                         <td class="text-center" data-monthno="7">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(7);">Jul</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(7);">Jul</a>
                                         </td>
                                         <td class="text-center" data-monthno="8">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(8);">Aug</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(8);">Aug</a>
                                         </td>
                                         <td class="text-center" data-monthno="9">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(9);">Sep</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(9);">Sep</a>
                                         </td>
                                         <td class="text-center" data-monthno="10">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(10);">Oct</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(10);">Oct</a>
                                         </td>
                                         <td class="text-center" data-monthno="11">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(11);">Nov</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(11);">Nov</a>
                                         </td>
                                         <td class="text-center" data-monthno="12">
-                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(12);">Dec</a> 
+                                            <a href="javascript:void(0);" onclick="ShowMonthCalendar(12);">Dec</a>
                                         </td>
                                         <td class="text-center">
                                             <a href="javascript:void(0);" title="Prev"><i class="fa fa-angle-left next_prev_btn" onclick="ShowPrevYearCalendar();"></i></a>
-                                            
+
                                         </td>
                                         <td class="text-center">
                                             <a href="javascript:void(0);" title="Next"><i class="fa fa-angle-right next_prev_btn" onclick="ShowNextYearCalendar();"></i></a>
-                                            
+
                                         </td>
                                     </tr>
                                 </table>
@@ -118,21 +129,96 @@
                     </div>
 
                     <div class="row" id="divCalendar">
-                        @Html.Partial("_Calendar",
-                                new ViewDataDictionary {
-                                    { "Month", currentMonthNo },
-                                    { "Year", currentYear }
-                                })
+                      
                     </div>
                 </div>
             </div>
         </form>
     </div>
 </section>
+
+<!-- Calendar Notes Modal START -->
+<div id="calendarNotesModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Notes</h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divCalendarNotes">
+                <form id="frmCalendarNotes" name="frmCalendarNotes" enctype="multipart/form-data">
+                    <!-- HIDDEN FIELD-->
+                    <input type="hidden" id="Date" name="Date" value="" />
+                    <input type="hidden" id="Id" name="Id" value="" />
+                    <input type="hidden" id="SelectedBoxId" name="SelectedBoxId" value="" />
+                    <!-- HIDDEN FIELD-->
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="DisplayDate" class="required-label">Date : <span id="DisplayDate"></span></label>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="Notes" class="required-label">Notes</label>
+                            <textarea id="Notes" name="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <input type="button" class="btn btn-sm btn-success m-r-sm btnSaveNotes" id="btnSaveNotes" 
+                                   value="Save" onclick="saveNotes();" />
+                            <input type="button" class="btn btn-sm btn-danger btnCancelNotes" id="btnCancelNotes" value="Cancel"  data-dismiss="modal"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+<!-- Calendar Notes Modal END -->
+
 <script type="text/javascript">
     $(document).ready(function () {
-        $("table#tblCalendarHeader tr td[data-monthno='@currentMonthNo'").addClass("label-bold");        
+        $("table#tblCalendarHeader tr td[data-monthno='@currentMonthNo'").addClass("label-bold");
+
+        //Load Calendar
+        loadCalendar('@currentYear', '@currentMonthNo', true);
+
+        //Bind Click event of calendar date.
+        BindClickableCalendarDateEvent();
     });
+
+    function BindClickableCalendarDateEvent() {
+        var isAdmin = parseBoolean('@IsAdminUser');
+
+        //Bind Click event only for admin users.
+        if (isAdmin) {
+            $("table#tblCalendar td.clickableDate").click(function (e) {
+                var date = $(this).attr("data-date");
+                var displayDate = $(this).attr("data-displaydate");
+                var notes = $(this).attr("data-notes");
+                var notesId = $(this).attr("data-notesid");
+
+                var selectedId = $(this).attr("id");
+
+                console.log("Date : " + date);
+
+                clearCalendarNotesForm();
+
+                $('form#frmCalendarNotes #DisplayDate').html(displayDate);
+                $('form#frmCalendarNotes #Date').val(date);
+                $('form#frmCalendarNotes #Id').val(notesId);
+                $('form#frmCalendarNotes #Notes').val(notes);
+                $('form#frmCalendarNotes #SelectedBoxId').val(selectedId);
+
+                //Open Form to Add / Edit Notes.
+                OpenModal("calendarNotesModal");
+            });
+        }
+    }
 
     function ShowPrevYearCalendar() {
         var year = $('#hdnPrevYear').val();
@@ -170,7 +256,7 @@
             url: '@Url.Content("~/PropertyCalendar/ShowCalendar")',
             type: 'POST',
             data: { year: year, month: month },
-            success: function (response) {                
+            success: function (response) {
                 if (response.IsSuccess == false) {
                     showToaster(response.errorMessage, ToasterType.ERROR);
                 }
@@ -198,8 +284,134 @@
                         //For Current Year.
                         $('#hdnMonthNo').val(parseInt(month));
                     }
+
+                    //Bind Click event of calendar date.
+                    BindClickableCalendarDateEvent();
                 }
             }
         });
+    }
+
+    function clearCalendarNotesForm() {
+        $('form#frmCalendarNotes #DisplayDate').html('');
+        $('form#frmCalendarNotes #Date').val('');
+        $('form#frmCalendarNotes #Id').val('');
+        $('form#frmCalendarNotes #Notes').val('');
+        $('form#frmCalendarNotes #SelectedBoxId').val('');
+    }
+
+    function validateNotes() {
+        var notes = $('form#frmCalendarNotes #Notes').val();
+
+        var blnValid = true;
+        var errorText = "";
+
+        if (IsNullOrEmpty(notes)) {
+            errorText += "Please enter notes.";
+            blnValid = false;
+        }
+
+        if (blnValid == false) {
+            showToaster(errorText, ToasterType.ERROR);
+            return false;
+        }
+
+        return blnValid;
+    }
+    function saveNotes() {
+        if (validateNotes()) {
+            var notesId = $('form#frmCalendarNotes #Id').val();
+
+            if (IsNullOrEmpty(notesId)) {
+                //Add Calendar Notes.
+                AddCalendarNotes();
+            } else {
+                //Update Calendar Notes.
+                UpdateCalendarNotes();
+            }
+        }
+    }
+
+    function AddCalendarNotes() {
+        //Ajax request to add calendar notes.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/PropertyCalendar/AddCalendarNotes")',
+            type: 'POST',
+            data: $("form#frmCalendarNotes").serialize(),
+            success: function (response) {
+                if (!IsNullOrEmpty(response)) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Notes added successfully.", ToasterType.SUCCESS);
+
+                        var notesId = response.data.NotesId;
+
+                        //Append notes.
+                        AppendNotesDetails(notesId);
+
+                        CloseModal("calendarNotesModal");
+                    }
+                }
+            }
+        });
+    }
+
+    function UpdateCalendarNotes() {
+        //Ajax request to update calendar notes.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/PropertyCalendar/EditCalendarNotes")',
+            type: 'POST',
+            data: $("form#frmCalendarNotes").serialize(),
+            success: function (response) {
+                if (!IsNullOrEmpty(response)) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Notes updated successfully.", ToasterType.SUCCESS);
+
+                        var notesId = response.data.NotesId;
+
+                        //Append notes.
+                        AppendNotesDetails(notesId);
+
+                        CloseModal("calendarNotesModal");
+                    }
+                }
+            }
+        });
+    }
+
+    function AppendNotesDetails(noteId) {
+
+        //Append notes details.
+        var selectedId = $('form#frmCalendarNotes #SelectedBoxId').val();
+        var notes = $('form#frmCalendarNotes #Notes').val();
+        var shortNotes = (!IsNullOrEmpty(notes) && notes.length >= 18) ? (notes.substring(0, 15) + "...") : notes;
+        $("#" + selectedId + " p.calendarNotes").empty().html(shortNotes);
+        $("#" + selectedId + " p.calendarNotes").attr("title", notes);
+
+        $("#" + selectedId + "").attr("data-notesid", noteId);
+        $("#" + selectedId + "").attr("data-notes", notes);
     }
 </script>

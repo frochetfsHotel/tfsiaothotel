@@ -18535,3 +18535,529 @@ BEGIN
 			RoomFeaturesMapping.RoomFeatureId IN (SELECT * FROM [dbo].[SplitStrings] (@RoomFeatures,',')) 
 END
 
+
+
+/****************************************************************************************************/
+
+Name : Nilesh
+Date : 07-FEB-2018
+
+/*****************************************************************************************************/
+
+/*************** Create New Table Holidays ****************/
+
+
+/****** Object:  Table [dbo].[Holidays]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Holidays](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Date]	[datetime]	NOT NULL,
+	[Title] [nvarchar](500) NOT NULL,
+	[Description] [nvarchar](MAX) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_Holidays] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddHoliday
+	Comment   Create SP AddHoliday
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddHoliday]    Script Date: 2/7/2018 11:32:27 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddHoliday]	
+	@Date			DATETIME					,	
+	@Title			NVARCHAR(500)				,	
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@IsActive		BIT				=	NULL	,	
+	@CreatedBy		INT				=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Holidays]
+           ([Id]           
+           ,[Date]
+		   ,[Title]		  
+		   ,[Description] 		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Date
+			   ,@Title		
+			   ,@Description	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateHoliday
+	Comment   Create SP UpdateHoliday
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateHoliday]    Script Date: 2/7/2018 11:34:55 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateHoliday]
+	@Id				UNIQUEIDENTIFIER			,	
+	@Date			DATETIME					,	
+	@Title			NVARCHAR(500)				,	
+	@Description	NVARCHAR(MAX)	=	NULL	,		
+	@IsActive		BIT				=	NULL	,	
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Holidays]
+		SET	[Date]			=	@Date
+		   ,[Title]			=	@Title		   		   
+		   ,[Description]	=	@Description		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/*******************************************************************************************************************
+	SP Name : DeleteHoliday
+	Comment   Create SP DeleteHoliday
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteHoliday]    Script Date: 2/7/2018 11:36:39 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteHoliday] 
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Holidays] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetHolidayById
+	Comment   Create SP GetHolidayById
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetHolidayById]    Script Date: 2/7/2018 11:40:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetHolidayById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Holidays]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Title]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchHoliday
+	Comment   Create SP SearchHoliday
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchHoliday]    Script Date: 2/7/2018 11:42:41 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchHoliday] NULL, '', '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchHoliday]			
+	@Date			DATETIME		=	NULL	,		
+	@Title			NVARCHAR(500)	=	NULL	,		
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempHolidays
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Date]			DATETIME			NOT NULL	
+		,   [Title]			NVARCHAR(500)		NOT NULL	
+		,	[Description]	NVARCHAR(MAX)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Holidays]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Title,'') = '' OR [Title] LIKE '%'+ @Title +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+								AND (@Date IS NULL OR CAST([Date] AS DATE) = CAST(@Date AS DATE))
+						)
+
+
+		INSERT INTO #tempHolidays 
+		(
+			[RowNum]		, 
+			[Id]			,	 
+			[Date]			, 
+			[Title]			,
+			[Description]	, 
+			[CreatedOn]		, 
+			[IsActive]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN [CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN [CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Date' and @SortDirection = 'asc'
+						THEN [Date] END ASC,
+					CASE WHEN @SortColumn = 'Date' and @SortDirection = 'desc'
+						THEN [Date] END DESC,
+
+					CASE WHEN @SortColumn = 'Title' and @SortDirection = 'asc'
+						THEN [Title] END ASC,
+					CASE WHEN @SortColumn = 'Title' and @SortDirection = 'desc'
+						THEN [Title] END DESC,
+
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+						THEN [Description] END ASC,
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+						THEN [Description] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN [Title] END ASC
+
+			) AS RowNum,
+			[Id],								
+			[Date],
+			ISNULL([Title], '') AS [Title],
+			ISNULL([Description],'') AS [Description],
+			[CreatedOn],
+			[IsActive]
+		FROM [dbo].[Holidays]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Title,'') = '' OR [Title] LIKE '%'+ @Title +'%')  
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+					AND (@Date IS NULL OR CAST([Date] AS DATE) = CAST(@Date AS DATE))
+				
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Date],		
+			temp.[Title],
+			temp.[Description],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempHolidays AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetHolidaysOfCurrentMonth
+	Comment   Create SP GetHolidaysOfCurrentMonth
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetHolidaysOfCurrentMonth]    Script Date: 2/7/2018 11:40:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetHolidaysOfCurrentMonth]
+	@Month 	INT	=	NULL,
+	@Year	INT	=	NULL 	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Holidays]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND DATEPART(YEAR,[Date]) 	= @Year 
+				AND DATEPART(MONTH,[Date]) 	= @Month
+		ORDER BY [Title]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationLogByRoom
+	Comment   Changes in SP GetReservationLogByRoom
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationLogByRoom]    Script Date: 2/7/2018 2:49:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationLogByRoom]
+	@RoomId			UNIQUEIDENTIFIER				,
+	@RoomStatusId	UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationId	UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate	DATETIME			=	NULL	,
+	@DepartureDate	DATETIME			=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RL.* FROM [dbo].[ReservationLog] RL 
+			INNER JOIN Reservation R ON R.Id = RL.ReservationId
+			AND ISNULL(R.IsDeleted,0) = 0 
+		WHERE	ISNULL(RL.IsDeleted,0) = 0  AND ISNULL(RL.IsActive,0) = 1 
+				AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+				AND 
+				(
+					(ISNULL(@ArrivalDate,'') = '' OR CAST(@ArrivalDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate  AS DATE))
+						OR 
+					(ISNULL(@DepartureDate,'') = '' OR CAST(@DepartureDate AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate  AS DATE))
+				)
+				AND RoomId = @RoomId
+				AND RL.RoomStatusId = @RoomStatusId
+				AND @ReservationId IS NULL OR RL.ReservationId = @ReservationId
+
+END
+
+/***************** Create new table CalendarNotes ***************/
+
+/****** Object:  Table [dbo].[CalendarNotes]    Script Date: 1/18/2018 4:03:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[CalendarNotes](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Date]	[datetime]	NOT NULL,
+	[Notes] [nvarchar](MAX) NOT NULL,	
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_CalendarNotes] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetNotesById
+	Comment   Create SP GetNotesById
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetNotesById]    Script Date: 2/7/2018 11:40:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetNotesById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[CalendarNotes]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Date]
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : AddCalendarNotes
+	Comment   Create SP AddCalendarNotes
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddCalendarNotes]    Script Date: 2/7/2018 11:32:27 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddCalendarNotes]	
+	@Date			DATETIME					,		
+	@Notes			NVARCHAR(MAX)	=	NULL	,	
+	@IsActive		BIT				=	NULL	,	
+	@CreatedBy		INT				=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[CalendarNotes]
+           ([Id]           
+           ,[Date]		   
+		   ,[Notes]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Date
+			   ,@Notes					   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateCalendarNotes
+	Comment   Create SP UpdateCalendarNotes
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateCalendarNotes]    Script Date: 2/7/2018 11:34:55 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateCalendarNotes]
+	@Id				UNIQUEIDENTIFIER			,	
+	@Date			DATETIME					,	
+	@Notes			NVARCHAR(MAX)	=	NULL	,
+	@IsActive		BIT				=	NULL	,	
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[CalendarNotes]
+		SET	[Date]			=	@Date		   		   		   
+		   ,[Notes]	=	@Notes		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetCalendarNotesOfCurrentMonth
+	Comment   Create SP GetCalendarNotesOfCurrentMonth
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetCalendarNotesOfCurrentMonth]    Script Date: 2/7/2018 11:40:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetCalendarNotesOfCurrentMonth]
+	@Month 	INT	=	NULL,
+	@Year	INT	=	NULL 	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[CalendarNotes]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND DATEPART(YEAR,[Date]) 	= @Year 
+				AND DATEPART(MONTH,[Date]) 	= @Month
+		ORDER BY [Date]
+END
+

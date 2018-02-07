@@ -77,28 +77,39 @@
                 
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-group" aria-hidden="true"></i> Preference Group
+                        <i class="fa fa-cogs"></i> Preference Master
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="@Url.Action("Create", "PreferenceGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                        <li><a href="@Url.Action("List", "PreferenceGroup")"><i class="fa fa-search"></i> Search </a></li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-group" aria-hidden="true"></i> Preference Group
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "PreferenceGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "PreferenceGroup")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-cog" aria-hidden="true"></i> Preference
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "Preference")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "Preference")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-cog" aria-hidden="true"></i> Preference
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="@Url.Action("Create", "Preference")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                        <li><a href="@Url.Action("List", "Preference")"><i class="fa fa-search"></i> Search </a></li>
-                    </ul>
-                </li>
+
 
                 <li class="treeview">
                     <a href="#">
@@ -391,6 +402,19 @@
                     <ul class="treeview-menu">
                         <li><a href="@Url.Action("Create", "Title")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
                         <li><a href="@Url.Action("List", "Title")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-tripadvisor" aria-hidden="true"></i> Holiday
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "Holiday")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "Holiday")"><i class="fa fa-search"></i> Search </a></li>
                     </ul>
                 </li>
 

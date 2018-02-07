@@ -1609,6 +1609,56 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Holiday
+
+    public class SearchHolidayParametersVM
+    {
+        public SearchHolidayParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Title")]
+        public string Title { get; set; }
+        
+        [DisplayName("Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
+        public DateTime? Date { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchHolidayResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Title")]
+        public string Title { get; set; }
+
+        [DisplayName("Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

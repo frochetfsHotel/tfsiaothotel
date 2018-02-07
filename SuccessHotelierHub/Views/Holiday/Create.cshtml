@@ -1,0 +1,107 @@
+﻿@model SuccessHotelierHub.Models.HolidayVM
+@{
+    ViewBag.Title = "Create Holiday";
+}
+
+<section class="content-header">
+    <h1>
+        Holiday <small>Create</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Holiday</li>
+        <li class="active">Create</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Holiday Details</h3>
+        </div>
+        @using (Html.BeginForm("Create", "Holiday", FormMethod.Post, new { id = "frmHoliday", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Date, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Date, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                        @Html.ValidationMessageFor(m => m.Date, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Title, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Title" })
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Description)
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveHoliday();">Save</button>
+                <a href="@Url.Action("List", "Holiday")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateHoliday() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmHoliday").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function saveHoliday() {
+
+        if (validateHoliday()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Holiday/Create")',
+                type: 'POST',
+                data: $('#frmHoliday').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Holiday details saved successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/Holiday/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

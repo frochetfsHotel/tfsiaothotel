@@ -1,4 +1,6 @@
-﻿@using SuccessHotelierHub.Repository
+﻿@using SuccessHotelierHub.Models;
+@using SuccessHotelierHub.Utility;
+@using SuccessHotelierHub.Models.StoredProcedure;
 @{
     var month = (int)ViewData["Month"];
     var year = (int)ViewData["Year"];
@@ -16,11 +18,15 @@
     var currentYear = DateTime.Now.Year;
 
     bool isWeekEnd = false;
+    bool isHoliday = false;
 
-    RoomRepository roomRepository = new RoomRepository();
+    var results = (List<TotalRoomAvailableByCalendarResultVM>)ViewData["RoomDetails"];
 
-    var results = roomRepository.GetTotalRoomAvailableByCalendar(month, year);
+    var holidays = (List<HolidayVM>)ViewData["Holidays"];
 
+    var calendarNotes =(List<CalendarNotesVM>)ViewData["CalendarNotes"];
+
+    string notes = "", shortNotes = "", notesId = "";
 }
 
 <div class="col-md-12 form-group">
@@ -38,6 +44,12 @@
                 @for (int intI = 0; intI < 42; intI++)
                 {
                     isWeekEnd = false;
+                    isHoliday = false;
+
+                    notes = "";
+                    shortNotes = "";
+                    notesId = "";
+
                     if (intI % 7 == 0)
                     {
                         @Html.Raw("</tr><tr>")
@@ -51,29 +63,78 @@
 
                     if ((intI >= firstDayOfWeek) && (day <= lastDate))
                     {
+                        string dateString = new DateTime(year, month, day).ToString("yyyy/MM/dd");
+
                         var totalAvailableRooms = results.Where(m => m.day == day).FirstOrDefault().AvailableRooms;
+
+                        //Check Holidays.
+                        var holiday = holidays.Where(m => m.Date.ToString("yyyy/MM/dd") == dateString).FirstOrDefault();
+
+                        if(holiday != null)
+                        {
+                            isHoliday = true;
+                        }
+
+                        //Calendar Notes.
+                        var objCalendarNotes = calendarNotes.Where(m => m.Date.ToString("yyyy/MM/dd") == dateString).FirstOrDefault();
+
+                        if (objCalendarNotes != null)
+                        {
+                            notesId = Convert.ToString(objCalendarNotes.Id);
+                            notes = objCalendarNotes.Notes;
+                            shortNotes = (!string.IsNullOrWhiteSpace(notes) && notes.Length >= 18) ? (notes.Substring(0, 15) + "...") : notes;
+                        }
+
 
                         //Check current date.
                         if (currentMonth == month && currentYear == year && currentDay == day)
                         {
-                            if (isWeekEnd)
+                            if (isWeekEnd || isHoliday)
                             {
-                                @Html.Raw(string.Format("<td class='currentDay'><p class='text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                                @Html.Raw(string.Format("<td class='currentDay clickableDate' data-date='{0}' data-notes='{1}' data-notesid='{2}' id='td_{3}' data-displaydate='{4}'>", dateString, Utility.EscapeString(notes), notesId, day, new DateTime(year, month, day).ToString("dd/MM/yyyy")));
+                                @Html.Raw(string.Format("<p class='text-weekend-bgcolor text-bold'>{0}</p>", day))
+                                if (isHoliday && holiday != null)
+                                {
+                                    @Html.Raw(string.Format("<p class='text-blue text-bold'>{0}</p>", holiday.Title))
+                                }
+                                @Html.Raw(string.Format("<p class='calendarNotes text-left' title='{1}'>{0}</p>",
+                                   shortNotes, notes))
+                                @Html.Raw(string.Format("<p class='text-success text-right text-bold'>{0}</p>", totalAvailableRooms))
+                                @Html.Raw("</td>");
                             }
                             else
-                            {   
-                                @Html.Raw(string.Format("<td class='currentDay'><p class='text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                            {
+                                @Html.Raw(string.Format("<td class='currentDay clickableDate'  data-date='{0}' data-notes='{1}' data-notesid='{2}' id='td_{3}' data-displaydate='{4}'>", dateString, Utility.EscapeString(notes), notesId, day, new DateTime(year, month, day).ToString("dd/MM/yyyy")));
+                                @Html.Raw(string.Format("<p class='text-bold'>{0}</p>", day))
+                                @Html.Raw(string.Format("<p class='calendarNotes text-left' title='{1}'>{0}</p>",
+                                   shortNotes, notes))
+                                @Html.Raw(string.Format("<p class='text-success text-right text-bold'>{0}</p>", totalAvailableRooms))
+                                @Html.Raw("</td>");
                             }
                         }
                         else
                         {
-                            if (isWeekEnd)
+                            if (isWeekEnd || isHoliday)
                             {
-                                @Html.Raw(string.Format("<td><p class='text-weekend-bgcolor text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                                @Html.Raw(string.Format("<td class='clickableDate' data-date='{0}' data-notes='{1}' data-notesid='{2}' id='td_{3}' data-displaydate='{4}'>", dateString, Utility.EscapeString(notes), notesId, day, new DateTime(year, month, day).ToString("dd/MM/yyyy")));
+                                @Html.Raw(string.Format("<p class='text-weekend-bgcolor text-bold'>{0}</p>", day))
+                                if (isHoliday && holiday != null)
+                                {
+                                    @Html.Raw(string.Format("<p class='text-blue text-bold'>{0}</p>", holiday.Title))
+                                }
+                                @Html.Raw(string.Format("<p class='calendarNotes text-left' title='{1}'>{0}</p>",
+                                   shortNotes, notes))
+                                @Html.Raw(string.Format("<p class='text-success text-right text-bold'>{0}</p>", totalAvailableRooms))
+                                @Html.Raw("</td>");
                             }
                             else
                             {
-                                @Html.Raw(string.Format("<td><p class='text-bold'>{0}</p> <p class='text-success text-right text-bold'>{1}</p></td>", day, totalAvailableRooms))
+                                @Html.Raw(string.Format("<td class='clickableDate' data-date='{0}' data-notes='{1}' data-notesid='{2}' id='td_{3}' data-displaydate='{4}'>", dateString, Utility.EscapeString(notes), notesId, day, new DateTime(year, month, day).ToString("dd/MM/yyyy")));
+                                @Html.Raw(string.Format("<p class='text-bold'>{0}</p>", day))
+                                @Html.Raw(string.Format("<p class='calendarNotes text-left' title='{1}'>{0}</p>",
+                                   shortNotes, notes))
+                                @Html.Raw(string.Format("<p class='text-success text-right text-bold'>{0}</p>", totalAvailableRooms))
+                                @Html.Raw("</td>");
                             }
                         }
                         day = day + 1;
