@@ -20080,3 +20080,171 @@ BEGIN
 	SELECT @RoomId AS Id
     
 END
+
+
+
+
+/*******************************************************************************************************************
+	SP Name : SearchRoom
+	Comment   Changes in SP SearchRoom
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchRoom]    Script Date: 2/8/2018 7:43:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchRoom] NULL, NULL, '',1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchRoom]
+	@RoomTypeId		UNIQUEIDENTIFIER	=	NULL	,	
+	@FloorId		UNIQUEIDENTIFIER	=	NULL	,	
+	@RoomNo			NVARCHAR(255)		=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempRoom
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL		
+		,   [Type]			NVARCHAR(50)		NULL	
+		,   [RoomNo]		NVARCHAR(255)		NOT NULL
+		,	[Description]	NVARCHAR(2000)		NULL
+		,	[RoomTypeId]	UNIQUEIDENTIFIER	NULL
+		,	[RoomTypeCode]	NVARCHAR(255)		NULL
+		,	[FloorId]		UNIQUEIDENTIFIER	NULL
+		,	[FloorName]		NVARCHAR(255)		NULL
+		,	[FloorNo]		INT					NULL
+		,	[RoomFeatures]	NVARCHAR(MAX)		NULL				
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT R.Id) 
+						FROM [dbo].[Room] R
+							INNER JOIN [Floor] F ON F.Id = R.FloorId
+								AND ISNULL(F.IsDeleted,0) = 0
+							LEFT JOIN [RoomType] RT ON RT.Id = R.RoomTypeId
+								AND ISNULL(RT.IsDeleted,0) = 0
+						WHERE	ISNULL(R.IsDeleted,0) = 0								
+								AND (@RoomTypeId IS NULL OR R.[RoomTypeId] = @RoomTypeId)  
+								AND (@FloorId IS NULL OR R.[FloorId] = @FloorId)  
+								AND (ISNULL(@RoomNo,'') = '' OR R.[RoomNo] LIKE '%'+ @RoomNo +'%')  
+						)
+
+
+		INSERT INTO #tempRoom 
+		(
+			[RowNum]		, 
+			[Id]			, 
+			[Type]			, 
+			[RoomNo]		, 
+			[Description]	, 
+			[RoomTypeId]	, 
+			[RoomTypeCode]	,
+			[FloorId]		, 
+			[FloorName]		,
+			[FloorNo]		,
+			[CreatedOn]		, 
+			[IsActive]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN R.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN R.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+						THEN R.[Type] END ASC,
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+						THEN R.[Type] END DESC,
+
+					CASE WHEN @SortColumn = 'RoomNo' and @SortDirection = 'asc'
+						THEN R.[RoomNo] END ASC,
+					CASE WHEN @SortColumn = 'RoomNo' and @SortDirection = 'desc'
+						THEN R.[RoomNo] END DESC,
+
+					CASE WHEN @SortColumn = 'FloorName' and @SortDirection = 'asc'
+						THEN F.[Name] END ASC,
+					CASE WHEN @SortColumn = 'FloorName' and @SortDirection = 'desc'
+						THEN F.[Name] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN [Name] END ASC
+
+			) AS RowNum,
+			R.Id,				
+			ISNULL(R.[Type],'') AS [Type],
+			ISNULL(R.[RoomNo],'') AS [RoomNo],
+			ISNULL(R.[Description],'') AS [Description],
+			R.RoomTypeId,
+			ISNULL(RT.RoomTypeCode,'') AS [RoomTypeCode],
+			R.FloorId,
+			ISNULL(F.[Name],'') AS [FloorName],
+			F.[FloorNo],
+			R.[CreatedOn],
+			R.[IsActive]
+	FROM [dbo].[Room] R
+			INNER JOIN [Floor] F ON F.Id = R.FloorId
+				AND ISNULL(F.IsDeleted,0) = 0
+			LEFT JOIN [RoomType] RT ON RT.Id = R.RoomTypeId
+				AND ISNULL(RT.IsDeleted,0) = 0
+		WHERE	ISNULL(R.IsDeleted,0) = 0								
+				AND (@RoomTypeId IS NULL OR R.[RoomTypeId] = @RoomTypeId)  
+				AND (@FloorId IS NULL OR R.[FloorId] = @FloorId)  
+				AND (ISNULL(@RoomNo,'') = '' OR R.[RoomNo] LIKE '%'+ @RoomNo +'%')  
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+	--UPDATE Room Features by comma seprated.
+	UPDATE temp
+		SET [RoomFeatures] = (STUFF(( SELECT ', '+ CAST(CONCAT(RF.[Name],' - ', RF.[Description])   AS varchar(MAX))					
+				FROM RoomFeaturesMapping RFM
+						INNER JOIN Room R ON R.Id = RFM.RoomId
+							AND ISNULL(R.IsDeleted,0) = 0
+						INNER JOIN RoomFeatures RF ON RF.Id = RFM.RoomFeatureId
+							AND ISNULL(RF.IsDeleted,0) = 0
+				WHERE	ISNULL(RFM.IsDeleted,0) = 0
+							AND RFM.RoomId = temp.Id						
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempRoom temp 	
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.RowNum,
+			temp.[Id],			
+			temp.[Type],			
+			temp.[RoomNo],		
+			temp.[Description],	
+			temp.[RoomTypeId],
+			temp.[RoomTypeCode],
+			temp.[FloorId],
+			temp.[FloorName],
+			temp.[FloorNo],
+			temp.[RoomFeatures],
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempRoom AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+END
