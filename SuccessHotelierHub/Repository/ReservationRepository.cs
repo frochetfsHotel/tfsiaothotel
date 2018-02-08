@@ -367,6 +367,28 @@ namespace SuccessHotelierHub.Repository
             return reservationId;
         }
 
+        public void DeleteAllReservation(int updatedBy)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            DALHelper.ExecuteScalar("DeleteAllReservation", parameters);
+        }
+
+        public void DeleteReservationAndRoomMappingByRoom(Guid roomId, Guid reservationId, int updatedBy)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            DALHelper.ExecuteScalar("DeleteReservationAndRoomMappingByRoom", parameters);
+        }
+
         #endregion
 
         #region Room Plan
@@ -407,7 +429,6 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
-
 
         #region Reservation Status
         public List<ReservationStatusVM> GetReservationStatusById(Guid reservationId)

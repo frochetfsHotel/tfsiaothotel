@@ -99,6 +99,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ConfirmationNo", Value = model.ConfirmationNo },
                     new SqlParameter { ParameterName = "@DepartureDate", Value = model.DepartureDate },
                     new SqlParameter { ParameterName = "@IsShowCheckedOut", Value = model.IsShowCheckedOut },
+                    new SqlParameter { ParameterName = "@IsShowCheckedIn", Value = model.IsShowCheckedIn },
+                    new SqlParameter { ParameterName = "@IsShowDueOut", Value = model.IsShowDueOut },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

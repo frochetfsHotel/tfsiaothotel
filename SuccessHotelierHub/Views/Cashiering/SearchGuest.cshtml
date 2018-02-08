@@ -93,13 +93,27 @@
                     </div>
                     <div class="row">
                         <div class="col-md-3">
+                            <label class="container1" for="IsShowCheckedIn">
+                                Checked In
+                                @Html.CheckBoxFor(m => m.IsShowCheckedIn, new { @checked = "checked" })
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="container1" for="IsShowDueOut">
+                                Due Out
+                                @Html.CheckBoxFor(m => m.IsShowDueOut)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-3">
                             <label class="container1" for="IsShowCheckedOut">
-                                Show Checked Out
+                                Checked Out
                                 @Html.CheckBoxFor(m => m.IsShowCheckedOut)
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-9 form-group text-right">
+                        <div class="col-md-3 form-group text-right">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchGuest()">
                                 Search
                             </button>
@@ -383,6 +397,7 @@
     var currentPage = 1;
     var grdReservation;
     var IsSearchButtonClicked = false;
+    var IsTransactionPosted = false;
 
     $(document).ready(function () {
 
@@ -419,7 +434,15 @@
             }
         });
 
-        //Add Reservation Charge
+        
+        //Handle Billing Modal Popup Close Event
+        $('#billingInfoModal').on('hidden.bs.modal', function () {            
+            if (IsTransactionPosted) {
+                //Reload Grid.
+                searchGuest();
+                IsTransactionPosted = false;
+            }
+        })
 
     });
 
@@ -434,6 +457,8 @@
         var blockCodeId = $('#BlockCodeId').val();
         var departureDate = $('#DepartureDate').val();
         var isShowCheckedOut = $('#IsShowCheckedOut').prop('checked');
+        var isShowCheckedIn = $('#IsShowCheckedIn').prop('checked');
+        var isShowDueOut = $('#IsShowDueOut').prop('checked');
 
         d.PageNum = currentPage;
         d.LastName = lastName;
@@ -445,6 +470,8 @@
         d.ConfirmationNo = confirmationNo;
         d.DepartureDate = departureDate;
         d.IsShowCheckedOut = isShowCheckedOut;
+        d.IsShowCheckedIn = isShowCheckedIn;
+        d.IsShowDueOut = isShowDueOut;
     }
 
 
@@ -829,6 +856,8 @@
         $('#BlockCodeId').val('');
         $('#DepartureDate').val('');
         $('#IsShowCheckedOut').prop('checked', false);
+        $('#IsShowCheckedIn').prop('checked', false);
+        $('#IsShowDueOut').prop('checked', false);
 
         searchGuest();
     }
@@ -997,6 +1026,18 @@
 
 
         }
+    }
+
+    function BillingOk() {
+        if (IsTransactionPosted) {
+
+            //Reload Grid.
+            searchGuest();
+
+            IsTransactionPosted = false;
+        }
+
+        CloseModal('billingInfoModal');
     }
 </script>
 

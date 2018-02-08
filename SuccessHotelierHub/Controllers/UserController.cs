@@ -8,13 +8,15 @@ using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
-{   
+{
     public class UserController : Controller
     {
         #region Declaration
 
         private UserRoleRepository userRoleRepository = new UserRoleRepository();
         private UserRepository userRepository = new UserRepository();
+        private UserPageRepository userPageRepository = new UserPageRepository();
+        private PageRepository pageRepository = new PageRepository();
 
         #endregion
 
@@ -30,7 +32,7 @@ namespace SuccessHotelierHub.Controllers
             var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
 
             ViewBag.UserRoleList = userRoleList;
-            
+
             return View();
         }
 
@@ -58,7 +60,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #endregion
 
-                
+
                 //Get Max. User Id.
                 var newUserId = (userRepository.GetMaxUserId()) + 1;
                 model.UserId = newUserId;
@@ -85,6 +87,35 @@ namespace SuccessHotelierHub.Controllers
 
 
                     userRepository.AddUpdateUserRoleMapping(userRoleMapping);
+
+                    #endregion
+
+                    #region Add User Page Access Rights For Profile
+
+                    var profilePage = pageRepository.GetPageDetailByPageCode("INDIVIDUALPROFILE").FirstOrDefault();
+
+                    if (profilePage != null)
+                    {
+                        UserPagesVM userPage = new UserPagesVM();
+                        userPage.UserId = Guid.Parse(userId);
+                        userPage.PageId = profilePage.Id;
+                        if (model.IsAllowToDeleteProfile)
+                        {
+                            userPage.IsDelete = true;
+                        }
+                        else
+                        {
+                            userPage.IsDelete = false;
+                        }
+                        userPage.IsAdd = true;
+                        userPage.IsEdit = true;
+                        userPage.IsView = true;
+                        userPage.IsActive = true;
+                        userPage.CreatedBy = LogInManager.LoggedInUserId;
+
+                        userPageRepository.AddUserPages(userPage);
+                    }
+
 
                     #endregion
 
@@ -127,10 +158,22 @@ namespace SuccessHotelierHub.Controllers
             if (user != null && user.Count > 0)
             {
                 model = user[0];
-
+                                
                 var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
 
                 ViewBag.UserRoleList = userRoleList;
+
+                //Check Delete Access For Profile Page
+                var profilePageAccessRights = userPageRepository.GetUserPageAccessRights(id, "INDIVIDUALPROFILE").FirstOrDefault();
+
+                if (profilePageAccessRights != null)
+                {
+                    model.IsAllowToDeleteProfile = profilePageAccessRights.IsDelete;
+                }
+                else
+                {
+                    model.IsAllowToDeleteProfile = false;
+                }
 
                 return View(model);
             }
@@ -191,6 +234,47 @@ namespace SuccessHotelierHub.Controllers
                     userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
                     userRepository.AddUpdateUserRoleMapping(userRoleMapping);
+
+                    #endregion
+
+                    #region Add/Update User Page Access Rights For Profile
+
+                    var profilePage = pageRepository.GetPageDetailByPageCode("INDIVIDUALPROFILE").FirstOrDefault();
+
+                    var profilePageAccessRights = userPageRepository.GetUserPageAccessRights(Guid.Parse(userId), "INDIVIDUALPROFILE").FirstOrDefault();
+
+                    if (profilePage != null)
+                    {
+                        UserPagesVM userPage = new UserPagesVM();
+                        userPage.UserId = Guid.Parse(userId);
+                        userPage.PageId = profilePage.Id;
+                        if (model.IsAllowToDeleteProfile)
+                        {
+                            userPage.IsDelete = true;
+                        }
+                        else
+                        {
+                            userPage.IsDelete = false;
+                        }
+                        userPage.IsAdd = true;
+                        userPage.IsEdit = true;
+                        userPage.IsView = true;
+                        userPage.IsActive = true;
+                        userPage.CreatedBy = LogInManager.LoggedInUserId;
+                        userPage.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        if (profilePageAccessRights == null)
+                        {
+                            userPageRepository.AddUserPages(userPage);
+                        }
+                        else
+                        {
+                            userPage.Id = profilePageAccessRights.Id;
+                            userPageRepository.AddUserPages(userPage);
+                        }
+                    }
+
+
 
                     #endregion
 

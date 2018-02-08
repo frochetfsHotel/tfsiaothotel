@@ -536,6 +536,26 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult DeleteAll()
+        {
+            try
+            {
+                //Delete all Reservation.
+                profileRepository.DeleteAllProfile(LogInManager.LoggedInUserId);
+
+                return Json(new
+                {
+                    IsSuccess = true
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "DeleteAll");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         #endregion
 
 

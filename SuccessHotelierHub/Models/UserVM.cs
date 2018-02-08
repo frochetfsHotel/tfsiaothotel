@@ -44,6 +44,9 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please enter cashier number.")]
         public string CashierNumber { get; set; }
 
+        [DisplayName("Can Delete Profile")]
+        public bool IsAllowToDeleteProfile { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

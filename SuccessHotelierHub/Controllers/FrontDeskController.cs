@@ -159,6 +159,7 @@ namespace SuccessHotelierHub.Controllers
                     searchRoomModel.DepartureDate = reservation.DepartureDate;
                     searchRoomModel.RoomNo = string.Empty;
                     searchRoomModel.Type = string.Empty;
+                    searchRoomModel.IsClean = true; //only take clean room.
 
                     var availableRoomList = roomRepository.SearchAdvanceRoom(searchRoomModel);
 
@@ -237,48 +238,53 @@ namespace SuccessHotelierHub.Controllers
                     reservation.CreditCardNo = model.CreditCardNo;
                     reservation.CardExpiryDate = model.CardExpiryDate;
                     reservation.ArrivalDate = model.CheckInDate;
+                    if (model.RoomTypeId.HasValue)
+                    {
+                        reservation.RoomTypeId = model.RoomTypeId.Value;
+                    }
+                    
 
                     DateTime dtDepartureDate;
                     dtDepartureDate = model.CheckInDate.Value.AddDays(reservation.NoOfNight);
                     reservation.DepartureDate = dtDepartureDate;
 
-                    #region Check Room Availability
+                    //#region Check Room Availability
 
-                    if (!string.IsNullOrWhiteSpace(model.RoomNumbers))
-                    {
-                        var roomNumbers = model.RoomNumbers.Split(',');
+                    //if (!string.IsNullOrWhiteSpace(model.RoomNumbers))
+                    //{
+                    //    var roomNumbers = model.RoomNumbers.Split(',');
 
-                        if (roomNumbers != null)
-                        {
-                            //Remove Duplication.
-                            roomNumbers = roomNumbers.Distinct().ToArray();
+                    //    if (roomNumbers != null)
+                    //    {
+                    //        //Remove Duplication.
+                    //        roomNumbers = roomNumbers.Distinct().ToArray();
 
-                            foreach (var roomNo in roomNumbers)
-                            {
-                                SearchAdvanceRoomParametersVM searchRoomModel = new SearchAdvanceRoomParametersVM();
-                                searchRoomModel.ArrivalDate = reservation.ArrivalDate;
-                                searchRoomModel.DepartureDate = reservation.DepartureDate;
-                                searchRoomModel.RoomNo = roomNo;
-                                searchRoomModel.IsClean = true;
+                    //        foreach (var roomNo in roomNumbers)
+                    //        {
+                    //            SearchAdvanceRoomParametersVM searchRoomModel = new SearchAdvanceRoomParametersVM();
+                    //            searchRoomModel.ArrivalDate = reservation.ArrivalDate;
+                    //            searchRoomModel.DepartureDate = reservation.DepartureDate;
+                    //            searchRoomModel.RoomNo = roomNo;
+                    //            searchRoomModel.IsClean = true;
 
-                                var availableRoomList = roomRepository.SearchAdvanceRoom(searchRoomModel);
+                    //            var availableRoomList = roomRepository.SearchAdvanceRoom(searchRoomModel);
 
-                                if (availableRoomList == null || availableRoomList.Count == 0)
-                                {
-                                    return Json(new
-                                    {
-                                        IsSuccess = false,
-                                        errorMessage = string.Format("Selected Room # : {0} already booked. Please select other room.", roomNo)
-                                    }, JsonRequestBehavior.AllowGet);
-                                }
+                    //            if (availableRoomList == null || availableRoomList.Count == 0)
+                    //            {
+                    //                return Json(new
+                    //                {
+                    //                    IsSuccess = false,
+                    //                    errorMessage = string.Format("Selected Room # : {0} already booked. Please select other room.", roomNo)
+                    //                }, JsonRequestBehavior.AllowGet);
+                    //            }
 
-                            }
-                        }
-                    }
+                    //        }
+                    //    }
+                    //}
 
                    
 
-                    #endregion
+                    //#endregion
 
 
                     string CheckInTimeText = model.CheckInTimeText;
@@ -348,6 +354,12 @@ namespace SuccessHotelierHub.Controllers
 
                                 ////Update Room Status CLEAN to DIRTY.
                                 //roomRepository.UpdateRoomCheckInStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.DIRTY), true, LogInManager.LoggedInUserId);
+
+                                #region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
+
+                                reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId);
+
+                                #endregion
 
                                 #region Add Reservation Log
 

@@ -678,6 +678,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Room #")]
         public string RoomNumber { get; set; }
 
+        [DisplayName("Checked In")]
         public bool IsShowCheckedIn { get; set; }
 
         public int? CreatedBy { get; set; }
@@ -753,7 +754,14 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }
 
+        [DisplayName("Checked Out")]
         public  bool IsShowCheckedOut { get; set; }
+        
+        [DisplayName("Checked In")]
+        public bool IsShowCheckedIn { get; set; }
+
+        [DisplayName("Due Out")]
+        public bool IsShowDueOut { get; set; }
 
         public int? CreatedBy { get; set; }
         public bool IsAdminUser { get; set; }

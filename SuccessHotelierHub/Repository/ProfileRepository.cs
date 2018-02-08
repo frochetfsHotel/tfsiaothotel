@@ -182,5 +182,15 @@ namespace SuccessHotelierHub.Repository
 
             return profiles;
         }
+
+        public void DeleteAllProfile(int updatedBy)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            DALHelper.ExecuteScalar("DeleteAllProfile", parameters);
+        }
     }
 }

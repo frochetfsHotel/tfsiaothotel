@@ -480,11 +480,11 @@ namespace SuccessHotelierHub.Controllers
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
 
 
-                                if (source != "RoomPlan")
-                                {
+                                //if (source != "RoomPlan")
+                                //{
                                     #region Remove Existing reservation if room status are dirty.
 
-                                    var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+                                    var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
 
                                     if (reservationLog != null)
                                     {
@@ -499,7 +499,7 @@ namespace SuccessHotelierHub.Controllers
                                     }
 
                                     #endregion Remove Existing reservation if room status are dirty.
-                                }
+                                //}
 
                             }
                         }
@@ -575,6 +575,10 @@ namespace SuccessHotelierHub.Controllers
                         if (source == "RoomPlan")
                         {
                             url = Url.Action("RoomPlan", "Reservation");
+                        }
+                        else if (source == "SearchArrivals")
+                        {
+                            url = Url.Action("Arrivals", "FrontDesk");
                         }
 
                         if (!string.IsNullOrWhiteSpace(url))
@@ -869,7 +873,7 @@ namespace SuccessHotelierHub.Controllers
 
                             #region Remove Existing reservation if room status are dirty.
 
-                            var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), null, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+                            var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), Guid.Parse(reservationId), Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
 
                             if (reservationLog != null)
                             {
@@ -922,6 +926,26 @@ namespace SuccessHotelierHub.Controllers
             }
 
             return confirmationNo;
+        }
+
+        [HttpPost]
+        public ActionResult DeleteAll()
+        {
+            try
+            {
+                //Delete all Reservation.
+                reservationRepository.DeleteAllReservation(LogInManager.LoggedInUserId);
+
+                return Json(new
+                {
+                    IsSuccess = true
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "DeleteAll");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
         }
 
         #endregion

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,21 +6,20 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class AdditionalChargeVM
+    public class PagesVM
     {
         public Guid Id { get; set; }
 
-        [DisplayName("Code")]
-        [Required(ErrorMessage = "Please enter code.")]
-        public string Code { get; set; }
+        [DisplayName("Page Code")]
+        [Required(ErrorMessage = "Please page code.")]
+        public string PageCode { get; set; }
+
+        [DisplayName("Page Name")]
+        [Required(ErrorMessage = "Please page name.")]
+        public string PageName { get; set; }
 
         [DisplayName("Description")]
-        [Required(ErrorMessage = "Please enter description.")]
         public string Description { get; set; }
-
-        [DisplayName("Price")]
-        [DataType(DataType.Currency, ErrorMessage = "Please enter valid price.")]
-        public double? Price { get; set; }
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

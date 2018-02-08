@@ -95,6 +95,10 @@
         {
             btnCancelUrl = Url.Action("RoomPlan", "Reservation");
         }
+        if (sourceParam == "SearchArrivals")
+        {
+            btnCancelUrl = Url.Action("Arrivals", "FrontDesk");
+        }
     }
     #endregion
 }

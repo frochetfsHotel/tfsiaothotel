@@ -7,6 +7,7 @@ using SuccessHotelierHub.Repository;
 using System.Configuration;
 using System.Web.Mvc;
 using System.Net;
+using SuccessHotelierHub.Models.StoredProcedure;
 
 namespace SuccessHotelierHub
 {
@@ -16,6 +17,7 @@ namespace SuccessHotelierHub
         {
             UserRepository userRepository = new UserRepository();
             UserRoleRepository userRoleRepository = new UserRoleRepository();
+            UserPageRepository userPageRepository = new UserPageRepository();
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
@@ -31,11 +33,14 @@ namespace SuccessHotelierHub
 
             var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
 
+            var userPageAccessRights = userPageRepository.GetUserPageAccessRights(user.Id, string.Empty);
+
             LogInManager.UserName = user.Name;
             LogInManager.CashierNumber = user.CashierNumber;
             LogInManager.LoggedInUserId = user.UserId;
             LogInManager.LoggedInUser = user;
             LogInManager.UsersRoles = userRoles;
+            LogInManager.UserPageAccessRights = userPageAccessRights;
             LogInManager.UserRoleName = GetUserRoleName(userRoles);
 
             return LoginStatus.Success;
@@ -98,6 +103,25 @@ namespace SuccessHotelierHub
             }
         }
 
+        public static List<UserPageAccessRightsResultVM> UserPageAccessRights
+        {
+            get
+            {
+                if (HttpContext.Current.Session["UserPageAccessRights"] != null)
+                {
+                    return (List<UserPageAccessRightsResultVM>)HttpContext.Current.Session["UserPageAccessRights"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["UserPageAccessRights"] = value;
+            }
+        }
+
         public static string UserName
         {
             get
@@ -155,12 +179,24 @@ namespace SuccessHotelierHub
             }
         }
 
-        public static bool HasRights(string userRightsCode)
+        public static UserPageAccessRightsResultVM HasPageAccessRights(string userRightsCode)
+        {
+            if (UserPageAccessRights != null && UserPageAccessRights.Count > 0)
+            {
+                var returnVal = UserPageAccessRights
+                                .Where(m => m.PageCode == userRightsCode)
+                                .FirstOrDefault();
+                return returnVal;
+            }
+            return null;
+        }
+
+        public static bool HasRights(string pageCode)
         {
             if (UsersRoles != null)
             {
                 var returnVal = UsersRoles
-                                .Where(m => m.Code == userRightsCode)
+                                .Where(m => m.Code == pageCode)
                                 .Any();
                 return returnVal;
             }

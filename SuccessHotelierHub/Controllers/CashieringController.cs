@@ -630,16 +630,7 @@ namespace SuccessHotelierHub.Controllers
                 }
             }
             #endregion
-
-            if (profile.CityId.HasValue)
-            {
-                var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
-
-                if (city != null)
-                {
-                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
-                }
-            }
+            
 
             model.RoomNumer = roomNumbers;
             model.FolioNumber = Convert.ToString(reservation.FolioNumber);

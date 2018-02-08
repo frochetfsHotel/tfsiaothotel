@@ -271,6 +271,7 @@
     <Compile Include="Models\MarketVM.cs" />
     <Compile Include="Models\NationalityVM.cs" />
     <Compile Include="Models\PackageVM.cs" />
+    <Compile Include="Models\PagesVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
     <Compile Include="Models\PaymentMethodVM.cs" />
     <Compile Include="Models\PreferenceGroupVM.cs" />
@@ -304,8 +305,10 @@
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\UserPageAccessRightsResultVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
+    <Compile Include="Models\UserPagesVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
     <Compile Include="Models\UserRoleVM.cs" />
     <Compile Include="Models\UsersActivityLogVM.cs" />
@@ -323,6 +326,7 @@
     <Compile Include="Repository\MarketRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
     <Compile Include="Repository\PackageRepository.cs" />
+    <Compile Include="Repository\PageRepository.cs" />
     <Compile Include="Repository\PaymentMethodRepository.cs" />
     <Compile Include="Repository\PreferenceGroupRepository.cs" />
     <Compile Include="Repository\PreferenceRepository.cs" />
@@ -342,6 +346,7 @@
     <Compile Include="Repository\RoomTypeRepository.cs" />
     <Compile Include="Repository\StateRepository.cs" />
     <Compile Include="Repository\TitleRepository.cs" />
+    <Compile Include="Repository\UserPageRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Repository\UserRoleRepository.cs" />
     <Compile Include="Repository\UsersActivityLogRepository.cs" />

@@ -92,11 +92,11 @@
                                 {
                                     if (Model.RoomFeatures.Contains(feature.Id))
                                     {
-                                        <option value="@feature.Id" selected>@feature.Name</option>
+                                        <option value="@feature.Id" selected>@(feature.Name + " - " + feature.Description)</option>
                                     }
                                     else
                                     {
-                                        <option value="@feature.Id">@feature.Name</option>
+                                        <option value="@feature.Id">@(feature.Name + " - " + feature.Description)</option>
                                     }
                                 }
                             }

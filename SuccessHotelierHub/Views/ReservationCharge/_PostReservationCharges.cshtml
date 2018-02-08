@@ -60,7 +60,7 @@
                                 <td>
                                     <input type="text" id="Amount_1" name="Amount_1"
                                            class="form-control" placeholder="Amount" 
-                                           onkeypress = "onlyNumeric(event)"  />
+                                           onkeypress = "onlyNumeric(event)"  value="0.00"/>
                                 </td>
                                 <td>
                                     <textarea id="Description_1" name="Description_1" rows="1" 
@@ -68,7 +68,7 @@
                                 </td>
                                 <td>
                                     <input type="text" id="Qty_1" name="Qty_1"
-                                           class="form-control"
+                                           class="form-control" value="1"
                                            onkeydown = "onlyDigits(event)"/>
                                 </td>
                                 <td>
@@ -143,7 +143,7 @@
 
         //Amount
         html += "<td>";
-        html += "<input type='text' id='Amount_" + rowNumber + "' name='Amount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='onlyNumeric(event)'>";
+        html += "<input type='text' id='Amount_" + rowNumber + "' name='Amount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='onlyNumeric(event)' value='0.00'>";
         html += "</td>";
 
         //Description
@@ -153,7 +153,7 @@
 
         //Qty
         html += "<td>";
-        html += "<input type='text' id='Qty_" + rowNumber + "' name='Qty_" + rowNumber + "' class='form-control' onkeydown='onlyDigits(event)'>";
+        html += "<input type='text' id='Qty_" + rowNumber + "' name='Qty_" + rowNumber + "' class='form-control' onkeydown='onlyDigits(event)' value='1'>";
         html += "</td>";
 
         //Supplement
@@ -189,6 +189,7 @@
     function validateReservationCharges() {
         var errorMessage = "";
         var blnValid = true;
+        var blnAmountValid = true;
 
         $("form#frmReservationCharge #tblTransactionCharges tbody tr").each(function () {
             var rowNumber = $(this).attr("data-rownumber");            
@@ -196,15 +197,24 @@
                 rowNumber = parseInt(rowNumber);
                 var code = $('#Code_' + rowNumber).val();
                 var chargeId = $('#AdditionalChargeId_' + rowNumber).val();
+                var amount = $('#Amount_' + rowNumber).val();
 
                 if (IsNullOrEmpty(code) || IsNullOrEmpty(chargeId)) {
                     blnValid = false;
+                }
+                if (IsNullOrEmpty(amount)) {
+                    blnAmountValid = false;
                 }
             }
         });
 
         if (blnValid == false) {
             showToaster("Please search and select valid transaction code.", ToasterType.ERROR);
+            return false;
+        }
+
+        if (blnAmountValid == false) {
+            showToaster("Please enter amount.", ToasterType.ERROR);
             return false;
         }
 
@@ -266,6 +276,7 @@
 
                             if (transactions != null) {
                                 //Call Grid Function.
+                                IsTransactionPosted = true;
                                 bindBillingTransactionGrid(transactions);
                             }
                             showToaster("Charge details saved successfully", ToasterType.SUCCESS);
@@ -289,8 +300,8 @@
         $("#TransactionDate_1").datepicker("setDate", new Date());
         $('#Code_1').val('');
         $('#Description_1').val('');
-        $('#Amount_1').val('');
-        $('#Qty_1').val('');
+        $('#Amount_1').val('0.00');
+        $('#Qty_1').val('1');
         $('#Supplement_1').val('');
         $('#Reference_1').val('');
         $('#AdditionalChargeId_1').val('');

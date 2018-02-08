@@ -1,27 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
+
 namespace SuccessHotelierHub.Models
 {
-    public class AdditionalChargeVM
+    public class UserPagesVM
     {
         public Guid Id { get; set; }
 
-        [DisplayName("Code")]
-        [Required(ErrorMessage = "Please enter code.")]
-        public string Code { get; set; }
+        public Guid UserId { get; set; }
+
+        public Guid PageId { get; set; }
+
+        public bool IsAdd { get; set; }
+        public bool IsEdit { get; set; }
+        public bool IsDelete { get; set; }
+        public bool IsView { get; set; }
+
 
         [DisplayName("Description")]
-        [Required(ErrorMessage = "Please enter description.")]
         public string Description { get; set; }
-
-        [DisplayName("Price")]
-        [DataType(DataType.Currency, ErrorMessage = "Please enter valid price.")]
-        public double? Price { get; set; }
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
