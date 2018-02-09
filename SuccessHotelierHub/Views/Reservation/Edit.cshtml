@@ -151,7 +151,7 @@
                         @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
-                            <div class="input-group-addon cursor-P" onclick="openProfileSearchModal();">
+                            <div class="input-group-addon cursor-P openProfileSearchModal" onclick="openProfileSearchModal();">
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
@@ -311,7 +311,7 @@
                         @Html.LabelFor(m => m.RoomTypeCode, new { @class = "required-label" })
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
-                            <div class="input-group-addon cursor-P" onclick="openRoomTypeSearchModal();">
+                            <div class="input-group-addon cursor-P openRoomTypeSearchModal" onclick="openRoomTypeSearchModal();">
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
@@ -343,7 +343,7 @@
                                 placeholder = "Room #",
                                 @readonly = "readonly"
                             })
-                            <div class="input-group-addon cursor-P" onclick="openRoomSearchModal();">
+                            <div class="input-group-addon cursor-P openRoomSearchModal" onclick="openRoomSearchModal();">
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
@@ -712,6 +712,8 @@
 
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
+       
+
         $("#frmReservation input[type='text'], textarea").blur(function () {
             if (!IsNullOrEmpty($(this).val())) {
                 $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
@@ -913,6 +915,46 @@
             }
         });
 
+        //If Client checked out then disabled below fields.
+        var isCheckedOut = parseBoolean('@Model.IsCheckOut');
+        if (isCheckedOut) {
+            $('form#frmReservation #LastName').attr("readonly", true);
+            $('form#frmReservation #FirstName').attr("readonly", true);
+            $('form#frmReservation div.openProfileSearchModal').attr('onclick', "");
+
+            $('form#frmReservation #ArrivalDate').attr("readonly", true);
+            $("form#frmReservation #ArrivalDate").datepicker("destroy");
+
+            $('form#frmReservation #NoOfNight').attr("readonly", true);
+
+            $('form#frmReservation #DepartureDate').attr("readonly", true);
+            $("form#frmReservation #DepartureDate").datepicker("destroy");
+
+            $('form#frmReservation #NoOfAdult').attr("readonly", true);
+            $('form#frmReservation #NoOfChildren').attr("readonly", true);
+            $('form#frmReservation #RoomTypeCode').attr("readonly", true);
+            $('form#frmReservation div.openRoomTypeSearchModal').attr('onclick', "");
+
+            $('form#frmReservation #NoOfRoom').attr("readonly", true);
+            $('form#frmReservation #RoomNumbers').attr("readonly", true);
+            $('form#frmReservation div.openRoomSearchModal').attr('onclick', "");
+
+            $('form#frmReservation #RateCodeId').attr("disabled", true);
+            $('form#frmReservation #Rate').attr("readonly", true);
+            $('form#frmReservation #CurrencyId').attr("disabled", true);
+
+            $('#ETAText').attr("readonly", true);
+            //$("#ETAText").timepicker("hide");
+
+            $('form#frmReservation #ReservationTypeId').attr("disabled", true);
+            $('form#frmReservation #MarketId').attr("disabled", true);
+            $('form#frmReservation #ReservationSourceId').attr("disabled", true);
+            $('form#frmReservation #PaymentMethodId').attr("disabled", true);
+            $('form#frmReservation #CreditCardNo').attr("readonly", true);
+            $('form#frmReservation #CardExpiryDate').attr("readonly", true);
+            $('form#frmReservation #CVVNo').attr("readonly", true);
+        }
+
     });
 
     function arrivalDateChanged(e) {
@@ -1057,6 +1099,15 @@
             //Get Selected Preference Items.
             var preferenceIds = getSelectedPreferenceItemIds();
             $('form#frmReservation #PreferenceItems').val(preferenceIds);
+
+            //Enable all select box before form submit.
+            $('form#frmReservation #RateCodeId').attr("disabled", false);
+            $('form#frmReservation #CurrencyId').attr("disabled", false);
+            $('form#frmReservation #ReservationTypeId').attr("disabled", false);
+            $('form#frmReservation #MarketId').attr("disabled", false);
+            $('form#frmReservation #ReservationSourceId').attr("disabled", false);
+            $('form#frmReservation #PaymentMethodId').attr("disabled", false);
+            
 
             //Ajax Request to edit reservation.
             $.ajax({

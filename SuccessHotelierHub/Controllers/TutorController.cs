@@ -17,6 +17,7 @@ namespace SuccessHotelierHub.Controllers
         private UserRoleRepository userRoleRepository = new UserRoleRepository();
         private UserRepository userRepository = new UserRepository();
         private UsersActivityLogRepository usersActivityLogRepository = new UsersActivityLogRepository();
+        private ReservationRepository reservationRepository = new ReservationRepository();
 
         #endregion
 
@@ -288,6 +289,150 @@ namespace SuccessHotelierHub.Controllers
             catch (Exception e)
             {
                 Utility.Utility.LogError(e, "SearchActivityLog");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        public ActionResult ReservationLog(Guid id)
+        {
+
+            if (id == null)
+            {
+                return HttpNotFound();
+            }
+
+            SearchUsersReservationLogParametersVM model = new SearchUsersReservationLogParametersVM();
+            model.UserGUID = id;
+            model.ReservationCreatedDate = DateTime.Now;
+
+            return View(model);
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        [HttpPost]
+        public ActionResult SearchReservationLog(SearchUsersReservationLogParametersVM model)
+        {
+            try
+            {
+                var userDetail = userRepository.GetUserDetailById(model.UserGUID.Value).FirstOrDefault();
+
+                if (userDetail == null)
+                {
+                    return Json(new { IsSuccess = false, errorMessage = "User details not exist."});
+                }
+
+                model.UserId = userDetail.UserId;
+
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+
+                var reservations = reservationRepository.SearchReservationByUserId(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+
+                int totalRecords = 0;
+                var dbRecords = reservations.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = reservations
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SearchReservationLog");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        public ActionResult FolioLog(Guid id)
+        {
+
+            if (id == null)
+            {
+                return HttpNotFound();
+            }
+
+            SearchUsersReservationFolioLogParametersVM model = new SearchUsersReservationFolioLogParametersVM();
+            model.UserGUID = id;
+            model.ReservationCreatedDate = DateTime.Now;
+
+            return View(model);
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        [HttpPost]
+        public ActionResult SearchFolioLog(SearchUsersReservationFolioLogParametersVM model)
+        {
+            try
+            {
+                var userDetail = userRepository.GetUserDetailById(model.UserGUID.Value).FirstOrDefault();
+
+                if (userDetail == null)
+                {
+                    return Json(new { IsSuccess = false, errorMessage = "User details not exist." });
+                }
+
+                model.UserId = userDetail.UserId;
+
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+
+                var reservations = reservationRepository.SearchCheckedOutReservationByUserId(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+
+                int totalRecords = 0;
+                var dbRecords = reservations.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = reservations
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SearchFolioLog");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

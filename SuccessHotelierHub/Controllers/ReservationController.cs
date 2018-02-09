@@ -446,6 +446,7 @@ namespace SuccessHotelierHub.Controllers
                 double totalPrice = (double)(model.Rate * model.NoOfNight);
                 model.TotalPrice = Math.Round(totalPrice, 2);
                 model.TotalBalance = Math.Round(totalPrice, 2);
+                model.GuestBalance = Math.Round(totalPrice, 2);
 
                 reservationId = reservationRepository.UpdateReservation(model);
 
@@ -846,6 +847,7 @@ namespace SuccessHotelierHub.Controllers
             double totalPrice = (double)(model.Rate * model.NoOfNight);
             model.TotalPrice = Math.Round(totalPrice, 2);
             model.TotalBalance = Math.Round(totalPrice, 2);
+            model.GuestBalance = Math.Round(totalPrice, 2);
 
             reservationId = reservationRepository.AddReservation(model);
 

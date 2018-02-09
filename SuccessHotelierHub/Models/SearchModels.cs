@@ -1668,6 +1668,198 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Reservation Log
+
+    public class SearchUsersReservationLogParametersVM
+    {
+        public SearchUsersReservationLogParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("User")]
+        public Guid? UserGUID { get; set; }
+
+        public int UserId { get; set; }
+
+        [DisplayName("Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ReservationCreatedDate { get; set; }
+                
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchUsersReservationLogResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        public Guid? ProfileId { get; set; }
+
+        [DisplayName("Confirmation #")]
+        public string ConfirmationNumber { get; set; }
+
+        [DisplayName("Last Name")]        
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        [DisplayName("Arrival Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
+        public DateTime? ArrivalDate { get; set; }
+
+        [DisplayName("Nights")]
+        public int NoOfNight { get; set; }
+
+        [DisplayName("Departure Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
+        public DateTime? DepartureDate { get; set; }
+
+        [DisplayName("Adults")]
+        public int NoOfAdult { get; set; }
+
+        [DisplayName("Children")]
+        public int NoOfChildren { get; set; }
+
+        [DisplayName("No Of Rooms.")]
+        public int NoOfRoom { get; set; }
+                        
+        public Guid? RoomTypeId { get; set; }
+
+        [DisplayName("Room Type")]        
+        public string RoomTypeCode { get; set; }       
+
+        [DisplayName("Room #")]
+        public string RoomNumbers { get; set; }
+        
+        public Guid? RateTypeId { get; set; }
+
+        public string RateTypeCode { get; set; }
+
+        [DisplayName("Rate")]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public double? Rate { get; set; }
+
+        [DisplayName("Guest Balance")]
+        public double? GuestBalance { get; set; }
+
+        public DateTime? CreatedOn { get; set; }        
+        public int TotalCount { get; set; }
+    }
+
+    #endregion
+
+    #region Search Reservation Folio Log
+
+    public class SearchUsersReservationFolioLogParametersVM
+    {
+        public SearchUsersReservationFolioLogParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("User")]
+        public Guid? UserGUID { get; set; }
+
+        public int UserId { get; set; }
+
+        [DisplayName("Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ReservationCreatedDate { get; set; }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchUsersReservationFolioLogResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        public Guid? ProfileId { get; set; }
+
+        [DisplayName("Confirmation #")]
+        public string ConfirmationNumber { get; set; }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        [DisplayName("Arrival Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ArrivalDate { get; set; }
+
+        [DisplayName("Nights")]
+        public int NoOfNight { get; set; }
+
+        [DisplayName("Departure Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DepartureDate { get; set; }
+
+        [DisplayName("Adults")]
+        public int NoOfAdult { get; set; }
+
+        [DisplayName("Children")]
+        public int NoOfChildren { get; set; }
+
+        [DisplayName("No Of Rooms.")]
+        public int NoOfRoom { get; set; }
+
+        public Guid? RoomTypeId { get; set; }
+
+        [DisplayName("Room Type")]
+        public string RoomTypeCode { get; set; }
+
+        [DisplayName("Room #")]
+        public string RoomNumbers { get; set; }
+
+        public Guid? RateTypeId { get; set; }
+
+        public string RateTypeCode { get; set; }
+
+        [DisplayName("Rate")]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public double? Rate { get; set; }
+
+        [DisplayName("Guest Balance")]
+        public double? GuestBalance { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public int TotalCount { get; set; }
+    }
+
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

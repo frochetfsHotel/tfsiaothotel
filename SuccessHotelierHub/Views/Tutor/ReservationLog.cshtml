@@ -1,0 +1,287 @@
+﻿@model SuccessHotelierHub.Models.SearchUsersReservationLogParametersVM
+@{
+    ViewBag.Title = "Search Reservation Log";
+}
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+@{
+    var PagerName = "ReservationLogGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Reservation Log <small>List</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Reservation Log</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Reservation Log</h3>
+        </div>
+        <form class="frmReservationLogList" enctype="multipart/form-data" method="post">
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.UserGUID)
+            <!--HIDDEN FIELD-->
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ReservationCreatedDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ReservationCreatedDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.LastName)
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @placeholder = "Last Name" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.FirstName)
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @placeholder = "Last Name" })
+                        </div>
+
+                        <div class="col-md-3 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchReservationLog()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger m-r-xs" onclick="clearReservationLog()">Clear</button>
+                            <a href="@Url.Action("ViewStudent", "Tutor")" class="btn btn-primary">Back</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-md">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblReservationLog">
+                            <thead>
+                                <tr>
+                                    <th>Created On</th>
+                                    <th>Confirmation #</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Arrival</th>
+                                    <th>Nights</th>
+                                    <th>Departure</th>                                    
+                                    <th>Room #</th>
+                                    <th>Room Type</th>
+                                    <th>Rate Type</th>
+                                    <th>Rate</th>
+                                    <th>Guest Balance</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "ReservationLogGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdReservationLog;
+
+    $(document).ready(function () {
+
+
+        //Date picker
+        $('#ReservationCreatedDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(reservationDateChanged)
+        .on('changeDate', reservationDateChanged);
+
+        setTimeout(InitializeReservationLogGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+    function reservationDateChanged(e) {
+        var selectedDate = $(this).val();
+        searchReservationLog();
+    }
+
+    function SearchReservationLogParameters(d) {
+        var reservationDate = $('#ReservationCreatedDate').val();
+        var userId = $('#UserGUID').val();
+        var lastName = $('#LastName').val();
+        var firstName = $('#FirstName').val();
+
+        d.PageNum = currentPage;
+        d.ReservationCreatedDate = reservationDate;
+        d.UserGUID = userId;
+        d.LastName = lastName;
+        d.FirstName = firstName;
+    }
+
+    function ReservationLogGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadReservationLogGrid() {
+        grdReservationLog.ajax.url("@Url.Content("~/Tutor/SearchReservationLog")").load();
+    }
+
+    function ReservationLogGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadReservationLogGrid();
+    }
+
+
+    function InitializeReservationLogGrid() {
+        grdReservationLog = $('#tblReservationLog').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Tutor/SearchReservationLog")',
+                data: SearchReservationLogParameters,
+                dataSrc: ReservationLogGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var createdOn = full.CreatedOn;
+                    return ParseJsonDate(createdOn);
+                }
+            },
+            {
+                targets: 1,
+                data: "ConfirmationNumber",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "LastName",
+                orderable: true
+            },
+            {
+                targets: 3,
+                data: "FirstName",
+                orderable: true
+            },
+            {
+                targets: 4,
+                data: "ArrivalDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var arrivalDate = full.ArrivalDate;                    
+                    return ParseJsonDate(arrivalDate);
+                }
+
+            },
+            {
+                targets: 5,
+                data: "NoOfNight",
+                orderable: false
+            },
+            {
+                targets: 6,
+                data: "DepartureDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var departureDate = full.DepartureDate;
+                    return ParseJsonDate(departureDate);
+                }
+            },
+            {
+                targets: 7,
+                data: "RoomNumbers",
+                orderable: false
+            },
+            {
+                targets: 8,
+                data: "RoomTypeCode",
+                orderable: true
+            }
+            ,
+            {
+                targets: 9,
+                data: "RateTypeCode",
+                orderable: true
+            },
+            {
+                targets: 10,
+                data: "Rate",
+                orderable: true
+            },
+            {
+                targets: 11,
+                data: "GuestBalance",
+                orderable: true
+            }
+            ],
+            //order: [[0, "desc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+
+    function searchReservationLog() {
+        currentPage = 1;
+        ReloadReservationLogGrid();
+    }
+
+    function clearReservationLog() {
+        $('#ReservationCreatedDate').val('');
+        $('#LastName').val();
+        $('#FirstName').val();
+
+        searchReservationLog();
+    }
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

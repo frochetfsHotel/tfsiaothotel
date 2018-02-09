@@ -195,8 +195,21 @@
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoStudentActivity(\'' + full.Id + '\')" '
+                    var buttons = "";
+
+                    //View Activity
+                    buttons += '<a href="javascript:void(0);" onclick="GotoStudentActivity(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">View Activity</a> ';
+
+                    //Reservation Log
+                    buttons += '<a href="javascript:void(0);" onclick="GotoReservationLog(\'' + full.Id + '\')" '
+                        + ' class="btn btn-warning btn-xs m-r-xs">Reservation Log</a> ';
+
+                    //Folio Log
+                    buttons += '<a href="javascript:void(0);" onclick="GotoFolioLog(\'' + full.Id + '\')" '
+                        + ' class="btn btn-info btn-xs m-r-xs">Folio Log</a> ';
+
+                    return buttons;
                 }
             }
             ],
@@ -209,6 +222,16 @@
 
     function GotoStudentActivity(Id) {
         var url = '@Url.Content("~/Tutor/ViewActivity/")' + Id;
+        redirectTo(url);
+    }
+
+    function GotoReservationLog(Id) {
+        var url = '@Url.Content("~/Tutor/ReservationLog/")' + Id;
+        redirectTo(url);
+    }
+
+    function GotoFolioLog(Id) {
+        var url = '@Url.Content("~/Tutor/FolioLog/")' + Id;
         redirectTo(url);
     }
 

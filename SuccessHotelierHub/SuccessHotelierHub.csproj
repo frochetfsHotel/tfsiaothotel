@@ -2087,6 +2087,8 @@
     <Content Include="Views\Holiday\Create.cshtml" />
     <Content Include="Views\Holiday\Edit.cshtml" />
     <Content Include="Views\Holiday\List.cshtml" />
+    <Content Include="Views\Tutor\ReservationLog.cshtml" />
+    <Content Include="Views\Tutor\FolioLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -34,7 +34,7 @@
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
                         <div class="col-md-4 form-group">
-                            @Html.LabelFor(m => m.ActivityDate, new { @class = "required-label" })
+                            @Html.LabelFor(m => m.ActivityDate)
                             <div class="input-group date">
                                 @Html.TextBoxFor(m => m.ActivityDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
                                 <div class="input-group-addon">

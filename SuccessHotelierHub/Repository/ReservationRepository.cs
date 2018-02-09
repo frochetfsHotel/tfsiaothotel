@@ -389,6 +389,50 @@ namespace SuccessHotelierHub.Repository
             DALHelper.ExecuteScalar("DeleteReservationAndRoomMappingByRoom", parameters);
         }
 
+        public List<SearchUsersReservationLogResultVM> SearchReservationByUserId(SearchUsersReservationLogParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
+                    new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
+                    new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
+                    new SqlParameter { ParameterName = "@CreatedOn", Value = model.ReservationCreatedDate },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchReservationByUserId", parameters);
+
+            var reservations = new List<SearchUsersReservationLogResultVM>();
+            reservations = DALHelper.CreateListFromTable<SearchUsersReservationLogResultVM>(dt);
+
+            return reservations;
+        }
+
+        public List<SearchUsersReservationFolioLogResultVM> SearchCheckedOutReservationByUserId(SearchUsersReservationFolioLogParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
+                    new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
+                    new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
+                    new SqlParameter { ParameterName = "@CreatedOn", Value = model.ReservationCreatedDate },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchCheckedOutReservationByUserId", parameters);
+
+            var reservations = new List<SearchUsersReservationFolioLogResultVM>();
+            reservations = DALHelper.CreateListFromTable<SearchUsersReservationFolioLogResultVM>(dt);
+
+            return reservations;
+        }
+
         #endregion
 
         #region Room Plan
