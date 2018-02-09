@@ -58,7 +58,15 @@ namespace SuccessHotelierHub.Controllers
                     {
                         totalBalance = reservation.TotalBalance.HasValue ? reservation.TotalBalance.Value : 0;
 
-                        totalBalance += model.Amount.HasValue ? model.Amount.Value : 0;
+                        //Calculate total Amount.
+                        int qty = 1;
+
+                        if (model.Qty.HasValue)
+                            qty = model.Qty.Value;
+
+                        totalBalance = totalBalance + (model.Amount.HasValue ? (model.Amount.Value * qty) : 0);
+
+                        //totalBalance += model.Amount.HasValue ? model.Amount.Value : 0;
 
                         //Update Total Balance.
                         reservationRepository.UpdateReservationTotalBalance(reservation.Id, totalBalance, LogInManager.LoggedInUserId);
@@ -185,6 +193,79 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+
+        [HttpPost]
+        public ActionResult DeleteCharge(Guid id)
+        {
+            try
+            {
+                double totalBalance = 0;
+
+                var chargeDetail = reservationChargeRepository.GetReservationChargesById(id).FirstOrDefault();
+
+                if (chargeDetail != null)
+                {
+                    Guid? reservationId = chargeDetail.ReservationId;
+
+                    double chargeAmount = 0;
+
+                    //Calculate total Amount.
+                    int qty = 1;
+
+                    if (chargeDetail.Qty.HasValue)
+                        qty = chargeDetail.Qty.Value;
+
+                    chargeAmount = (chargeDetail.Amount.HasValue ? (chargeDetail.Amount.Value * qty) : 0);
+
+                    //Delete Reservation Charge
+                    reservationChargeRepository.DeleteReservationCharges(chargeDetail.Id, LogInManager.LoggedInUserId);
+
+                    #region Update Reservation Total Balance.
+                    var reservation = new ReservationVM();
+
+                    if (reservationId.HasValue)
+                        reservation = reservationRepository.GetReservationById(reservationId.Value).FirstOrDefault();
+
+                    if (reservation != null)
+                    {
+                        totalBalance = reservation.TotalBalance.HasValue ? reservation.TotalBalance.Value : 0;
+
+                        if (totalBalance > chargeAmount)
+                        {
+                            totalBalance -= chargeAmount;
+                        }
+                        else
+                        {
+                            totalBalance = 0;
+                        }
+
+                        //Update Total Balance.
+                        reservationRepository.UpdateReservationTotalBalance(reservation.Id, totalBalance, LogInManager.LoggedInUserId);
+                    }
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        errorMessage = "Charge details deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Charge details not found."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "DeleteCharge");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
 
     }
 }

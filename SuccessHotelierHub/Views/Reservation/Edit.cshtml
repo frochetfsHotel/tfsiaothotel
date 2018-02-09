@@ -507,7 +507,7 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.GuestBalance)
-                        @Html.TextBoxFor(m => m.GuestBalance, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.GuestBalance, Utility.FormatAmountWithTwoDecimal(Model.GuestBalance.HasValue ? Model.GuestBalance.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)", @readonly = "readonly"})
                     </div>
                     <div class="col-md-3 form-group">
                         <label for="DiscountAmount" class="col-xs-12 padding-zero">Disc. Amt</label>

@@ -779,6 +779,7 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Email { get; set; }
 
         public string ArrivalDate { get; set; }        
         public string DepartureDate { get; set; }

@@ -406,15 +406,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.LastName + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                            + ' class="">' + full.LastName + '</a> ';
-                    }
+                  
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
+                  
                     return html;
                 }
             },
@@ -423,16 +418,11 @@
                 data: "FirstName",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.FirstName + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                    var html = "";                   
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.FirstName + '</a>';
-                    }
+                    
                     return html;
                 }
             },
@@ -442,15 +432,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.RoomNumbers + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                   
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.RoomNumbers + '</a> ';
-                    }
+                    
                     return html;                    
                 }
             },
@@ -460,15 +445,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.RoomTypeCode + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                    
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.RoomTypeCode + '</a> ';
-                    }
+                   
                     return html;
                 }
             },
@@ -478,15 +458,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.RateTypeCode + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                   
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.RateTypeCode + '</a> ';
-                    }
+                   
                     return html;
                 }
             },
@@ -496,15 +471,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.ArrivalDate + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                    
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.ArrivalDate + '</a> ';
-                    }
+                  
                     return html;
                 }
             },
@@ -514,15 +484,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.DepartureDate + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                   
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.DepartureDate + '</a> ';
-                    }
+                
                     return html;
                 }
             },
@@ -532,15 +497,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.NoOfRoom + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                    
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.NoOfRoom + '</a> ';
-                    }
+                   
                     return html;
                 }
             },
@@ -550,15 +510,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckIn == true)
-                    {
-                        html += '' + full.NoOfNight + '';
-                    }
-                    else
-                    {
-                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                                      
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                         + ' class="">' + full.NoOfNight + '</a> ';
-                    }
+                  
                     return html;
                 }
             },

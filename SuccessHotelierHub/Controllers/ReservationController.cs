@@ -305,6 +305,11 @@ namespace SuccessHotelierHub.Controllers
                     }
                 }
 
+                if (!model.GuestBalance.HasValue)
+                {
+                    model.GuestBalance = model.TotalBalance;
+                }
+
                 #region Room Type
                 //Get Room Type Details.
                 if (model.RoomTypeId.HasValue)

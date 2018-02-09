@@ -247,6 +247,7 @@
                                 <table class="table table-bordered table-hover table-striped cursor-P m-b-none">
                                     <thead>
                                         <tr>
+                                            <th></th>
                                             <th>Date</th>
                                             <th>Code</th>
                                             <th>Description</th>
@@ -397,7 +398,7 @@
     var currentPage = 1;
     var grdReservation;
     var IsSearchButtonClicked = false;
-    var IsTransactionPosted = false;
+    var IsTransactionGridUpdated = false;
 
     $(document).ready(function () {
 
@@ -437,10 +438,10 @@
         
         //Handle Billing Modal Popup Close Event
         $('#billingInfoModal').on('hidden.bs.modal', function () {            
-            if (IsTransactionPosted) {
+            if (IsTransactionGridUpdated) {
                 //Reload Grid.
                 searchGuest();
-                IsTransactionPosted = false;
+                IsTransactionGridUpdated = false;
             }
         })
 
@@ -712,7 +713,7 @@
                         var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' +  full.Id;
                         buttons += '<a href="' + url + '" target="_blank" '
                                  + ' class="btn btn-warning btn-xs m-r-xs">Folio</a> ';
-                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\')" '
+                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\',\'' + full.Email + '\')" '
                                  + ' class="btn btn-primary btn-xs m-r-xs">Export</a> ';
                     }
                     else
@@ -828,7 +829,15 @@
             for (i = 0; i < data.length; i++) {
                 var amount = (IsNullOrEmpty(data[i].Amount) ? "0" : data[i].Amount);
                 var qty =  (IsNullOrEmpty(data[i].Qty) ? "1" : data[i].Qty);
-                html += "<tr>";
+                html += "<tr id='trCharge_" + data[i].Id + "' data-chargeid='" + data[i].Id +"'>";
+
+                //Delete  Charge
+                if (!IsNullOrEmpty(data[i].Code) && data[i].Code != "1000") {
+                    html += "<td><span class='text-red font_20 cursor-P' onclick='removeTransactionCharge(this);'><i class='fa fa-remove text'></i></span></td>";
+                } else {
+                    html += "<td></td>";
+                }
+
                 html += "<td>" + ParseJsonDate(data[i].TransactionDate) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
@@ -973,8 +982,8 @@
         });
     }
 
-    function OpenEmailForm(id) {
-        $("form#frmEmail #Email").val('')
+    function OpenEmailForm(id, email) {
+        $("form#frmEmail #Email").val(email)
         $("form#frmEmail #hdnReservationId").val(id);
 
         OpenModal('emailFormModal');
@@ -1029,15 +1038,55 @@
     }
 
     function BillingOk() {
-        if (IsTransactionPosted) {
+        if (IsTransactionGridUpdated) {
 
             //Reload Grid.
             searchGuest();
 
-            IsTransactionPosted = false;
+            IsTransactionGridUpdated = false;
         }
 
         CloseModal('billingInfoModal');
+    }
+
+    function removeTransactionCharge(element) {
+        var chargeId = $(element).closest("tr").attr("data-chargeid");
+
+        if (!IsNullOrEmpty(chargeId)) {
+            //Ajax request to delete transaction charge.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/ReservationCharge/DeleteCharge")',
+                type: 'POST',
+                data: { id: chargeId },
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+
+                        $(element).closest("tr").remove();
+
+                        ShowBalanceInfo();
+
+                        IsTransactionGridUpdated = true;
+
+                        showToaster("Charge details deleted successfully.", ToasterType.SUCCESS);
+                    }
+                    return false;
+                }
+            });
+           
+        }
+     
     }
 </script>
 
