@@ -936,8 +936,7 @@
                 }
             } else {
                 var arrivalTime = $('#ETAText').val();
-                if (IsNullOrEmpty(arrivalTime)) {
-                    debugger;
+                if (IsNullOrEmpty(arrivalTime)) {                    
                     blnValid = false;
                     swal({
                         title: '<span>Reservation type Non Guranteed requires an arrival time.</span>',
