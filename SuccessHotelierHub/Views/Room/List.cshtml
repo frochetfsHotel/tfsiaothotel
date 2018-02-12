@@ -85,10 +85,7 @@
                             </thead>
                         </table>
                     </div>
-                    <div class="clearfix"></div>
-                    <div class="text-left">
-                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "RoomGridPageChange" })
-                    </div>
+                    <div class="clearfix"></div>                    
                 </div>
             </div>
         </form>
@@ -125,7 +122,7 @@
 
     function RoomGridDataBound(response) {
         if (response.IsSuccess == true) {
-            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            @*@("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);*@
 
             if (response.data.length > 0) {
                 $('#divMultipleDeleteAction').show();

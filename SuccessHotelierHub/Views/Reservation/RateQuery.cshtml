@@ -198,7 +198,7 @@
                                 <div class="box-header with-border">
                                     <h3 class="box-title mt-10 mb-10">Show Rates</h3>
                                 </div>
-                                <div class="box-body pb-0">
+                                <div class="box-body pb-0 hide">
                                     <div class="row">
                                         <div class="col-md-2 col-sm-4 col-xs-12 form-group">
                                             <label class="container1" for="IsClosed">
@@ -221,12 +221,11 @@
                                                 <span class="checkmark"></span>
                                             </label>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row m-t">
                                 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.RateClassId)
                                     <select class="form-control" id="RateClassId" name="RateClassId">
@@ -343,13 +342,13 @@
                     </div>
 
                     <div class="col-xs-12 padding-zero" id="divRateInfo">
-                        <div class="col-xs-12 col-sm-12 col-md-8 mt-10 padding-zero m-b-md">
-                            <label class="col-md-3 col-sm-3 col-xs-12">Room Description</label>
-                            <div class="col-md-9 col-sm-9 col-xs-12 padding-zero">
-                                <textarea class="form-control" readonly="readonly" id="txtRateInfo" name="txtRateInfo"></textarea>
+                        <div class="col-xs-12 col-sm-12 col-md-10 mt-10 padding-zero m-b-md">
+                            <label class="col-md-2 col-sm-2 col-xs-12">Room Description</label>
+                            <div class="col-md-10 col-sm-10 col-xs-12 padding-zero">
+                                <textarea class="form-control" readonly="readonly" rows="5" id="txtRateInfo" name="txtRateInfo"></textarea>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-4 col-sm-4 text-right m-b-md m-t-sm">                            
+                        <div class="col-xs-12 col-md-2 col-sm-2 text-right m-b-md m-t-sm">                            
                             <button type="button" class="btn btn-info m-r-xs" onclick="showTab('tab_1')">Prev</button>
                             <button type="button" class="btn btn-success" id="btnOk" onclick="showReservation();">OK</button>
                         </div>

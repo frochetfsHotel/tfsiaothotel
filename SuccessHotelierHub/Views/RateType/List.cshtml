@@ -60,6 +60,7 @@
                                     <th></th>
                                     <th>Rate Type Code</th>
                                     <th>Description</th>                                    
+                                    <th>LEIS Rate Type</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -190,6 +191,19 @@
             },
             {
                 targets: 3,
+                data: "IsLeisRateType",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isLeisRateType = full.IsLeisRateType;
+                    if (isLeisRateType == true) {
+                        return "Yes";
+                    } else {
+                        return "No";
+                    }
+                }
+            },
+            {
+                targets: 4,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -202,7 +216,7 @@
                 }
             },
             {
-                targets: 4,
+                targets: 5,
                 data: "Id",
                 orderable: false,
                 className: "text-center",

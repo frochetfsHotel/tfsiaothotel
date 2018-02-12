@@ -253,7 +253,7 @@
                                             <th>Description</th>
                                             <th>Qty</th>
                                             <th>Amount</th>
-                                            <th>Supplement</th>
+                                            @*<th>Supplement</th>*@
                                             <th>Reference</th>
                                         </tr>
                                     </thead>
@@ -843,7 +843,7 @@
                 html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
                 html += "<td>" + qty + "</td>";
                 html += "<td class='tdAmount' data-amount='" + amount + "' data-qty='" + qty + "'>" + FormatNumberWithTwoDecimal(amount) + "</td>";
-                html += "<td>" + (IsNullOrEmpty(data[i].Supplement) ? "" : data[i].Supplement) + "</td>";
+                //html += "<td>" + (IsNullOrEmpty(data[i].Supplement) ? "" : data[i].Supplement) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Reference) ? "" : data[i].Reference) + "</td>";
                 html += "</tr>";
             }

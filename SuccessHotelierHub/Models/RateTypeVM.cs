@@ -21,6 +21,9 @@ namespace SuccessHotelierHub.Models
         [DataType(DataType.Currency, ErrorMessage = "Please enter valid amount.")]
         public double Amount { get; set; }
 
+        [DisplayName("LEIS Rate Type")]
+        public bool IsLeisRateType { get; set; }
+
         public bool IsActive { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

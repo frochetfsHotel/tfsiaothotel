@@ -20,7 +20,7 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
-        public ActionResult Create()
+        public ActionResult Create(string source)
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
             var ratetypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "ID", "RateTypeCode");
@@ -402,6 +402,26 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.TabName = tabName;
 
             return View();
+        }
+
+        public JsonResult GetWeekDayPrice(Guid roomTypeId, Guid rateTypeId)
+        {
+            try
+            {
+                //Get Week Day Price.
+                var rate = rateRepository.GetWeekDayPrice(roomTypeId, rateTypeId).FirstOrDefault();
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = rate
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetWeekDayPrice");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
         }
     }
 }

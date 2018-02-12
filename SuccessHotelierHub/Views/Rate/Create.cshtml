@@ -52,7 +52,7 @@
                         @Html.DropDownListFor(m => m.RoomTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
                                             "Select Room Type",
-                                            new { @class = "form-control" })
+                                            new { @class = "form-control" , onchange="GetWeekDayPrice();" })
                         @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
@@ -60,7 +60,7 @@
                         @Html.DropDownListFor(m => m.RateTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
                                             "Select Rate Type",
-                                            new { @class = "form-control" })
+                                            new { @class = "form-control", onchange = "GetWeekDayPrice();" })
                         @Html.ValidationMessageFor(m => m.RateTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
@@ -143,6 +143,51 @@
                 }
             });
             return false;
+        }
+    }
+
+    function GetWeekDayPrice() {
+        if ('@sourceParam' == "WeekEndPrice") {
+
+            var roomTypeId = $('#RoomTypeId').val();
+            var rateTypeId = $('#RateTypeId').val();
+
+            if (!IsNullOrEmpty(roomTypeId) && !IsNullOrEmpty(rateTypeId)) {
+                //Ajax request to get week day price.
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/Rate/GetWeekDayPrice")',
+                    type: 'POST',
+                    data: { roomTypeId: roomTypeId, rateTypeId: rateTypeId },
+                    success: function (response) {
+                        if (response != null) {
+                            if (response.IsSuccess == false) {
+                                showToaster(response.errorMessage, ToasterType.ERROR);
+                            }
+                            else {
+                                var rate = response.data;
+
+                                if (rate != null && rate != undefined) {
+                                    var price = rate.Amount;
+
+                                    //Increase week end price upto (week day price + 20).
+                                    $('#Amount').val(parseInt(price) + 20);
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                $('#Amount').val('');
+            }
         }
     }
 </script>

@@ -91,7 +91,7 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please search and select room type.")]
         public string RoomTypeCode { get; set; }
 
-        [DisplayName("RTC")]
+        [DisplayName("Rate to Charge")]
         public Guid? RtcId { get; set; }
 
         [DisplayName("Room")]
@@ -161,10 +161,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("CVV #")]
         public string CVVNo { get; set; }
 
-        [DisplayName("Approval Code ")]
+        [DisplayName("Pre-Authorised Approval Code")]
         public string ApprovalCode { get; set; }
 
-        [DisplayName("Approval Amt.")]
+        [DisplayName("Pre-Authorised Approval Amount")]
         public double? ApprovalAmount { get; set; }
 
         [DisplayName("Suit With")]
@@ -175,16 +175,16 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Guest Balance")]
         public double? GuestBalance { get; set; }
 
-        [DisplayName("Dis. Amt.")]
+        [DisplayName("Disount Amt.")]
         public double? DiscountAmount { get; set; }
 
-        [DisplayName("Dis. Per.")]
+        [DisplayName("%")]
         public double? DiscountPercentage { get; set; }
 
-        [DisplayName("Reason")]
+        [DisplayName("Discount Reason")]
         public Guid? DiscountReasonId { get; set; }
 
-        [DisplayName("TA Rec Loc")]
+        [DisplayName("Agent Booking Reference")]
         public string TARecordLocator { get; set; }
 
         [DisplayName("Specials")]
@@ -202,7 +202,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("House Keeping Comments")]
         public string HouseKeepingComments { get; set; }
 
-        [DisplayName("Item Inv.")]
+        [DisplayName("Room Inventory")]
         public Guid? ItemInventoryId { get; set; }
 
         [DisplayName("Confirmation #")]

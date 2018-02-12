@@ -329,7 +329,7 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.RtcId)
                         <select class="form-control" id="RtcId" name="RtcId">
-                            <option value="">--Select RTC--</option>
+                            <option value="">--Select Rate to Charge--</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">RTC 1</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">RTC 2</option>
                         </select>
@@ -349,14 +349,14 @@
                         </div>
                         @Html.HiddenFor(m => m.RoomIds)
                     </div>
-                    <div class="col-md-3 form-group">
+                    @*<div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ExtnId)
                         <select class="form-control" id="ExtnId" name="ExtnId">
                             <option value="">--Select Extn.--</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Extn 1</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Extn 2</option>
                         </select>
-                    </div>
+                    </div>*@
                 </div>
                 <div class="row">
                     <div class="col-md-3 form-group">
@@ -364,7 +364,7 @@
                         @Html.DropDownListFor(m => m.RateCodeId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
                                 "--Select Rate Code--",
-                                new { @class = "form-control" })
+                                new { @class = "form-control", onchange = "RateTypeChange();" })
                         @Html.ValidationMessageFor(m => m.RateCodeId, "", new { @class = "text-danger" })
                     </div>
 
@@ -400,7 +400,7 @@
                                 "--Select Package--",
                                 new { @class = "form-control" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    @*<div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.BlockCodeId)
                         <select class="form-control" id="BlockCodeId" name="BlockCodeId">
                             <option value="">--Select Group Code--</option>
@@ -408,7 +408,7 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
                         </select>
-                    </div>
+                    </div>*@
                     <div class="col-md-3 form-group">
                         <div class="bootstrap-timepicker">
                             @Html.LabelFor(m => m.ETAText)
@@ -420,6 +420,18 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.TARecordLocator)
+                        @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "Agent Booking Reference" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.ItemInventoryId)
+                        <select class="form-control" id="ItemInventoryId" name="ItemInventoryId">
+                            <option value="">--Select Room Inventory--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Rollaway Bed</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Crib</option>
+                        </select>
                     </div>
                 </div>
 
@@ -489,11 +501,11 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ApprovalCode)
-                        @Html.TextBoxFor(m => m.ApprovalCode, new { @class = "form-control", placeholder = "Approval Code" })
+                        @Html.TextBoxFor(m => m.ApprovalCode, new { @class = "form-control", placeholder = "Pre-Authorised Approval Code" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ApprovalAmount)
-                        @Html.TextBoxFor(m => m.ApprovalAmount, new { @class = "form-control", placeholder = "Approval Amt." })
+                        @Html.TextBoxFor(m => m.ApprovalAmount, new { @class = "form-control", placeholder = "Pre-Authorised Approval Amount" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg m-r-n-lg">
                         <label class="container1" for="IsEmailConfirmation">
@@ -505,20 +517,20 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.GuestBalance)
                         @Html.TextBoxFor(m => m.GuestBalance, Utility.FormatAmountWithTwoDecimal(Model.GuestBalance.HasValue ? Model.GuestBalance.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)", @readonly = "readonly"})
                     </div>
-                    <div class="col-md-3 form-group">
-                        <label for="DiscountAmount" class="col-xs-12 padding-zero">Disc. Amt</label>
-                        <div class="col-md-5 col-sm-5 padding-zero">
-                            @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
-                        </div>
-                        <div class="col-md-2 col-sm-2 padding-zero text-center">
-                            <span>%</span>
-                        </div>
-                        <div class="col-md-5 col-sm-5 padding-zero">
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.DiscountAmount)
+                        @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
+                    </div>
+                    <div class="col-md-2 form-group mt_25">                        
+                        <div class="input-group">
                             @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
+                            <div class="input-group-addon">
+                                <i class="fa fa-percent"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3 form-group">
@@ -542,11 +554,7 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.TARecordLocator)
-                        @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Loc" })
-                    </div>
+                @*<div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.SpecialsId)
                         <select class="form-control" id="SpecialsId" name="SpecialsId">
@@ -555,16 +563,8 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Down pillow</option>
                         </select>
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ItemInventoryId)
-                        <select class="form-control" id="ItemInventoryId" name="ItemInventoryId">
-                            <option value="">--Select Item Inv.--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Rollaway Bed</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Crib</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
+                </div>*@
+                @*<div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationComments)
                         @Html.TextAreaFor(m => m.ReservationComments, new { @class = "form-control", placeholder = "Reservation Comments", rows = "3" })
@@ -581,7 +581,7 @@
                         @Html.LabelFor(m => m.HouseKeepingComments)
                         @Html.TextAreaFor(m => m.HouseKeepingComments, new { @class = "form-control", placeholder = "House Keeping Comments", rows = "3" })
                     </div>
-                </div>
+                </div>*@
                 <div class="row">
                     <div class="col-md-9 form-group">
                         @Html.LabelFor(m => m.Remarks)
@@ -712,7 +712,7 @@
 
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
-       
+
 
         $("#frmReservation input[type='text'], textarea").blur(function () {
             if (!IsNullOrEmpty($(this).val())) {
@@ -759,7 +759,7 @@
         });
 
         //Show value of selected drop down.
-        $('#Rate').val('@strRate');                
+        $('#Rate').val('@strRate');
 
         calculateTotalPrice();
 
@@ -915,6 +915,8 @@
             }
         });
 
+        RateTypeChange();
+
         //If Client checked out then disabled below fields.
         var isCheckedOut = parseBoolean('@Model.IsCheckOut');
         if (isCheckedOut) {
@@ -958,7 +960,7 @@
     });
 
     function arrivalDateChanged(e) {
-        var selectedDate = $(this).val();        
+        var selectedDate = $(this).val();
 
         var dayOfWeek = "";
         if (!IsNullOrEmpty(selectedDate)) {
@@ -1025,7 +1027,7 @@
 
     function getSelectedPreferenceItemIds() {
         var preferenceIds = "";
-        $("#ListOfSelectedPreferences span i").each(function () {            
+        $("#ListOfSelectedPreferences span i").each(function () {
             preferenceIds += $(this).data("preferenceid") + ",";
         });
 
@@ -1048,7 +1050,7 @@
             showToaster("Please search and select profile again.", ToasterType.ERROR);
             blnValid = false;
         }
-        
+
         if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
             var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
 
@@ -1056,7 +1058,7 @@
             if (Contains(paymentMethod, '-')) {
                 paymentMethodName = trim(paymentMethod.split('-')[1]);
             }
-            
+
             if (trim(paymentMethodName) != 'Cash') {
                 var creditCardNo = $('form#frmReservation #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
@@ -1107,7 +1109,7 @@
             $('form#frmReservation #MarketId').attr("disabled", false);
             $('form#frmReservation #ReservationSourceId').attr("disabled", false);
             $('form#frmReservation #PaymentMethodId').attr("disabled", false);
-            
+
 
             //Ajax Request to edit reservation.
             $.ajax({
@@ -1196,7 +1198,7 @@
         }
     }
 
-    function calculateTotalPrice() {        
+    function calculateTotalPrice() {
         var noOfNights = $("form#frmReservation #NoOfNight").val();
         var rate = $('form#frmReservation #Rate').val();
 
@@ -1247,7 +1249,7 @@
 
             var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=EditReservation&rid=" + reservationId;
             redirectTo(url);
-        }      
+        }
     }
 
     //Advance Profile Search
@@ -1285,14 +1287,16 @@
         $("form#frmAdvanceRoomSearch #ArrivalDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
         $("form#frmAdvanceRoomSearch #DepartureDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
 
-        //$("form#frmAdvanceRoomSearch #ArrivalDate").val($('form#frmReservation #ArrivalDate').val());
-        //$("form#frmAdvanceRoomSearch #DepartureDate").val($('form#frmReservation #DepartureDate').val());
-        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmReservation #RoomIds').val());        
+        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmReservation #RoomIds').val());
         $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('form#frmReservation #RoomNumbers').val());
         $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val($('form#frmReservation #NoOfRoom').val());
 
-        $("form#frmAdvanceRoomSearch #IsClean").prop("checked", false);
-        $("form#frmAdvanceRoomSearch #IsDirty").prop("checked", false);
+        var isCheckIn = parseBoolean('@Model.IsCheckIn');
+        if (isCheckIn) {
+            $("form#frmAdvanceRoomSearch #IsDirty").prop("checked", true);
+        } else {
+            $("form#frmAdvanceRoomSearch #IsDirty").prop("checked", false);
+        }
 
         $("form#frmAdvanceRoomSearch #btnSearch").click();
 
@@ -1518,6 +1522,29 @@
             }
         }
 
+    }
+
+    function RateTypeChange() {
+        if (!IsNullOrEmpty($('form#frmReservation #RateCodeId').val())) {
+            var text = $('form#frmReservation #RateCodeId option:selected').text();
+
+            var rateCode = text;
+            var isLeisType = false;
+            if (Contains(rateCode, '-')) {
+                if (!IsNullOrEmpty(trim(rateCode.split('-')[1])) && trim(rateCode.split('-')[1]) == "LEIS") {
+                    isLeisType = true;
+                }
+            }
+
+            if (isLeisType) {
+                //Select LEIS in Market & Reservation Source Dropdown.
+                $("form#frmReservation #MarketId option:contains(LEIS)").attr('selected', true);
+                $("form#frmReservation #ReservationSourceId option:contains(LEIS)").attr('selected', true);
+            } else {
+                $("form#frmReservation #MarketId").val('@Model.MarketId');
+                $("form#frmReservation #ReservationSourceId").val('@Model.ReservationSourceId');
+            }
+        }
     }
 
     window.onbeforeunload = function () {

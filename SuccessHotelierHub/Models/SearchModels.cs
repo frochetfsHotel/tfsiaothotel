@@ -312,6 +312,7 @@ namespace SuccessHotelierHub.Models
         public string Description { get; set; }
         public double Amount { get; set; }        
         public DateTime? CreatedOn { get; set; }
+        public bool IsLeisRateType { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }

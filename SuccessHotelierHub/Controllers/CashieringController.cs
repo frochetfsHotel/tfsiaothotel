@@ -467,10 +467,12 @@ namespace SuccessHotelierHub.Controllers
                         if (totalAmount > reservation.TotalBalance)
                         {
                             reservation.TotalBalance = 0;
+                            reservation.GuestBalance = 0;
                         }
                         else
                         {
                             reservation.TotalBalance -= totalAmount;
+                            reservation.GuestBalance -= totalAmount;
                         }
 
                         reservation.UpdatedBy = LogInManager.LoggedInUserId;

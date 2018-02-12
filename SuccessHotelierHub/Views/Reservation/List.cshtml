@@ -167,28 +167,28 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-3 form-group m-t-sm">
+                        <div class="col-md-3 form-group m-t-sm hide">
                             <label class="container1" for="IsShowCancelledReservation">
                                 Show Cancelled Reservation
                                 @Html.CheckBoxFor(m => m.IsShowCancelledReservation)
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-3 form-group m-t-sm">
+                        <div class="col-md-3 form-group m-t-sm hide">
                             <label class="container1" for="IsShowCheckedInReservation">
                                 Show Checked In
                                 @Html.CheckBoxFor(m => m.IsShowCheckedInReservation)
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-3 form-group m-t-sm">
+                        <div class="col-md-3 form-group m-t-sm hide">
                             <label class="container1" for="IsShowCheckedOutReservation">
                                 Show Checked Out
                                 @Html.CheckBoxFor(m => m.IsShowCheckedOutReservation)
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-3 form-group text-right">
+                        <div class="col-md-12 form-group text-right">
                             <button type="button" id="btnSearch"
                                     class="btn btn-success m-r-xs" onclick="searchReservation()">
                                 Search
@@ -268,6 +268,8 @@
     var IsSearchButtonClicked = false;
 
     $(document).ready(function () {
+
+        $('#ArrivalFrom').datepicker("setDate", new Date());
 
         setTimeout(InitializeReservationGrid, 200);
 

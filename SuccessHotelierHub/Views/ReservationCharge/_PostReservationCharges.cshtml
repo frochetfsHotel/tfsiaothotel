@@ -21,14 +21,14 @@
                     <table class="table table-bordered table-striped" id="tblTransactionCharges">
                         <thead>
                             <tr>
-                                <th class="width_5"></th>
+                                <th class="width_2"></th>
                                 <th class="width_15">Date</th>
-                                <th class="width_12">Code</th>
+                                <th class="width_15">Code</th>
                                 <th class="width_10">Amount</th>
-                                <th class="width_20">Description</th>
+                                <th class="width_25">Description</th>
                                 <th class="width_8">Qty</th>
-                                <th class="width_15">Supplement</th>
-                                <th class="width_15">Reference</th>
+                                @*<th class="width_15">Supplement</th>*@
+                                <th class="width_20">Reference</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,10 +71,10 @@
                                            class="form-control" value="1"
                                            onkeydown = "onlyDigits(event)"/>
                                 </td>
-                                <td>
+                                @*<td>
                                     <input type="text" id="Supplement_1" name="Supplement_1"
                                            class="form-control" placeholder="Supplement" />
-                                </td>
+                                </td>*@
                                 <td>
                                     <input type="text" id="Reference_1" name="Reference_1"
                                            class="form-control" placeholder="Reference" />
@@ -156,10 +156,10 @@
         html += "<input type='text' id='Qty_" + rowNumber + "' name='Qty_" + rowNumber + "' class='form-control' onkeydown='onlyDigits(event)' value='1'>";
         html += "</td>";
 
-        //Supplement
-        html += "<td>";
-        html += "<input type='text' id='Supplement_" + rowNumber + "' name='Supplement_" + rowNumber + "' class='form-control' placeholder='Supplement'>";
-        html += "</td>";
+        ////Supplement
+        //html += "<td>";
+        //html += "<input type='text' id='Supplement_" + rowNumber + "' name='Supplement_" + rowNumber + "' class='form-control' placeholder='Supplement'>";
+        //html += "</td>";
 
         //Reference
         html += "<td>";
@@ -244,7 +244,7 @@
                     modelReservationCharge.Description = $('#Description_' + rowNumber).val();
                     modelReservationCharge.Amount = $('#Amount_' + rowNumber).val();
                     modelReservationCharge.Qty = $('#Qty_' + rowNumber).val();
-                    modelReservationCharge.Supplement = $('#Supplement_' + rowNumber).val();
+                    //modelReservationCharge.Supplement = $('#Supplement_' + rowNumber).val();
                     modelReservationCharge.Reference = $('#Reference_' + rowNumber).val();
                     modelReservationCharge.IsActive = true;
 
@@ -302,7 +302,7 @@
         $('#Description_1').val('');
         $('#Amount_1').val('0.00');
         $('#Qty_1').val('1');
-        $('#Supplement_1').val('');
+        //$('#Supplement_1').val('');
         $('#Reference_1').val('');
         $('#AdditionalChargeId_1').val('');
         $('#hdnTotalTransactionCharges').val('1');

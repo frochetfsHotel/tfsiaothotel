@@ -53,6 +53,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateTypeCode", Value = rateType.RateTypeCode },
                     new SqlParameter { ParameterName = "@Description", Value = rateType.Description },
                     new SqlParameter { ParameterName = "@Amount", Value = rateType.Amount },
+                    new SqlParameter { ParameterName = "@IsLeisRateType", Value = rateType.IsLeisRateType },
                     new SqlParameter { ParameterName = "@IsActive", Value = rateType.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = rateType.CreatedBy }
                 };
@@ -72,6 +73,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateTypeCode", Value = rateType.RateTypeCode },
                     new SqlParameter { ParameterName = "@Description", Value = rateType.Description },
                     new SqlParameter { ParameterName = "@Amount", Value = rateType.Amount },
+                    new SqlParameter { ParameterName = "@IsLeisRateType", Value = rateType.IsLeisRateType },
                     new SqlParameter { ParameterName = "@IsActive", Value = rateType.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = rateType.UpdatedBy }
                 };

@@ -85,12 +85,12 @@
            <div class="col-md-12 col-xs-12 form-group">
                <label class="container1" for="IsAll">
                    All
-                   @Html.CheckBoxFor(m => m.IsAll, new { @checked = "checked" })
+                   @Html.CheckBoxFor(m => m.IsAll)
                    <span class="checkmark"></span>
                </label>
                <label class="container1" for="IsClean">
                    Clean
-                   @Html.CheckBoxFor(m => m.IsClean)
+                   @Html.CheckBoxFor(m => m.IsClean, new { @checked = "checked" })
                    <span class="checkmark"></span>
                </label>
                <label class="container1" for="IsDirty">
@@ -306,7 +306,7 @@
         $('form#frmAdvanceRoomSearch #RoomNo').val('');
         $('form#frmAdvanceRoomSearch #Type').val('');
         $("form#frmAdvanceRoomSearch #RoomFeatures").select2("val", "");
-        $('form#frmAdvanceRoomSearch #IsAll').prop('checked', true).trigger("change");
+        $('form#frmAdvanceRoomSearch #IsClean').prop('checked', true);
 
         $("form#frmAdvanceRoomSearch #tblRoom tbody").empty();
     }

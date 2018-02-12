@@ -51,7 +51,17 @@ namespace SuccessHotelierHub.Controllers
             var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
             var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
-            var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
+            //var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
+            var rateTypeList = new SelectList(
+                    rateTypeRepository.GetRateType(string.Empty)
+                    .Select(
+                        m => new SelectListItem()
+                        {
+                            Value = m.Id.ToString(),
+                            Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                        }
+            ), "Value", "Text").ToList();
+            
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
             var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
@@ -385,7 +395,15 @@ namespace SuccessHotelierHub.Controllers
                 var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
                 var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
-                var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
+                //var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
+                var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty)
+                                        .Select(
+                                            m => new SelectListItem()
+                                            {
+                                                Value = m.Id.ToString(),
+                                                Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                                            }
+                                        ), "Value", "Text").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
                 var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
@@ -486,9 +504,7 @@ namespace SuccessHotelierHub.Controllers
                                 roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
 
 
-                                //if (source != "RoomPlan")
-                                //{
-                                    #region Remove Existing reservation if room status are dirty.
+                                #region Remove Existing reservation if room status are dirty.
 
                                     var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
 
@@ -504,9 +520,8 @@ namespace SuccessHotelierHub.Controllers
                                         reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
                                     }
 
-                                    #endregion Remove Existing reservation if room status are dirty.
-                                //}
-
+                                #endregion Remove Existing reservation if room status are dirty.
+                              
                             }
                         }
                     }
