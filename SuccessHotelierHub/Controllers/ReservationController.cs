@@ -67,7 +67,11 @@ namespace SuccessHotelierHub.Controllers
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
             var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
             var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+            var marketLEISId = marketRepository.GetMarketByName("LEIS").FirstOrDefault().Id;
+
             var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+            var reservationSourceId = reservationSourceRepository.GetReservationSourceByName("LEIS").FirstOrDefault().Id;
+
             //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
             var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
@@ -183,6 +187,10 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.PaymentMethodList = paymentMethodList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
             ViewBag.OriginList = originList;
+            ViewBag.MarketLEISId = marketLEISId;
+            ViewBag.ReservationSourceId = reservationSourceId;
+
+
 
             #region Record Activity Log
             RecordActivityLog.RecordActivity(Pages.RESERVATION, "Goes to create new reservation page.");
@@ -419,7 +427,11 @@ namespace SuccessHotelierHub.Controllers
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
                 var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
                 var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+                var marketLEISId = marketRepository.GetMarketByName("LEIS").FirstOrDefault().Id;
+                                
                 var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+                var reservationSourceId = reservationSourceRepository.GetReservationSourceByName("LEIS").FirstOrDefault().Id;
+
                 //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
                 var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
@@ -453,6 +465,8 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.PaymentMethodList = paymentMethodList;
                 ViewBag.RoomFeaturesList = roomFeaturesList;
                 ViewBag.OriginList = originList;
+                ViewBag.MarketLEISId = marketLEISId;
+                ViewBag.ReservationSourceId = reservationSourceId;
 
                 return View(model);
             }

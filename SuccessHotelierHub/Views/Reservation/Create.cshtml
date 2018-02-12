@@ -19,6 +19,9 @@
         departureDayOfWeek = SuccessHotelierHub.Utility.Utility.WeekdayName((int)Model.DepartureDate.Value.DayOfWeek);
     }
 
+    var marketLEISId = Convert.ToString((Guid?)ViewBag.MarketLEISId);
+    var reservationSourceId = Convert.ToString((Guid?)ViewBag.ReservationSourceId);
+
 }
 
 @section styles {
@@ -936,7 +939,7 @@
                 }
             } else {
                 var arrivalTime = $('#ETAText').val();
-                if (IsNullOrEmpty(arrivalTime)) {                    
+                if (IsNullOrEmpty(arrivalTime)) {
                     blnValid = false;
                     swal({
                         title: '<span>Reservation type Non Guranteed requires an arrival time.</span>',
@@ -1193,11 +1196,11 @@
 
             if (isLeisType) {
                 //Select LEIS in Market & Reservation Source Dropdown.
-                $("form#frmReservation #MarketId option:contains(LEIS)").attr('selected', true);
-                $("form#frmReservation #ReservationSourceId option:contains(LEIS)").attr('selected', true);
+                $("form#frmReservation #MarketId").val('@marketLEISId');
+                $("form#frmReservation #ReservationSourceId").val('@reservationSourceId');
             } else {
-                $("form#frmReservation #MarketId").val('@Model.MarketId');
-                $("form#frmReservation #ReservationSourceId").val('@Model.ReservationSourceId');
+                $("form#frmReservation #MarketId").val('');
+                $("form#frmReservation #ReservationSourceId").val('');
             }
         }
     }

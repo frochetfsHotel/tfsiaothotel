@@ -107,6 +107,21 @@ namespace SuccessHotelierHub.Repository
             return markets;
         }
 
+        public List<MarketVM> GetMarketByName(string marketName)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Name", Value = marketName }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetMarketByName", parameters);
+
+            var market = new List<MarketVM>();
+            market = DALHelper.CreateListFromTable<MarketVM>(dt);
+
+            return market;
+        }
+
         #endregion
     }
 }

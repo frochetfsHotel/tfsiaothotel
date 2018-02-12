@@ -101,6 +101,9 @@
         }
     }
     #endregion
+
+    var marketLEISId = Convert.ToString((Guid?)ViewBag.MarketLEISId);
+    var reservationSourceId = Convert.ToString((Guid?)ViewBag.ReservationSourceId);
 }
 
 
@@ -1536,11 +1539,11 @@
 
             if (isLeisType) {
                 //Select LEIS in Market & Reservation Source Dropdown.
-                $("form#frmReservation #MarketId option:contains(LEIS)").attr('selected', true);
-                $("form#frmReservation #ReservationSourceId option:contains(LEIS)").attr('selected', true);
+                $("form#frmReservation #MarketId").val('@marketLEISId');
+                $("form#frmReservation #ReservationSourceId").val('@reservationSourceId');
             } else {
-                $("form#frmReservation #MarketId").val('@Model.MarketId');
-                $("form#frmReservation #ReservationSourceId").val('@Model.ReservationSourceId');
+                $("form#frmReservation #MarketId").val('');
+                $("form#frmReservation #ReservationSourceId").val('');
             }
         }
     }

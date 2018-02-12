@@ -22996,3 +22996,48 @@ BEGIN
 		WHERE	ISNULL(IsDeleted,0) = 0 
 				AND TRY_PARSE(ISNULL([RoomNo],0) AS INT) > 0
 END
+
+
+/*******************************************************************************************************************
+	SP Name : GetMarketByName
+	Comment   Create SP GetMarketByName
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetMarketByName]    Script Date: 2/12/2018 7:55:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetMarketByName]
+	@Name	NVARCHAR(255)	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Market]
+		WHERE	ISNULL(IsDeleted,0) = 0  AND ISNULL(IsActive,0) = 1
+				AND [Name] = @Name
+		ORDER BY [Name]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetReservationSourceByName
+	Comment   Create SP GetReservationSourceByName
+*******************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[GetReservationSourceByName]    Script Date: 2/12/2018 7:55:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationSourceByName]
+	@Name	NVARCHAR(255)	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationSource]
+		WHERE	ISNULL(IsDeleted,0) = 0  AND ISNULL(IsActive,0) = 1
+				AND [Name] = @Name
+		ORDER BY [Name]
+END

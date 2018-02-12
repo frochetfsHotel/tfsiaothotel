@@ -107,6 +107,21 @@ namespace SuccessHotelierHub.Repository
             return reservationSources;
         }
 
+        public List<ReservationSourceVM> GetReservationSourceByName(string sourceName)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Name", Value = sourceName }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationSourceByName", parameters);
+
+            var reservationSource = new List<ReservationSourceVM>();
+            reservationSource = DALHelper.CreateListFromTable<ReservationSourceVM>(dt);
+
+            return reservationSource;
+        }
+
         #endregion
     }
 }
