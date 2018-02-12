@@ -255,6 +255,13 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
+        public int GetMaxRoomNo()
+        {
+            var roomNo = DALHelper.ExecuteScalar("GetMaxRoomNo");
+
+            return (roomNo != null && !string.IsNullOrWhiteSpace(Convert.ToString(roomNo))) ? Convert.ToInt32(roomNo) : 0;
+        }
+
         #endregion
 
         #region Reservation Room Mapping 

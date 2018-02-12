@@ -22658,3 +22658,341 @@ BEGIN
 
 END
 
+
+
+/***************** Create new table origin ********************/
+/****** Object:  Table [dbo].[Origin]    Script Date: 2/12/2018 5:35:23 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Origin](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Code] [nvarchar](500) NOT NULL,
+	[Description] [nvarchar](max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_Origin] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/*******************************************************************************************************************
+	SP Name : AddOrigin
+	Comment   Create SP AddOrigin
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddOrigin]    Script Date: 2/12/2018 6:07:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddOrigin]	
+	@Code			NVARCHAR(500)				,	
+	@Description	NVARCHAR(MAX)	=	 NULL	,	
+	@IsActive		BIT				=	 NULL	,	
+	@CreatedBy		INT				=	 NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Origin]
+           ([Id]           
+           ,[Code]		  
+		   ,[Description] 		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Code		
+			   ,@Description	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateOrigin
+	Comment   Create SP UpdateOrigin
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateOrigin]    Script Date: 2/12/2018 6:09:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateOrigin]
+	@Id				UNIQUEIDENTIFIER			,	
+	@Code			NVARCHAR(500)				,	
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@IsActive		BIT				=	NULL	,	
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Origin]
+		SET	[Code]			=	@Code
+		   ,[Description]	=	@Description		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : DeleteOrigin
+	Comment   Create SP DeleteOrigin
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteOrigin]    Script Date: 2/12/2018 6:09:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteOrigin]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Origin] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetOriginById
+	Comment   Create SP GetOriginById
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetOriginById]    Script Date: 2/12/2018 6:10:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetOriginById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Origin]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Code]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : GetOrigins
+	Comment   Create SP GetOrigins
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetOrigins]    Script Date: 2/12/2018 6:11:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetOrigins]
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Origin]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Code]
+END
+
+
+/*******************************************************************************************************************
+	SP Name : SearchOrigin
+	Comment   Create SP SearchOrigin
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchOrigin]    Script Date: 2/12/2018 6:12:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchOrigin] '', '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchOrigin]					
+	@Code			NVARCHAR(500)	=	NULL	,		
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempOrigin
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Code]			NVARCHAR(255)		NOT NULL	
+		,	[Description]	NVARCHAR(MAX)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Origin]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+						)
+
+
+		INSERT INTO #tempOrigin 
+		(
+			[RowNum]		, 
+			[Id]			, 
+			[Code]			, 
+			[Description]	,	 
+			[CreatedOn]		, 
+			[IsActive]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN [CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN [CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+						THEN [Code] END ASC,
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+						THEN [Code] END DESC,
+
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+						THEN [Description] END ASC,
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+						THEN [Description] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN [Code] END ASC
+
+			) AS RowNum,
+			[ID],								
+			[Code],
+			ISNULL([Description],'') AS [Description],
+			[CreatedOn],
+			[IsActive]
+		FROM [dbo].[Origin]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  				 
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Code],		
+			temp.[Description],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempOrigin AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+/************* Default Data for Origin Screen **************/
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'35dae353-206e-437b-add3-14db4a9b1a27', N'GM', N'General Manager Approved', 1, CAST(N'2018-02-12T18:29:17.110' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'856f700d-0ba2-4ecc-b6a5-49d57619eb1f', N'RAT', N'Rate Not Loaded', 1, CAST(N'2018-02-12T18:34:36.770' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'68dca049-1159-46f6-9175-5325da1d7e45', N'REV', N'Revenue Manage Approved', 1, CAST(N'2018-02-12T18:33:31.963' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'264b299e-9582-4049-a5ff-59051708cce6', N'DM', N'Duty Manager Approved', 1, CAST(N'2018-02-12T18:33:58.527' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'09363488-0c88-4b1f-997d-7a9efcd520b7', N'FOM', N'Front Office Manager Approved', 1, CAST(N'2018-02-12T18:34:14.320' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'e35f9032-7c69-45cc-af98-8114a5c9645c', N'RES', N'Reservation Manager Approved', 1, CAST(N'2018-02-12T18:33:15.237' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'1d46c337-fcf1-4d0a-bce7-99e7391ab17c', N'COM', N'Commision', 1, CAST(N'2018-02-12T18:35:00.570' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'0118e534-05ec-4ffb-a1c6-a03e0000f3ea', N'EVE', N'Events Manager Approved', 1, CAST(N'2018-02-12T18:34:53.033' AS DateTime), NULL, NULL, 1, NULL);
+
+INSERT [dbo].[Origin] ([Id], [Code], [Description], [CreatedBy], [CreatedOn], [UpdatedBy], [UpdatedOn], [IsActive], [IsDeleted]) VALUES (N'4367851a-46f0-4824-a943-e70ce71f493e', N'SAL', N'Sales Manager Approved', 1, CAST(N'2018-02-12T18:34:26.340' AS DateTime), 1, CAST(N'2018-02-12T18:35:26.830' AS DateTime), 1, NULL);
+
+
+/*******************************************************************************************************************
+	SP Name : GetMaxRoomNo
+	Comment   Create SP GetMaxRoomNo
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetMaxRoomNo]    Script Date: 2/12/2018 6:56:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetMaxRoomNo]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT MAX([RoomNo]) AS RoomNo 
+		FROM [dbo].[Room]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND TRY_PARSE(ISNULL([RoomNo],0) AS INT) > 0
+END

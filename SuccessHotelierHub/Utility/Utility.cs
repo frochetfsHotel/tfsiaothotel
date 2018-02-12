@@ -614,6 +614,18 @@ namespace SuccessHotelierHub.Utility
         {
             return System.Web.HttpContext.Current.Request.Url.AbsoluteUri; 
         }
+
+        public static string ToUpperCase(string text)
+        {
+            if (!string.IsNullOrWhiteSpace(text)) { return text.Trim().ToUpper(); }
+            return "";
+        }
+
+        public static string ToLowerCase(string text)
+        {
+            if (!string.IsNullOrWhiteSpace(text)) { return text.Trim().ToLower(); }
+            return "";
+        }
     }
 
 

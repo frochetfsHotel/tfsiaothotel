@@ -463,13 +463,11 @@
                         @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.OriginId)
-                        <select class="form-control" id="OriginId" name="OriginId">
-                            <option value="">--Select Origin--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Origin 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Origin 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Origin 3</option>
-                        </select>
+                        @Html.LabelFor(m => m.OriginId)                        
+                        @Html.DropDownListFor(m => m.OriginId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.OriginList, "Value", "Text"),
+                                "--Select Origin--",
+                                new { @class = "form-control" })
                     </div>
                 </div>
 

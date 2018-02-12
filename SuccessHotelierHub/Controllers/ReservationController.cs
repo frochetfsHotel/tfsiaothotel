@@ -40,6 +40,7 @@ namespace SuccessHotelierHub.Controllers
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
         private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
+        private OriginRepository originRepository = new OriginRepository();
 
         #endregion
 
@@ -79,6 +80,15 @@ namespace SuccessHotelierHub.Controllers
             ), "Value", "Text").ToList();
 
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
+
+            var originList = new SelectList(originRepository.GetOrigins().Select
+                        (
+                               m => new SelectListItem()
+                               {
+                                   Value = m.Id.ToString(),
+                                   Text = (m.Code + " - " + m.Description)
+                               }
+                        ), "Value", "Text").ToList();
 
 
             ReservationVM model = new ReservationVM();
@@ -172,6 +182,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
+            ViewBag.OriginList = originList;
 
             #region Record Activity Log
             RecordActivityLog.RecordActivity(Pages.RESERVATION, "Goes to create new reservation page.");
@@ -420,6 +431,14 @@ namespace SuccessHotelierHub.Controllers
                         }
                     ), "Value", "Text").ToList();
                 var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
+                var originList = new SelectList(originRepository.GetOrigins().Select
+                       (
+                              m => new SelectListItem()
+                              {
+                                  Value = m.Id.ToString(),
+                                  Text = (m.Code + " - " + m.Description)
+                              }
+                       ), "Value", "Text").ToList();
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -433,6 +452,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.ReservationSourceList = reservationSourceList;
                 ViewBag.PaymentMethodList = paymentMethodList;
                 ViewBag.RoomFeaturesList = roomFeaturesList;
+                ViewBag.OriginList = originList;
 
                 return View(model);
             }

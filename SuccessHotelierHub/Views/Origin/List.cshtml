@@ -1,0 +1,269 @@
+﻿@model SuccessHotelierHub.Models.SearchOriginParametersVM
+@{
+    ViewBag.Title = "Search Origin";
+}
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "OriginGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Origin <small>List</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Origin</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Origin</h3>
+            <div class="pull-right box-tools">
+                <a href="@Url.Action("Create","Origin")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Origin</a>
+            </div>
+        </div>
+        <form class="frmOriginList" enctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Code)
+                            @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
+                        </div>
+                        <div class="col-md-4 form-group">
+                            @Html.LabelFor(m => m.Description)
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                        </div>
+                        <div class="col-md-4 form-group mt_25">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchOrigin()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearOrigin()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t-md">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblOrigin">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "OriginGridPageChange" })
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var currentPage = 1;
+    var grdOrigin;
+
+    $(document).ready(function () {
+        setTimeout(InitializeOriginGrid, 200);
+
+        $("input[type='text']").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
+            }
+        });
+    });
+
+
+    function SearchOriginParameters(d) {
+        var code = $('#Code').val();
+        var description = $('#Description').val();
+        d.PageNum = currentPage;
+        d.Code = code;
+        d.Description = description;
+    }
+
+    function OriginGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadOriginGrid() {
+        grdOrigin.ajax.url("@Url.Content("~/Origin/Search")").load();
+    }
+
+    function OriginGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadOriginGrid();
+    }
+
+
+    function InitializeOriginGrid() {
+        grdOrigin = $('#tblOrigin').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Origin/Search")',
+                data: SearchOriginParameters,
+                dataSrc: OriginGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                "visible": false
+            },
+            {
+                targets: 1,
+                data: "Code",
+                orderable: true
+            },
+            {
+                targets: 2,
+                data: "Description",
+                orderable: true
+            },
+            {
+                targets: 3,
+                data: "IsActive",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isActive = full.IsActive;
+                    if (isActive == true) {
+                        return "Active";
+                    } else {
+                        return "In Active";
+                    }
+                }
+            },
+            {
+                targets: 4,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoOriginEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs"'
+                        + ' onclick="deleteOrigin(this,event,\'' + full.Id + '\')">Delete</button>';
+                }
+            }
+            ],
+            order: [[1, "asc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function GotoOriginEdit(Id) {
+        var url = '@Url.Content("~/Origin/Edit/")' + Id;
+        redirectTo(url);
+    }
+
+    function searchOrigin() {
+        currentPage = 1;
+        ReloadOriginGrid();
+    }
+
+    function clearOrigin() {
+        $('#Code').val('');
+        $('#Description').val('');
+
+        searchOrigin();
+    }
+
+    function deleteOrigin(item, e, id) {
+
+        swal({
+            title: 'Are you sure you want to delete?',
+            type: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/Origin/Delete")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.IsSuccess == true) {
+
+                            var tr = $('#tblOrigin  tbody tr#' + id)
+                            var row = grdOrigin.row(tr);
+                            var rowNode = row.node();
+                            row.remove();
+                            grdOrigin.draw();
+
+                            showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                        }
+                        else {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                    }
+                });
+            }
+        });
+
+
+    }
+</script>
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

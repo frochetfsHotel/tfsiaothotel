@@ -226,6 +226,7 @@
     <Compile Include="Controllers\MarketController.cs" />
     <Compile Include="Controllers\MasterScreenController.cs" />
     <Compile Include="Controllers\NationalityController.cs" />
+    <Compile Include="Controllers\OriginController.cs" />
     <Compile Include="Controllers\PackageController.cs" />
     <Compile Include="Controllers\PaymentMethodController.cs" />
     <Compile Include="Controllers\PreferenceController.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MarketVM.cs" />
     <Compile Include="Models\NationalityVM.cs" />
+    <Compile Include="Models\OriginVM.cs" />
     <Compile Include="Models\PackageVM.cs" />
     <Compile Include="Models\PagesVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
@@ -325,6 +327,7 @@
     <Compile Include="Repository\HolidayRepository.cs" />
     <Compile Include="Repository\MarketRepository.cs" />
     <Compile Include="Repository\NationalityRepository.cs" />
+    <Compile Include="Repository\OriginRepository.cs" />
     <Compile Include="Repository\PackageRepository.cs" />
     <Compile Include="Repository\PageRepository.cs" />
     <Compile Include="Repository\PaymentMethodRepository.cs" />
@@ -2089,6 +2092,9 @@
     <Content Include="Views\Holiday\List.cshtml" />
     <Content Include="Views\Tutor\ReservationLog.cshtml" />
     <Content Include="Views\Tutor\FolioLog.cshtml" />
+    <Content Include="Views\Origin\Create.cshtml" />
+    <Content Include="Views\Origin\Edit.cshtml" />
+    <Content Include="Views\Origin\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

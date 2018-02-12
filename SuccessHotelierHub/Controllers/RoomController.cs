@@ -317,7 +317,13 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.FloorList = floorList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
 
-            return View();
+            //Get Max. Room#.
+            var maxRoomNo = roomRepository.GetMaxRoomNo();
+
+            RoomVM model = new RoomVM();
+            model.RoomNo = Convert.ToString(maxRoomNo + 1);
+
+            return View(model);
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
