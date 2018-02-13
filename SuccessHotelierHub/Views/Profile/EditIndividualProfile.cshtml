@@ -135,38 +135,35 @@
                         @Html.TextAreaFor(m => m.HomeAddress, new { @class = "form-control", @rows = "3", placeholder = "Home Address" })
                     </div>
                     <div class="col-md-4 form-group">
-                        <label for="ddlNationality">Nationality</label>
-                        @Html.DropDownListFor(m => m.NationalityId,
-                                (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4 form-group">
-                        <label for="ddlCountry">Country</label>
-                        @Html.DropDownListFor(m => m.CountryId,
-                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry", @onchange = "getState();getCity();" })
-                    </div>                   
-                    <div class="col-md-4 form-group">
-                        <label for="ddlCity">City</label>
-                        @Html.DropDownListFor(m => m.CityId,
-                                (IEnumerable<SelectListItem>)ViewBag.CityList, "-- Select City --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlCity" })
-                    </div>
-                    <div class="col-md-4 form-group">
-                        <label for="ddlState">State</label>
-                        @Html.DropDownListFor(m => m.StateId,
-                                (IEnumerable<SelectListItem>)ViewBag.StateList, "-- Select State --",
-                                htmlAttributes: new { @class = "form-control", @Id = "ddlState", @onchange = "getCity()" })
-                    </div>
+                        @Html.LabelFor(m => m.CityName)
+                        @Html.TextBoxFor(m => m.CityName, new { @class = "form-control", placeholder = "City" })
+                    </div>    
                 </div>
 
                 <div class="row">
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.ZipCode)
                         @Html.TextBoxFor(m => m.ZipCode, new { @class = "form-control", placeholder = "Zip Code" })
+                    </div>
+
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.StateName)
+                        @Html.TextBoxFor(m => m.StateName, new { @class = "form-control", placeholder = "State" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label for="ddlCountry">Country</label>
+                        @Html.DropDownListFor(m => m.CountryId,
+                                (IEnumerable<SelectListItem>)ViewBag.CountryList, "-- Select Country --",
+                                htmlAttributes: new { @class = "form-control", @Id = "ddlCountry" })
+                    </div>                                       
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label for="ddlNationality">Nationality</label>
+                        @Html.DropDownListFor(m => m.NationalityId,
+                                    (IEnumerable<SelectListItem>)ViewBag.NationalityList, "-- Select Nationality --",
+                                    htmlAttributes: new { @class = "form-control", @Id = "ddlNationality" })
                     </div>
                     <div class="col-md-4 form-group">
                         <label for="VipId">VIP</label>
@@ -525,9 +522,17 @@
         if (!IsNullOrEmpty('@Model.StateId'))
             $('label[for="ddlState"]').addClass("label-bold");
 
+        //StateName
+        if (!IsNullOrEmpty('@Model.StateName'))
+            $('label[for="StateName"]').addClass("label-bold");
+
         //City
         if (!IsNullOrEmpty('@Model.CityId'))
             $('label[for="ddlCity"]').addClass("label-bold");
+
+        //CityName
+        if (!IsNullOrEmpty('@Model.CityName'))
+            $('label[for="CityName"]').addClass("label-bold");
 
         //Nationality
         if (!IsNullOrEmpty('@Model.NationalityId'))

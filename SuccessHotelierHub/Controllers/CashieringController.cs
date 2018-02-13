@@ -602,24 +602,34 @@ namespace SuccessHotelierHub.Controllers
             #region Fetch Address
             model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
 
-            if (profile.CityId.HasValue)
-            {
-                var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
+            //if (profile.CityId.HasValue)
+            //{
+            //    var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
 
-                if (city != null)
-                {
-                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
-                }
+            //    if (city != null)
+            //    {
+            //        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
+            //    }
+            //}
+
+            if (!string.IsNullOrWhiteSpace(profile.CityName))
+            {
+                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
             }
 
-            if (profile.StateId.HasValue)
-            {
-                var state = stateRepository.GetStateById(profile.StateId.Value).FirstOrDefault();
+            //if (profile.StateId.HasValue)
+            //{
+            //    var state = stateRepository.GetStateById(profile.StateId.Value).FirstOrDefault();
 
-                if (state != null)
-                {
-                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + state.Name) : state.Name;
-                }
+            //    if (state != null)
+            //    {
+            //        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + state.Name) : state.Name;
+            //    }
+            //}
+
+            if (!string.IsNullOrWhiteSpace(profile.StateName))
+            {
+                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
             }
 
             if (profile.CountryId.HasValue)
@@ -789,24 +799,35 @@ namespace SuccessHotelierHub.Controllers
                 #region Fetch Address
                 model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
 
-                if (profile.CityId.HasValue)
-                {
-                    var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
+                //if (profile.CityId.HasValue)
+                //{
+                //    var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
 
-                    if (city != null)
-                    {
-                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
-                    }
+                //    if (city != null)
+                //    {
+                //        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
+                //    }
+                //}
+
+                if (!string.IsNullOrWhiteSpace(profile.CityName))
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
                 }
 
-                if (profile.StateId.HasValue)
-                {
-                    var state = stateRepository.GetStateById(profile.StateId.Value).FirstOrDefault();
 
-                    if (state != null)
-                    {
-                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + state.Name) : state.Name;
-                    }
+                //if (profile.StateId.HasValue)
+                //{
+                //    var state = stateRepository.GetStateById(profile.StateId.Value).FirstOrDefault();
+
+                //    if (state != null)
+                //    {
+                //        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + state.Name) : state.Name;
+                //    }
+                //}
+
+                if (!string.IsNullOrWhiteSpace(profile.StateName))
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
                 }
 
                 if (profile.CountryId.HasValue)

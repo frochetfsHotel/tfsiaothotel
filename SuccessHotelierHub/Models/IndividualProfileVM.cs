@@ -39,8 +39,16 @@ namespace SuccessHotelierHub.Models
         public string HomeAddress { get; set; }
 
         public int? CountryId { get; set; }
+
         public int? StateId { get; set; }
+
+        [DisplayName("State")]
+        public string StateName { get; set; }
+
         public int? CityId { get; set; }
+        
+        [DisplayName("City")]
+        public string CityName { get; set; }
 
         [Display(Name = "Zip Code")]
         public string ZipCode { get; set; }

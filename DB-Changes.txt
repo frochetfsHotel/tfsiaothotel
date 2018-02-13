@@ -23041,3 +23041,216 @@ BEGIN
 				AND [Name] = @Name
 		ORDER BY [Name]
 END
+
+
+/*********************************************************************************************/
+
+Name : Nilesh
+Date : 13-FEB-2018
+
+/*********** Add City Name & State Name Text box *************/
+
+ALTER TABLE IndividualProfile ADD CityName NVARCHAR(500) NULL
+GO
+
+ALTER TABLE IndividualProfile ADD StateName NVARCHAR(500) NULL
+GO
+
+/************** Update City Name for existing profile data******/
+
+ UPDATE P SET CityName =  C.[Name]
+ FROM IndividualProfile  P INNER JOIN City C ON P.CityId = C.Id
+ 
+
+/************** Update State Name for existing profile data ******/
+
+UPDATE P SET StateName=  S.[Name]
+ FROM IndividualProfile  P INNER JOIN State S ON P.StateID = S.Id
+
+
+/*******************************************************************************************************************
+	SP Name : AddIndividualProfile
+	Comment   Changes in  SP AddIndividualProfile
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddIndividualProfile]    Script Date: 2/12/2018 8:38:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddIndividualProfile]
+	@ProfileTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@TelephoneNo			NVARCHAR(50)		=	NULL	,
+	@BusinessTelephoneNo	NVARCHAR(20)		=	NULL	,
+	@Email					NVARCHAR(500)		=	NULL	,
+	@Address				NVARCHAR(MAX)		=	NULL	,
+	@HomeAddress			NVARCHAR(MAX)		=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@StateId				INT					=	NULL	,
+	@StateName				NVARCHAR(500)		=	NULL	,
+	@CityId					INT					=	NULL	,
+	@CityName				NVARCHAR(500)		=	NULL	,
+	@ZipCode				NVARCHAR(50)		=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@NationalityId			UNIQUEIDENTIFIER	=	NULL	,
+	@CarRegistrationNo		NVARCHAR(255)		=	NULL	,
+	@PassportNo				NVARCHAR(255)		=	NULL	,
+	@DOB					DateTime			=	NULL	,
+	@IsMailingList			BIT					=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@IsActive				BIT					=	NULL	,
+	@CreatedBy				INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @ProfileId UNIQUEIDENTIFIER
+	SET @ProfileId = NEWID()
+
+	INSERT INTO [dbo].[IndividualProfile]
+           ([Id]
+           ,[ProfileTypeId]
+           ,[FirstName]
+           ,[LastName]
+           ,[TitleId]
+           ,[TelephoneNo]
+           ,[BusinessTelephoneNo]
+           ,[Email]
+           ,[Address]
+           ,[HomeAddress]
+           ,[CountryId]
+           ,[StateId]
+		   ,[StateName]
+           ,[CityId]
+		   ,[CityName]
+           ,[ZipCode]
+           ,[VipId]
+		   ,[NationalityId]
+           ,[CarRegistrationNo]
+           ,[PassportNo]
+           ,[DOB]
+           ,[IsMailingList]
+		   ,[Remarks]
+           ,[CreatedOn]
+           ,[CreatedBy]
+           ,[IsActive])
+     VALUES
+           (
+			   @ProfileId
+			   ,@ProfileTypeId
+			   ,@FirstName
+			   ,@LastName
+			   ,@TitleId
+			   ,@TelephoneNo
+			   ,@BusinessTelephoneNo
+			   ,@Email
+			   ,@Address
+			   ,@HomeAddress
+			   ,@CountryId
+			   ,@StateId
+			   ,@StateName
+			   ,@CityId
+			   ,@CityName
+			   ,@ZipCode
+			   ,@VipId
+			   ,@NationalityId
+			   ,@CarRegistrationNo
+			   ,@PassportNo
+			   ,@DOB
+			   ,@IsMailingList
+			   ,@Remarks
+			   ,GETDATE()
+			   ,@CreatedBy
+			   ,@IsActive
+           )
+
+		SELECT @ProfileId AS ProfileId
+    
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : UpdateIndividualProfile
+	Comment   Changes in  SP UpdateIndividualProfile
+*******************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[UpdateIndividualProfile]    Script Date: 2/12/2018 8:40:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateIndividualProfile]
+	@Id						UNIQUEIDENTIFIER				,
+	@ProfileTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@TelephoneNo			NVARCHAR(50)		=	NULL	,
+	@BusinessTelephoneNo	NVARCHAR(20)		=	NULL	,
+	@Email					NVARCHAR(500)		=	NULL	,
+	@Address				NVARCHAR(MAX)		=	NULL	,
+	@HomeAddress			NVARCHAR(MAX)		=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@StateId				INT					=	NULL	,
+	@StateName				NVARCHAR(500)		=	NULL	,
+	@CityId					INT					=	NULL	,
+	@CityName				NVARCHAR(500)		=	NULL	,
+	@ZipCode				NVARCHAR(50)		=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@NationalityId			UNIQUEIDENTIFIER	=	NULL	,
+	@CarRegistrationNo		NVARCHAR(255)		=	NULL	,
+	@PassportNo				NVARCHAR(255)		=	NULL	,
+	@DOB					DateTime			=	NULL	,
+	@IsMailingList			BIT					=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@IsActive				BIT					=	NULL	,
+	@UpdatedBy				INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+
+	UPDATE [dbo].[IndividualProfile]
+           SET	[ProfileTypeId]				=	@ProfileTypeId
+				,[FirstName]				=	@FirstName
+				,[LastName]					=	@LastName
+				,[TitleId]					=	@TitleId
+				,[TelephoneNo]				=	@TelephoneNo
+				,[BusinessTelephoneNo]		=	@BusinessTelephoneNo
+				,[Email]					=	@Email
+				,[Address]					=	@Address
+				,[HomeAddress]				=	@HomeAddress
+				,[CountryId]				=	@CountryId
+				,[StateId]					=	@StateId
+				,[StateName]				=	@StateName
+				,[CityId]					=	@CityId
+				,[CityName]					=	@CityName
+				,[ZipCode]					=	@ZipCode
+				,[VipId]					=	@VipId
+				,[NationalityId]			=	@NationalityId
+				,[CarRegistrationNo]		=	@CarRegistrationNo
+				,[PassportNo]				=	@PassportNo
+				,[DOB]						=	@DOB
+				,[IsMailingList]			=	@IsMailingList
+				,[Remarks]					=	@Remarks
+				,[UpdatedOn]				=	GETDATE()
+				,[UpdatedBy]				=	@UpdatedBy
+				,[IsActive]					=	@IsActive
+			WHERE	ISNULL(IsDeleted,0) = 0 
+					AND [Id]= @Id
+
+		SELECT @Id AS ProfileId
+    
+END
+
+
+
