@@ -29,11 +29,21 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
-            var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
+            var userRoles = userRoleRepository.GetUserRoles();
 
+            var userRoleList = new SelectList(userRoles, "Id", "Name").ToList();
+
+            var studentRoleId =  userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
+            
             ViewBag.UserRoleList = userRoleList;
+                        
+            UserVM model = new UserVM();
+            if (studentRoleId != null)
+            {
+                model.UserRoleId = studentRoleId;
+            }
 
-            return View();
+            return View(model);
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
