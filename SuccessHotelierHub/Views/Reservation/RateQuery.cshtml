@@ -76,7 +76,7 @@
                         <div class="box-body pb-0">
                             <div class="pt_10 pl_10 pr_10 searchBox_Border">
                                 <div class="row">
-                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    <div class="col-md-3 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                                         <div class="input-group date">
                                             @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
@@ -87,11 +87,11 @@
                                         <span class="text-blue m-l-md" id="ArrivalDayOfWeek"></span>
                                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                                     </div>
-                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    <div class="col-md-1 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfNight)
                                         @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", value = "" })
                                     </div>
-                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    <div class="col-md-3 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.DepartureDate)
                                         <div class="input-group date">
                                             @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
@@ -101,15 +101,19 @@
                                         </div>
                                         <span class="text-blue m-l-md" id="DepartureDayOfWeek"></span>
                                     </div>
-                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    <div class="col-md-1 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfAdult)
                                         @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                                     </div>
-                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">                                        
                                         @Html.LabelFor(m => m.NoOfChildren)
-                                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.NoOfInfant, new { @class = "form-control", @placeholder="0-3", onkeydown = "onlyDigits(event)" })
+                                            <span class="input-group-addon"></span>                                            
+                                            @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", @placeholder = "3-12", onkeydown = "onlyDigits(event)" })
+                                        </div>
                                     </div>
-                                    <div class="col-md-2 col-sm-4 col-xs-12 form-group">
+                                    <div class="col-md-1 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.NoOfRoom)
                                         @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                                     </div>

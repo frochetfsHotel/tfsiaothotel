@@ -187,7 +187,7 @@ namespace SuccessHotelierHub.Controllers
 
                 model.RoomTypeId = reservation.RoomTypeId;
                 model.RoomTypeCode = roomType.RoomTypeCode;
-                model.NoOfRooms = reservation.NoOfRoom;
+                model.NoOfRooms = reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1;
 
                 model.StatusId = reservation.ReservationStatusId;
 
@@ -308,7 +308,7 @@ namespace SuccessHotelierHub.Controllers
 
                 model.CheckOutDate = reservation.DepartureDate;
 
-                model.NoOfRoom = reservation.NoOfRoom;
+                model.NoOfRoom = reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1;
                 model.Name = Convert.ToString(reservation.LastName + " " + reservation.FirstName).Trim();
                 model.PaymentMethodId = reservation.PaymentMethodId;
                 model.CreditCardNo = reservation.CreditCardNo;

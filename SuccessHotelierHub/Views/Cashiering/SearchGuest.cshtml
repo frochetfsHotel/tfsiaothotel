@@ -124,7 +124,7 @@
                 </div>
 
 
-                <div class="col-xs-12 padding-zero m-t" id="divReservationList" style="display:none;">
+                <div class="col-xs-12 padding-zero m-t" id="divReservationList">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblReservation">
                             <thead>
@@ -402,10 +402,10 @@
 
     $(document).ready(function () {
 
-        //setTimeout(InitializeReservationGrid, 200);
+        setTimeout(InitializeReservationGrid, 200);
 
         //Default Departure Date. (Set today's date).
-        $("#DepartureDate").datepicker("setDate", new Date());
+        //$("#DepartureDate").datepicker("setDate", new Date());
 
         //Additional Charge Search
         $('form#frmAdvanceAdditionalChargeSearch .btnAdvanceSearchAdditionalChargeOk').click(function (e) {

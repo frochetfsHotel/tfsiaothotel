@@ -626,6 +626,55 @@ namespace SuccessHotelierHub.Utility
             if (!string.IsNullOrWhiteSpace(text)) { return text.Trim().ToLower(); }
             return "";
         }
+
+        public static double CalculateRoomRentCharges(int noOfNights, double rate, int? noOfChildren, double? discountAmount, double? discountPercentage, bool blnIsDisocuntInPercentage = false)
+        {
+            double dblTotalBalance = 0;
+            double totalDiscount = 0;
+            double childrenCharges = 0;
+
+            if (blnIsDisocuntInPercentage)
+            {
+                if (discountPercentage.HasValue && discountPercentage.Value > 0)
+                    totalDiscount = (rate * discountPercentage.Value) / 100;
+            }
+            else
+            {
+                if (discountAmount.HasValue)
+                    totalDiscount = discountAmount.Value;
+            }
+
+            rate = (rate - totalDiscount);
+
+            //Default 5 Euro for the one children.
+            if (noOfChildren.HasValue)
+                childrenCharges = (noOfChildren.Value * 5);
+
+            dblTotalBalance = (noOfNights * rate) + childrenCharges;
+
+            return Math.Round(dblTotalBalance, 2);
+        }
+
+        #region 'Mask Credit Card Numbers'
+
+        public static string MaskCreditCardNo(string number)
+        {
+            string text = "";
+
+            if (!string.IsNullOrWhiteSpace(number) && number.Length > 4)
+            {
+                text = number.Substring(number.Length - 4, 4);
+            }
+            else {
+                text = number;
+            }
+
+            return "XXXXXXXXXXXX" + text;
+            //return (suffix.ToString("00000"));
+        }
+
+        #endregion
+
     }
 
 

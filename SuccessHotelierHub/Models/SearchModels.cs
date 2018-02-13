@@ -1896,6 +1896,41 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Discount Reason
+
+    public class SearchDiscountReasonParametersVM
+    {
+        public SearchDiscountReasonParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchDiscountReasonResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string Code { get; set; }
+        public string Description { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

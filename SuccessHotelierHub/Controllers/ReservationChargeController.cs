@@ -117,11 +117,13 @@ namespace SuccessHotelierHub.Controllers
                 double totalBalance = 0;
 
                 var transactions = new List<ReservationChargeVM>();
+                Guid? reservationId = null;
+                double totalAmount = 0;
 
                 if (models != null)
                 {
-                    Guid? reservationId = models[0].ReservationId;
-                    double totalAmount = 0;
+                    reservationId = models[0].ReservationId;
+                    
 
                     foreach (var model in models)
                     {
@@ -147,7 +149,11 @@ namespace SuccessHotelierHub.Controllers
                             blnIsChargesInserted = true;
                         }
                     }
+                    
+                }
 
+                if (blnIsChargesInserted)
+                {
                     #region Update Reservation Total Balance.
                     var reservation = new ReservationVM();
 
@@ -164,10 +170,7 @@ namespace SuccessHotelierHub.Controllers
                         reservationRepository.UpdateReservationTotalBalance(reservation.Id, totalBalance, LogInManager.LoggedInUserId);
                     }
                     #endregion
-                }
 
-                if (blnIsChargesInserted)
-                {
                     return Json(new
                     {
                         IsSuccess = true,

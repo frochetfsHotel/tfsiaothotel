@@ -4,49 +4,52 @@
     ViewBag.Title = "Log in";
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
-<div class="login-box">
-    <div class="login-logo">
-        <a href="#"><b>Hotelier</b>Hub</a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="login-box-body">
-        <p class="login-box-msg">Sign in</p>
-        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin", enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
+<div id="image-head" class="image-head grandParentContaniner">
+    <div class="centering-hack parentContainer">
+        <div class="login-box">
+            <div class="login-logo">
+                <a href="#"><b>Hotelier</b>Hub</a>
+            </div>
+            <!-- /.login-logo -->
+            <div class="login-box-body">
+                <p class="login-box-msg">Sign in</p>
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { id = "frmLogin", enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
 
-            <div class="form-group has-feedback">                
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })                                
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password", type = "password" })
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <label class="container1" for="RememberMe">
+                                Remember Me
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4">
+                            <button type="button" class="btn btn-primary btn-block btn-flat" id="btnLogin" onclick="Login();">Sign In</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                }
+                @*<a href="@Url.Action("Register", "Account")" class="text-center">Register with Hotelier Hub</a>*@
             </div>
-            <div class="form-group has-feedback">
-                @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password", type = "password"})                
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                
-            </div>
-            <div class="row">
-                <div class="col-xs-8">
-                    <label class="container1" for="RememberMe">
-                        Remember Me
-                        @Html.CheckBoxFor(m => m.RememberMe)
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-                <!-- /.col -->
-                <div class="col-xs-4">
-                    <button type="button" class="btn btn-primary btn-block btn-flat" id="btnLogin" onclick="Login();">Sign In</button>
-                </div>
-                <!-- /.col -->
-            </div>
-        }        
-        @*<a href="@Url.Action("Register", "Account")" class="text-center">Register with Hotelier Hub</a>*@
+            <!-- /.login-box-body -->
+        </div>
+        <!-- /.login-box -->
     </div>
-    <!-- /.login-box-body -->
 </div>
-<!-- /.login-box -->
-
 
 <script type="text/javascript">
     function validateLogin() {
@@ -93,4 +96,25 @@
             return false;
         }
     }
+</script>
+
+<script type="text/javascript">
+    const cats = [
+         "/Content/img/banner_1.jpg",
+         "/Content/img/banner_2.jpg",
+         "/Content/img/banner_3.jpg"
+    ]
+
+    const node = document.getElementById("image-head");
+
+    const cycleImages = (images, container, step) => {
+        images.forEach((image, index) => (
+        setTimeout(() => {
+            container.style.backgroundImage = `url(${image})`
+        }, step * (index + 1))
+      ))
+        setTimeout(() => cycleImages(images, container, step), step * images.length)
+    }
+
+    cycleImages(cats, node, 5000)
 </script>

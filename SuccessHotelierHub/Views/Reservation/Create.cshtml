@@ -188,7 +188,7 @@
                 <div class="clearfix"><hr /></div>
 
                 <div class="row">
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                         <div class="input-group date">
                             @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", placeholder = "dd/MM/yyyy" })
@@ -203,7 +203,7 @@
                         @Html.LabelFor(m => m.NoOfNight)
                         @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "calculateTotalPrice();" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" })
                         <div class="input-group date">
                             @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
@@ -218,15 +218,19 @@
                         @Html.LabelFor(m => m.NoOfAdult)
                         @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                     </div>
-                    <div class="col-md-1 form-group">
-                        @Html.LabelFor(m => m.NoOfChildren)
-                        @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.NoOfChildren)                        
+                        <div class="input-group">                            
+                            @Html.TextBoxFor(m => m.NoOfInfant, new { @class = "form-control", @placeholder = "0-3", onkeydown = "onlyDigits(event)" })
+                            <span class="input-group-addon"></span>                            
+                            @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", @placeholder = "3-12", onkeydown = "onlyDigits(event)", onblur = "calculateTotalPrice();" })
+                        </div>
                     </div>
 
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.RoomTypeCode, new { @class = "required-label" })
                         <div class="input-group">
-                            @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type Code" })
+                            @Html.TextBoxFor(m => m.RoomTypeCode, new { @class = "form-control", placeholder = "Room Type" })
                             <div class="input-group-addon cursor-P" onclick="openRoomTypeSearchModal();">
                                 <i class="fa fa-search"></i>
                             </div>
@@ -375,13 +379,13 @@
                                 new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    @*<div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.OriginId)
                         @Html.DropDownListFor(m => m.OriginId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.OriginList, "Value", "Text"),
                                 "--Select Origin--",
                                 new { @class = "form-control" })
-                    </div>
+                    </div>*@
                 </div>
 
                 <div class="row">
@@ -396,7 +400,8 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #"})
+                        @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
                         @Html.LabelFor(m => m.CardExpiryDate)
@@ -404,7 +409,8 @@
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
-                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)"})
+                        @Html.ValidationMessageFor(m => m.CVVNo, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -429,32 +435,28 @@
                 <div class="row">
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.GuestBalance)
-                        @Html.TextBoxFor(m => m.GuestBalance, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.GuestBalance, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", @readonly = "readonly" })
                     </div>
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DiscountAmount)
-                        @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)",  onchange = "ClearDiscountPercentage();", onblur = "calculateTotalPrice();" })
                     </div>
-                    <div class="col-md-2 form-group mt_25">                        
-                        <div class="input-group">
-                            @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeydown = "onlyDigits(event)" })
-                            <div class="input-group-addon">
-                                %
-                            </div>
-                        </div>
+                    <div class="col-md-2 form-group">                        
+                        @Html.LabelFor(m => m.DiscountPercentage)
+                        @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountAmount();", onblur = "calculateTotalPrice();" })
+                        
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.DiscountReasonId)
-                        <select class="form-control" id="DiscountReasonId" name="DiscountReasonId">
-                            <option value="">--Select Reason--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Reason 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Reason 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Reason 3</option>
-                        </select>
+                        @Html.LabelFor(m => m.DiscountReasonId)                       
+                        @Html.DropDownListFor(m => m.DiscountReasonId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.DiscountReasonList, "Value", "Text"),
+                                "--Select Reason--",
+                                new { @class = "form-control" })
                     </div>
                     <div class="col-md-3 form-group">
                         <label>
-                            Total Price : <span id="totalPrice">&euro; @(Model.NoOfNight * Model.Rate)</span>
+                            @*Total Price : <span id="totalPrice">&euro; @(Model.NoOfNight * Model.Rate)</span>*@
+                            Total Price : <span id="totalPrice">&euro; @(Model.TotalPrice)</span>
                             <br />
                             <span>
                                 [No. Of Nights <span class="text-blue" id="spnNoOfNight"
@@ -1019,7 +1021,7 @@
         var noOfNight = 1;
 
         if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
-
+            debugger;
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
             var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
 
@@ -1031,6 +1033,8 @@
             }
 
             $('form#frmReservation #NoOfNight').val(noOfNight);
+
+            calculateTotalPrice();
         }
     }
 
@@ -1040,7 +1044,7 @@
         var departureDate = '';
 
         if (!IsNullOrEmpty(arrivalDate)) {
-
+            debugger;
             var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
 
             var dt = objArrivalDate;
@@ -1052,22 +1056,49 @@
 
             if (dt != null) {
                 //dd/MM/yyyy
-                departureDate = GetDate(dt, DateFormat.DDMMYYYY);
-                $("form#frmReservation #DepartureDate").datepicker("setDate", new Date(departureDate));
+                //departureDate = GetDate(dt, DateFormat.DDMMYYYY);
+                $("form#frmReservation #DepartureDate").datepicker("setDate", dt);
             }
         }
     }
 
     function calculateTotalPrice() {
+        debugger;
         var noOfNights = $("form#frmReservation #NoOfNight").val();
         var rate = $('form#frmReservation #Rate').val();
+        var noOfChildren = $('form#frmReservation #NoOfChildren').val();
+        var discountAmount = $('form#frmReservation #DiscountAmount').val();
+        var discountPercentage = $('form#frmReservation #DiscountPercentage').val();
+
 
         var totalPrice = "0.00";
+        var totalDiscount = 0;
+        var childrenCharges = 0;
 
         if (IsNullOrEmpty(noOfNights)) { noOfNights = 1; }
         if (IsNullOrEmpty(rate)) { rate = 1; }
+        if (IsNullOrEmpty(noOfChildren)) { noOfChildren = 0; }
+        if (IsNullOrEmpty(discountAmount)) { discountAmount = 0; }
+        if (IsNullOrEmpty(discountPercentage)) { discountPercentage = 0; }
 
-        totalPrice = parseInt(noOfNights) * parseFloat(rate);
+        //Calculate Discount.
+        if (discountPercentage > 0) {
+            totalDiscount = (rate * discountPercentage) / 100;
+        }
+        else
+        {
+            totalDiscount = discountAmount;
+        }
+
+        //Deduct Discount from rate.
+        rate = (rate - totalDiscount);
+
+        //Calculate children charges. (Default euro 5.)
+        if (noOfChildren > 0)
+            childrenCharges = (noOfChildren * 5);
+
+
+        totalPrice = (parseInt(noOfNights) * parseFloat(rate)) + parseFloat(childrenCharges);
 
         //Set No. Of Nights
         $('#spnNoOfNight').html("(" + parseInt(noOfNights) + ")");
@@ -1205,6 +1236,14 @@
         }
     }
 
+    function ClearDiscountPercentage() {
+        $('form#frmReservation #DiscountPercentage').val('');
+    }
+
+    function ClearDiscountAmount() {
+        $('form#frmReservation #DiscountAmount').val('');
+    }
+
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation
         if (data_needs_saving) {
@@ -1222,3 +1261,4 @@
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
 }
+

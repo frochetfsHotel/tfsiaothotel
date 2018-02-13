@@ -44,7 +44,7 @@
                         @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.RoomTypeId,
                                 (IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "--Select Room Type--",
-                                htmlAttributes: new { @class = "form-control" })
+                                htmlAttributes: new { @class = "form-control", onchange="RoomTypeChange();" })
                         @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
@@ -155,6 +155,44 @@
                 }
             });
             return false;
+        }
+    }
+
+    function RoomTypeChange() {
+        var roomTypeId = $('#RoomTypeId').val();
+
+        $('#Description').val("");
+
+        if (!IsNullOrEmpty(roomTypeId)) {
+            //Ajax request to get room type information.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/RoomType/GetRoomTypeInfo")',
+                type: 'POST',
+                data: { id: roomTypeId },
+                success: function (response) {
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var roomType = response.data;
+
+                            if (!IsNullOrEmpty(roomType)) {
+                                $('#Description').val(roomType.Description);
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 </script>

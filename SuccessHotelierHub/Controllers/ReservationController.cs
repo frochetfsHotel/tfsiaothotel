@@ -41,6 +41,7 @@ namespace SuccessHotelierHub.Controllers
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
         private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
         private OriginRepository originRepository = new OriginRepository();
+        private DiscountReasonRepository discountReasonRepository = new DiscountReasonRepository();
 
         #endregion
 
@@ -66,10 +67,30 @@ namespace SuccessHotelierHub.Controllers
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
             var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
-            var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+            //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+            var marketList = new SelectList(
+                              marketRepository.GetMarkets()
+                              .Select(
+                                  m => new SelectListItem()
+                                  {
+                                      Value = m.Id.ToString(),
+                                      Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
+                                  }
+                      ), "Value", "Text").ToList();
+
             var marketLEISId = marketRepository.GetMarketByName("LEIS").FirstOrDefault().Id;
 
-            var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+            //var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+            var reservationSourceList = new SelectList(
+                             reservationSourceRepository.GetReservationSources()
+                             .Select(
+                                 m => new SelectListItem()
+                                 {
+                                     Value = m.Id.ToString(),
+                                     Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
+                                 }
+                     ), "Value", "Text").ToList();
+
             var reservationSourceId = reservationSourceRepository.GetReservationSourceByName("LEIS").FirstOrDefault().Id;
 
             //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
@@ -85,14 +106,23 @@ namespace SuccessHotelierHub.Controllers
 
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
-            var originList = new SelectList(originRepository.GetOrigins().Select
-                        (
-                               m => new SelectListItem()
-                               {
-                                   Value = m.Id.ToString(),
-                                   Text = (m.Code + " - " + m.Description)
-                               }
-                        ), "Value", "Text").ToList();
+            //var originList = new SelectList(originRepository.GetOrigins().Select
+            //            (
+            //                   m => new SelectListItem()
+            //                   {
+            //                       Value = m.Id.ToString(),
+            //                       Text = (m.Code + " - " + m.Description)
+            //                   }
+            //            ), "Value", "Text").ToList();
+
+            var discountReasonList = new SelectList(discountReasonRepository.GetDiscountReasons().Select
+                       (
+                              m => new SelectListItem()
+                              {
+                                  Value = m.Id.ToString(),
+                                  Text = (m.Code + " - " + m.Description)
+                              }
+                       ), "Value", "Text").ToList();
 
 
             ReservationVM model = new ReservationVM();
@@ -108,9 +138,10 @@ namespace SuccessHotelierHub.Controllers
                 model.ArrivalDate = rateQuery.ArrivalDate;
                 model.NoOfNight = rateQuery.NoOfNight.HasValue ? rateQuery.NoOfNight.Value : 0;
                 model.DepartureDate = rateQuery.DepartureDate;
-                model.NoOfAdult = rateQuery.NoOfAdult.HasValue ? rateQuery.NoOfAdult.Value : 0;
-                model.NoOfChildren = rateQuery.NoOfChildren.HasValue ? rateQuery.NoOfChildren.Value : 0;
-                model.NoOfRoom = rateQuery.NoOfRoom.HasValue ? rateQuery.NoOfRoom.Value : 0;
+                model.NoOfAdult = rateQuery.NoOfAdult;
+                model.NoOfChildren = rateQuery.NoOfChildren;
+                model.NoOfInfant = rateQuery.NoOfInfant;
+                model.NoOfRoom = rateQuery.NoOfRoom;
 
                 model.LastName = rateQuery.LastName;
                 model.FirstName = rateQuery.FirstName;
@@ -130,6 +161,14 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomTypeCode = rateQuery.RoomTypeCode; //RoomTypeCode
                 model.Rate = rateQuery.Amount; //Rate
                 model.IsWeekEndPrice = rateQuery.IsWeekEndPrice; // Week End Price.
+
+                double totalBalance = 0;
+
+                totalBalance = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+
+                model.GuestBalance = totalBalance;
+                model.TotalBalance = totalBalance;
+                model.TotalPrice = totalBalance;
 
                 model.PackageId = rateQuery.PackageId;
             }
@@ -186,7 +225,8 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
-            ViewBag.OriginList = originList;
+            //ViewBag.OriginList = originList;
+            ViewBag.DiscountReasonList = discountReasonList;
             ViewBag.MarketLEISId = marketLEISId;
             ViewBag.ReservationSourceId = reservationSourceId;
 
@@ -426,10 +466,30 @@ namespace SuccessHotelierHub.Controllers
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
                 var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
-                var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+                //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+                var marketList = new SelectList(
+                              marketRepository.GetMarkets()
+                              .Select(
+                                  m => new SelectListItem()
+                                  {
+                                      Value = m.Id.ToString(),
+                                      Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
+                                  }
+                      ), "Value", "Text").ToList();
+
                 var marketLEISId = marketRepository.GetMarketByName("LEIS").FirstOrDefault().Id;
-                                
-                var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+
+                //var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+                var reservationSourceList = new SelectList(
+                              reservationSourceRepository.GetReservationSources()
+                              .Select(
+                                  m => new SelectListItem()
+                                  {
+                                      Value = m.Id.ToString(),
+                                      Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
+                                  }
+                      ), "Value", "Text").ToList();
+
                 var reservationSourceId = reservationSourceRepository.GetReservationSourceByName("LEIS").FirstOrDefault().Id;
 
                 //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
@@ -443,7 +503,16 @@ namespace SuccessHotelierHub.Controllers
                         }
                     ), "Value", "Text").ToList();
                 var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
-                var originList = new SelectList(originRepository.GetOrigins().Select
+                //var originList = new SelectList(originRepository.GetOrigins().Select
+                //       (
+                //              m => new SelectListItem()
+                //              {
+                //                  Value = m.Id.ToString(),
+                //                  Text = (m.Code + " - " + m.Description)
+                //              }
+                //       ), "Value", "Text").ToList();
+
+                var discountReasonList = new SelectList(discountReasonRepository.GetDiscountReasons().Select
                        (
                               m => new SelectListItem()
                               {
@@ -464,7 +533,8 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.ReservationSourceList = reservationSourceList;
                 ViewBag.PaymentMethodList = paymentMethodList;
                 ViewBag.RoomFeaturesList = roomFeaturesList;
-                ViewBag.OriginList = originList;
+                //ViewBag.OriginList = originList;
+                ViewBag.DiscountReasonList = discountReasonList;
                 ViewBag.MarketLEISId = marketLEISId;
                 ViewBag.ReservationSourceId = reservationSourceId;
 
@@ -495,10 +565,18 @@ namespace SuccessHotelierHub.Controllers
                     model.ETA = time.TimeOfDay;
                 }
 
-                double totalPrice = (double)(model.Rate * model.NoOfNight);
-                model.TotalPrice = Math.Round(totalPrice, 2);
-                model.TotalBalance = Math.Round(totalPrice, 2);
-                model.GuestBalance = Math.Round(totalPrice, 2);
+                //double totalPrice = (double)(model.Rate * model.NoOfNight);
+                //model.TotalPrice = Math.Round(totalPrice, 2);
+                //model.TotalBalance = Math.Round(totalPrice, 2);
+                //model.GuestBalance = Math.Round(totalPrice, 2);
+
+                double totalBalance = 0;
+
+                totalBalance = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+
+                //model.GuestBalance = totalBalance;
+                //model.TotalBalance = totalBalance;
+                model.TotalPrice = totalBalance;
 
                 reservationId = reservationRepository.UpdateReservation(model);
 
@@ -604,7 +682,7 @@ namespace SuccessHotelierHub.Controllers
                         reservationCharge.Code = roomRentCharge.Code;
                         reservationCharge.Description = roomRentCharge.Description;
                         reservationCharge.TransactionDate = model.ArrivalDate;
-                        reservationCharge.Amount = totalPrice;
+                        reservationCharge.Amount = totalBalance;
                         reservationCharge.Qty = 1;
                         reservationCharge.IsActive = true;
                         reservationCharge.UpdatedBy = LogInManager.LoggedInUserId;
@@ -893,10 +971,18 @@ namespace SuccessHotelierHub.Controllers
 
             #endregion
 
-            double totalPrice = (double)(model.Rate * model.NoOfNight);
-            model.TotalPrice = Math.Round(totalPrice, 2);
-            model.TotalBalance = Math.Round(totalPrice, 2);
-            model.GuestBalance = Math.Round(totalPrice, 2);
+            //double totalPrice = (double)(model.Rate * model.NoOfNight);
+            //model.TotalPrice = Math.Round(totalPrice, 2);
+            //model.TotalBalance = Math.Round(totalPrice, 2);
+            //model.GuestBalance = Math.Round(totalPrice, 2);
+
+            double totalBalance = 0;
+
+            totalBalance = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+
+            model.GuestBalance = totalBalance;
+            model.TotalBalance = totalBalance;
+            model.TotalPrice = totalBalance;
 
             reservationId = reservationRepository.AddReservation(model);
 
@@ -1004,6 +1090,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        
         #endregion
 
         #region Rate Query

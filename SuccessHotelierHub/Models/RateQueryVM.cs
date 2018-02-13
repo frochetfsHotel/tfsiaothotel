@@ -29,6 +29,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Children")]
         public int? NoOfChildren { get; set; }
 
+        [DisplayName("Infants")]
+        public int? NoOfInfant { get; set; }
+
         [DisplayName("Rooms")]
         public int? NoOfRoom { get; set; }
                 

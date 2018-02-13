@@ -166,7 +166,7 @@ namespace SuccessHotelierHub.Controllers
                     if(availableRoomList != null && availableRoomList.Count > 0)
                     {
                         //Get default available rooms by top.
-                        availableRoomList = availableRoomList.Take(reservation.NoOfRoom).ToList();
+                        availableRoomList = availableRoomList.Take(reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1).ToList();
 
                         foreach (var room in availableRoomList)
                         {
@@ -198,7 +198,7 @@ namespace SuccessHotelierHub.Controllers
                 model.CheckInDate = reservation.ArrivalDate;
                 model.CheckInTime = reservation.ETA;                
 
-                model.NoOfRoom = reservation.NoOfRoom;
+                model.NoOfRoom = reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1;
                 model.Name = Convert.ToString(reservation.LastName + " " + reservation.FirstName).Trim();
                 model.PaymentMethodId = reservation.PaymentMethodId;
                 model.CreditCardNo = reservation.CreditCardNo;
@@ -304,7 +304,8 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Save Room Rent Charges 
 
-                    double totalPrice = (double)(reservation.Rate * reservation.NoOfNight);
+                    //double totalPrice = (double)(reservation.Rate * reservation.NoOfNight);
+                    double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
 
                     var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
 

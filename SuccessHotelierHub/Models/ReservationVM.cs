@@ -75,13 +75,16 @@ namespace SuccessHotelierHub.Models
         public DateTime? DepartureDate { get; set; }
 
         [DisplayName("Adults")]
-        public int NoOfAdult { get; set; }
+        public int? NoOfAdult { get; set; }
 
         [DisplayName("Children")]
-        public int NoOfChildren { get; set; }
+        public int? NoOfChildren { get; set; }
+
+        [DisplayName("Infant")]
+        public int? NoOfInfant { get; set; }
 
         [DisplayName("No Of Rooms.")]
-        public int NoOfRoom { get; set; }
+        public int? NoOfRoom { get; set; }
 
         [DisplayName("Room Type")]
         [Required(ErrorMessage = "Please select room type.")]
@@ -116,7 +119,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Rate")]
         [DisplayFormat(DataFormatString = "{0:C0}")]
-        public float? Rate { get; set; }
+        public double? Rate { get; set; }
 
         [DisplayName("Currency")]
         public Guid? CurrencyId { get; set; }
@@ -153,12 +156,14 @@ namespace SuccessHotelierHub.Models
         public Guid? PaymentMethodId { get; set; }
 
         [DisplayName("Credit Card #")]
+        //[StringLength(4, MinimumLength = 4, ErrorMessage = "Please enter only last 4 digits of credit card.")]
         public string CreditCardNo { get; set; }
 
         [DisplayName("Exp. Date (MM/YY)")]
         public string CardExpiryDate { get; set; }
 
         [DisplayName("CVV #")]
+        [StringLength(4, MinimumLength = 3, ErrorMessage = "CVV # must be only 3 or 4 digits.")]
         public string CVVNo { get; set; }
 
         [DisplayName("Pre-Authorised Approval Code")]
@@ -175,10 +180,10 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Guest Balance")]
         public double? GuestBalance { get; set; }
 
-        [DisplayName("Disount Amt.")]
+        [DisplayName("Discount Amount")]
         public double? DiscountAmount { get; set; }
 
-        [DisplayName("%")]
+        [DisplayName("Discount (%)")]
         public double? DiscountPercentage { get; set; }
 
         [DisplayName("Discount Reason")]

@@ -357,5 +357,28 @@ namespace SuccessHotelierHub.Controllers
             }
             
         }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult GetRoomTypeInfo(Guid id)
+        {
+            try
+            {
+
+                var roomType = roomTypeRepository.GetRoomTypeById(id).FirstOrDefault();
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = roomType
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetRoomTypeInfo");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
     }
 }

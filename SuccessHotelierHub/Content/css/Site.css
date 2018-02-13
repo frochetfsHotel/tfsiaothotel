@@ -863,3 +863,34 @@ width:100% !important;
 .text-lowercase{
     text-transform:lowercase !important;
 }
+
+.image-head {
+  background-image:url(/Content/img/banner_1.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top center;
+  height: 500px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  color: black;
+  text-align: center;
+}
+#image-head {
+    height: 100%;
+}
+.login-box, .register-box {
+    width: 360px;
+}
+.login-logo a, .register-logo a {
+    color: #fff;
+}
+.grandParentContaniner{
+	display:table; height:100%; margin: 0 auto;
+}
+Html, body{
+	height:100% !important;
+}
+.parentContainer{
+	display:table-cell; vertical-align:middle;
+}	
