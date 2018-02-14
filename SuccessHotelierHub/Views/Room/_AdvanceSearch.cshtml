@@ -69,7 +69,7 @@
                         {
                             foreach (var feature in roomFeaturesList)
                             {
-                                <option value="@feature.Id">@feature.Name</option>
+                                <option value="@feature.Id">@(feature.Name + " - " + feature.Description)</option>
                             }
                         }
                     </select>

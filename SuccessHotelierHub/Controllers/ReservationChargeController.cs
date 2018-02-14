@@ -56,7 +56,7 @@ namespace SuccessHotelierHub.Controllers
                     double totalBalance = 0;
                     if (reservation != null)
                     {
-                        totalBalance = reservation.TotalBalance.HasValue ? reservation.TotalBalance.Value : 0;
+                        totalBalance = reservation.GuestBalance.HasValue ? reservation.GuestBalance.Value : 0;
 
                         //Calculate total Amount.
                         int qty = 1;
@@ -162,7 +162,12 @@ namespace SuccessHotelierHub.Controllers
 
                     if (reservation != null)
                     {
-                        totalBalance = reservation.TotalBalance.HasValue ? reservation.TotalBalance.Value : 0;
+
+                        if(reservation.GuestBalance.HasValue)
+                        {
+                            totalBalance = reservation.GuestBalance.Value;
+                        }
+                       
 
                         totalBalance += totalAmount;
 
@@ -231,7 +236,7 @@ namespace SuccessHotelierHub.Controllers
 
                     if (reservation != null)
                     {
-                        totalBalance = reservation.TotalBalance.HasValue ? reservation.TotalBalance.Value : 0;
+                        totalBalance = reservation.GuestBalance.HasValue ? reservation.GuestBalance.Value : 0;
 
                         if (totalBalance > chargeAmount)
                         {

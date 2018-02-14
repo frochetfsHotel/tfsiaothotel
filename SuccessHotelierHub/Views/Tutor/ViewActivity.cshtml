@@ -33,16 +33,25 @@
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
-                        <div class="col-md-4 form-group">
-                            @Html.LabelFor(m => m.ActivityDate)
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.StartDate)
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.ActivityDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                @Html.TextBoxFor(m => m.StartDate, new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 form-group mt_25">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.EndDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.EndDate, new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchActivityLog()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger m-r-xs" onclick="clearActivityLog()">Clear</button>
                             <a href="@Url.Action("ViewStudent", "Tutor")" class="btn btn-primary">Back</a>
@@ -83,12 +92,16 @@
 
 
         //Date picker
-        $('#ActivityDate').datepicker({            
+        $('#StartDate').datepicker({
             autoclose: true,
             format: 'dd/mm/yyyy'
-        })
-        .change(activityDateChanged)
-        .on('changeDate', activityDateChanged);
+        });
+
+        $('#EndDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+        
 
         setTimeout(InitializeActivityLogGrid, 200);
 
@@ -99,17 +112,15 @@
         });
     });
 
-    function activityDateChanged(e) {
-        var selectedDate = $(this).val();
-        searchActivityLog();
-    }
-
+    
     function SearchActivityLogParameters(d) {
-        var activityDate = $('#ActivityDate').val();
+        var startDate = $('#StartDate').val();
+        var endDate = $('#EndDate').val();
         var userId = $('#UserId').val();
 
         d.PageNum = currentPage;
-        d.ActivityDate = activityDate;
+        d.StartDate = startDate;
+        d.EndDate = endDate;
         d.UserId = userId;
     }
 
@@ -198,12 +209,32 @@
 
 
     function searchActivityLog() {
+        var startDate =  $('#StartDate').val();
+        var endDate = $('#EndDate').val();
+
+        if (!IsNullOrEmpty(startDate)) {
+
+            if (IsNullOrEmpty(endDate)) {
+                showToaster("Please enter end date.", ToasterType.ERROR);
+                return false;
+            } else {
+                var objStartDate = GetDateObject(startDate, DateSeprator.SLASH);
+                var objEndDate = GetDateObject(endDate, DateSeprator.SLASH);
+
+                if (objEndDate < objStartDate) {
+                    showToaster("Start date must be less than end date.", ToasterType.ERROR);
+                    return false;
+                }
+            }
+        }
+
         currentPage = 1;
         ReloadActivityLogGrid();
     }
 
     function clearActivityLog() {
-        $('#ActivityDate').val('');
+        $('#StartDate').val('');
+        $('#EndDate').val('');
 
         searchActivityLog();
     }

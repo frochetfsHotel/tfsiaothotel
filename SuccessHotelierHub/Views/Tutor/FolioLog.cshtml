@@ -34,9 +34,18 @@
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
                         <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.ReservationCreatedDate)
+                            @Html.LabelFor(m => m.StartDate)
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.ReservationCreatedDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                @Html.TextBoxFor(m => m.StartDate, new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.EndDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.EndDate, new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
@@ -50,8 +59,9 @@
                             @Html.LabelFor(m => m.FirstName)
                             @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @placeholder = "Last Name" })
                         </div>
-
-                        <div class="col-md-3 form-group mt_25">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group mt_25 text-right">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchFolioLog()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger m-r-xs" onclick="clearFolioLog()">Clear</button>
                             <a href="@Url.Action("ViewStudent", "Tutor")" class="btn btn-primary">Back</a>
@@ -99,12 +109,16 @@
 
 
         //Date picker
-        $('#ReservationCreatedDate').datepicker({
+        $('#StartDate').datepicker({
             autoclose: true,
             format: 'dd/mm/yyyy'
-        })
-        .change(reservationDateChanged)
-        .on('changeDate', reservationDateChanged);
+        });
+
+        $('#EndDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+
 
         setTimeout(InitializeFolioLogGrid, 200);
 
@@ -121,13 +135,15 @@
     }
 
     function SearchFolioLogParameters(d) {
-        var reservationDate = $('#ReservationCreatedDate').val();
+        var startDate = $('#StartDate').val();
+        var endDate = $('#EndDate').val();
         var userId = $('#UserGUID').val();
         var lastName = $('#LastName').val();
         var firstName = $('#FirstName').val();
 
         d.PageNum = currentPage;
-        d.ReservationCreatedDate = reservationDate;
+        d.StartDate = startDate;
+        d.EndDate = endDate;
         d.UserGUID = userId;
         d.LastName = lastName;
         d.FirstName = firstName;
@@ -267,12 +283,34 @@
 
 
     function searchFolioLog() {
+
+        var startDate = $('#StartDate').val();
+        var endDate = $('#EndDate').val();
+
+        if (!IsNullOrEmpty(startDate)) {
+
+            if (IsNullOrEmpty(endDate)) {
+                showToaster("Please enter end date.", ToasterType.ERROR);
+                return false;
+            } else {
+                var objStartDate = GetDateObject(startDate, DateSeprator.SLASH);
+                var objEndDate = GetDateObject(endDate, DateSeprator.SLASH);
+
+                if (objEndDate < objStartDate) {
+                    showToaster("Start date must be less than end date.", ToasterType.ERROR);
+                    return false;
+                }
+            }
+        }
+
+
         currentPage = 1;
         ReloadFolioLogGrid();
     }
 
     function clearFolioLog() {
-        $('#ReservationCreatedDate').val('');
+        $('#StartDate').val('');
+        $('#EndDate').val('');
         $('#LastName').val('');
         $('#FirstName').val('');
 

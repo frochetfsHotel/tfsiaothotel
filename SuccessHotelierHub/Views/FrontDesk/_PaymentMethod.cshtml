@@ -79,7 +79,7 @@
         </div>
         <div class="col-md-4 divCreditCardInfo">
             @Html.LabelFor(m => m.CreditCardNo)
-            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #"})
+            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)" })
         </div>
         <div class="col-md-4 divCreditCardInfo divCardExpiryDate">
             @Html.LabelFor(m => m.CardExpiryDate)
@@ -167,8 +167,16 @@
         var selectedRoomNumbers = $('form#frmCheckInPayment #RoomNumbers').val();
         var selectedRoomIds = $('form#frmCheckInPayment #RoomIds').val();
 
+        var creditCardNo = $('form#frmCheckInPayment #CreditCardNo').val();
+
         if (IsNullOrEmpty(selectedRoomNumbers) || IsNullOrEmpty(selectedRoomIds)) {
             showToaster("Please select room number", ToasterType.ERROR);
+            return false;
+        }
+
+
+        if (!IsNullOrEmpty(creditCardNo) && !IsValidCreditCardNo(creditCardNo)) {
+            showToaster("Please enter valid credit card number. It must be 16 digits.", ToasterType.ERROR);
             return false;
         }
 

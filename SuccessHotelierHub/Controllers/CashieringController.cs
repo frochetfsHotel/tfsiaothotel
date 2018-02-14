@@ -168,7 +168,7 @@ namespace SuccessHotelierHub.Controllers
                 model.ProfileId = reservation.ProfileId;
                 model.Name = (reservation.LastName + " " + reservation.FirstName).Trim();
 
-                model.Balance = reservation.TotalBalance;
+                model.Balance = reservation.GuestBalance;
                 model.ArrivalDate = reservation.ArrivalDate;
                 model.DepartureDate = reservation.DepartureDate;
 
@@ -316,7 +316,7 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomNumbers = roomNumbers;
                 model.RoomIds = roomIds;
                 model.RoomTypeId = reservation.RoomTypeId;
-                model.Amount = reservation.TotalBalance;
+                model.Amount = reservation.GuestBalance;
 
                 ViewData["Source"] = source;
                 ViewData["PaymentMethodList"] = paymentMethodList;
@@ -464,14 +464,12 @@ namespace SuccessHotelierHub.Controllers
                         //reservation.DepartureDate = model.CheckOutDate.Value;
 
                         //Update Total Balance.
-                        if (totalAmount > reservation.TotalBalance)
-                        {
-                            reservation.TotalBalance = 0;
+                        if (totalAmount > reservation.GuestBalance)
+                        {   
                             reservation.GuestBalance = 0;
                         }
                         else
                         {
-                            reservation.TotalBalance -= totalAmount;
                             reservation.GuestBalance -= totalAmount;
                         }
 
@@ -602,19 +600,10 @@ namespace SuccessHotelierHub.Controllers
             #region Fetch Address
             model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
 
-            //if (profile.CityId.HasValue)
-            //{
-            //    var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
-
-            //    if (city != null)
-            //    {
-            //        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
-            //    }
-            //}
-
             if (!string.IsNullOrWhiteSpace(profile.CityName))
             {
-                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
+                //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
+                model.City = profile.CityName;
             }
 
             //if (profile.StateId.HasValue)
@@ -629,7 +618,8 @@ namespace SuccessHotelierHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(profile.StateName))
             {
-                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
+                //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
+                model.State = profile.StateName;
             }
 
             if (profile.CountryId.HasValue)
@@ -638,7 +628,8 @@ namespace SuccessHotelierHub.Controllers
 
                 if (country != null)
                 {
-                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
+                    //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
+                    model.Country = country.Name;
                 }
             }
             #endregion
@@ -799,21 +790,11 @@ namespace SuccessHotelierHub.Controllers
                 #region Fetch Address
                 model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
 
-                //if (profile.CityId.HasValue)
-                //{
-                //    var city = cityRepository.GetCityById(profile.CityId.Value).FirstOrDefault();
-
-                //    if (city != null)
-                //    {
-                //        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + city.Name) : city.Name;
-                //    }
-                //}
-
                 if (!string.IsNullOrWhiteSpace(profile.CityName))
                 {
-                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
+                    //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
+                    model.City = profile.CityName;
                 }
-
 
                 //if (profile.StateId.HasValue)
                 //{
@@ -827,7 +808,8 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(profile.StateName))
                 {
-                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
+                    //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
+                    model.State = profile.StateName;
                 }
 
                 if (profile.CountryId.HasValue)
@@ -836,7 +818,8 @@ namespace SuccessHotelierHub.Controllers
 
                     if (country != null)
                     {
-                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
+                        //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
+                        model.Country = country.Name;
                     }
                 }
                 #endregion

@@ -288,6 +288,7 @@
     <Compile Include="Models\RateTypeVM.cs" />
     <Compile Include="Models\ReservationCancellationReasonVM.cs" />
     <Compile Include="Models\ReservationChargeVM.cs" />
+    <Compile Include="Models\ReservationConfirmationReportVM.cs" />
     <Compile Include="Models\ReservationLogVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
     <Compile Include="Models\ReservationRoomMappingVM.cs" />
@@ -302,6 +303,7 @@
     <Compile Include="Models\RoomTypeRateTypeMappingVM.cs" />
     <Compile Include="Models\RoomTypeVM.cs" />
     <Compile Include="Models\RoomVM.cs" />
+    <Compile Include="Models\RtcVM.cs" />
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
@@ -349,6 +351,7 @@
     <Compile Include="Repository\RoomRepository.cs" />
     <Compile Include="Repository\RoomStatusRepository.cs" />
     <Compile Include="Repository\RoomTypeRepository.cs" />
+    <Compile Include="Repository\RTCRepository.cs" />
     <Compile Include="Repository\StateRepository.cs" />
     <Compile Include="Repository\TitleRepository.cs" />
     <Compile Include="Repository\UserPageRepository.cs" />
@@ -2100,6 +2103,7 @@
     <Content Include="Views\Origin\Create.cshtml" />
     <Content Include="Views\Origin\Edit.cshtml" />
     <Content Include="Views\Origin\List.cshtml" />
+    <Content Include="Views\Reservation\ReservationConfirmation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

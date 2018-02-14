@@ -1039,6 +1039,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("No Of Room")]
         public int NoOfRoom { get; set; }
 
+        [DisplayName("Room Types Info")]
+        public string RoomTypesInfo { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
@@ -1504,10 +1507,15 @@ namespace SuccessHotelierHub.Models
         [DisplayName("User")]
         public Guid? UserId { get; set; }
 
-        [DisplayName("Date")]
+        [DisplayName("Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime? ActivityDate { get; set; }        
+        public DateTime? StartDate { get; set; }
+
+        [DisplayName("End Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EndDate { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -1527,6 +1535,7 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }
+
     #endregion
 
     #region Search Error Log
@@ -1686,12 +1695,17 @@ namespace SuccessHotelierHub.Models
         public Guid? UserGUID { get; set; }
 
         public int UserId { get; set; }
-
-        [DisplayName("Date")]
+        
+        [DisplayName("Start Date")]        
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime? ReservationCreatedDate { get; set; }
-                
+        public DateTime? StartDate { get; set; }
+
+        [DisplayName("End Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EndDate { get; set; }
+
         [DisplayName("Last Name")]
         public string LastName { get; set; }
 
@@ -1783,10 +1797,15 @@ namespace SuccessHotelierHub.Models
 
         public int UserId { get; set; }
 
-        [DisplayName("Date")]
+        [DisplayName("Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime? ReservationCreatedDate { get; set; }
+        public DateTime? StartDate { get; set; }
+
+        [DisplayName("End Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EndDate { get; set; }
 
         [DisplayName("Last Name")]
         public string LastName { get; set; }

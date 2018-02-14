@@ -106,7 +106,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@GuestBalance", Value = reservation.GuestBalance },
                     new SqlParameter { ParameterName = "@DiscountAmount", Value = reservation.DiscountAmount },
                     new SqlParameter { ParameterName = "@DiscountPercentage", Value = reservation.DiscountPercentage },
-                    new SqlParameter { ParameterName = "@DiscountReasonId", Value = reservation.DiscountReasonId },
+                    new SqlParameter { ParameterName = "@DiscountApprovedBy", Value = reservation.DiscountApprovedBy },
+                    new SqlParameter { ParameterName = "@DiscountReason", Value = reservation.DiscountReason },
                     new SqlParameter { ParameterName = "@TARecordLocator", Value = reservation.TARecordLocator },
                     new SqlParameter { ParameterName = "@SpecialsId", Value = reservation.SpecialsId },
                     new SqlParameter { ParameterName = "@ReservationComments", Value = reservation.ReservationComments },
@@ -116,8 +117,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
                     new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
                     new SqlParameter { ParameterName = "@ConfirmationNumber", Value = reservation.ConfirmationNumber },
-                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
-                    new SqlParameter { ParameterName = "@TotalBalance", Value = reservation.TotalBalance },
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },                    
                     new SqlParameter { ParameterName = "@FolioNumber", Value = reservation.FolioNumber },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = reservation.CreatedBy }
@@ -182,7 +182,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@GuestBalance", Value = reservation.GuestBalance },
                     new SqlParameter { ParameterName = "@DiscountAmount", Value = reservation.DiscountAmount },
                     new SqlParameter { ParameterName = "@DiscountPercentage", Value = reservation.DiscountPercentage },
-                    new SqlParameter { ParameterName = "@DiscountReasonId", Value = reservation.DiscountReasonId },
+                    new SqlParameter { ParameterName = "@DiscountApprovedBy", Value = reservation.DiscountApprovedBy },
+                    new SqlParameter { ParameterName = "@DiscountReason", Value = reservation.DiscountReason },
                     new SqlParameter { ParameterName = "@TARecordLocator", Value = reservation.TARecordLocator },
                     new SqlParameter { ParameterName = "@SpecialsId", Value = reservation.SpecialsId },
                     new SqlParameter { ParameterName = "@ReservationComments", Value = reservation.ReservationComments },
@@ -191,8 +192,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@HouseKeepingComments", Value = reservation.HouseKeepingComments },
                     new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
                     new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
-                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
-                    new SqlParameter { ParameterName = "@TotalBalance", Value = reservation.TotalBalance },
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },                    
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = reservation.UpdatedBy }
                 };
@@ -396,7 +396,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
                     new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
                     new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
-                    new SqlParameter { ParameterName = "@CreatedOn", Value = model.ReservationCreatedDate },
+                    new SqlParameter { ParameterName = "@StartDate", Value = model.StartDate },
+                    new SqlParameter { ParameterName = "@EndDate", Value = model.EndDate },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -415,10 +416,11 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
+                    new SqlParameter { ParameterName = "@UserId",   Value = model.UserId },
                     new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
                     new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
-                    new SqlParameter { ParameterName = "@CreatedOn", Value = model.ReservationCreatedDate },
+                    new SqlParameter { ParameterName = "@StartDate", Value = model.StartDate },
+                    new SqlParameter { ParameterName = "@EndDate", Value = model.EndDate },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -494,3 +496,4 @@ namespace SuccessHotelierHub.Repository
 
     }
 }
+

@@ -1,0 +1,96 @@
+﻿@model SuccessHotelierHub.Models.ReservationConfirmationReportVM
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-size: 18px;
+            color: #333;
+            font-weight: 400;
+            font-family: Calibri;
+        }
+
+        table, th, td {
+            border: 1px solid #efefef;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px;
+            /*text-align: right;*/
+        }
+
+        table th {
+            background-color: #efefef;
+        }
+
+        .text-bold {
+            font-weight: bold;
+        }
+    </style>
+    <title></title>
+</head>
+<body>
+    <div style="margin-top: 10px;margin-bottom: 20px;">
+        <p>Dear @Model.UserName</p>
+        <p>We are delighted to confirm the following booking for you:</p>
+        <br />
+        <table>
+            <tr>
+                <td class="text-bold">Reservation Number :</td>
+                <td>@Model.ConfirmationNumber</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Date Of Arrival :</td>
+                <td>@Model.ArrivalDate</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Date Of Departure :</td>
+                <td>@Model.DepartureDate</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Number Of Nights :</td>
+                <td>@Model.NoOfNight</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Accommodation :</td>
+                <td>@Model.Accommodation</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Name Of Guest :</td>
+                <td>@Model.GuestName</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Number Of Guests :</td>
+                <td>
+                    <span class="text-bold">Adults :</span> @Model.NoOfAdult
+                    <span class="text-bold">Children :</span> @Model.NoOfChildren
+                </td>
+            </tr>
+            <tr>
+                <td class="text-bold">Room Rate Per Night :</td>
+                <td><span class="text-bold">Night 1</span>- @Model.RatePerNight EUR Including Full Irish Breakfast</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Method Of Payment :</td>
+                <td>@Model.MethodOfPayment</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Deposit Paid :</td>
+                <td>@Model.DepositPaid</td>
+            </tr>
+        </table>
+        <p class="text-bold">Important:</p>
+        <p>Your room will be available from 2 pm onwards and check out time is 12 noon on the morning of departure.</p>
+        <p>Our cancellation policy is 24 hours prior to arrival; cancellations made outside of this period will result in a charge of the first-night stay from the card provided. Any non-arrival bookings will be charged for the first night accommodation.</p>
+        <p>A pre-authorisation will be taken on the day of arrival – should the funds not be available on the card provided the hotel reserves the right to release the room.</p>
+        <p>Thank you for choosing to stay at the Roche International Hotel and Spa, we look forward to welcoming you. If we can be of any further assistance, please feel free to contact us.</p>
+        <br />
+        <p>Kind Regards,</p>
+        <p>Admin - HotelierHub</p>
+        <p>Website:<a href="http://tfshotelierhub.com/" target="_blank">http://tfshotelierhub.com</a></p></div>
+
+    <div style="clear:both"></div>
+</body>
+</html>

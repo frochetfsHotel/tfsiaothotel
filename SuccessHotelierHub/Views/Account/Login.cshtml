@@ -29,7 +29,7 @@
 
                     </div>
                     <div class="row">
-                        <div class="col-xs-8">
+                        <div class="col-xs-5">
                             <label class="container1" for="RememberMe">
                                 Remember Me
                                 @Html.CheckBoxFor(m => m.RememberMe)
@@ -37,8 +37,8 @@
                             </label>
                         </div>
                         <!-- /.col -->
-                        <div class="col-xs-4">
-                            <button type="button" class="btn btn-primary btn-block btn-flat" id="btnLogin" onclick="Login();">Sign In</button>
+                        <div class="col-xs-7 text-right">
+                            <button type="button" class="btn btn-primary btn-flat" id="btnLogin" onclick="Login();">Sign In</button>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -99,7 +99,7 @@
 </script>
 
 <script type="text/javascript">
-    const cats = [
+    @*const cats = [
          '@Url.Content("~/Content/img/banner_1.jpg")',
          '@Url.Content("~/Content/img/banner_2.jpg")',
          '@Url.Content("~/Content/img/banner_3.jpg")'
@@ -116,5 +116,5 @@
         setTimeout(() => cycleImages(images, container, step), step * images.length)
     }
 
-    cycleImages(cats, node, 5000)
+    cycleImages(cats, node, 5000)*@
 </script>

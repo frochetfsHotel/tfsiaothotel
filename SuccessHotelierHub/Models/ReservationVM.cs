@@ -156,7 +156,7 @@ namespace SuccessHotelierHub.Models
         public Guid? PaymentMethodId { get; set; }
 
         [DisplayName("Credit Card #")]
-        //[StringLength(4, MinimumLength = 4, ErrorMessage = "Please enter only last 4 digits of credit card.")]
+        [StringLength(16, MinimumLength = 16, ErrorMessage = "Please enter valid credit card number. It must be 16 digits.")]
         public string CreditCardNo { get; set; }
 
         [DisplayName("Exp. Date (MM/YY)")]
@@ -186,8 +186,11 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Discount (%)")]
         public double? DiscountPercentage { get; set; }
 
+        [DisplayName("Discount Approved By")]
+        public Guid? DiscountApprovedBy { get; set; }
+
         [DisplayName("Discount Reason")]
-        public Guid? DiscountReasonId { get; set; }
+        public string DiscountReason { get; set; }
 
         [DisplayName("Agent Booking Reference")]
         public string TARecordLocator { get; set; }
@@ -227,8 +230,7 @@ namespace SuccessHotelierHub.Models
         public string Remarks { get; set; }
         public string PreferenceItems { get; set; }
 
-        public double? TotalPrice { get; set; }
-        public double? TotalBalance { get; set; }
+        public double? TotalPrice { get; set; }        
 
 
         public Guid? ReservationStatusId { get; set; }

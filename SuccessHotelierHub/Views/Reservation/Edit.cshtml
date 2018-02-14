@@ -334,12 +334,11 @@
                         @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.RtcId)
-                        <select class="form-control" id="RtcId" name="RtcId">
-                            <option value="">--Select Rate to Charge--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">RTC 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">RTC 2</option>
-                        </select>
+                        @Html.LabelFor(m => m.RtcId)                        
+                        @Html.DropDownListFor(m => m.RtcId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RtcList, "Value", "Text"),
+                                "--Select Rate to Charge--",
+                                new { @class = "form-control", onchange = "RtcChange();" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.RoomNumbers)
@@ -491,7 +490,7 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)" })
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
@@ -536,19 +535,23 @@
                         @Html.LabelFor(m => m.DiscountPercentage)
                         @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountAmount();", onblur = "calculateTotalPrice();" })
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.DiscountReasonId)                        
-                        @Html.DropDownListFor(m => m.DiscountReasonId,
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.DiscountApprovedBy)
+                        @Html.DropDownListFor(m => m.DiscountApprovedBy,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.DiscountReasonList, "Value", "Text"),
-                                "--Select Reason--",
+                                "--Select Discount Approved By--",
                                 new { @class = "form-control" })
                     </div>
-                    <div class="col-md-3 form-group m-t">
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.DiscountReason)
+                        @Html.TextBoxFor(m => m.DiscountReason, new { @class = "form-control", placeholder = "Discount Reason" })
+                    </div>
+                    <div class="col-md-2 form-group m-t">
                         <label>
                             Total Price : <span id="totalPrice">&euro; 0.00</span>
                             <br />
                             <span>
-                                [No. Of Nights <span class="text-blue" id="spnNoOfNight"
+                                [Nights <span class="text-blue" id="spnNoOfNight"
                                 data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-blue" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
                             </span>
                         </label>
@@ -1069,6 +1072,11 @@
                 if (IsNullOrEmpty(creditCardNo)) {
                     errorText += "Please enter credit card number." + Delimeter.BREAKLINE;
                     blnValid = false;
+                } else {
+                    if (!IsValidCreditCardNo(creditCardNo)) {
+                        errorText += "Please enter valid credit card number. It must be 16 digits." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
                 }
 
                 if (IsNullOrEmpty(cardExpiryDate)) {
@@ -1169,9 +1177,9 @@
                 noOfNight = diffDays > 0 ? diffDays : 1;
             }
 
-
-
             $('form#frmReservation #NoOfNight').val(noOfNight);
+
+            calculateTotalPrice();
         }
     }
 
@@ -1196,6 +1204,8 @@
                 //departureDate = GetDate(dt, DateFormat.DDMMYYYY);
                 $("form#frmReservation #DepartureDate").datepicker("setDate", dt);
             }
+
+            calculateTotalPrice();
         }
     }
 
@@ -1489,9 +1499,13 @@
         if (!IsNullOrEmpty('@Model.DiscountAmount'))
             $('label[for="DiscountAmount"]').addClass("label-bold");
 
-        //DiscountReasonId
-        if (!IsNullOrEmpty('@Model.DiscountReasonId'))
-            $('label[for="DiscountReasonId"]').addClass("label-bold");
+        //DiscountApprovedBy
+        if (!IsNullOrEmpty('@Model.DiscountApprovedBy'))
+            $('label[for="DiscountApprovedBy"]').addClass("label-bold");
+
+        //DiscountReason
+        if (!IsNullOrEmpty('@Model.DiscountReason'))
+            $('label[for="DiscountReason"]').addClass("label-bold");
 
         //TARecordLocator
         if (!IsNullOrEmpty('@Model.TARecordLocator'))
@@ -1580,6 +1594,15 @@
 
     function ClearDiscountAmount() {
         $('form#frmReservation #DiscountAmount').val('');
+    }
+
+    function RtcChange() {
+        var rtc = $('form#frmReservation #RtcId').val();
+        if (!IsNullOrEmpty(rtc)) {
+            $("form#frmReservation #IsFixedRate").prop("checked", true);
+        } else {
+            $("form#frmReservation #IsFixedRate").prop("checked", false);
+        }
     }
 
     window.onbeforeunload = function () {

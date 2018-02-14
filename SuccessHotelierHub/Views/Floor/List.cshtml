@@ -61,6 +61,8 @@
                                     <th>CreatedOn</th>
                                     <th>Code</th>
                                     <th>Name</th>
+                                    <th>No Of Room</th>
+                                    <th>Room Types</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -170,6 +172,16 @@
             },
             {
                 targets: 3,
+                data: "NoOfRoom",
+                orderable: true
+            },
+            {
+                targets: 4,
+                data: "RoomTypesInfo",
+                orderable: false
+            },
+            {
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -182,7 +194,7 @@
                 }
             },
             {
-                targets: 4,
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",

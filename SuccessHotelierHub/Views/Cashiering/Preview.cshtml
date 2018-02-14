@@ -69,16 +69,20 @@
             margin: auto;
             display: block;
         }
+
         .text-right {
-            text-align:right !important;
+            text-align: right !important;
         }
-        .footer{
+
+        .footer {
+            border: 10px solid #ff0000;
+            /*border-radius:10px;*/
             height: 75px;
-            background: #0b2d4c;
             margin-top: 30px;
             margin-bottom: 10px;
         }
-        .padding-zero{
+
+        .padding-zero {
             padding-left: 0 !important;
             padding-right: 0 !important;
         }
@@ -112,7 +116,10 @@
                             <td style="width:50%;text-align:left" valign="top">
                                 <label class="mb5"><b>@Model.Title @Model.Name</b></label>
                                 <br />
-                                <label class="mb5"><b>@Model.Address</b></label>
+                                <label class="mb5"><b>@Model.Address</b></label> <br />
+                                <label class="mb5"><b>@Model.City</b></label> <br />
+                                <label class="mb5"><b>@Model.State</b></label> <br />
+                                <label class="mb5"><b>@Model.Country</b></label> <br />
                             </td>
                             <td style="width:50%;">
                                 <table>
@@ -173,7 +180,7 @@
                                         <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("MM-dd-yyyy") : "")</td>
                                         <td>@transaction.Description</td>
                                         <td>@transaction.Code</td>
-                                        <td>@(transaction.Qty.HasValue ? transaction.Qty.Value : 1)</td>                                        
+                                        <td>@(transaction.Qty.HasValue ? transaction.Qty.Value : 1)</td>
                                         <td>&euro;&nbsp;@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value : 0)</td>
                                         <td></td>
                                     </tr>
@@ -185,33 +192,9 @@
                     <table style="border:none">
                         <tr>
                             <td style="width:50%;">
+                                <br /><br />
                                 <label class="">Guest Signature: ______________________________</label>
                                 <br />
-                                <table style="margin-top:10px;">
-                                    <tr>
-                                        <th>GST Summary</th>
-                                    </tr>
-                                    <tr>
-                                        <th style="width: 250px">Total</th>
-                                        <td>&euro;&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.Total)</td>
-                                    </tr>
-                                    <tr>
-                                        <th style="width: 250px">Room</th>
-                                        <td>&euro;&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.Room)</td>
-                                    </tr>
-                                    <tr>
-                                        <th style="width: 250px">F & B</th>
-                                        <td>&euro;&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.FandB)</td>
-                                    </tr>
-                                    <tr>
-                                        <th style="width: 250px">Other</th>
-                                        <td>&euro;&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.Other)</td>
-                                    </tr>
-                                    <tr>
-                                        <th>G.S.T. Registration Number: </th>
-                                        <td>@Model.GSTRegistrationNumber</td>
-                                    </tr>
-                                </table>
                             </td>
                             <td style="width:50%;">
                                 <table>
@@ -243,12 +226,6 @@
                                     </tr>
 
                                 </table>
-
-                                <p class="para">
-                                    I agree that my liability for this bill is not waived and
-                                    I agree to be held personally liable in the event that the indicated person,
-                                    company or association fails to pay for any part or the full.
-                                </p>
                             </td>
                         </tr>
                     </table>
@@ -258,10 +235,21 @@
         </div>
         <div style="clear:both"></div>
     </div>
-    <footer style="text-align:center">
-        <div class="padding-zero footer">
-
-        </div>
+    <footer style="text-align:center;">
+        @*<div class="padding-zero footer">
+            <p>We hope you enjoyed your stay with us and look forward to welcoming you back soon!</p>
+            <p>You can book directly on line with us on www.rihs.com</p>
+        </div>*@
+        <table style="border:5px solid #000;">
+            <tr style="">
+                <td style="text-align:center;padding-top:20px;"><p>We hope you enjoyed your stay with us and look forward to welcoming you back soon!</p></td>
+            </tr>
+            <tr>
+                <td style="text-align:center; padding-top:10px;">
+                    <p>You can book directly on line with us on <a href="http://www.rihs.com" target="_blank">www.rihs.com</a></p>
+                </td>
+            </tr>
+        </table>
     </footer>
 </body>
 </html>

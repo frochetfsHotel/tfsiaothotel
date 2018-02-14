@@ -570,3 +570,13 @@ function parseBoolean(value) {
         return false;
     }
 }
+
+function IsValidCreditCardNo(number) {
+    if (!IsNullOrEmpty(number)) {
+        if (number.length != 16) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}

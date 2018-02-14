@@ -64,7 +64,8 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
-                    new SqlParameter { ParameterName = "@ActivityDate", Value = model.ActivityDate },
+                    new SqlParameter { ParameterName = "@StartDate", Value = model.StartDate },
+                    new SqlParameter { ParameterName = "@EndDate", Value = model.EndDate },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

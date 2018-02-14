@@ -76,7 +76,7 @@
             </div>
             <div class="col-md-4 divCreditCardInfo">
                 @Html.LabelFor(m => m.CreditCardNo)
-                @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #" })
+                @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)" })
             </div>
             <div class="col-md-4 divCreditCardInfo divCardExpiryDate">
                 @Html.LabelFor(m => m.CardExpiryDate)
@@ -170,6 +170,13 @@
 
     //Check Out
     function validateCheckOut() {
+
+        var creditCardNo = $('form#frmCheckOutPayment #CreditCardNo').val();
+
+        if (!IsNullOrEmpty(creditCardNo) && !IsValidCreditCardNo(creditCardNo)) {
+            showToaster("Please enter valid credit card number. It must be 16 digits.", ToasterType.ERROR);
+            return false;
+        }
 
         if ($("form#frmCheckOutPayment").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);

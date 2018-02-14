@@ -240,8 +240,7 @@ namespace SuccessHotelierHub.Controllers
             }
 
             SearchUsersActivityLogParametersVM model = new SearchUsersActivityLogParametersVM();
-            model.UserId = id;
-            model.ActivityDate = DateTime.Now;
+            model.UserId = id;            
 
             return View(model);
         }
@@ -303,8 +302,7 @@ namespace SuccessHotelierHub.Controllers
             }
 
             SearchUsersReservationLogParametersVM model = new SearchUsersReservationLogParametersVM();
-            model.UserGUID = id;
-            model.ReservationCreatedDate = DateTime.Now;
+            model.UserGUID = id;            
 
             return View(model);
         }
@@ -375,8 +373,7 @@ namespace SuccessHotelierHub.Controllers
             }
 
             SearchUsersReservationFolioLogParametersVM model = new SearchUsersReservationFolioLogParametersVM();
-            model.UserGUID = id;
-            model.ReservationCreatedDate = DateTime.Now;
+            model.UserGUID = id;            
 
             return View(model);
         }

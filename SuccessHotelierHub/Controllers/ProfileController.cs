@@ -63,7 +63,10 @@ namespace SuccessHotelierHub.Controllers
             {
                 string profileId = string.Empty;
 
+                model.CarRegistrationNo = Utility.Utility.ToUpperCase(model.CarRegistrationNo);
                 model.CreatedBy = LogInManager.LoggedInUserId;
+
+
                 profileId = profileRepository.AddIndividualProfile(model);
 
                 if (!string.IsNullOrWhiteSpace(profileId))
@@ -202,6 +205,8 @@ namespace SuccessHotelierHub.Controllers
             {
                 model = profile[0];
 
+                model.CarRegistrationNo = Utility.Utility.ToUpperCase(model.CarRegistrationNo);
+
                 #region Preference Mapping
                 //Get Preference Mapping
                 var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null);
@@ -251,7 +256,9 @@ namespace SuccessHotelierHub.Controllers
             {
                 string profileId = string.Empty;
 
+                model.CarRegistrationNo = Utility.Utility.ToUpperCase(model.CarRegistrationNo);
                 model.UpdatedBy = LogInManager.LoggedInUserId;
+
                 profileId = profileRepository.UpdateIndividualProfile(model);
 
                 if (!string.IsNullOrWhiteSpace(profileId))
