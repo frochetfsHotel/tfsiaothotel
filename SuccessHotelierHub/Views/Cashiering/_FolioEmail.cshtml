@@ -1,0 +1,71 @@
+﻿<form id="frmEmail" name="frmEmail" enctype="multipart/form-data">
+    <!-- HIDDEN FIELD-->
+    <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />
+    <!-- HIDDEN FIELD-->
+    <div class="row">
+        <div class="col-md-12">
+            <label for="Email">Email</label>
+            <input type="text" id="Email" name="Email" class="form-control" placeholder="Email"
+                   value="" />
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <input type="button" class="btn btn-sm btn-success m-r-sm" id="btnSendEmail" onclick="SendEmail();"
+                   value="Send" />
+            <input type="button" class="btn btn-sm btn-danger" id="btnCancel"
+                   value="Cancel" data-dismiss="modal" />
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    function validateEmailForm() {
+        var email = $("form#frmEmail #Email").val();
+
+        if (IsNullOrEmpty(email)) {
+            showToaster("Please enter email.", ToasterType.ERROR);
+            return false;
+        } else if (!validateEmail(email)) {
+            showToaster("Please enter valid email.", ToasterType.ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    function SendEmail() {
+        if (validateEmailForm()) {
+            var reservationId = $("form#frmEmail #hdnReservationId").val();
+            var email = $("form#frmEmail #Email").val();
+
+            //Ajax Request to Send Email.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Cashiering/SendEmail")',
+                type: 'POST',
+                data: { Id: reservationId, email: email },
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Email sent successfully to your email address.", ToasterType.SUCCESS);
+                        CloseModal('emailFormModal');
+                    }
+                }
+            });
+
+
+        }
+    }
+</script>

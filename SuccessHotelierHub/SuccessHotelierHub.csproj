@@ -243,6 +243,7 @@
     <Compile Include="Controllers\RoomController.cs" />
     <Compile Include="Controllers\RoomFeaturesController.cs" />
     <Compile Include="Controllers\RoomTypeController.cs" />
+    <Compile Include="Controllers\RTCController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\TitleController.cs" />
     <Compile Include="Controllers\TutorController.cs" />
@@ -2104,6 +2105,10 @@
     <Content Include="Views\Origin\Edit.cshtml" />
     <Content Include="Views\Origin\List.cshtml" />
     <Content Include="Views\Reservation\ReservationConfirmation.cshtml" />
+    <Content Include="Views\Cashiering\_FolioEmail.cshtml" />
+    <Content Include="Views\RTC\Edit.cshtml" />
+    <Content Include="Views\RTC\List.cshtml" />
+    <Content Include="Views\RTC\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

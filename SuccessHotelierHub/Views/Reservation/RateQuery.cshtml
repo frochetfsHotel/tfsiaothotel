@@ -291,7 +291,7 @@
                                          new { @class = "form-control" })                                    
                                 </div>
                             </div>
-                            <div class="row">
+                            @*<div class="row">
                                 <div class="clearfix"></div>
                                 <div class="col-md-12 form-group">
                                     <label class="container1" for="IsInclNonDeduct">
@@ -300,7 +300,7 @@
                                         <span class="checkmark"></span>
                                     </label>
                                 </div>
-                            </div>
+                            </div>*@
                         </div>
 
                         <div class="col-xs-12 m-b-xs text-right">
@@ -629,6 +629,7 @@
             var departureDate = $('#DepartureDate').val();
             var noOfAdults = $('#NoOfAdult').val();
             var noOfChildren = $('#NoOfChildren').val();
+            var noOfInfant = $('#NoOfInfant').val();
             var noOfRooms = $('#NoOfRoom').val();
             var arrivalDayOfWeek = $('#ArrivalDayOfWeek').html();
             $('#RateTypeCode').val('');
@@ -667,6 +668,8 @@
 
             //Children
             noOfChildren = (!IsNullOrEmpty(noOfChildren)) ? noOfChildren : 0;
+            noOfInfant = (!IsNullOrEmpty(noOfInfant)) ? noOfInfant : 0;
+            noOfChildren = parseInt(noOfChildren) + parseInt(noOfInfant);
             if (noOfChildren > 1)
                 reservationInfo += noOfChildren + " Childrens" + Delimeter.SPACE;
             else

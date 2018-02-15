@@ -61,7 +61,8 @@ namespace SuccessHotelierHub.Controllers
                         m => new SelectListItem()
                         {
                             Value = m.Id.ToString(),
-                            Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                            //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                            Text = m.RateTypeCode
                         }
                     ), "Value", "Text").ToList();
 
@@ -333,6 +334,9 @@ namespace SuccessHotelierHub.Controllers
                                     {
                                         bodyMsg.Append(sr.ReadToEnd());
 
+                                        bodyMsg.Replace("[@UserName]", obj.UserName);
+                                        bodyMsg.Replace("[@CashierName]", LogInManager.UserName);
+
                                         //File Name.
                                         string fileName = string.Format("Confirm-Reservation-{0}.pdf", model.ConfirmationNumber);
 
@@ -477,7 +481,8 @@ namespace SuccessHotelierHub.Controllers
                                             m => new SelectListItem()
                                             {
                                                 Value = m.Id.ToString(),
-                                                Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                                                //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                                                Text = m.RateTypeCode
                                             }
                                         ), "Value", "Text").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();

@@ -24,7 +24,7 @@
     if (Model.ETA.HasValue && Model.ETA.Value != null)
     {
         DateTime time = DateTime.Today.Add(Model.ETA.Value);
-        ETAText = time.ToString("hh:mm tt");
+        ETAText = time.ToString("HH:mm");
     }
 
     var strRate = "0.00";
@@ -217,10 +217,10 @@
                         @Html.LabelFor(m => m.MemberNo)
                         @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    @*<div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.MemberLvt)
                         @Html.TextBoxFor(m => m.MemberLvt, new { @class = "form-control", placeholder = "Member LVT." })
-                    </div>
+                    </div>*@
 
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.AgentId)
@@ -240,9 +240,6 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.GroupId)
                         <select class="form-control" id="GroupId" name="GroupId">
@@ -252,6 +249,10 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="row">
+                    
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.SourceId)
                         <select class="form-control" id="SourceId" name="SourceId">
@@ -420,7 +421,7 @@
                             @Html.LabelFor(m => m.ETAText)
                             <div class="input-group">
                                 <input type="text" id="ETAText" name="ETAText" value="@ETAText" class="form-control"
-                                       placeholder="hh:mm tt" />
+                                       placeholder="HH:mm" />
                                 <div class="input-group-addon">
                                     <i class="fa fa-clock-o"></i>
                                 </div>
@@ -759,7 +760,10 @@
 
         //Timepicker
         $('#ETAText').timepicker({
-            showInputs: false
+            showInputs: false,
+            showMeridian: false,
+            minuteStep: 5
+            //timeFormat: 'HH:mm'
         });
 
         //Show value of selected drop down.
@@ -1004,6 +1008,9 @@
             $("form#frmAdvancePreferenceSearch #divPreferences").show();
         }
 
+        selectPrefereceGroup("ROOOM FEATURES");
+        $("form#frmAdvancePreferenceSearch #btnSearch").click();
+
         $('#preferenceModal').modal('toggle');
     }
 
@@ -1143,14 +1150,101 @@
                         //reset the global varible once the data is saved
                         data_needs_saving = false;
 
-                        showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
+                        var reservationId = response.data.ReservationId;
 
                         if (response.IsExternalUrl) {
                             redirectTo(response.data);
                         } else {
-                            setTimeout(function () {
-                                redirectTo('@Url.Content("~/Reservation/List")');
-                            }, 1000);
+
+                            var isCheckIn = parseBoolean('@Model.IsCheckIn');
+
+                            if (!IsNullOrEmpty(reservationId) && isCheckIn == false) {
+                                var roomNumbers = $('#RoomNumbers').val();
+
+                                if (!IsNullOrEmpty(roomNumbers)) {
+                                    //Ask confirmation about check in.
+                                    swal({
+                                        title: 'Are you want to check in guest?',
+                                        type: 'info',
+                                        showCancelButton: true,
+                                        showCloseButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Yes'
+                                    }).then((result) => {
+                                        if (result.value) {
+
+                                            var name = ($('form#frmReservation #LastName').val() + ' ' + $('form#frmReservation #FirstName').val());
+
+                                            var modelCheckInPaymentMethod = {};
+                                            modelCheckInPaymentMethod.ReservationId = response.data.ReservationId;
+                                            modelCheckInPaymentMethod.ProfileId = $('form#frmReservation #ProfileId').val();
+                                            modelCheckInPaymentMethod.NoOfRoom = $('form#frmReservation #NoOfRoom').val();
+                                            modelCheckInPaymentMethod.Name = name;
+                                            modelCheckInPaymentMethod.CheckInDate = $('form#frmReservation #ArrivalDate').val();
+                                            modelCheckInPaymentMethod.CheckInTimeText = $('form#frmReservation #ETAText').val();
+                                            modelCheckInPaymentMethod.PaymentMethodId = $('form#frmReservation #PaymentMethodId').val();
+                                            modelCheckInPaymentMethod.CreditCardNo = $('form#frmReservation #CreditCardNo').val();
+                                            modelCheckInPaymentMethod.CardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
+                                            modelCheckInPaymentMethod.RoomNumbers = $('form#frmReservation #RoomNumbers').val();
+                                            modelCheckInPaymentMethod.RoomIds = $('form#frmReservation #RoomIds').val();
+                                            modelCheckInPaymentMethod.RoomTypeId = $('form#frmReservation #RoomTypeId').val();
+
+                                            $.ajax({
+                                                beforeSend: function (xhr) {
+                                                    showLoader();
+                                                },
+                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                    ShowErrorMessage(jqXHR.status, errorThrown);
+                                                },
+                                                complete: function () {
+                                                    hideLoader();
+                                                },
+                                                url: '@Url.Content("~/FrontDesk/CheckIn")',
+                                                type: 'POST',
+                                                data: modelCheckInPaymentMethod,
+                                                success: function (response) {
+                                                    if (response.IsSuccess == false) {
+                                                        showToaster(response.errorMessage, ToasterType.ERROR);
+                                                    }
+                                                    else {
+                                                        swal({
+                                                            title: '' + response.data.Name + ' checked in successfully.',
+                                                            type: 'success',
+                                                            showCloseButton: true,
+                                                            showCancelButton: false,
+                                                            focusConfirm: false,
+                                                            confirmButtonText: 'OK',
+                                                        }).then((result) => {
+                                                            showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
+                                                            setTimeout(function () {
+                                                                redirectTo('@Url.Content("~/Reservation/List")');
+                                                            }, 1000);
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
+                                            setTimeout(function () {
+                                                redirectTo('@Url.Content("~/Reservation/List")');
+                                            }, 1000);
+                                        }
+                                    })
+                                } else {
+                                    showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
+                                    setTimeout(function () {
+                                        redirectTo('@Url.Content("~/Reservation/List")');
+                                    }, 1000);
+                                }
+                            } else {
+                                showToaster("Reservation details updated successfully.", ToasterType.SUCCESS);
+                                setTimeout(function () {
+                                    redirectTo('@Url.Content("~/Reservation/List")');
+                                }, 1000);
+                            }
+
+
                         }
 
                     }
@@ -1210,7 +1304,6 @@
     }
 
     function calculateTotalPrice() {
-        debugger;
         var noOfNights = $("form#frmReservation #NoOfNight").val();
         var rate = $('form#frmReservation #Rate').val();
         var noOfChildren = $('form#frmReservation #NoOfChildren').val();
@@ -1566,26 +1659,41 @@
     }
 
     function RateTypeChange() {
-        if (!IsNullOrEmpty($('form#frmReservation #RateCodeId').val())) {
+       if (!IsNullOrEmpty($('form#frmReservation #RateCodeId').val())) {
             var text = $('form#frmReservation #RateCodeId option:selected').text();
 
             var rateCode = text;
-            var isLeisType = false;
-            if (Contains(rateCode, '-')) {
-                if (!IsNullOrEmpty(trim(rateCode.split('-')[1])) && trim(rateCode.split('-')[1]) == "LEIS") {
-                    isLeisType = true;
-                }
+
+            if (rateCode == 'BAR' || rateCode == 'BARBB' || rateCode == 'BARDBB') {
+                selectMarket("Leisure");
+                selectReservationSource("Leisure");
             }
 
-            if (isLeisType) {
+            if (rateCode == 'CORPBB' || rateCode == 'CORPDBB' || rateCode == 'CORPRO') {
+                selectMarket("Corporate");
+                //selectReservationSource("Corporate");
+                $("form#frmReservation #ReservationSourceId").val('');
+            }
+
+            //var isLeisType = false;
+            //if (Contains(rateCode, '-')) {
+            //    if (!IsNullOrEmpty(trim(rateCode.split('-')[1])) && trim(rateCode.split('-')[1]) == "LEIS") {
+            //        isLeisType = true;
+            //    }
+            //}
+
+            @*if (isLeisType) {
                 //Select LEIS in Market & Reservation Source Dropdown.
                 $("form#frmReservation #MarketId").val('@marketLEISId');
                 $("form#frmReservation #ReservationSourceId").val('@reservationSourceId');
             } else {
                 $("form#frmReservation #MarketId").val('');
                 $("form#frmReservation #ReservationSourceId").val('');
-            }
-        }
+            }*@
+       } else {
+           $("form#frmReservation #MarketId").val('');
+           $("form#frmReservation #ReservationSourceId").val('');
+       }
     }
 
     function ClearDiscountPercentage() {
@@ -1604,6 +1712,27 @@
             $("form#frmReservation #IsFixedRate").prop("checked", false);
         }
     }
+
+    function selectMarket(name) {
+        var dd = document.getElementById('MarketId');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].text === name) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    function selectReservationSource(name) {
+        var dd = document.getElementById('ReservationSourceId');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].text === name) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation

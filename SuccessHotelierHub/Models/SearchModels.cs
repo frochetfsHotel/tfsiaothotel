@@ -265,6 +265,7 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }        
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Email { get; set; }
 
         [DisplayName("Phone #")]
         public string PhoneNo { get; set; }
@@ -1833,6 +1834,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("First Name")]
         public string FirstName { get; set; }
 
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
         [DisplayName("Arrival Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
@@ -1939,6 +1943,41 @@ namespace SuccessHotelierHub.Models
     }
 
     public class SearchDiscountReasonResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string Code { get; set; }
+        public string Description { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search RTC
+
+    public class SearchRTCParametersVM
+    {
+        public SearchRTCParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchRTCResultVM
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }

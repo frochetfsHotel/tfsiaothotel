@@ -168,7 +168,8 @@
                                     <th>Departure</th>
                                     <th>Rms</th>
                                     <th>Night</th>
-                                    <th style="width:15%;">Action</th>
+                                    <th class="width_10">Status</th>
+                                    <th class="width_15">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -521,21 +522,36 @@
                 targets: 9,
                 data: "Id",
                 orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    if (full.IsCheckIn == true) {
+                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">Checked In</a> ';
+                    } else {
+                        html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                       + ' class="">-</a> ';
+                    }
+
+                    return html;
+                }
+            },
+            {
+                targets: 10,
+                data: "Id",
+                orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
                     var buttons = '';
                     buttons += '<a href="javascript:void(0);" onclick="GotoProfileEditPage(\'' + full.ProfileId + '\')" '
                                 + ' class="btn bg-olive btn-xs m-r-xs">Profile</a> ';
                     
-                    if (full.IsCheckIn == true)
-                    {
-                        buttons += ' <button type="button" class="btn bg-navy btn-xs m-n">Checked In</button>';
-                    }
-                    else
+                    if (full.IsCheckIn == false)
                     {
                         buttons += '<a href="javascript:void(0);" onclick="OpenCheckInPaymentMethodForm(\'' + full.Id + '\')" '
                                                         + ' class="btn btn-primary btn-xs m-r-xs">Check In</a> ';
                     }
+
                     return buttons;
                 }
             }

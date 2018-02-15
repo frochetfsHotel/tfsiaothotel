@@ -218,7 +218,8 @@
                                     <th>Rooms</th>
                                     <th>Room Type</th>
                                     <th>Rate Type</th>
-                                    <th width="20%;">Action</th>
+                                    <th width="10%;">Status</th>
+                                    <th width="15%;">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -260,6 +261,24 @@
     </div>
 </div>
 <!-- Advance Reservation Cancellation Reason Search Modal END -->
+
+<!-- Email Form Modal START -->
+<div id="emailFormModal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Send Email</h4>
+            </div>
+            <div class="modal-body modal-body_padding" id="divSendEmail">
+                @Html.Partial("~/Views/Cashiering/_FolioEmail.cshtml")
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!--  Email Form Modal END -->
 
 <script type="text/javascript">
 
@@ -556,9 +575,35 @@
                         + ' class="">' + full.RateTypeCode + '</a> ';
 
                 }
-            },
+            },            
             {
                 targets: 12,
+                data: "Id",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isReservationCancel = full.IsReservationCancel;
+                    var isCheckIn = full.IsCheckIn;
+                    var isCheckOut = full.IsCheckOut;
+                    var text = "";
+
+                    if (isReservationCancel == true) {
+                        text += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">Cancelled</a> ';
+                    }
+                    else if (isCheckIn == true && isCheckOut == false) {
+                        text += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">Checked In</a> ';
+                    }
+                    else if (isCheckIn == true && isCheckOut == true) {
+                        text += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">Checked Out</a> ';
+                    }
+
+                    return text;
+                }
+            },
+            {
+                targets: 13,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -571,18 +616,18 @@
                     buttons += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
                                 + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
 
-                    if (isReservationCancel == true) {
-                        buttons += ' <button type="button" class="btn bg-maroon btn-xs m-n">Cancelled</button>';
-                    }
-                    else if (isCheckIn == true && isCheckOut == false) {
-                        buttons += ' <button type="button" class="btn bg-navy btn-xs m-n">Checked In</button>';                       
-                    }
-                    else if (isCheckIn == true && isCheckOut == true) {
-                        buttons += ' <button type="button" class="btn bg-purple btn-xs m-n">Checked Out</button>';
-                    }
-                    else {
+                    if (isReservationCancel == false && isCheckIn == false) {
                         buttons += ' <button type="button" class="btn btn-danger btn-xs"'
                                     + ' onclick="cancelReservation(this,event,\'' + full.Id + '\')">Cancel</button>';
+                    }
+
+                    if (isCheckOut) {
+                        var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' + full.Id;
+
+                        buttons += '<a href="' + url + '" target="_blank" '
+                                 + ' class="btn btn-warning btn-xs m-r-xs">Folio</a> ';
+
+                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\',\'' + full.Email + '\')" ' + ' class="btn btn-primary btn-xs m-r-xs">Export</a> ';
                     }
 
                     return buttons;
@@ -760,6 +805,13 @@
                 });
             }
         });
+    }
+
+    function OpenEmailForm(id, email) {
+        $("form#frmEmail #Email").val(email)
+        $("form#frmEmail #hdnReservationId").val(id);
+
+        OpenModal('emailFormModal');
     }
 </script>
 

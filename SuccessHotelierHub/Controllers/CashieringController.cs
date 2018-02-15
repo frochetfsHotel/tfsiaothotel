@@ -10,7 +10,7 @@ using System.IO;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
+    
     public class CashieringController : Controller
     {
         #region Declaration
@@ -32,12 +32,14 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         // GET: Cashiering
         public ActionResult Index()
         {
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult SearchGuest()
         {
             var charges = additionalChargeRepository.GetAdditionalCharges();
@@ -51,6 +53,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult SearchGuest(SearchGuestParametersVM model)
         {
@@ -104,6 +107,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult GetBillingInfo(Guid reservationId, string source = "")
         {
@@ -254,6 +258,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult ShowCheckOutPaymentMethod(Guid reservationId, string source = "")
         {
@@ -330,6 +335,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult CheckOut(CheckOutPaymentMethodVM model)
         {
@@ -529,6 +535,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult Preview(Guid? Id)
         {
             if (Id == null)
@@ -710,6 +717,7 @@ namespace SuccessHotelierHub.Controllers
 
         #region SEND EMAIL
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult SendEmail(Guid? Id, string email)
         {
             try
