@@ -307,6 +307,7 @@
     <Compile Include="Models\RtcVM.cs" />
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
+    <Compile Include="Models\StoredProcedure\AvailableRoomInfoByDateResultVM.cs" />
     <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
@@ -2109,6 +2110,7 @@
     <Content Include="Views\RTC\Edit.cshtml" />
     <Content Include="Views\RTC\List.cshtml" />
     <Content Include="Views\RTC\Create.cshtml" />
+    <Content Include="Views\PropertyCalendar\_RoomInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

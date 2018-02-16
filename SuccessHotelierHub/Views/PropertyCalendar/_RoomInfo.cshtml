@@ -1,0 +1,47 @@
+﻿@using SuccessHotelierHub.Models;
+@using SuccessHotelierHub.Utility;
+@using SuccessHotelierHub.Models.StoredProcedure;
+
+@{
+    var results = (List<AvailableRoomInfoByDateResultVM>)ViewData["RoomInfo"];
+
+    var firstRowHtml = "";
+    var secondRowHtml = "";
+    var thirdRowHtml = "";
+
+    if (results != null && results.Count > 0)
+    {
+        firstRowHtml = "<tr>";
+        firstRowHtml += "<th class='width_30'>Room Type</th>";
+
+        secondRowHtml = "<tr>";
+        secondRowHtml += "<th class='width_30'>Total Room</th>";
+
+        thirdRowHtml = "<tr>";
+        thirdRowHtml += "<th class='width_30'>Available Room</th>";
+
+        foreach (var result in results)
+        {
+            firstRowHtml += string.Format("<td>{0}</td>", result.RoomTypeCode);
+            secondRowHtml += string.Format("<td>{0}</td>", result.TotalRoom);
+            thirdRowHtml += string.Format("<td>{0}</td>", result.AvailableRoom);
+        }
+
+        firstRowHtml  += "</tr>";
+
+        secondRowHtml += "</tr>";
+
+        thirdRowHtml += "</tr>";
+    }
+}
+
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            @Html.Raw(firstRowHtml)
+            @Html.Raw(secondRowHtml)
+            @Html.Raw(thirdRowHtml)
+        </table>
+    </div>
+</div>
+

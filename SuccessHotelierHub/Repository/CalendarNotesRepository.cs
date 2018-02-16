@@ -80,6 +80,21 @@ namespace SuccessHotelierHub.Repository
             return notes;
         }
 
+        public string DeleteCalendarNotes(Guid id, int updatedBy)
+        {
+            string notesId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            notesId = Convert.ToString(DALHelper.ExecuteScalar("DeleteCalendarNotes", parameters));
+
+            return notesId;
+        }
+
         #endregion
     }
 }

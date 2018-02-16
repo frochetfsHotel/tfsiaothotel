@@ -957,5 +957,90 @@ namespace SuccessHotelierHub.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public ActionResult ReverseCheckOut(Guid reservationId, string source = "")
+        {
+            try
+            {
+                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+
+                if (reservation != null)
+                {
+
+                    #region  Remove Reservation Charges                    
+
+                    reservationChargeRepository.DeleteReservationChargesByReservation(reservation.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region  Remove Reservation Log (Room Occupied)
+
+                    reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region  Remove Check Out Details
+
+                    checkInCheckOutRepository.DeleteCheckInCheckOutDetailByReservation(reservation.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Update Reservation Check In & Check Out Flag (FALSE)                    
+
+                    reservationRepository.UpdateReservationCheckInFlag(reservation.Id, false, LogInManager.LoggedInUserId);
+
+                    reservationRepository.UpdateReservationCheckOutFlag(reservation.Id, false, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Update Reservation
+
+                    double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+
+                    reservation.GuestBalance = totalPrice;
+                    reservation.TotalPrice = totalPrice;
+
+                    reservation.UpdatedBy = LogInManager.LoggedInUserId;
+                    reservationRepository.UpdateReservation(reservation);
+
+                    #endregion
+
+                    #region Update Reservation Status (NULL)
+
+                    reservationRepository.UpdateReservationStatus(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Record Activity Log
+
+                    RecordActivityLog.RecordActivity(Pages.CHECKIN, string.Format("Reverse Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            ReservationId = reservationId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Reverse check in not done successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "ReverseCheckIn");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
     }
 }

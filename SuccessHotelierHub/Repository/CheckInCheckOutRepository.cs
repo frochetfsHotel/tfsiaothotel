@@ -139,5 +139,20 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion Check Out
+
+        public string DeleteCheckInCheckOutDetailByReservation(Guid reservationId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteCheckInCheckOutDetailByReservation", parameters));
+
+            return id;
+        }
     }
 }

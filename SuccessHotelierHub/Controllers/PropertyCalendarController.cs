@@ -9,6 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
+    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
     public class PropertyCalendarController : Controller
     {
         #region Declaration
@@ -126,6 +127,52 @@ namespace SuccessHotelierHub.Controllers
                     errorMessage = e.Message
                 });
             }
+        }
+
+        [HttpPost]
+        public ActionResult Delete(Guid id)
+        {
+            try
+            {
+                string notesId = string.Empty;
+
+                notesId = calendarNotesRepository.DeleteCalendarNotes(id, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(notesId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            NotesId = notesId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Notes details not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "Delete");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetAvailableRoomInfo(string date)
+        {
+            //Room Details.
+            var results = roomRepository.GetAvailableRoomInfoByDate(date);
+            ViewData["RoomInfo"] = results;
+
+            return PartialView("_RoomInfo");
         }
     }
 }

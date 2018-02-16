@@ -108,6 +108,21 @@ namespace SuccessHotelierHub.Repository
             return chargeId;
         }
 
+        public string DeleteReservationChargesByReservation(Guid reservationId, int updatedBy)
+        {
+            string chargeId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            chargeId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationChargesByReservation", parameters));
+
+            return chargeId;
+        }
+
         #endregion Reservation Charge
     }
 }

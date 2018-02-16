@@ -107,6 +107,21 @@ namespace SuccessHotelierHub.Repository
             return reservationLogId;
         }
 
+        public string DeleteReservationLogByReservation(Guid reservationId, int updatedBy)
+        {
+            string reservationLogId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            reservationLogId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationLogByReservation", parameters));
+
+            return reservationLogId;
+        }
+
         public List<ReservationLogVM> GetReservationLogByRoom(Guid? roomId, Guid? reservationId, Guid? roomStatusId, DateTime? arrivaldate, DateTime? departureDate)
         {
             SqlParameter[] parameters =

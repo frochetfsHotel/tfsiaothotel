@@ -26919,3 +26919,260 @@ BEGIN
 				AND Id = @Id
 		ORDER BY [Code]
 END
+
+
+/***************************************************************************************************************/
+Name : Nilesh
+Date : 16-FEB-2018
+/***************************************************************************************************************/
+
+/************************************************************************************************************************ 
+	SP Name : DeleteCalendarNotes
+	Comment : Create SP DeleteCalendarNotes	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteCalendarNotes]    Script Date: 2/16/2018 11:57:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteCalendarNotes]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[CalendarNotes] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationLogByReservation
+	Comment : Create SP DeleteReservationLogByReservation	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationLogByReservation]    Script Date: 2/16/2018 1:22:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationLogByReservation]
+	@ReservationId	UNIQUEIDENTIFIER	,	
+	@UpdatedBy		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationLog] 
+		SET		[IsDeleted]		=	1
+			,	[UpdatedBy]		=	@UpdatedBy					   
+			,	[UpdatedOn]		=	GETDATE()
+     WHERE		ISNULL(IsDeleted,0) = 0 
+				AND ReservationId = @ReservationId
+
+	SELECT @ReservationId AS ReservationId
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteCheckInCheckOutDetailByReservation
+	Comment : Create SP DeleteCheckInCheckOutDetailByReservation	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteCheckInCheckOutDetailByReservation]  Script Date: 2/16/2018 1:22:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteCheckInCheckOutDetailByReservation]
+	@ReservationId	UNIQUEIDENTIFIER	,	
+	@UpdatedBy		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[CheckInCheckOutDetail] 
+		SET		[IsDeleted]		=	1
+			,	[UpdatedBy]		=	@UpdatedBy					   
+			,	[UpdatedOn]		=	GETDATE()
+     WHERE		ISNULL(IsDeleted,0) = 0 
+				AND ReservationId = @ReservationId
+
+	SELECT @ReservationId AS ReservationId
+    
+END
+
+
+
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationChargesByReservation
+	Comment : Create SP DeleteReservationChargesByReservation	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationChargesByReservation]  Script Date: 2/16/2018 1:22:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationChargesByReservation]
+	@ReservationId	UNIQUEIDENTIFIER	,	
+	@UpdatedBy		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationCharges] 
+		SET		[IsDeleted]		=	1
+			,	[UpdatedBy]		=	@UpdatedBy					   
+			,	[UpdatedOn]		=	GETDATE()
+     WHERE		ISNULL(IsDeleted,0) = 0 
+				AND ReservationId = @ReservationId
+
+	SELECT @ReservationId AS ReservationId
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationCharges
+	Comment : Changes in SP GetReservationCharges	
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 2/16/2018 2:49:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'8238c78e-b793-40c6-a77b-becf312d7d5a',
+		@AdditionalChargeId		=	NULL
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId		UNIQUEIDENTIFIER = NULL,
+	@AdditionalChargeId	UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+	UNION
+		SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RE.CreditCardNo, 4)) END )AS Code,
+		RC.Description,3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+
+
+	ORDER BY SortOrder
+
+
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetRTCById
+	Comment : Changes in SP GetRTCById	
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[GetAvailableRoomInfoByDate]    Script Date: 2/15/2018 6:40:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetAvailableRoomInfoByDate] 
+		@Date = '2018-02-16'
+
+*/
+
+CREATE PROCEDURE [dbo].[GetAvailableRoomInfoByDate]
+	@Date NVARCHAR(255)
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+   SELECT DISTINCT RT.Id AS RoomTypeId, RT.RoomTypeCode, 
+		COUNT(R.Id) AS TotalRoom,
+		( 
+			COUNT(R.Id) - 
+			(
+				SELECT DISTINCT COUNT(RL.Id)
+				FROM ReservationLog RL 
+						INNER JOIN Reservation R ON R.Id = RL.ReservationId
+							AND ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsActive,0) = 1
+						INNER JOIN Room RM ON RM.Id = RL.RoomId AND ISNULL(RM.IsDeleted,0) = 0			
+				WHERE	ISNULL(RL.IsDeleted,0) = 0 
+						AND ISNULL(RL.IsActive,0) = 1 
+						AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+						AND RM.RoomTypeId = RT.Id
+						AND ( CAST(@Date AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate AS DATE))
+			 )
+		) AS AvailableRoom
+
+		FROM Room R 
+			INNER JOIN RoomType RT ON R.RoomTypeId = RT.Id 
+				AND ISNULL(RT.IsDeleted,0) = 0
+		WHERE	ISNULL(R.IsDeleted,0) = 0 
+		GROUP BY RT.Id, RT.RoomTypeCode
+
+END
+

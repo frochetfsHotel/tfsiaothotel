@@ -402,6 +402,21 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
+        public List<AvailableRoomInfoByDateResultVM> GetAvailableRoomInfoByDate(string date)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Date", Value = date }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetAvailableRoomInfoByDate", parameters);
+
+            var results = new List<AvailableRoomInfoByDateResultVM>();
+            results = DALHelper.CreateListFromTable<AvailableRoomInfoByDateResultVM>(dt);
+
+            return results;
+        }
+
         #endregion
 
     }

@@ -457,5 +457,83 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+
+        [HttpPost]
+        public ActionResult ReverseCheckIn(Guid reservationId, string source = "")
+        {
+            try
+            {
+                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+
+                if (reservation != null)
+                {
+
+                    #region  Remove Rent Charges
+
+                    var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
+
+                    var reservationCharge = reservationChargeRepository.GetReservationCharges(reservation.Id, roomRentCharge.Id).FirstOrDefault();
+
+                    if (reservationCharge != null)
+                    {
+                        reservationChargeRepository.DeleteReservationCharges(reservationCharge.Id, LogInManager.LoggedInUserId);
+                    }
+
+                    #endregion
+
+                    #region  Remove Reservation Log (Room Occupied)
+
+                    reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Update Reservation Check In Flag (FALSE)
+
+                    reservationRepository.UpdateReservationCheckInFlag(reservation.Id, false, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region  Remove Check In Details
+
+                    checkInCheckOutRepository.DeleteCheckInCheckOutDetailByReservation(reservation.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Update Reservation Status (NULL)
+
+                    reservationRepository.UpdateReservationStatus(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Record Activity Log
+                    RecordActivityLog.RecordActivity(Pages.CHECKIN, string.Format("Reverse Checked in profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            ReservationId = reservationId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Reverse check in not done successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "ReverseCheckIn");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        
     }
 }
