@@ -656,6 +656,9 @@ namespace SuccessHotelierHub.Controllers
 
             //Get Amount.
 
+            var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("9004").FirstOrDefault(); //Check out
+            var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("1000").FirstOrDefault(); //Room Rent
+
             double checkOutPaidPayment = 0;
             foreach (var item in transactions)
             {
@@ -664,19 +667,19 @@ namespace SuccessHotelierHub.Controllers
                 if (item.Qty.HasValue)
                     qty = item.Qty.Value;
 
-                if (item.Code != "9004")  //Check out
+                if (checkoutAdditionalCharge != null && checkoutAdditionalCharge.Id == item.AdditionalChargeId.Value)  //Check out
                 {
-                    totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;                    
                 }
                 else
                 {
-                    checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
+                    totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
                 }
 
                 //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
 
                 //Room Rent
-                if (item.Code == "1000")
+                if (roomRentAdditionalCharge != null && roomRentAdditionalCharge.Id == item.AdditionalChargeId.Value)
                     roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
 
             }
@@ -847,6 +850,10 @@ namespace SuccessHotelierHub.Controllers
                 //Get Amount.
 
                 double checkOutPaidPayment = 0;
+
+                var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("9004").FirstOrDefault(); //Check out
+                var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("1000").FirstOrDefault(); //Room Rent
+
                 foreach (var item in transactions)
                 {
                     int qty = 1;
@@ -854,19 +861,19 @@ namespace SuccessHotelierHub.Controllers
                     if (item.Qty.HasValue)
                         qty = item.Qty.Value;
 
-                    if (item.Code != "9004")  //Check out
+                    if (checkoutAdditionalCharge != null && checkoutAdditionalCharge.Id == item.AdditionalChargeId.Value)  //Check out
                     {
-                        totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                        checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
                     }
                     else
                     {
-                        checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
+                        totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);                        
                     }
 
                     //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
 
                     //Room Rent
-                    if (item.Code == "1000")
+                    if (roomRentAdditionalCharge != null && roomRentAdditionalCharge.Id == item.AdditionalChargeId.Value)
                         roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
 
                 }
