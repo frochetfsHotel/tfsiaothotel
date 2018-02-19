@@ -68,7 +68,19 @@ namespace SuccessHotelierHub.Controllers
 
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
-            var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+            //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+            //var packageList = packageRepository.GetPackages();
+            var packageList = new SelectList(
+                   packageRepository.GetPackages()
+                   .Select(
+                       m => new SelectListItem()
+                       {
+                           Value = m.Id.ToString(),
+                            //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                            Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+                       }
+                   ), "Value", "Text").ToList();
+
             //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
             var marketList = new SelectList(
                               marketRepository.GetMarkets()
@@ -151,6 +163,7 @@ namespace SuccessHotelierHub.Controllers
                 model.FirstName = rateQuery.FirstName;
                 model.ProfileId = rateQuery.ProfileId;
                 model.TitleId = profile.TitleId;
+                model.Remarks = profile.Remarks;
 
                 model.MemberTypeId = rateQuery.MemberTypeId;
                 model.CompanyId = rateQuery.CompanyId;
@@ -166,11 +179,14 @@ namespace SuccessHotelierHub.Controllers
                 model.Rate = rateQuery.Amount; //Rate
                 model.IsWeekEndPrice = rateQuery.IsWeekEndPrice; // Week End Price.
 
-                double totalBalance = 0;
+                double totalBalance = 0, totalPrice = 0;
 
-                totalBalance = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
-                                
-                model.TotalPrice = totalBalance;
+                totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+
+                totalBalance = totalPrice;
+
+                model.TotalPrice = totalPrice;
+                
 
                 model.PackageId = rateQuery.PackageId;
             }
@@ -183,6 +199,7 @@ namespace SuccessHotelierHub.Controllers
             var titleId = (Guid?)TempData["TitleId"];
             var countryId = (int?)TempData["CountryId"];
             var telephoneNo = (string)TempData["TelephoneNo"];
+            var remarks = (string)TempData["Remarks"];
 
             if (!string.IsNullOrWhiteSpace(profileId))
             {
@@ -211,6 +228,10 @@ namespace SuccessHotelierHub.Controllers
             if (!string.IsNullOrWhiteSpace(telephoneNo))
             {
                 model.PhoneNo = telephoneNo;
+            }
+            if (!string.IsNullOrWhiteSpace(remarks))
+            {
+                model.Remarks = remarks;
             }
 
             #endregion
@@ -253,6 +274,7 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(confirmationNo))
                 {
+
                     //Clear Session Object.
                     Session["RateQueryVM"] = null;
 
@@ -439,6 +461,7 @@ namespace SuccessHotelierHub.Controllers
                 var titleId = (Guid?)TempData["TitleId"];
                 var countryId = (int?)TempData["CountryId"];
                 var telephoneNo = (string)TempData["TelephoneNo"];
+                var remarks = (string)TempData["Remarks"];
 
                 if (!string.IsNullOrWhiteSpace(profileId))
                 {
@@ -468,6 +491,10 @@ namespace SuccessHotelierHub.Controllers
                 {
                     model.PhoneNo = telephoneNo;
                 }
+                if (!string.IsNullOrWhiteSpace(remarks))
+                {
+                    model.Remarks = remarks;
+                }
 
                 #endregion
 
@@ -487,7 +514,18 @@ namespace SuccessHotelierHub.Controllers
                                         ), "Value", "Text").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
-                var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+                //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+                //var packageList = packageRepository.GetPackages();
+                var packageList = new SelectList(
+                         packageRepository.GetPackages()
+                         .Select(
+                             m => new SelectListItem()
+                             {
+                                 Value = m.Id.ToString(),
+                                   //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                                   Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+                             }
+                         ), "Value", "Text").ToList();
                 //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
                 var marketList = new SelectList(
                               marketRepository.GetMarkets()
@@ -544,6 +582,7 @@ namespace SuccessHotelierHub.Controllers
                        ), "Value", "Text").ToList();
 
                 var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
+                
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -589,14 +628,16 @@ namespace SuccessHotelierHub.Controllers
 
                     model.ETA = time.TimeOfDay;
                 }
-                
 
-                double totalBalance = 0;
 
-                totalBalance = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+                double totalBalance = 0, totalPrice = 0;
+
+                totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+
+                totalBalance = totalPrice;
 
                 //model.GuestBalance = totalBalance;                
-                model.TotalPrice = totalBalance;
+                model.TotalPrice = totalPrice;
 
                 reservationId = reservationRepository.UpdateReservation(model);
 
@@ -689,6 +730,27 @@ namespace SuccessHotelierHub.Controllers
                     }
                     #endregion
 
+                    #region Save Reservation Package Mapping               
+
+                    if (model.PackageList != null && model.PackageList.Count > 0)
+                    {
+                        //Delete Existing Reservation Package Mapping.
+                        //reservationRepository.DeleteReservationPackageMappingByReservation(Guid.Parse(reservationId), LogInManager.LoggedInUserId);
+
+                        foreach (var pacakge in model.PackageList)
+                        {
+                            //Save Reservation Package Mapping.
+                            ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
+                            reservationPackageMapping.PackageId = pacakge.Id;
+                            reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                        }
+                    }
+                    #endregion
+
                     #region Update Room Rent Charges 
 
                     var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
@@ -697,12 +759,12 @@ namespace SuccessHotelierHub.Controllers
 
                     if (reservationCharge != null)
                     {
-                        reservationCharge.ReservationId = model.Id;
+                        reservationCharge.ReservationId = Guid.Parse(reservationId);
                         reservationCharge.AdditionalChargeId = roomRentCharge.Id;
                         reservationCharge.Code = roomRentCharge.Code;
                         reservationCharge.Description = roomRentCharge.Description;
                         reservationCharge.TransactionDate = model.ArrivalDate;
-                        reservationCharge.Amount = totalBalance;
+                        reservationCharge.Amount = totalPrice;
                         reservationCharge.Qty = 1;
                         reservationCharge.IsActive = true;
                         reservationCharge.UpdatedBy = LogInManager.LoggedInUserId;
@@ -712,6 +774,18 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Update Reservation Total Balance.
+
+                    if (model.IsCheckOut == false)
+                    {
+                        double totalGuestBalance = Utility.Utility.CalculateTotalBalance(Guid.Parse(reservationId));
+
+                        //Update Total Balance.
+                        reservationRepository.UpdateReservationTotalBalance(Guid.Parse(reservationId), totalGuestBalance, LogInManager.LoggedInUserId);                        
+                    }
+
+                    #endregion
+                    
                     #region Record Activity Log
                     RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Updated reservation, Confirmation# : {0}", model.ConfirmationNumber));
                     #endregion
@@ -990,14 +1064,16 @@ namespace SuccessHotelierHub.Controllers
             model.FolioNumber = folioNo;
 
             #endregion
-            
 
-            double totalBalance = 0;
 
-            totalBalance = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+            double totalBalance = 0, totalPrice = 0;
 
-            model.GuestBalance = totalBalance;            
-            model.TotalPrice = totalBalance;
+            totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+
+            totalBalance = totalPrice;
+
+            model.GuestBalance = totalBalance;
+            model.TotalPrice = totalPrice;
 
             reservationId = reservationRepository.AddReservation(model);
 
@@ -1074,6 +1150,48 @@ namespace SuccessHotelierHub.Controllers
                         }
                     }
                 }
+                #endregion
+
+                #region Save Reservation Package Mapping               
+
+                if (model.PackageList != null && model.PackageList.Count > 0)
+                {
+                    foreach (var pacakge in model.PackageList)
+                    {
+                        //Save Reservation Package Mapping.
+                        ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
+                        reservationPackageMapping.PackageId = pacakge.Id;
+                        reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                        reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                        reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                    }
+                }
+                #endregion                        
+
+                #region Reservation Remarks 
+
+                if (model.RemarksList != null && model.RemarksList.Count > 0)
+                {
+                    foreach (var remark in model.RemarksList)
+                    {
+                        remark.ReservationId = Guid.Parse(reservationId);
+                        remark.CreatedBy = LogInManager.LoggedInUserId;
+
+                        reservationRepository.AddReservationRemark(remark);
+                    }
+                }
+
+                #endregion
+
+                #region Update Reservation Total Balance.
+
+                double totalGuestBalance = Utility.Utility.CalculateTotalBalance(Guid.Parse(reservationId));
+
+                //Update Total Balance.
+                reservationRepository.UpdateReservationTotalBalance(Guid.Parse(reservationId), totalGuestBalance, LogInManager.LoggedInUserId);
+
                 #endregion
 
                 #region Record Activity Log
@@ -1221,7 +1339,17 @@ namespace SuccessHotelierHub.Controllers
             var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, DateTime.Now.ToString("MM/dd/yyyy"));
 
             var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
-            var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+            //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+            var packageList = new SelectList(
+                 packageRepository.GetPackages()
+                 .Select(
+                     m => new SelectListItem()
+                     {
+                         Value = m.Id.ToString(),
+                           //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                           Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+                     }
+                 ), "Value", "Text").ToList();
 
 
             ViewBag.RateTypeList = rateTypeList;
@@ -1428,6 +1556,154 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+
+        #endregion
+
+        #region Reservation  Remarks
+
+        [HttpPost]
+        public ActionResult AddReservationRemark(ReservationRemarkVM model)
+        {
+            try
+            {
+                string remarkId = string.Empty;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.CreatedOn = DateTime.Now;
+
+                remarkId = reservationRepository.AddReservationRemark(model);
+
+                if (!string.IsNullOrWhiteSpace(remarkId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RemarkId = remarkId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Remarks not saved successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "AddReservationRemark");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult UpdateReservationRemark(ReservationRemarkVM model)
+        {
+            try
+            {
+                string remarkId = string.Empty;
+                model.UpdatedOn = DateTime.Now;
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+
+                remarkId = reservationRepository.UpdateReservationRemark(model);
+
+                if (!string.IsNullOrWhiteSpace(remarkId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RemarkId = remarkId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Remarks not updated successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "UpdateReservationRemark");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteReservationRemark(Guid id)
+        {
+            try
+            {
+                string remarkId = string.Empty;
+
+                remarkId = reservationRepository.DeleteReservationRemark(id, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(remarkId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RemarkId = remarkId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Remark not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "DeleteReservationRemark");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+
+        [HttpPost]
+        public ActionResult GetReservationRemarks(Guid reservationId)
+        {
+            try
+            {
+                var remarks = reservationRepository.GetReservationRemarks(reservationId, null);
+               
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = remarks
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetReservationRemarks");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
 
         #endregion
     }

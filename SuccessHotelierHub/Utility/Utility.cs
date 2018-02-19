@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Repository;
 using System.IO;
 using System.Drawing;
 using System.Data.SqlClient;
@@ -651,6 +652,46 @@ namespace SuccessHotelierHub.Utility
                 childrenCharges = (noOfChildren.Value * 5);
 
             dblTotalBalance = (noOfNights * rate) + childrenCharges;
+
+            return Math.Round(dblTotalBalance, 2);
+        }
+
+        public static double CalculateTotalBalance(Guid reservationId)
+        {
+            double dblTotalBalance = 0;
+
+            ReservationRepository reservationRepository = new ReservationRepository();
+            var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+
+            ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
+
+            if (reservation != null)
+            {
+                double totalRoomRentCharge = CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+
+                dblTotalBalance = totalRoomRentCharge;
+
+
+                //Package Price
+                var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
+                if (packageDetails != null && packageDetails.Count > 0)
+                {
+                    var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
+
+                    dblTotalBalance += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
+                }
+
+                //Reservation Charges
+                var reservationCharges = reservationChargeRepository.GetReservationCharges(reservationId, null);
+                if (reservationCharges != null && reservationCharges.Count > 0)
+                {
+                    var totalReservationCharges = reservationCharges.Where(m => m.Amount.HasValue)
+                                .Sum(m => (m.Amount.Value * (m.Qty.HasValue ? m.Qty.Value : 1)));
+
+                    dblTotalBalance += totalReservationCharges;
+                }
+
+            }
 
             return Math.Round(dblTotalBalance, 2);
         }

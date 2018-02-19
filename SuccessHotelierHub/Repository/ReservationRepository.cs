@@ -5,6 +5,7 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Models.StoredProcedure;
 
 namespace SuccessHotelierHub.Repository
 {
@@ -493,7 +494,143 @@ namespace SuccessHotelierHub.Repository
             return reservationStatus;
         }
         #endregion
+        
+        #region Reservation Remarks
 
+        public List<ReservationRemarksResultVM> GetReservationRemarks(Guid reservationId, Guid? id)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@Id", Value = id }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRemarks", parameters);
+
+            var remarks = new List<ReservationRemarksResultVM>();
+            remarks = DALHelper.CreateListFromTable<ReservationRemarksResultVM>(dt);
+
+            return remarks;
+        }
+
+        public List<ReservationRemarkVM> GetReservationRemarkById(Guid id)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Id", Value = id }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRemarkById", parameters);
+
+            var remark = new List<ReservationRemarkVM>();
+            remark = DALHelper.CreateListFromTable<ReservationRemarkVM>(dt);
+
+            return remark;
+        }
+
+        public string AddReservationRemark(ReservationRemarkVM remark)
+        {
+            string remarkId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = remark.ReservationId },
+                    new SqlParameter { ParameterName = "@Remarks", Value = remark.Remarks },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = remark.CreatedBy },
+                    new SqlParameter { ParameterName = "@CreatedOn", Value = remark.CreatedOn },                    
+                };
+
+            remarkId = Convert.ToString(DALHelper.ExecuteScalar("AddReservationRemark", parameters));
+
+            return remarkId;
+        }
+
+        public string UpdateReservationRemark(ReservationRemarkVM remark)
+        {
+            string remarkId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = remark.Id },
+                    new SqlParameter { ParameterName = "@ReservationId", Value = remark.ReservationId },
+                    new SqlParameter { ParameterName = "@Remarks", Value = remark.Remarks },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = remark.UpdatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedOn", Value = remark.UpdatedOn },
+                };
+
+            remarkId = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationRemark", parameters));
+
+            return remarkId;
+        }
+
+        public string DeleteReservationRemark(Guid id, int updatedBy)
+        {
+            string remarkId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            remarkId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationRemark", parameters));
+
+            return remarkId;
+        }
+
+        #endregion
+
+        #region Reservation Package Mapping 
+
+        public string AddUpdateReservationPackageMapping(ReservationPackageMappingVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = model.ReservationId },
+                    new SqlParameter { ParameterName = "@PackageId", Value = model.PackageId } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUpdateReservationPackageMapping", parameters));
+
+            return id;
+        }
+
+        public string DeleteReservationPackageMappingByReservation(Guid reservationId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPackageMappingByReservation", parameters));
+
+            return id;
+        }
+
+        public List<ReservationPackageMappingVM> GetReservationPackageMapping(Guid? reservationId, Guid? packageId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@PackageId", Value = (object) packageId ?? DBNull.Value }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationPackageMapping", parameters);
+
+            var reservationPackageMapping = new List<ReservationPackageMappingVM>();
+            reservationPackageMapping = DALHelper.CreateListFromTable<ReservationPackageMappingVM>(dt);
+
+            return reservationPackageMapping;
+        }
+
+        #endregion
     }
 }
 

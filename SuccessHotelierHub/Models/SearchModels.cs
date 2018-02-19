@@ -175,6 +175,7 @@ namespace SuccessHotelierHub.Models
         public string Address { get; set; }
         public string City { get; set; }
         public string ZipCode { get; set; }
+        public string Remarks { get; set; }
 
         public int? CountryId { get; set; }
         public int? StateId { get; set; }
@@ -1103,6 +1104,13 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Description")]
         public string Description { get; set; }
 
+        [DisplayName("Price")]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public double? Price { get; set; }
+
+        [DisplayName("Calculation Ratio")]
+        public Guid? CalculationRatioId { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -1113,6 +1121,16 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        [DisplayName("Price")]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public double Price { get; set; }
+
+        [DisplayName("Calculation Ratio")]
+        public Guid? CalculationRatioId { get; set; }
+
+        public string CalculationRatio { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }

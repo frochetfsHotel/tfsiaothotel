@@ -35,17 +35,32 @@
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Description)
                             @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                         </div>
-                        <div class="col-md-4 form-group mt_25">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchPackage()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearPackage()">Clear</button>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.Price)
+                            @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.CalculationRatioId)
+                            @Html.DropDownListFor(m => m.CalculationRatioId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.CalculationRatioList, "Value", "Text"),
+                                "--Select Calculation Ratio--",
+                                new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group mt_25 text-right">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" 
+                                    onclick="searchPackage()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" 
+                                    onclick="clearPackage()">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -60,6 +75,8 @@
                                     <th></th>
                                     <th>Name</th>
                                     <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Calculation Ration</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -95,10 +112,14 @@
     function SearchPackageParameters(d) {
         var name = $('#Name').val();
         var description = $('#Description').val();
+        var price = $('#Price').val();
+        var calculationRatioId = $('#CalculationRatioId').val();
 
         d.PageNum = currentPage;
         d.Name = name;
         d.Description = description;
+        d.Price = price;
+        d.CalculationRatioId = calculationRatioId;
     }
 
     function PackageGridDataBound(response) {
@@ -165,10 +186,23 @@
             {
                 targets: 2,
                 data: "Description",
-                orderable: false
+                orderable: false,
             },
             {
                 targets: 3,
+                data: "Price",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return FormatNumberWithTwoDecimal(full.Price);
+                }
+            },
+            {
+                targets: 4,
+                data: "CalculationRatio",
+                orderable: true
+            },
+            {
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -181,7 +215,7 @@
                 }
             },
             {
-                targets: 4,
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -213,6 +247,8 @@
     function clearPackage() {
         $('#Name').val('');
         $('#Description').val('');
+        $('#Price').val('');
+        $('#CalculationRatioId').val('');
         searchPackage();
     }
 

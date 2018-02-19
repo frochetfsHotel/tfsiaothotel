@@ -101,8 +101,7 @@
     function showReason(element) {
 
         if (element) {            
-            var reasonId = $(element).val();
-
+            var reasonId = $(element).val();            
             if (!IsNullOrEmpty(reasonId)) {                
                 $("#Description").attr("readonly", true);
 
@@ -121,7 +120,7 @@
     }
 
     function onSelectReason(element) {
-        $('#' + element).prop("checked", true);
+        $('#' + element).prop("checked", true).trigger("change");
     }
 
     function searchReason() {

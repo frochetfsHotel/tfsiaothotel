@@ -45,6 +45,8 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Name", Value = package.Name },
                     new SqlParameter { ParameterName = "@Description", Value = package.Description },
+                    new SqlParameter { ParameterName = "@Price", Value = package.Price },
+                    new SqlParameter { ParameterName = "@CalculationRatioId", Value = package.CalculationRatioId },
                     new SqlParameter { ParameterName = "@IsActive", Value = package.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = package.CreatedBy }
                 };
@@ -63,6 +65,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Id", Value = package.Id },
                     new SqlParameter { ParameterName = "@Name", Value = package.Name },
                     new SqlParameter { ParameterName = "@Description", Value = package.Description },
+                    new SqlParameter { ParameterName = "@Price", Value = package.Price },
+                    new SqlParameter { ParameterName = "@CalculationRatioId", Value = package.CalculationRatioId },
                     new SqlParameter { ParameterName = "@IsActive", Value = package.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = package.UpdatedBy }
                 };
@@ -93,6 +97,8 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Description", Value = model.Description },
+                    new SqlParameter { ParameterName = "@Price", Value = model.Price },
+                    new SqlParameter { ParameterName = "@CalculationRatioId", Value = model.CalculationRatioId },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -108,5 +114,21 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
+
+        #region Package Calculation Ration
+
+        public List<PackageCalculationRatioVM> GetPackageCalculationRatio()
+        {
+            var ds = DALHelper.GetDataTableWithExtendedTimeOut("GetPackageCalculationRatio");
+
+            var packageCalculationRatios = new List<PackageCalculationRatioVM>();
+            packageCalculationRatios = DALHelper.CreateListFromTable<PackageCalculationRatioVM>(ds);
+
+            return packageCalculationRatios;
+        }
+
+        #endregion
+
+       
     }
 }

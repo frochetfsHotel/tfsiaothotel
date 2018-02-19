@@ -103,13 +103,21 @@
     #endregion
 
     var marketLEISId = Convert.ToString((Guid?)ViewBag.MarketLEISId);
-    var reservationSourceId = Convert.ToString((Guid?)ViewBag.ReservationSourceId);
+    var reservationSourceId = Convert.ToString((Guid?)ViewBag.ReservationSourceId);    
 }
 
 
 @section styles{
+    @Styles.Render("~/Content/css/AdminLTE/select2/select2.css")
+    @Styles.Render("~/Content/css/AdminLTE/select2/select2-bootstrap.css")
     <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
 }
+<style type="text/css">
+    #tblReservationRemark thead {
+        background-color: #367FA9;
+        color: #fff;
+    }
+</style>
 
 <section class="content-header">
     <h1>
@@ -591,15 +599,41 @@
                     <div class="col-md-9 form-group">
                         @Html.LabelFor(m => m.Remarks)
                         @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                        <input  type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
                     </div>
                     <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
+                            Add Remarks
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm btnCancelReservationRemarks" id="btnCancelReservationRemarks"
+                                onclick="ClearRemarks();">
+                            Cancel
+                        </button>
+                    </div>                    
+                </div>
+                <div class="row" id="divReservationRemark" style="display:none;">
+                    <div class="col-md-12 table-responsive table_maxheight m-b-md">
+                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
+                            <thead>
+                                <tr>
+                                    <th class="width_50">Remarks Details</th>
+                                    <th class="width_35">Track</th>
+                                    <th class="width_15">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row m-t-md">
+                    <hr/>
+                    <div class="col-xs-1 form-group">
                         <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
                             Preference
                         </button>
                     </div>
-                </div>
-                <div class="row" style="display:none;" id="divSelectedPreference">
-                    <div class="col-md-9 form-group">
+                    <div class="col-md-11 form-group" style="display:none;" id="divSelectedPreference">
                         <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
                         <div class="col-sm-9" id="ListOfSelectedPreferences">
                                                         
@@ -607,12 +641,38 @@
                     </div>
                 </div>
 
+                @*<div class="row m-t-md">
+                    <hr/>
+                    <div class="col-xs-1 form-group">
+                        <button type="button" class="btn bg-navy btn-sm" onclick="openPackageModal();">
+                            Packages
+                        </button>
+                    </div>
+                    <div class="col-md-11 form-group" style="display:none;" id="divSelectedPackages">
+                        <label for="ListOfSelectedPackages" class="m-l-n col-sm-3 control-label m-r-n-xl"> 
+                            Selected Packages : 
+                        </label>
+                        <div class="col-sm-9" id="ListOfSelectedPackages">
+
+                        </div>
+                    </div>
+                </div>*@
 
             </div>
             <!-- /.box-body -->
-            <div class="box-footer text-right">
-                <button type="button" class="btn btn-success" onclick="updateReservation();">Update</button>
-                <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>
+            <div class="box-footer">
+                <div class="col-md-8 text-left">
+                    @if (Model.IsReservationCancel)
+                    {
+                        <label class="text-left label-bold">Reservation Cancelled Reason :</label> 
+                        <span class="text-red">@Model.CancellationReasonComment</span>
+                    }
+                </div>                
+                <div class="col-md-4 text-right">
+                    <button type="button" class="btn btn-success" onclick="updateReservation();">Update</button>
+                    <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>
+                </div>
+                
             </div>
             <!-- /.box-footer -->
         }
@@ -713,6 +773,8 @@
 
 
 <script type="text/javascript">
+    var grdReservationRemarks;
+
     $(document).ready(function () {
 
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
@@ -964,6 +1026,85 @@
             $('form#frmReservation #CardExpiryDate').attr("readonly", true);
             $('form#frmReservation #CVVNo').attr("readonly", true);
         }
+
+        //Reservation Remarks
+        LoadReservationRemarksGrid();
+
+        $('form#frmReservation #btnReservationRemarks').click(function (e) {
+            var remarkId = $('form#frmReservation #hdnReservationRemarkId').val();
+            var reservationId = $('form#frmReservation #Id').val();
+            var remarks = $('form#frmReservation #Remarks').val();
+
+            if (IsNullOrEmpty(remarks)) {
+                showToaster("Please enter remarks", ToasterType.ERROR);
+                return false;
+            }
+
+            var modelReservationRemark = {};
+            modelReservationRemark.ReservationId = reservationId;
+            modelReservationRemark.Remarks = remarks;
+
+            if (!IsNullOrEmpty(remarkId)) {
+                modelReservationRemark.Id = remarkId;
+
+                //Ajax request to update reservation remarks.
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                        ClearRemarks();
+                    },
+                    url: '@Url.Content("~/Reservation/UpdateReservationRemark")',
+                    type: 'POST',
+                    data: modelReservationRemark,
+                    success: function (response) {                        
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("Remarks updated successfully", ToasterType.SUCCESS);
+
+                            LoadReservationRemarksGrid();
+                        }
+                    }
+                });
+            } else {
+                //Ajax request to add reservation remarks.
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                        ClearRemarks();
+                    },
+                    url: '@Url.Content("~/Reservation/AddReservationRemark")',
+                    type: 'POST',
+                    data: modelReservationRemark,
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("Remarks saved successfully", ToasterType.SUCCESS);
+
+                            LoadReservationRemarksGrid();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        //Reservation Packages
 
     });
 
@@ -1733,6 +1874,107 @@
         }
     }
 
+    //Reservation Remarks
+    function LoadReservationRemarksGrid() {
+        var reservationId = $('form#frmReservation #Id').val();
+
+        if (!IsNullOrEmpty(reservationId)) {
+            //Ajax request to load reservation remarks details.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Reservation/GetReservationRemarks")',
+                type: 'POST',
+                data: { reservationId: reservationId },
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                        $("form#frmReservation #divReservationRemark").hide();
+                    }
+                    else {
+                        //Show data in table.
+                        var result = response.data;
+
+                        
+                        $("form#frmReservation #divReservationRemark").show();
+
+                        $("form#frmReservation #tblReservationRemark tbody").empty();
+                        var tbody = $("form#frmReservation #tblReservationRemark tbody");
+
+                        var markup = "";
+
+                        if (result.length > 0) {
+                            //Add the data rows.
+                            for (var i = 0; i < result.length; i++) {
+                                markup += "<tr id='tr_" + result[i].Id + "'>";
+
+                                markup += "<td class='remarks'>" + result[i].Remarks + "</td>";
+                                markup += "<td class='tracklog'>" + result[i].TrackLog + "</td>";
+                                markup += "<td><a href=\"javascript:void(0);\" onclick=\"editReservationRemark('" + result[i].Id + "','" + html_entity_decode(result[i].Remarks) + "');\" class=\"text-success font_18 m-r-md\"><i class='fa fa-edit'/></a><a href=\"javascript:void(0);\" class=\"text-danger font_18 m-r-md \" onclick=\"deleteReservationRemark('" + result[i].Id + "');\"><i class='fa fa-trash'/></a></td> ";
+
+                                markup += "</tr>";
+                            }
+                        } else {
+                            markup += "<tr><td colspan =\'3\' class=\'text-center\'>No data available.</td></tr>";
+                        }
+
+                        tbody.append(markup);
+                    }
+                }
+            });
+        }
+    }
+
+    function editReservationRemark(id, remarks) {
+        $('form#frmReservation #hdnReservationRemarkId').val(id);
+        $('form#frmReservation #Remarks').val(remarks);
+        $('form#frmReservation #btnReservationRemarks').html("Update Remarks");
+
+    }
+
+    function deleteReservationRemark(id) {
+        //Ajax request to delete remark.
+        var trId = "#tr_" + id;
+
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+                ClearRemarks();
+            },
+            url: '@Url.Content("~/Reservation/DeleteReservationRemark")',
+            type: 'POST',
+            data: { id: id },
+            success: function (response) {
+                if (response.IsSuccess == true) {
+                    $("form#frmReservation #tblReservationRemark tbody " + trId).remove();
+                    showToaster("Remark deleted successfully", ToasterType.SUCCESS);
+                }
+                else {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+            }
+        });
+    }
+
+    function ClearRemarks() {
+        $('form#frmReservation #hdnReservationRemarkId').val('');
+        $('form#frmReservation #Remarks').val('');
+        $('form#frmReservation #btnReservationRemarks').html("Add Remarks");
+    }
+
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation
@@ -1745,6 +1987,7 @@
 </script>
 
 @section scripts {
+    @Scripts.Render("~/Scripts/AdminLTE/select2/select2.min.js") 
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>

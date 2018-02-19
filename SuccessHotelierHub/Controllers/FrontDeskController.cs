@@ -324,6 +324,15 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    //#region Update Reservation Total Balance.
+
+                    //double totalGuestBalance = Utility.Utility.CalculateTotalBalance(reservation.Id);
+
+                    ////Update Total Balance.
+                    //reservationRepository.UpdateReservationTotalBalance(reservation.Id, totalGuestBalance, LogInManager.LoggedInUserId);
+
+                    //#endregion
+
                     #region Save Reservation Room Mapping & Update Room Occupied Flag
                     var roomIds = model.RoomIds;
 

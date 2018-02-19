@@ -25,8 +25,15 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />    
 }
+
+<style type="text/css">
+    #tblReservationRemark thead {
+        background-color: #367FA9;
+        color: #fff;
+    }
+</style>
 
 
 <section class="content-header">
@@ -317,7 +324,7 @@
                         @Html.DropDownListFor(m => m.PackageId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.PackageList, "Value", "Text"),
                                 "--Select Package--",
-                                new { @class = "form-control" })
+                                new { @class = "form-control" })                     
                     </div>
                     @*<div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.BlockCodeId)
@@ -503,15 +510,40 @@
                                 <div class="col-md-9 form-group">
                                     @Html.LabelFor(m => m.Remarks)
                                     @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                                    <input type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
+                                    <input type="hidden" id="hdnTotalReservationRemarks" name="hdnTotalReservationRemarks" value="0" />
                                 </div>
                                 <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                                    <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
+                                        Add Remarks
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm btnCancelReservationRemarks" id="btnCancelReservationRemarks"
+                                            onclick="ClearRemarks();">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row" id="divReservationRemark" style="display:none;">
+                                <div class="col-md-12 table-responsive table_maxheight m-b-md">
+                                    <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
+                                        <thead>
+                                            <tr>
+                                                <th class="width_50">Remarks Details</th>
+                                                <th class="width_35">Track</th>
+                                                <th class="width_15">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-1 form-group">
                                     <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
                                         Preference
                                     </button>
                                 </div>
-                            </div>
-                            <div class="row" style="display:none;" id="divSelectedPreference">
-                                <div class="col-md-9 form-group">
+                                <div class="col-md-11 form-group" style="display:none;" id="divSelectedPreference">
                                     <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
                                     <div class="col-sm-9" id="ListOfSelectedPreferences">
 
@@ -522,10 +554,10 @@
 
                         </div>
             <!-- /.box-body -->
-                                <div class="box-footer text-right">
-                                    <button type="button" class="btn btn-success" onclick="saveReservation();">Save</button>
-                                    <a href="@Url.Action("List","Reservation")" class="btn btn-danger">Cancel</a>
-                                </div>
+                        <div class="box-footer text-right">
+                            <button type="button" class="btn btn-success" onclick="saveReservation();">Save</button>
+                            <a href="@Url.Action("List","Reservation")" class="btn btn-danger">Cancel</a>
+                        </div>
             <!-- /.box-footer -->
         }
     </div>
@@ -553,6 +585,7 @@
     </div>
 </div>
 <!-- Preference Modal Popup END -->
+
 <!-- Advance Profile Search Modal START -->
 <div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -575,6 +608,7 @@
     </div>
 </div>
 <!-- Advance Profile Search Modal END -->
+
 <!-- RoomType Modal Popup START -->
 <div class="modal fade" id="roomTypeModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -596,6 +630,7 @@
     </div>
 </div>
 <!-- RoomType Modal Popup END -->
+
 <!-- Room Modal Popup START -->
 <div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl">
@@ -694,7 +729,7 @@
         $('.btnAdvanceSearchProfileOk').click(function (e) {
             var selectedProfile = $('input[name=rbProfile]:checked', '#frmAdvanceProfileSearch');
             if (!IsNullOrEmpty(selectedProfile.val())) {
-                var profileId, firstName, lastName, titleId, title, telephoneNo, countryId;
+                var profileId, firstName, lastName, titleId, title, telephoneNo, countryId, remarks;
                 profileId = $(selectedProfile).val();
                 firstName = $(selectedProfile).data('firstname');
                 lastName = $(selectedProfile).data('lastname');
@@ -702,6 +737,7 @@
                 title = $(selectedProfile).data('title');
                 telephoneNo = $(selectedProfile).data('telephoneno');
                 countryId = $(selectedProfile).data('countryid');
+                remarks = $(selectedProfile).data('remarks');
 
                 $('form#frmReservation #ProfileId').val(profileId);
 
@@ -709,6 +745,7 @@
                 $('form#frmReservation #LastName').val(lastName);
                 $('form#frmReservation #TitleId').val(titleId);
                 $('form#frmReservation #PhoneNo').val(telephoneNo);
+                $('form#frmReservation #Remarks').val(remarks);
 
                 if (!IsNullOrEmpty(countryId) && countryId != "0")
                     $('form#frmReservation #ddlCountry').val(countryId);
@@ -792,6 +829,28 @@
         if (!IsNullOrEmpty('@Model.ProfileId')) {
             showPreferencesByProfile('@Model.ProfileId');
         }
+
+        //Reservation Remarks
+        $('form#frmReservation #btnReservationRemarks').click(function (e) {
+            var remarkId = $('form#frmReservation #hdnReservationRemarkId').val();
+            var reservationId = $('form#frmReservation #Id').val();
+            var remarks = $('form#frmReservation #Remarks').val();
+
+            if (IsNullOrEmpty(remarks)) {
+                showToaster("Please enter remarks", ToasterType.ERROR);
+                return false;
+            }
+            if (!IsNullOrEmpty(remarkId)) {                
+                //Update remarks in table.
+                UpdateReservationRemark(remarkId);               
+            } else {
+                //Add remarks in table.
+                AddReservationRemark();
+            }
+        });
+
+        //Reservation Packages
+       
     });
 
     function arrivalDateChanged(e) {
@@ -992,6 +1051,31 @@
             var preferenceIds = getSelectedPreferenceItemIds();
             $('form#frmReservation #PreferenceItems').val(preferenceIds);
 
+            //Reservation Remarks.
+            var reservationRemarkList = [];
+            $("form#frmReservation #tblReservationRemark tbody tr").each(function () {
+                var rowNumber = $(this).attr("data-rownumber");
+                if (!IsNullOrEmpty(rowNumber)) {
+                    var modelReservationRemark = {};
+
+                    rowNumber = parseInt(rowNumber);
+
+                    var remarks = $('#Remarks_' + rowNumber).val();
+                    modelReservationRemark.Remarks = remarks;
+                    
+                    var dateTimeObj = $('#RemarksCreatedOn_' + rowNumber).val();
+                    modelReservationRemark.CreatedOn = dateTimeObj;
+                    
+                    reservationRemarkList.push(modelReservationRemark);
+                }
+            });
+
+
+            var formData = $('#frmReservation').serializeObject();
+
+            //Add additional property in form data.
+            $.extend(formData, { RemarksList: reservationRemarkList });                        
+
             //Ajax Request to create reservation.
             $.ajax({
                 beforeSend: function (xhr) {
@@ -1004,105 +1088,107 @@
                     hideLoader();
                 },
                 url: '@Url.Content("~/Reservation/Create")',
-                type: 'POST',
-                data: $('#frmReservation').serialize(),
+                type: 'POST',               
+                data: formData,
                 success: function (response) {
-                    if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                    else {
-                        //reset the global varible once the data is saved
-                        data_needs_saving = false;
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            //reset the global varible once the data is saved
+                            data_needs_saving = false;
 
-                        var reservationId = response.data.ReservationId;
+                            var reservationId = response.data.ReservationId;
 
-                        swal({
-                            title: 'Confirmation# : <span class="text-blue">' + response.data.ConfirmationNo + '</span>',
-                            type: 'success',
-                            html: 'Reservation details saved successfully.',
-                            showCloseButton: true,
-                            showCancelButton: false,
-                            focusConfirm: false,
-                            confirmButtonText: 'OK',
-                        }).then((result) => {
-                            if (result.value) {
+                            swal({
+                                title: 'Confirmation# : <span class="text-blue">' + response.data.ConfirmationNo + '</span>',
+                                type: 'success',
+                                html: 'Reservation details saved successfully.',
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                focusConfirm: false,
+                                confirmButtonText: 'OK',
+                            }).then((result) => {
+                                if (result.value) {
 
-                                if (!IsNullOrEmpty(reservationId)) {
-                                    var roomNumbers = $('#RoomNumbers').val();
+                                    if (!IsNullOrEmpty(reservationId)) {
+                                        var roomNumbers = $('#RoomNumbers').val();
 
-                                    if (!IsNullOrEmpty(roomNumbers)) {
-                                        //Ask confirmation about check in.
-                                        swal({
-                                            title: 'Are you want to check in guest?',
-                                            type: 'info',
-                                            showCancelButton: true,
-                                            showCloseButton: true,
-                                            confirmButtonColor: '#3085d6',
-                                            cancelButtonColor: '#d33',
-                                            confirmButtonText: 'Yes'
-                                        }).then((result) => {
-                                            if (result.value) {
+                                        if (!IsNullOrEmpty(roomNumbers)) {
+                                            //Ask confirmation about check in.
+                                            swal({
+                                                title: 'Are you want to check in guest?',
+                                                type: 'info',
+                                                showCancelButton: true,
+                                                showCloseButton: true,
+                                                confirmButtonColor: '#3085d6',
+                                                cancelButtonColor: '#d33',
+                                                confirmButtonText: 'Yes'
+                                            }).then((result) => {
+                                                if (result.value) {
 
-                                                var name = ($('form#frmReservation #LastName').val() + ' ' + $('form#frmReservation #FirstName').val());
+                                                    var name = ($('form#frmReservation #LastName').val() + ' ' + $('form#frmReservation #FirstName').val());
 
-                                                var modelCheckInPaymentMethod = {};
-                                                modelCheckInPaymentMethod.ReservationId = response.data.ReservationId;
-                                                modelCheckInPaymentMethod.ProfileId = $('form#frmReservation #ProfileId').val();
-                                                modelCheckInPaymentMethod.NoOfRoom = $('form#frmReservation #NoOfRoom').val();
-                                                modelCheckInPaymentMethod.Name = name;
-                                                modelCheckInPaymentMethod.CheckInDate = $('form#frmReservation #ArrivalDate').val();
-                                                modelCheckInPaymentMethod.CheckInTimeText = $('form#frmReservation #ETAText').val();
-                                                modelCheckInPaymentMethod.PaymentMethodId = $('form#frmReservation #PaymentMethodId').val();
-                                                modelCheckInPaymentMethod.CreditCardNo = $('form#frmReservation #CreditCardNo').val();
-                                                modelCheckInPaymentMethod.CardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
-                                                modelCheckInPaymentMethod.RoomNumbers = $('form#frmReservation #RoomNumbers').val();
-                                                modelCheckInPaymentMethod.RoomIds = $('form#frmReservation #RoomIds').val();
-                                                modelCheckInPaymentMethod.RoomTypeId = $('form#frmReservation #RoomTypeId').val();
-                                                
-                                                $.ajax({
-                                                    beforeSend: function (xhr) {
-                                                        showLoader();
-                                                    },
-                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                        ShowErrorMessage(jqXHR.status, errorThrown);
-                                                    },
-                                                    complete: function () {
-                                                        hideLoader();
-                                                    },
-                                                    url: '@Url.Content("~/FrontDesk/CheckIn")',
-                                                    type: 'POST',
-                                                    data: modelCheckInPaymentMethod,
-                                                    success: function (response) {                                                        
-                                                        if (response.IsSuccess == false) {
-                                                            showToaster(response.errorMessage, ToasterType.ERROR);
+                                                    var modelCheckInPaymentMethod = {};
+                                                    modelCheckInPaymentMethod.ReservationId = response.data.ReservationId;
+                                                    modelCheckInPaymentMethod.ProfileId = $('form#frmReservation #ProfileId').val();
+                                                    modelCheckInPaymentMethod.NoOfRoom = $('form#frmReservation #NoOfRoom').val();
+                                                    modelCheckInPaymentMethod.Name = name;
+                                                    modelCheckInPaymentMethod.CheckInDate = $('form#frmReservation #ArrivalDate').val();
+                                                    modelCheckInPaymentMethod.CheckInTimeText = $('form#frmReservation #ETAText').val();
+                                                    modelCheckInPaymentMethod.PaymentMethodId = $('form#frmReservation #PaymentMethodId').val();
+                                                    modelCheckInPaymentMethod.CreditCardNo = $('form#frmReservation #CreditCardNo').val();
+                                                    modelCheckInPaymentMethod.CardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
+                                                    modelCheckInPaymentMethod.RoomNumbers = $('form#frmReservation #RoomNumbers').val();
+                                                    modelCheckInPaymentMethod.RoomIds = $('form#frmReservation #RoomIds').val();
+                                                    modelCheckInPaymentMethod.RoomTypeId = $('form#frmReservation #RoomTypeId').val();
+
+                                                    $.ajax({
+                                                        beforeSend: function (xhr) {
+                                                            showLoader();
+                                                        },
+                                                        error: function (jqXHR, textStatus, errorThrown) {
+                                                            ShowErrorMessage(jqXHR.status, errorThrown);
+                                                        },
+                                                        complete: function () {
+                                                            hideLoader();
+                                                        },
+                                                        url: '@Url.Content("~/FrontDesk/CheckIn")',
+                                                        type: 'POST',
+                                                        data: modelCheckInPaymentMethod,
+                                                        success: function (response) {
+                                                            if (response.IsSuccess == false) {
+                                                                showToaster(response.errorMessage, ToasterType.ERROR);
+                                                            }
+                                                            else {
+                                                                swal({
+                                                                    title: '' + response.data.Name + ' checked in successfully.',
+                                                                    type: 'success',
+                                                                    showCloseButton: true,
+                                                                    showCancelButton: false,
+                                                                    focusConfirm: false,
+                                                                    confirmButtonText: 'OK',
+                                                                }).then((result) => {
+                                                                    redirectTo('@Url.Content("~/Reservation/List")');
+                                                                });
+
+                                                            }
                                                         }
-                                                        else {
-                                                            swal({
-                                                                title: '' + response.data.Name + ' checked in successfully.',
-                                                                type: 'success',
-                                                                showCloseButton: true,
-                                                                showCancelButton: false,
-                                                                focusConfirm: false,
-                                                                confirmButtonText: 'OK',
-                                                            }).then((result) => {                                                                
-                                                                redirectTo('@Url.Content("~/Reservation/List")');
-                                                            });
-
-                                                        }
-                                                    }
-                                                });
-                                            } else {
-                                                redirectTo('@Url.Content("~/Reservation/List")');
-                                            }
-                                        })
+                                                    });
+                                                } else {
+                                                    redirectTo('@Url.Content("~/Reservation/List")');
+                                                }
+                                            })
+                                        } else {
+                                            redirectTo('@Url.Content("~/Reservation/List")');
+                                        }
                                     } else {
                                         redirectTo('@Url.Content("~/Reservation/List")');
                                     }
-                                } else {
-                                    redirectTo('@Url.Content("~/Reservation/List")');
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             });
@@ -1378,6 +1464,119 @@
         }
     }
 
+    //Reservation Remarks
+    function AddReservationRemark(){        
+
+        var rowNumber = $('#hdnTotalReservationRemarks').val();
+
+        if (!IsNullOrEmpty(rowNumber)) {
+            rowNumber = parseInt(rowNumber) + 1;
+        } else {
+            rowNumber = 1;
+        }
+
+        var remarks = $('form#frmReservation #Remarks').val();
+
+        var html = "";
+
+        //Create New Row
+        html += "<tr data-rownumber='" + rowNumber + "' id='tr_" + rowNumber + "'>";
+
+        //Remakrs
+        html += "<td class='remarks'>";
+        html += remarks;
+        html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+        html += "</td>";
+
+        //TrackLog
+        var userName = '@LogInManager.UserName';
+        var dateObj = new Date();
+        var createdDate = GetDate(dateObj, DateFormat.DDMMYYYY);
+        var createdTime = GetTime(dateObj);
+        var trackLog = createdDate + " at " + createdTime + " added by " + userName;
+        var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
+
+        html += "<td class='tracklog'>";
+        html += trackLog;
+        html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
+        html += "</td>";
+
+        //Action
+        html += "<td>";
+        html += "<a href='javascript:void(0);' onclick='editReservationRemark(this);' class='text-success font_18 m-r-md'><i class='fa fa-edit'/></a>";
+        html += "<a href='javascript:void(0);' onclick='deleteReservationRemark(this);' class='text-danger font_18 m-r-md'><i class='fa fa-trash'/></a>";
+        html += "</td>";
+
+        html += "</tr>";
+
+
+        $('form#frmReservation #tblReservationRemark tbody').prepend(html);
+
+        $('#hdnTotalReservationRemarks').val(rowNumber);
+
+        ClearRemarks();
+
+        $("form#frmReservation #divReservationRemark").show();
+    }
+
+
+    function UpdateReservationRemark(id) {
+        var rowNumber = id;
+
+        if (!IsNullOrEmpty(rowNumber)) {
+            var remarks = $('form#frmReservation #Remarks').val();
+
+            var html = "";
+            var trId = "#tr_" + rowNumber;
+
+            //Remarks                        
+            html += remarks;
+            html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' #Remarks_' + rowNumber).val(remarks);
+
+            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.remarks').html(html);
+
+            //TrackLog
+            var userName = '@LogInManager.UserName';
+            var dateObj = new Date();            
+            var createdDate = GetDate(dateObj, DateFormat.DDMMYYYY);
+            var createdTime = GetTime(dateObj);
+            var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
+            var trackLog = createdDate + " at " + createdTime + " added by " + userName;
+            
+            html = "";
+            html += trackLog;
+            html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
+            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.tracklog').html(html);
+
+            //showToaster("Remark updated successfully", ToasterType.SUCCESS);
+
+            ClearRemarks();
+        }
+    }
+
+    function editReservationRemark(element) {
+
+        if(!IsNullOrEmpty(element)){
+            var id = $(element).closest("tr").attr("data-rownumber");
+            $('form#frmReservation #hdnReservationRemarkId').val(id);
+            $('form#frmReservation #Remarks').val($('#Remarks_' + id).val());
+            $('form#frmReservation #btnReservationRemarks').html("Update Remarks");
+        }
+    }
+
+    function deleteReservationRemark(element) {        
+        $(element).closest("tr").remove();
+        ClearRemarks();
+        //showToaster("Remark deleted successfully", ToasterType.SUCCESS);
+    }
+
+    function ClearRemarks() {
+        $('form#frmReservation #hdnReservationRemarkId').val('');
+        $('form#frmReservation #Remarks').val('');
+        $('form#frmReservation #btnReservationRemarks').html("Add Remarks");
+    }
+
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation
         if (data_needs_saving) {
@@ -1390,6 +1589,7 @@
 </script>
 
 @section scripts {
+    @Scripts.Render("~/Scripts/AdminLTE/select2/select2.min.js")     
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>

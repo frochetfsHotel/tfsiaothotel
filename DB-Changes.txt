@@ -27450,3 +27450,838 @@ BEGIN
 	-- PAGING COMPLETED
 
 END
+
+/****************************************************************************************/
+
+Name : Nilesh
+Date : 19-FEB-2018
+
+/*************************************************************************************/
+
+/********* Update Cancelled Reservation Reason *********************/
+
+
+UPDATE RE SET RE.[CancellationReasonComment] = RCR.Description
+FROM Reservation RE INNER JOIN ReservationCancellationReasons RCR ON RE.CancellationReasonId = RCR.Id
+
+
+/************** Create ReservationRemarks Table ************/
+
+/****** Object:  Table [dbo].[ReservationRemarks]    Script Date: 2/19/2018 11:01:04 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ReservationRemarks](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[ReservationId] [uniqueidentifier] NOT NULL,
+	[Remarks] [nvarchar](MAX) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_ReservationRemarks] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/**** Add Foreign Key of ReservationId in ReservationRemarks Table****/
+
+ALTER TABLE [dbo].[ReservationRemarks] WITH NOCHECK
+	ADD CONSTRAINT [FK_ReservationRemarks_Reservation] FOREIGN KEY ([ReservationId]) REFERENCES [dbo].[Reservation] ([Id]);
+
+
+/************************************************************************************************************************ 
+	SP Name : AddReservationRemark
+	Comment : Create SP AddReservationRemark	
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[AddReservationRemark]    Script Date: 2/19/2018 11:06:12 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddReservationRemark]	
+	@ReservationId	UNIQUEIDENTIFIER				,
+	@Remarks		NVARCHAR(MAX)					,	
+	@CreatedOn		DATETIME			=	NULL	,					
+	@CreatedBy		INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationRemarks]
+           (
+				 [Id]           
+				,[ReservationId]		   
+				,[Remarks]
+				,[CreatedBy]
+				,[CreatedOn]
+		   )
+     VALUES
+           (
+			   @Id			   
+			   ,@ReservationId
+			   ,@Remarks
+			   ,@CreatedBy
+			   ,@CreatedOn
+           )
+
+		SELECT @Id AS Id    
+END
+
+/************************************************************************************************************************ 
+	SP Name : UpdateReservationRemark
+	Comment : Create SP UpdateReservationRemark	
+***********************************************************************************************************************/ 
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateReservationRemark]
+	@Id				UNIQUEIDENTIFIER				,
+	@ReservationId	UNIQUEIDENTIFIER				,
+	@Remarks		NVARCHAR(MAX)					,		
+	@UpdatedOn		DATETIME			=	NULL	,		
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationRemarks]
+		SET	[ReservationId]		=	@ReservationId	   
+		   ,[Remarks]			=	@Remarks
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[UpdatedOn]			=	@UpdatedOn
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationRemark
+	Comment : Create SP DeleteReservationRemark	
+	
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[DeleteReservationRemark]    Script Date: 2/19/2018 11:11:23 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationRemark]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationRemarks] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationRemarkById
+	Comment : Create SP GetReservationRemarkById	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetReservationRemarkById]    Script Date: 2/19/2018 11:11:53 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetReservationRemarkById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationRemarks]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY CreatedOn DESC
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationRemarks
+	Comment : Create SP GetReservationRemarks	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationRemarks]    Script Date: 2/19/2018 11:11:53 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC GetReservationRemarks
+		@ReservationId	=	NULL,
+		@Id				=	NULL
+	
+*/
+
+CREATE PROCEDURE [dbo].[GetReservationRemarks]
+	@ReservationId	UNIQUEIDENTIFIER	=	NULL	,
+	@Id				UNIQUEIDENTIFIER	=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RM.Id,RM.ReservationId,ISNULL(RM.Remarks,'') AS Remarks, RM.CreatedOn,
+		  UD.[Name] AS UserName, RM.CreatedBy
+		FROM [dbo].[ReservationRemarks] RM
+			LEFT JOIN UserDetail UD ON UD.UserId = RM.CreatedBy
+				AND ISNULL(UD.IsDeleted,0) = 0
+		WHERE	ISNULL(RM.IsDeleted,0) = 0 
+				AND (@Id IS NULL OR RM.Id = @Id)
+				AND (@ReservationId IS NULL OR RM.ReservationId = @ReservationId)
+		ORDER BY RM.CreatedOn DESC
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchAdvanceProfile
+	Comment : Change in SP SearchAdvanceProfile	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceProfile]    Script Date: 2/19/2018 3:14:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceProfile]
+			@LastName			=	''		,
+			@FirstName			=	''		,
+			@ViewBy				=	NULL	,
+			@City				=	''		,
+			@PostalCode			=	''		,
+			@MemberTypeId		=	NULL	,
+			@MemberNo			=	''		,
+			@Keyword			=	''		,
+			@Communication		=	''		,
+			@ClientID			=	''		,
+			@CorpNo				=	''		,
+			@IATANo				=	''		,
+			@IsNegRates			=	0		,
+			@IsShowInActive		=	0		,
+			@CreatedBy			=	2		,
+			@IsAdminUser		=	1
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceProfile]
+	@LastName			NVARCHAR(255)		=	NULL,
+	@FirstName			NVARCHAR(255)		=	NULL,
+	@ViewBy				UNIQUEIDENTIFIER	=	NULL,
+	@City				NVARCHAR(255)		=	NULL,
+	@PostalCode			NVARCHAR(255)		=	NULL,
+	@MemberTypeId		UNIQUEIDENTIFIER	=	NULL,
+	@MemberNo			NVARCHAR(255)		=	NULL,
+	@Keyword			NVARCHAR(255)		=	NULL,
+	@Communication		NVARCHAR(255)		=	NULL,
+	@ClientID			NVARCHAR(255)		=	NULL,
+	@IATANo				NVARCHAR(255)		=	NULL,
+	@CorpNo				NVARCHAR(255)		=	NULL,
+	@IsNegRates			BIT					=	NULL,
+	@IsShowInActive		BIT					=	NULL,
+	@CreatedBy			INT					=	NULL,
+	@IsAdminUser		BIT					=	NULL
+
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  P.[CreatedOn] DESC
+
+				) AS RowNum,
+				P.[Id], 
+				T.Id AS TitleId,
+				ISNULL(T.[Title],'') AS Title, 
+				ISNULL(P.[FirstName],'') AS FirstName, 
+				ISNULL(P.[LastName],'') AS LastName, 
+				ISNULL(P.[TelephoneNo],'') AS TelephoneNo, 
+				ISNULL(P.[Email],'') AS Email,   
+				ISNULL(P.[Address],'') AS [Address],
+				ISNULL(C.[Name],'') AS [City],
+				ISNULL(P.[ZipCode],'') AS ZipCode,
+				ISNULL(P.[CountryId],0) AS CountryId,
+				ISNULL(P.[StateId],0) AS StateId,
+				ISNULL(P.[CityId],0) AS CityId,
+				ISNULL(P.[Remarks],'') AS [Remarks],
+				P.[CreatedOn], 
+				P.[IsActive]
+			FROM [dbo].[IndividualProfile] P
+					LEFT JOIN [dbo].[Title] T ON P.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[ProfileType] PT ON P.ProfileTypeId= PT.Id AND ISNULL(PT.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[Vip] V ON P.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[Nationality] N ON P.NationalityId= N.Id AND ISNULL(N.IsDeleted,0) = 0			
+					LEFT JOIN [dbo].[City] C ON P.CityId = C.Id 
+					LEFT JOIN [dbo].[State] S ON P.StateId = S.Id 
+					LEFT JOIN [dbo].[Country] CO ON P.CountryId = CO.Id 
+				WHERE	ISNULL(P.IsDeleted,0) = 0
+						AND (ISNULL(@FirstName,'') = '' OR P.[FirstName] LIKE '%'+ @FirstName +'%')  
+						AND (ISNULL(@LastName,'') = '' OR P.[LastName] LIKE '%'+ @LastName +'%')  
+						AND (ISNULL(@City,'') = '' OR C.[Name] LIKE '%'+ @City +'%')  
+						AND (ISNULL(@PostalCode,'') = '' OR P.[ZipCode] LIKE '%'+ @PostalCode +'%')  
+						AND (@IsShowInActive IS NULL OR 
+								P.IsActive IN  (CASE WHEN @IsShowInActive = 0 THEN 1 ELSE P.IsActive END))
+						AND (ISNULL(@IsAdminUser,0) = 1 OR (@CreatedBy IS NULL OR ISNULL(P.CreatedBy,0) = ISNULL(@CreatedBy,0)))
+
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteAllReservation
+	Comment : Change in SP DeleteAllReservation	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[DeleteAllReservation]    Script Date: 2/19/2018 4:33:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/****
+	EXEC [DeleteAllReservation]
+***/
+
+ALTER PROCEDURE [dbo].[DeleteAllReservation]	
+	@UpdatedBy	INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	-- ReservationRoomMapping	
+	UPDATE [dbo].[ReservationRoomMapping] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	
+	-- ReservationPreferenceMapping
+	DELETE FROM [dbo].[ReservationPreferenceMapping] 	
+		
+	-- CheckInCheckOutDetail
+	UPDATE [dbo].[CheckInCheckOutDetail] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	-- ReservationCharges
+	UPDATE [dbo].[ReservationCharges] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	-- ReservationLog
+	UPDATE [dbo].[ReservationLog] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+
+	-- ReservationRemarks
+	UPDATE [dbo].[ReservationRemarks] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	-- Reservation
+	UPDATE [dbo].[Reservation] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+END
+
+/******************* Create new table PackageCalculationRatio *****************/
+
+/****** Object:  Table [dbo].[PackageCalculationRatio]    Script Date: 2/19/2018 11:01:04 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PackageCalculationRatio](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[Name] [nvarchar] (500) NOT NULL,
+	[Description] [nvarchar](MAX) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_PackageCalculationRatio] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/************ Add data to PackageCalculationRatio table. *********/
+
+--- Add PackageCalculationRatio data
+INSERT INTO [dbo].[PackageCalculationRatio] ([Id],[Name],[Description],[CreatedOn],[IsActive],[CreatedBy]) 
+	VALUES (NEWID(), 'Per Adult', 'Per Adult', GETDATE(),1,1);
+	
+INSERT INTO [dbo].[PackageCalculationRatio] ([Id],[Name],[Description],[CreatedOn],[IsActive],[CreatedBy]) 
+	VALUES (NEWID(), 'Flat Rate', 'Flat Rate', GETDATE(),1,1);
+	
+INSERT INTO [dbo].[PackageCalculationRatio] ([Id],[Name],[Description],[CreatedOn],[IsActive],[CreatedBy]) 
+	VALUES (NEWID(), 'Per Person', 'Per Person', GETDATE(),1,1);
+
+INSERT INTO [dbo].[PackageCalculationRatio] ([Id],[Name],[Description],[CreatedOn],[IsActive],[CreatedBy]) 
+	VALUES (NEWID(), 'Per Room', 'Per Room', GETDATE(),1,1);
+
+/************ Add Price and CalculationRatioId column in Package Table **************/
+
+ALTER TABLE Package ADD Price NUMERIC(18,2) NULL
+GO
+
+ALTER TABLE Package ADD CalculationRatioId UNIQUEIDENTIFIER NULL
+GO
+
+
+/************************************************************************************************************************ 
+	SP Name : GetPackageCalculationRatio
+	Comment : Create SP GetPackageCalculationRatio	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetPackageCalculationRatio]    Script Date: 2/19/2018 5:16:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetPackageCalculationRatio]
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[PackageCalculationRatio]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : AddPackage
+	Comment : Change in SP AddPackage	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddPackage]    Script Date: 2/19/2018 5:30:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddPackage]	
+	@Name					NVARCHAR(500)				,	
+	@Description			NVARCHAR(MAX)		=	NULL	,	
+	@Price					NUMERIC(18,2)		=	NULL	,
+	@CalculationRatioId		UNIQUEIDENTIFIER	=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@CreatedBy				INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Package]
+           ([Id]           
+           ,[Name]		
+		   ,[Description] 
+		   ,[Price]
+		   ,[CalculationRatioId]  		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name	
+			   ,@Description	
+			   ,@Price
+			   ,@CalculationRatioId	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdatePackage
+	Comment : Change in SP UpdatePackage	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdatePackage]    Script Date: 2/19/2018 5:32:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdatePackage]
+	@Id						UNIQUEIDENTIFIER				,	
+	@Name					NVARCHAR(500)					,	
+	@Description			NVARCHAR(MAX)		=	NULL	,
+	@Price					NUMERIC(18,2)		=	NULL	,
+	@CalculationRatioId		UNIQUEIDENTIFIER	=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@UpdatedBy				INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Package]
+		SET	[Name]					=	@Name		
+		   ,[Description]			=	@Description   	
+		   ,[Price]					=	@Price
+		   ,[CalculationRatioId]	=	@CalculationRatioId	   
+		   ,[UpdatedBy]				=	@UpdatedBy
+		   ,[UpdatedOn]				=	GETDATE()
+		   ,[IsActive]				=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchPackage
+	Comment : Change in SP SearchPackage	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchPackage]    Script Date: 2/19/2018 5:33:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchPackage] '', '', NULL, NULL, 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchPackage]					
+	@Name					NVARCHAR(500)		=	NULL	,		
+	@Description			NVARCHAR(MAX)		=	NULL	,
+	@Price					NUMERIC(18,2)		=	NULL	,
+	@CalculationRatioId		UNIQUEIDENTIFIER	=	NULL	,
+	@PageNum				INT					=	1		,
+	@PageSize				INT					=	10		,
+	@SortColumn				NVARCHAR(255)		=	NULL	,
+	@SortDirection			NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempPackage
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(255)		NOT NULL	
+		,	[Description]			NVARCHAR(MAX)		NULL	
+		,	[Price]					NUMERIC(18,2)		NULL
+		,	[CalculationRatioId]	UNIQUEIDENTIFIER	NULL
+		,	[CalculationRatio]		NVARCHAR(500)		NULL
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT PK.Id) 
+						FROM [dbo].[Package] PK
+								LEFT JOIN [dbo].[PackageCalculationRatio] PCR ON PCR.Id = PK.CalculationRatioId
+									AND ISNULL(PCR.IsDeleted,0) = 0
+							WHERE	ISNULL(PK.IsDeleted,0) = 0								
+									AND (ISNULL(@Name,'') = '' OR PK.[Name] LIKE '%'+ @Name +'%')  					 
+									AND (ISNULL(@Description,'') = '' OR PK.[Description] LIKE '%'+ @Description +'%')  	
+									AND (@Price IS NULL OR PK.[Price] = @Price)
+									AND (@CalculationRatioId IS NULL OR PK.[CalculationRatioId] = @CalculationRatioId)								
+						)
+
+
+		INSERT INTO #tempPackage 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Description], 
+			[Price],
+			[CalculationRatioId],
+			[CalculationRatio],
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN PK.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN PK.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN PK.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN PK.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Price' and @SortDirection = 'asc'
+							THEN PK.Price END ASC,
+						CASE WHEN @SortColumn = 'Price' and @SortDirection = 'desc'
+							THEN PK.Price END DESC,
+
+						CASE WHEN @SortColumn = 'CalculationRatio' and @SortDirection = 'asc'
+							THEN PCR.[Name] END ASC,
+						CASE WHEN @SortColumn = 'CalculationRatio' and @SortDirection = 'desc'
+							THEN PCR.[Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN PK.[Name] END ASC
+
+				) AS RowNum,
+				PK.[ID],								
+				PK.[Name],
+				ISNULL(PK.[Description],'') AS [Description],
+				PK.Price,
+				PK.CalculationRatioId,
+				ISNULL(PCR.[Name],'') AS [CalculationRatio],
+				PK.[CreatedOn],
+				PK.[IsActive]
+		FROM [dbo].[Package] PK
+				LEFT JOIN [dbo].[PackageCalculationRatio] PCR ON PCR.Id = PK.CalculationRatioId
+					AND ISNULL(PCR.IsDeleted,0) = 0
+			WHERE	ISNULL(PK.IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR PK.[Name] LIKE '%'+ @Name +'%')  					 
+					AND (ISNULL(@Description,'') = '' OR PK.[Description] LIKE '%'+ @Description +'%')  	
+					AND (@Price IS NULL OR PK.[Price] = @Price)
+					AND (@CalculationRatioId IS NULL OR PK.[CalculationRatioId] = @CalculationRatioId)
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],	
+			temp.[Description],	
+			temp.[Price],
+			temp.[CalculationRatioId],
+			temp.[CalculationRatio],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempPackage AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+END
+
+/**************** Add new  table ReservationPackageMapping *************/
+
+
+/****** Object:  Table [dbo].[ReservationPackageMapping]    Script Date: 2/19/2018 11:01:04 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ReservationPackageMapping](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[ReservationId] [uniqueidentifier] NOT NULL,
+	[PackageId]	[uniqueidentifier] NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_ReservationPackageMapping] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/**** Add Foreign Key of ReservationId in ReservationPackageMapping Table****/
+
+ALTER TABLE [dbo].[ReservationPackageMapping] WITH NOCHECK
+	ADD CONSTRAINT [FK_ReservationPackageMapping_Reservation] FOREIGN KEY ([ReservationId]) REFERENCES [dbo].[Reservation] ([Id]);
+
+
+/************************************************************************************************************************ 
+	SP Name : AddUpdateReservationPackageMapping
+	Comment : Create SP AddUpdateReservationPackageMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddUpdateReservationPackageMapping]    Script Date: 2/19/2018 6:20:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUpdateReservationPackageMapping]
+	@ReservationId		UNIQUEIDENTIFIER			,	
+	@PackageId			UNIQUEIDENTIFIER			,
+	@CreatedBy			INT					=	NULL,
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF NOT EXISTS (SELECT * FROM [ReservationPackageMapping] 
+						WHERE ISNULL(IsDeleted,0) = 0 AND [ReservationId] = @ReservationId AND PackageId = @PackageId)
+	BEGIN
+		DECLARE @Id UNIQUEIDENTIFIER
+		SET @Id = NEWID()
+
+		INSERT INTO [dbo].[ReservationPackageMapping]
+			   ([Id]
+			   ,[ReservationId]			   
+			   ,[PackageId]
+			   ,[CreatedBy]
+			   ,[CreatedOn])
+		 VALUES
+				(
+					@Id
+					,@ReservationId					
+					,@PackageId
+					,@CreatedBy
+					,GETDATE()
+				)
+	END
+	ELSE
+	BEGIN
+		UPDATE [dbo].[ReservationPackageMapping]
+			SET		[UpdatedBy] = @UpdatedBy
+					,[UpdatedOn]	= GETDATE()
+			WHERE	ISNULL(IsDeleted,0) = 0 
+					AND [ReservationId] = @ReservationId 
+					AND [PackageId] = @PackageId
+	END
+			
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationPackageMappingByReservation
+	Comment : Create SP DeleteReservationPackageMappingByReservation	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationPackageMappingByReservation]    Script Date: 2/19/2018 6:22:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationPackageMappingByReservation]	
+	@ReservationId	UNIQUEIDENTIFIER		,
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationPackageMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND ReservationId = @ReservationId
+	
+
+	SELECT @ReservationId AS Id
+    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationPackageMapping
+	Comment : Create SP GetReservationPackageMapping	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationPackageMapping]    Script Date: 2/19/2018 6:23:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationPackageMapping] 		
+		@ReservationId = NULL,
+		@PackageId = NULL
+*/
+CREATE PROCEDURE [dbo].[GetReservationPackageMapping]		
+	@ReservationId	UNIQUEIDENTIFIER = NULL,
+	@PackageId		UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT	RPM.*,PK.[Name] AS PackageName, PK.[Description] AS PackageDescription, PK.[Price] AS PackagePrice, 
+			PK.CalculationRatioId AS PackageCalculationRatioId, 
+			ISNULL(PCR.[Name],'') AS PackageCalculationRatio
+	 FROM [dbo].[ReservationPackageMapping] RPM
+			INNER JOIN [dbo].[Package] PK ON PK.Id = RPM.PackageId 
+				AND ISNULL(PK.IsDeleted,0) = 0			
+			LEFT JOIN [dbo].[PackageCalculationRatio] PCR ON PCR.Id = PK.CalculationRatioId
+				AND ISNULL(PCR.IsDeleted,0) = 0			
+		WHERE	ISNULL(RPM.IsDeleted,0) = 0
+				AND (@ReservationId IS NULL OR RPM.ReservationId = @ReservationId)
+				AND (@PackageId IS NULL OR RPM.PackageId = @PackageId)
+		ORDER BY RPM.CreatedOn
+
+END

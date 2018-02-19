@@ -243,5 +243,10 @@ namespace SuccessHotelierHub.Models
         public DateTime? UpdatedOn { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+
+        public List<ReservationRemarkVM> RemarksList { get; set; }
+
+        public List<Guid> PackageIds  { get; set; }
+        public List<PackageVM> PackageList { get; set; }
     }
 }

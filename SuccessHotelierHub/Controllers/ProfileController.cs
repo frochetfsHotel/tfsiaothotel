@@ -118,6 +118,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("RateQuery", "Reservation");                            
                         }
@@ -129,6 +130,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Create", "Reservation");
                         }
@@ -142,6 +144,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
@@ -153,6 +156,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Arrivals", "FrontDesk");
                         }
@@ -314,6 +318,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("RateQuery", "Reservation");
                         }
@@ -325,6 +330,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Create", "Reservation");
                         }
@@ -338,6 +344,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
@@ -349,6 +356,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
+                            TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Arrivals", "FrontDesk");
                         }

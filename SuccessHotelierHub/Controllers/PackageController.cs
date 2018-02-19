@@ -26,6 +26,9 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult Create()
         {
+            var calculationRatioList = new SelectList(packageRepository.GetPackageCalculationRatio(), "Id", "Name").ToList();
+
+            ViewBag.CalculationRatioList = calculationRatioList;
             return View();
         }
 
@@ -80,6 +83,10 @@ namespace SuccessHotelierHub.Controllers
             if (package != null && package.Count > 0)
             {
                 model = package[0];
+
+                var calculationRatioList = new SelectList(packageRepository.GetPackageCalculationRatio(), "Id", "Name").ToList();
+
+                ViewBag.CalculationRatioList = calculationRatioList;
 
                 return View(model);
             }
@@ -166,6 +173,10 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult List()
         {
+            var calculationRatioList = new SelectList(packageRepository.GetPackageCalculationRatio(), "Id", "Name").ToList();
+
+            ViewBag.CalculationRatioList = calculationRatioList;
+
             return View();
         }
 

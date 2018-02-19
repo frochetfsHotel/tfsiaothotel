@@ -6,7 +6,7 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class PackageVM
+    public class PackageCalculationRatioVM
     {
         public Guid Id { get; set; }
 
@@ -15,16 +15,7 @@ namespace SuccessHotelierHub.Models
         public string Name { get; set; }
 
         [DisplayName("Description")]
-        public string Description { get; set; }
-
-        [DisplayName("Price")]
-        [DisplayFormat(DataFormatString = "{0:C0}")]
-        [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = "Please enter valid price.")]
-        public double? Price { get; set; }
-
-        [DisplayName("Calculation Ratio")]
-        public Guid? CalculationRatioId { get; set; }
-
+        public string Description { get; set; }        
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

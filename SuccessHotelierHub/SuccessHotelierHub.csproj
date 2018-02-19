@@ -274,6 +274,7 @@
     <Compile Include="Models\MarketVM.cs" />
     <Compile Include="Models\NationalityVM.cs" />
     <Compile Include="Models\OriginVM.cs" />
+    <Compile Include="Models\PackageCalculationRatioVM.cs" />
     <Compile Include="Models\PackageVM.cs" />
     <Compile Include="Models\PagesVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
@@ -291,7 +292,9 @@
     <Compile Include="Models\ReservationChargeVM.cs" />
     <Compile Include="Models\ReservationConfirmationReportVM.cs" />
     <Compile Include="Models\ReservationLogVM.cs" />
+    <Compile Include="Models\ReservationPackageMappingVM.cs" />
     <Compile Include="Models\ReservationPreferenceMappingVM.cs" />
+    <Compile Include="Models\ReservationRemarkVM.cs" />
     <Compile Include="Models\ReservationRoomMappingVM.cs" />
     <Compile Include="Models\ReservationSourceVM.cs" />
     <Compile Include="Models\ReservationStatusVM.cs" />
@@ -309,6 +312,7 @@
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\StoredProcedure\AvailableRoomInfoByDateResultVM.cs" />
     <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\ReservationRemarksResultVM.cs" />
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />

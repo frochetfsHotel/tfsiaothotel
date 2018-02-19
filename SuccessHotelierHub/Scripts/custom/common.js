@@ -10,10 +10,27 @@ $(function () {
         format: 'dd/mm/yyyy'
     })
     .change(changeColorOfDatePickerLabel)
-    .on('changeDate', changeColorOfDatePickerLabel);;
+    .on('changeDate', changeColorOfDatePickerLabel);
+
 });
 
 var RootPath = ""; //Store Site Root Location.
+
+$.fn.serializeObject = function () {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function () {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
 
 var StatusCode = {
     SUCCESS: 200,
@@ -375,6 +392,18 @@ function ParseJsonDate(date) {
         return GetDate(dt, DateFormat.DDMMYYYY);
     }
     return "";
+}
+
+function GetTime(dateObject) {
+    if (IsNullOrEmpty(dateObject)) {
+        dateObject = new Date();
+    }
+
+    var datetext = dateObject.toTimeString();
+
+    datetext = datetext.split(' ')[0];
+
+    return datetext;
 }
 
 /*** Date Utility Functions END ****/

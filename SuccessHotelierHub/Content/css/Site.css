@@ -894,3 +894,29 @@ Html, body{
 .parentContainer{
 	display:table-cell; vertical-align:middle;
 }	
+
+/***** Font ******/
+.font_8 {
+    font-size:8px !important;
+}
+.font_10 {
+    font-size:10px !important;
+}
+.font_12 {
+    font-size:12px !important;
+}
+.font_15 {
+    font-size:15px !important;
+}
+.font_18 {
+    font-size:15px !important;
+}
+.font_20 {
+    font-size:20px !important;
+}
+.font_22 {
+    font-size:22px !important;
+}
+.font_25 {
+    font-size:25px !important;
+}
