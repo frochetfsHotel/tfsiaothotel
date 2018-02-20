@@ -340,13 +340,13 @@ namespace SuccessHotelierHub.Controllers
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
-        public ActionResult RoomStatus(Guid roomTypeId)
+        public ActionResult RoomStatus(Guid roomTypeId, string date)
         {
             try
             {
-                var roomType = roomTypeRepository.GetRoomTypeById(roomTypeId).FirstOrDefault();
+                var roomTypeStatus = roomTypeRepository.GetRoomTypeStatusInfo(date, roomTypeId).FirstOrDefault();
 
-                ViewData["RoomTypeInfo"] = roomType;
+                ViewData["RoomTypeInfo"] = roomTypeStatus;
 
                 return PartialView("_RoomTypeStatus");
             }

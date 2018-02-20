@@ -218,6 +218,7 @@
     <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\CountryController.cs" />
+    <Compile Include="Controllers\DiscountApprovedController.cs" />
     <Compile Include="Controllers\ErrorLogController.cs" />
     <Compile Include="Controllers\FloorController.cs" />
     <Compile Include="Controllers\FrontDeskController.cs" />
@@ -265,7 +266,7 @@
     <Compile Include="Models\CityVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\CurrentUserRoleVM.cs" />
-    <Compile Include="Models\DiscountReasonVM.cs" />
+    <Compile Include="Models\DiscountApprovedVM.cs" />
     <Compile Include="Models\ErrorLogVM.cs" />
     <Compile Include="Models\FloorVM.cs" />
     <Compile Include="Models\HolidayVM.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="Models\StoredProcedure\AvailableRoomInfoByDateResultVM.cs" />
     <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
     <Compile Include="Models\StoredProcedure\ReservationRemarksResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\RoomTypeStatusInfoResultVM.cs" />
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
@@ -331,7 +333,7 @@
     <Compile Include="Repository\CheckInCheckOutRepository.cs" />
     <Compile Include="Repository\CityRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
-    <Compile Include="Repository\DiscountReasonRepository.cs" />
+    <Compile Include="Repository\DiscountApprovedRepository.cs" />
     <Compile Include="Repository\ErrorLogRepository.cs" />
     <Compile Include="Repository\FloorRepository.cs" />
     <Compile Include="Repository\HolidayRepository.cs" />
@@ -2116,6 +2118,9 @@
     <Content Include="Views\RTC\Create.cshtml" />
     <Content Include="Views\PropertyCalendar\_RoomInfo.cshtml" />
     <Content Include="Views\Package\_Packages.cshtml" />
+    <Content Include="Views\DiscountApproved\Edit.cshtml" />
+    <Content Include="Views\DiscountApproved\List.cshtml" />
+    <Content Include="Views\DiscountApproved\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

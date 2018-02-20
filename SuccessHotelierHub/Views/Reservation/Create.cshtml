@@ -462,7 +462,7 @@
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DiscountApprovedBy)
                         @Html.DropDownListFor(m => m.DiscountApprovedBy,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.DiscountReasonList, "Value", "Text"),
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.DiscountApprovedList, "Value", "Text"),
                                 "--Select Discount Approved By--",
                                 new { @class = "form-control" })
                     </div>

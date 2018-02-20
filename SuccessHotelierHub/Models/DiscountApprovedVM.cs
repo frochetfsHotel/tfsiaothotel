@@ -6,7 +6,7 @@ using System.Web;
 
 namespace SuccessHotelierHub.Models
 {
-    public class DiscountReasonVM
+    public class DiscountApprovedVM
     {
         public Guid Id { get; set; }
 

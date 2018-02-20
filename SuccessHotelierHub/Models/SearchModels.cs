@@ -1939,9 +1939,9 @@ namespace SuccessHotelierHub.Models
 
     #region Search Discount Reason
 
-    public class SearchDiscountReasonParametersVM
+    public class SearchDiscountApprovedParametersVM
     {
-        public SearchDiscountReasonParametersVM()
+        public SearchDiscountApprovedParametersVM()
         {
             columns = new List<ColumnName>();
             order = new List<ColumnOrderInfo>();
@@ -1960,7 +1960,7 @@ namespace SuccessHotelierHub.Models
         public List<ColumnOrderInfo> order { get; set; }
     }
 
-    public class SearchDiscountReasonResultVM
+    public class SearchDiscountApprovedResultVM
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }

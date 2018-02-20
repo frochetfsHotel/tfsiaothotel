@@ -1,12 +1,18 @@
-﻿@using SuccessHotelierHub.Models
+﻿@using SuccessHotelierHub.Models.StoredProcedure
 @{
 
-    var roomTypeInfo = (RoomTypeVM)ViewData["RoomTypeInfo"];
+    var roomTypeStatusInfo = (RoomTypeStatusInfoResultVM)ViewData["RoomTypeInfo"];
 
+    int totalRooms = 0, totalVacantRooms = 0, totalOccupiedRooms = 0, totalDirtyRooms = 0, totalCleanRooms = 0;
 
+    totalRooms = roomTypeStatusInfo.TotalRoom;
+    totalVacantRooms = roomTypeStatusInfo.AvailableRoom;
+    totalOccupiedRooms = (roomTypeStatusInfo.TotalRoom - roomTypeStatusInfo.AvailableRoom);
+    totalDirtyRooms = (roomTypeStatusInfo.TotalRoom - roomTypeStatusInfo.AvailableRoom);
+    totalCleanRooms = roomTypeStatusInfo.AvailableRoom;
 }
 
-@if (roomTypeInfo != null)
+@if (roomTypeStatusInfo != null)
 {
     <form id="frmRoomTypeInfo" name="frmRoomTypeInfo" enctype="multipart/form-data">
         <div class="box-body">
@@ -14,16 +20,16 @@
                 <div class="col-md-4 form-group">
                     <label for="RoomTypeCode">Room Type</label>
                     <input type="text" class="form-control" id="RoomTypeCode" name="RoomTypeCode" readonly="readonly"
-                           value="@roomTypeInfo.RoomTypeCode">
+                           value="@roomTypeStatusInfo.RoomTypeCode">
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="Description">Description</label>
-                    <textarea id="Description" name="Description" readonly="readonly" class="form-control" rows="3">@roomTypeInfo.Description</textarea>
+                    <textarea id="Description" name="Description" readonly="readonly" class="form-control" rows="3">@roomTypeStatusInfo.RoomTypeDescription</textarea>
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="NoOfRooms">Total</label>
                     <input type="text" class="form-control" id="NoOfRooms" name="NoOfRooms" readonly="readonly"
-                           value="10">
+                           value="@totalRooms">
                 </div>
             </div>
 
@@ -48,12 +54,12 @@
                                         <td>Total</td>
                                         <td>
                                             <input type="text" class="form-control" id="VacantTotal"
-                                                   name="VacantTotal" readonly="readonly" value="0">
+                                                   name="VacantTotal" readonly="readonly" value="@totalVacantRooms">
                                         </td>
                                         <td></td>
                                         <td>
                                             <input type="text" class="form-control" id="OccupiedTotal"
-                                                   name="OccupiedTotal" readonly="readonly" value="0">
+                                                   name="OccupiedTotal" readonly="readonly" value="@totalOccupiedRooms">
                                         </td>
                                     </tr>
                                     <tr>
@@ -72,7 +78,7 @@
                                         <td>Clean</td>
                                         <td>
                                             <input type="text" class="form-control" id="VacantClean"
-                                                   name="VacantClean" readonly="readonly"  value="0">
+                                                   name="VacantClean" readonly="readonly"  value="@totalCleanRooms">
                                         </td>
                                         <td></td>
                                         <td>
@@ -89,7 +95,7 @@
                                         <td></td>
                                         <td>
                                             <input type="text" class="form-control" id="OccupiedDirty"
-                                                   name="OccupiedDirty" readonly="readonly"  value="0">
+                                                   name="OccupiedDirty" readonly="readonly"  value="@totalDirtyRooms">
                                         </td>
                                     </tr>
                                     <tr>

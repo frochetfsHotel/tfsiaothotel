@@ -41,7 +41,7 @@ namespace SuccessHotelierHub.Controllers
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
         private ReservationLogRepository reservationLogRepository = new ReservationLogRepository();
         private OriginRepository originRepository = new OriginRepository();
-        private DiscountReasonRepository discountReasonRepository = new DiscountReasonRepository();
+        private DiscountApprovedRepository discountApprovedRepository = new DiscountApprovedRepository();
         private RTCRepository rtcRepository = new RTCRepository();
 
         #endregion
@@ -128,7 +128,7 @@ namespace SuccessHotelierHub.Controllers
             //                   }
             //            ), "Value", "Text").ToList();
 
-            var discountReasonList = new SelectList(discountReasonRepository.GetDiscountReasons().Select
+            var discountApprovedList = new SelectList(discountApprovedRepository.GetDiscountApprovedDetail().Select
                        (
                               m => new SelectListItem()
                               {
@@ -253,7 +253,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.PaymentMethodList = paymentMethodList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
             //ViewBag.OriginList = originList;
-            ViewBag.DiscountReasonList = discountReasonList;
+            ViewBag.DiscountApprovedList = discountApprovedList;
             ViewBag.MarketLEISId = marketLEISId;
             ViewBag.ReservationSourceId = reservationSourceId;
             ViewBag.RtcList = rtcList;
@@ -585,7 +585,7 @@ namespace SuccessHotelierHub.Controllers
                 //              }
                 //       ), "Value", "Text").ToList();
 
-                var discountReasonList = new SelectList(discountReasonRepository.GetDiscountReasons().Select
+                var discountApprovedList = new SelectList(discountApprovedRepository.GetDiscountApprovedDetail().Select
                        (
                               m => new SelectListItem()
                               {
@@ -610,7 +610,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.PaymentMethodList = paymentMethodList;
                 ViewBag.RoomFeaturesList = roomFeaturesList;
                 //ViewBag.OriginList = originList;
-                ViewBag.DiscountReasonList = discountReasonList;
+                ViewBag.DiscountApprovedList = discountApprovedList;
                 ViewBag.MarketLEISId = marketLEISId;
                 ViewBag.ReservationSourceId = reservationSourceId;
                 ViewBag.RtcList = rtcList;

@@ -844,6 +844,16 @@
     function openRoomTypeStatusModal(roomTypeId) {        
 
         if (!IsNullOrEmpty(roomTypeId)) {
+
+            var arrivalDate = $('#txtArrivalDate').val();
+
+            if (IsNullOrEmpty(arrivalDate)) {
+                showToaster("Please select arrival date.", ToasterType.ERROR);
+                return false;
+            } else {
+                arrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
+            }
+
             //Ajax request to fetch room type status.
             $.ajax({
                 beforeSend: function (xhr) {
@@ -857,7 +867,7 @@
                 },
                 url: '@Url.Content("~/RoomType/RoomStatus")',
                 type: 'GET',
-                data: { roomTypeId: roomTypeId },
+                data: { roomTypeId: roomTypeId, date: arrivalDate },
                 success: function (response) {                    
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);

@@ -1,6 +1,6 @@
-﻿@model SuccessHotelierHub.Models.SearchOriginParametersVM
+﻿@model SuccessHotelierHub.Models.SearchDiscountApprovedParametersVM
 @{
-    ViewBag.Title = "Search Origin";
+    ViewBag.Title = "Search Discount Approved";
 }
 @section styles{
     <!-- DataTables -->
@@ -8,16 +8,16 @@
 }
 
 @{
-    var PagerName = "OriginGrid";
+    var PagerName = "DiscountApprovedGrid";
 }
 
 <section class="content-header">
     <h1>
-        Origin <small>List</small>
+        Discount Approved <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Origin</li>
+        <li class="">Discount Approved</li>
         <li class="active">Search</li>
     </ol>
 </section>
@@ -25,13 +25,13 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search Origin</h3>
+            <h3 class="box-title">Search Discount Approved</h3>
             <div class="pull-right box-tools">
-                <a href="@Url.Action("Create","Origin")"
-                   class="btn btn-info btn-sm" style="color: #fff">Add Origin</a>
+                <a href="@Url.Action("Create","DiscountApproved")"
+                   class="btn btn-info btn-sm" style="color: #fff">Add Discount Approved</a>
             </div>
         </div>
-        <form class="frmOriginList" enctype="multipart/form-data" method="post">
+        <form class="frmDiscountApprovedList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
@@ -44,15 +44,15 @@
                             @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                         </div>
                         <div class="col-md-4 form-group mt_25">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchOrigin()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearOrigin()">Clear</button>
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchDiscountApproved()">Search</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearDiscountApproved()">Clear</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped" id="tblOrigin">
+                        <table class="table table-bordered table-hover table-striped" id="tblDiscountApproved">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="clearfix"></div>
                     <div class="text-left">
-                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "OriginGridPageChange" })
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "DiscountApprovedGridPageChange" })
                     </div>
                 </div>
             </div>
@@ -77,10 +77,10 @@
 
 <script type="text/javascript">
     var currentPage = 1;
-    var grdOrigin;
+    var grdDiscountApproved;
 
     $(document).ready(function () {
-        setTimeout(InitializeOriginGrid, 200);
+        setTimeout(InitializeDiscountApprovedGrid, 200);
 
         $("input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
@@ -90,7 +90,7 @@
     });
 
 
-    function SearchOriginParameters(d) {
+    function SearchDiscountApprovedParameters(d) {
         var code = $('#Code').val();
         var description = $('#Description').val();
         d.PageNum = currentPage;
@@ -98,7 +98,7 @@
         d.Description = description;
     }
 
-    function OriginGridDataBound(response) {
+    function DiscountApprovedGridDataBound(response) {
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
             return response.data;
@@ -109,18 +109,18 @@
     }
 
 
-    function ReloadOriginGrid() {
-        grdOrigin.ajax.url("@Url.Content("~/Origin/Search")").load();
+    function ReloadDiscountApprovedGrid() {
+        grdDiscountApproved.ajax.url("@Url.Content("~/DiscountApproved/Search")").load();
     }
 
-    function OriginGridPageChange(cPage) {
+    function DiscountApprovedGridPageChange(cPage) {
         currentPage = cPage;
-        ReloadOriginGrid();
+        ReloadDiscountApprovedGrid();
     }
 
 
-    function InitializeOriginGrid() {
-        grdOrigin = $('#tblOrigin').DataTable({
+    function InitializeDiscountApprovedGrid() {
+        grdDiscountApproved = $('#tblDiscountApproved').DataTable({
             serverSide: true,
             ajax: {
                 beforeSend: function (xhr) {
@@ -132,9 +132,9 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Origin/Search")',
-                data: SearchOriginParameters,
-                dataSrc: OriginGridDataBound,
+                url: '@Url.Content("~/DiscountApproved/Search")',
+                data: SearchDiscountApprovedParameters,
+                dataSrc: DiscountApprovedGridDataBound,
                 type: "POST"
             },
             scrollCollapse: true,
@@ -183,10 +183,10 @@
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoOriginEdit(\'' + full.Id + '\')" '
+                    return '<a href="javascript:void(0);" onclick="GotoDiscountApprovedEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
                         + ' <button type="button" class="btn btn-danger btn-xs"'
-                        + ' onclick="deleteOrigin(this,event,\'' + full.Id + '\')">Delete</button>';
+                        + ' onclick="deleteDiscountApproved(this,event,\'' + full.Id + '\')">Delete</button>';
                 }
             }
             ],
@@ -197,24 +197,24 @@
         })
     }
 
-    function GotoOriginEdit(Id) {
-        var url = '@Url.Content("~/Origin/Edit/")' + Id;
+    function GotoDiscountApprovedEdit(Id) {
+        var url = '@Url.Content("~/DiscountApproved/Edit/")' + Id;
         redirectTo(url);
     }
 
-    function searchOrigin() {
+    function searchDiscountApproved() {
         currentPage = 1;
-        ReloadOriginGrid();
+        ReloadDiscountApprovedGrid();
     }
 
-    function clearOrigin() {
+    function clearDiscountApproved() {
         $('#Code').val('');
         $('#Description').val('');
 
-        searchOrigin();
+        searchDiscountApproved();
     }
 
-    function deleteOrigin(item, e, id) {
+    function deleteDiscountApproved(item, e, id) {
 
         swal({
             title: 'Are you sure you want to delete?',
@@ -236,17 +236,17 @@
                     complete: function () {
                         hideLoader();
                     },
-                    url: '@Url.Content("~/Origin/Delete")',
+                    url: '@Url.Content("~/DiscountApproved/Delete")',
                     type: 'POST',
                     data: { id: id },
                     success: function (response) {
                         if (response.IsSuccess == true) {
 
-                            var tr = $('#tblOrigin  tbody tr#' + id)
-                            var row = grdOrigin.row(tr);
+                            var tr = $('#tblDiscountApproved  tbody tr#' + id)
+                            var row = grdDiscountApproved.row(tr);
                             var rowNode = row.node();
                             row.remove();
-                            grdOrigin.draw();
+                            grdDiscountApproved.draw();
 
                             showToaster("Record deleted successfully", ToasterType.SUCCESS);
                         }

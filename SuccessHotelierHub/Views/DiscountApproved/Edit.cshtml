@@ -1,27 +1,31 @@
-﻿@model SuccessHotelierHub.Models.OriginVM
+﻿@model SuccessHotelierHub.Models.DiscountApprovedVM
 @{
-    ViewBag.Title = "Create Origin";
+    ViewBag.Title = "Edit Discount Approved";
 }
 
 <section class="content-header">
     <h1>
-        Origin <small>Create</small>
+        Discount Approved <small>Edit</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Origin</li>
-        <li class="active">Create</li>
+        <li class="">Discount Approved</li>
+        <li class="active">Edit</li>
     </ol>
 </section>
 
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Origin Details</h3>
+            <h3 class="box-title">Discount Approved Details</h3>
         </div>
-        @using (Html.BeginForm("Create", "Origin", FormMethod.Post, new { id = "frmOrigin", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Edit", "DiscountApproved", FormMethod.Post, new { id = "frmDiscountApproved", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            <!--HIDDEN FIELD-->
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
@@ -38,28 +42,28 @@
                     <div class="col-md-4 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
-                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            @Html.CheckBoxFor(m => m.IsActive)
                             <span class="checkmark"></span>
                         </label>
                     </div>
                 </div>
             </div>
             <div class="box-footer text-right">
-                <button type="button" class="btn btn-success m-r-xs" onclick="return saveOrigin();">Save</button>
-                <a href="@Url.Action("List", "Origin")" class="btn btn-danger">Cancel</a>
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateDiscountApproved();">Update</button>
+                <a href="@Url.Action("List", "DiscountApproved")" class="btn btn-danger">Cancel</a>
             </div>
         }
     </div>
 </section>
 
 <script type="text/javascript">
-    function validateOrigin() {
+    function validateDiscountApproved() {
 
         var errorMessage = "";
         var blnValid = true;
 
 
-        if ($("#frmOrigin").valid() == false) {
+        if ($("#frmDiscountApproved").valid() == false) {
             showToaster("Please fill all the required field first", ToasterType.ERROR);
             blnValid = false;
         }
@@ -68,9 +72,9 @@
     }
 
 
-    function saveOrigin() {
+    function updateDiscountApproved() {
 
-        if (validateOrigin()) {
+        if (validateDiscountApproved()) {
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -81,18 +85,18 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Origin/Create")',
+                url: '@Url.Content("~/DiscountApproved/Edit")',
                 type: 'POST',
-                data: $('#frmOrigin').serialize(),
+                data: $('#frmDiscountApproved').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        showToaster("Origin details saved successfully", ToasterType.SUCCESS);
+                        showToaster("Discount Approved details updated successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
-                            redirectTo('@Url.Content("~/Origin/List")');
+                            redirectTo('@Url.Content("~/DiscountApproved/List")');
                         }, 1000);
                     }
                 }

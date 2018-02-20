@@ -29355,3 +29355,328 @@ BEGIN
 
 END
 
+/************************************************************************************************************************ 
+	SP Name : GetRoomTypeStatusInfo
+	Comment : Create SP GetRoomTypeStatusInfo	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetRoomTypeStatusInfo]    Script Date: 2/20/2018 5:51:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetRoomTypeStatusInfo] 
+		@Date		= '2018-02-20'								,
+		@RoomTypeId	= 'C26FAE42-4F8D-4A52-B4F5-DF80FE7AF96F'	
+
+*/
+
+CREATE PROCEDURE [dbo].[GetRoomTypeStatusInfo]
+	@Date			NVARCHAR(255)		,
+	@RoomTypeId		UNIQUEIDENTIFIER	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+   SELECT DISTINCT RT.Id AS RoomTypeId, RT.RoomTypeCode, RT.[Description] AS RoomTypeDescription,
+		COUNT(R.Id) AS TotalRoom,
+		( 
+			COUNT(R.Id) - 
+			(
+				SELECT DISTINCT COUNT(RL.Id)
+				FROM ReservationLog RL 
+						INNER JOIN Reservation R ON R.Id = RL.ReservationId
+							AND ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsActive,0) = 1
+						INNER JOIN Room RM ON RM.Id = RL.RoomId AND ISNULL(RM.IsDeleted,0) = 0			
+				WHERE	ISNULL(RL.IsDeleted,0) = 0 
+						AND ISNULL(RL.IsActive,0) = 1 
+						AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+						AND RM.RoomTypeId = RT.Id
+						AND ( CAST(@Date AS DATE) BETWEEN CAST(RL.CheckInDate  AS DATE) AND CAST(RL.CheckOutDate AS DATE))
+			 )
+		) AS AvailableRoom
+
+		FROM Room R 
+			INNER JOIN RoomType RT ON R.RoomTypeId = RT.Id 
+				AND ISNULL(RT.IsDeleted,0) = 0
+		WHERE	ISNULL(R.IsDeleted,0) = 0  
+				AND R.RoomTypeId = @RoomTypeId		
+		GROUP BY RT.Id, RT.RoomTypeCode, RT.[Description] 
+END
+
+
+
+/********************* Rename table name 'DiscountReason' to 'DiscountApprovedMaster' *********/
+
+EXEC sp_rename 'DiscountReason', 'DiscountApprovedMaster'
+
+
+/************************************************************************************************************************ 
+	SP Name : GetDiscountApprovedDetail
+	Comment : Create SP GetDiscountApprovedDetail	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetDiscountApprovedDetail]    Script Date: 2/20/2018 6:22:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetDiscountApprovedDetail]
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[DiscountApprovedMaster]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Code]
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetDiscountApprovedById
+	Comment : Create SP GetDiscountApprovedById	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetDiscountApprovedById]    Script Date: 2/20/2018 6:33:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetDiscountApprovedById]
+	@Id UNIQUEIDENTIFIER
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[DiscountApprovedMaster]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY Code DESC
+END
+
+/************************************************************************************************************************ 
+	SP Name : AddDiscountApproved
+	Comment : Create SP AddDiscountApproved	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddDiscountApproved]    Script Date: 2/20/2018 6:34:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddDiscountApproved]	
+	@Code			NVARCHAR(500)				,	
+	@Description	NVARCHAR(MAX)	=	 NULL	,	
+	@IsActive		BIT				=	 NULL	,	
+	@CreatedBy		INT				=	 NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[DiscountApprovedMaster]
+           ([Id]           
+           ,[Code]		  
+		   ,[Description] 		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Code		
+			   ,@Description	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateDiscountApproved
+	Comment : Create SP UpdateDiscountApproved	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateDiscountApproved]    Script Date: 2/20/2018 6:35:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateDiscountApproved]
+	@Id				UNIQUEIDENTIFIER			,	
+	@Code			NVARCHAR(500)				,	
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@IsActive		BIT				=	NULL	,	
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[DiscountApprovedMaster]
+		SET	[Code]			=	@Code
+		   ,[Description]	=	@Description		   		   
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/************************************************************************************************************************ 
+	SP Name : DeleteDiscountApproved
+	Comment : Create SP DeleteDiscountApproved	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteDiscountApproved]    Script Date: 2/20/2018 6:37:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteDiscountApproved]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[DiscountApprovedMaster] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/**********************************************************************************************************************
+	SP Name : SearchDiscountApproved
+	Comment : Create SP SearchDiscountApproved	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchDiscountApproved]    Script Date: 2/20/2018 6:38:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchDiscountApproved] '', '',  1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchDiscountApproved]					
+	@Code			NVARCHAR(500)	=	NULL	,		
+	@Description	NVARCHAR(MAX)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempDiscountApproved
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [Code]			NVARCHAR(255)		NOT NULL	
+		,	[Description]	NVARCHAR(MAX)		NULL		
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[DiscountApprovedMaster]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+						)
+
+
+		INSERT INTO #tempDiscountApproved 
+		(
+			[RowNum]		, 
+			[Id]			, 
+			[Code]			, 
+			[Description]	,	 
+			[CreatedOn]		, 
+			[IsActive]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN [CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN [CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+						THEN [Code] END ASC,
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+						THEN [Code] END DESC,
+
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+						THEN [Description] END ASC,
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+						THEN [Description] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN [Code] END ASC
+
+			) AS RowNum,
+			[ID],								
+			[Code],
+			ISNULL([Description],'') AS [Description],
+			[CreatedOn],
+			[IsActive]
+		FROM [dbo].[DiscountApprovedMaster]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  				 
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Code],		
+			temp.[Description],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempDiscountApproved AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
