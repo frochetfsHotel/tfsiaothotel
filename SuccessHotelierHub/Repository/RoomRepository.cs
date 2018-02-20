@@ -298,6 +298,21 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
+        public string DeleteReservationRoomMapping(Guid id, int updatedBy)
+        {
+            string mappingId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationRoomMapping", parameters));
+
+            return mappingId;
+        }
+
         public List<ReservationRoomMappingVM> GetReservationRoomMapping(Guid? reservationId, Guid? roomId)
         {
             SqlParameter[] parameters =

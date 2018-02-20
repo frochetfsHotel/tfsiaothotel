@@ -41,6 +41,7 @@ namespace SuccessHotelierHub.Controllers
                 string chargeId = string.Empty;
 
                 model.CreatedBy = LogInManager.LoggedInUserId;
+                model.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                 chargeId = reservationChargeRepository.AddReservationCharges(model);
                 
                 if (!string.IsNullOrWhiteSpace(chargeId))
@@ -130,6 +131,7 @@ namespace SuccessHotelierHub.Controllers
                         string chargeId = string.Empty;
 
                         model.CreatedBy = LogInManager.LoggedInUserId;
+                        model.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                         chargeId = reservationChargeRepository.AddReservationCharges(model);
 
                         if (!string.IsNullOrWhiteSpace(chargeId))

@@ -183,7 +183,7 @@
                 render: function (data, type, full, meta) {
                     var chkBox = "";
 
-                    if (full.Code != '1000' && full.Code != '9004') {
+                    if (full.Code != '1000' && full.Code != '9004' && full.Code != '9005') {
 
                         var checked = "";
                         if (selectedAdditionalChargeIds != null && selectedAdditionalChargeIds.length > 0) {
@@ -238,7 +238,7 @@
                 render: function (data, type, full, meta) {
                     var buttons = '';
                     //Room Rent, CheckOut
-                    if (full.Code != '1000' && full.Code != '9004')
+                    if (full.Code != '1000' && full.Code != '9004' && full.Code != '9005')
                     {
                         buttons += '<a href="javascript:void(0);" onclick="GotoAdditionalChargeEdit(\'' + full.Id + '\')" '
                         + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';

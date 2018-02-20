@@ -499,7 +499,7 @@ namespace SuccessHotelierHub.Controllers
                         {
                             if (roomFeature.RoomFeatureId.HasValue)
                             {
-                                if (!model.RoomFeatures.Contains(roomFeature.RoomFeatureId.Value))
+                                if (model.RoomFeatures == null || !model.RoomFeatures.Contains(roomFeature.RoomFeatureId.Value))
                                 {
                                     mappingIds.Add(roomFeature.Id);
                                 }

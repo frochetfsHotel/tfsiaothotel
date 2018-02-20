@@ -119,7 +119,7 @@ namespace SuccessHotelierHub.Controllers
                     List<Guid> mappingIds = new List<Guid>();
                     foreach (var tutorStudentMapping in tutorStudentMappings)
                     {
-                        if (!studentIds.Contains(tutorStudentMapping.StudentId))
+                        if (studentIds == null || !studentIds.Contains(tutorStudentMapping.StudentId))
                         {
                             mappingIds.Add(tutorStudentMapping.Id);
                         }

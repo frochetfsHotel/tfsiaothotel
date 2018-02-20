@@ -814,11 +814,18 @@
                 html += "<tr id='trCharge_" + data[i].Id + "' data-chargeid='" + data[i].Id +"'>";
 
                 //Delete  Charge
-                if (!IsNullOrEmpty(data[i].Code) && data[i].Code != "1000") {
-                    html += "<td><span class='text-red font_20 cursor-P' onclick='removeTransactionCharge(this);'><i class='fa fa-remove text'></i></span></td>";
+                if (!IsNullOrEmpty(data[i].Code)) {
+                    //Room Rent, Package Charge.
+                    if (data[i].Code != "1000" && data[i].Code != "9005")
+                    {
+                        html += "<td><span class='text-red font_20 cursor-P' onclick='removeTransactionCharge(this);'><i class='fa fa-remove text'></i></span></td>";
+                    } else {
+                        html += "<td></td>";
+                    }
                 } else {
                     html += "<td></td>";
                 }
+                
 
                 html += "<td>" + ParseJsonDate(data[i].TransactionDate) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";

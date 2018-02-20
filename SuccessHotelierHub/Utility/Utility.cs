@@ -667,30 +667,34 @@ namespace SuccessHotelierHub.Utility
 
             if (reservation != null)
             {
-                double totalRoomRentCharge = CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
-
-                dblTotalBalance = totalRoomRentCharge;
-
-
-                //Package Price
-                var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
-                if (packageDetails != null && packageDetails.Count > 0)
+                if (reservation.IsCheckIn == true)
                 {
-                    var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
+                    //Reservation Charges
+                    var reservationCharges = reservationChargeRepository.GetReservationCharges(reservationId, null);
+                    if (reservationCharges != null && reservationCharges.Count > 0)
+                    {
+                        var totalReservationCharges = reservationCharges.Where(m => m.Amount.HasValue)
+                                    .Sum(m => (m.Amount.Value * (m.Qty.HasValue ? m.Qty.Value : 1)));
 
-                    dblTotalBalance += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
+                        dblTotalBalance += totalReservationCharges;
+                    }
                 }
-
-                //Reservation Charges
-                var reservationCharges = reservationChargeRepository.GetReservationCharges(reservationId, null);
-                if (reservationCharges != null && reservationCharges.Count > 0)
+                else
                 {
-                    var totalReservationCharges = reservationCharges.Where(m => m.Amount.HasValue)
-                                .Sum(m => (m.Amount.Value * (m.Qty.HasValue ? m.Qty.Value : 1)));
+                    double totalRoomRentCharge = CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
 
-                    dblTotalBalance += totalReservationCharges;
+                    dblTotalBalance = totalRoomRentCharge;
+
+                    //Package Price
+                    var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
+                    if (packageDetails != null && packageDetails.Count > 0)
+                    {
+                        var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
+
+                        dblTotalBalance += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
+                    }
                 }
-
+                
             }
 
             return Math.Round(dblTotalBalance, 2);
@@ -826,6 +830,14 @@ namespace SuccessHotelierHub.Utility
     {
         public const string ROOM_RENT = "1000";
         public const string CHECK_OUT = "9004";
+        public const string PACKAGE = "9005";
+    }
+
+    public static class AdditionalChargeSource
+    {
+        public const string ADDITIONAL_CHARGE = "AC"; //Additional Charge
+        public const string PACKAGE_MAPPING = "PKM"; //Package Mapping
+        public const string ADD_ONS_MAPPING = "AOM"; //Add-Ons
     }
 
     public static class Pages

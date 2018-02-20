@@ -22,6 +22,8 @@ namespace SuccessHotelierHub.Models
         //Additional Charge        
         public Guid? AdditionalChargeId { get; set; }
 
+        public string AdditionalChargeSource { get; set; }
+
         [Required(ErrorMessage = "Please search and select code.")]
         [DisplayName("Code")]
         public string Code { get; set; }

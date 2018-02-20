@@ -271,31 +271,68 @@ namespace SuccessHotelierHub.Controllers
 
                     var preferenceItems = model.PreferenceItems;
 
-                    //Delete Existing Profile Preference Mapping.
-                    preferenceRepository.DeleteProfilePreferenceMappingByProfile(model.ProfileTypeId, model.Id);
+                    string[] preferenceItemsArr = null;
 
                     if (!string.IsNullOrWhiteSpace(preferenceItems))
                     {
-                        var preferenceItemsArr = preferenceItems.Split(',');
+                        preferenceItemsArr = preferenceItems.Split(',');
 
                         if (preferenceItemsArr != null)
                         {
                             //Remove Duplication.
                             preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+                        }
+                    }
 
-                            foreach (var item in preferenceItemsArr)
+                    //Delete Existing Profile Preference Mapping.
+                    //preferenceRepository.DeleteProfilePreferenceMappingByProfile(model.ProfileTypeId, model.Id);
+
+                    #region Delete Preference Mapping
+
+                    var preferenceMappings = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null);
+
+                    if (preferenceMappings != null && preferenceMappings.Count > 0)
+                    {
+                        List<Guid> preferenceMappingIds = new List<Guid>();
+
+                        foreach (var preferenceMapping in preferenceMappings)
+                        {
+                            if (preferenceMapping.PreferenceId.HasValue)
                             {
-                                //Save Profile Preference Mapping.
-                                ProfilePreferenceMappingVM profilePreferenceMappingVM = new ProfilePreferenceMappingVM();
-                                profilePreferenceMappingVM.ProfileTypeId = model.ProfileTypeId;
-                                profilePreferenceMappingVM.PreferenceId = Guid.Parse(item);
-                                profilePreferenceMappingVM.ProfileId = Guid.Parse(profileId);
-                                profilePreferenceMappingVM.CreatedBy = LogInManager.LoggedInUserId;
+                                if (preferenceItemsArr == null || !preferenceItemsArr.Contains(preferenceMapping.PreferenceId.Value.ToString()))
+                                {
+                                    preferenceMappingIds.Add(preferenceMapping.Id);
+                                }
+                            }
+                        }
 
-                                preferenceRepository.AddProfilePreferenceMapping(profilePreferenceMappingVM);
+                        //Delete Preference Mapping
+                        if (preferenceMappingIds != null && preferenceMappingIds.Count > 0)
+                        {
+                            foreach (var mappingId in preferenceMappingIds)
+                            {
+                                preferenceRepository.DeleteProfilePreferenceMapping(mappingId);
                             }
                         }
                     }
+
+                    #endregion
+
+                    if (preferenceItemsArr != null)
+                    {
+                        foreach (var item in preferenceItemsArr)
+                        {
+                            //Save Profile Preference Mapping.
+                            ProfilePreferenceMappingVM profilePreferenceMappingVM = new ProfilePreferenceMappingVM();
+                            profilePreferenceMappingVM.ProfileTypeId = model.ProfileTypeId;
+                            profilePreferenceMappingVM.PreferenceId = Guid.Parse(item);
+                            profilePreferenceMappingVM.ProfileId = Guid.Parse(profileId);
+                            profilePreferenceMappingVM.CreatedBy = LogInManager.LoggedInUserId;
+
+                            preferenceRepository.AddProfilePreferenceMapping(profilePreferenceMappingVM);
+                        }
+                    }
+                    
                     #endregion
 
                     #region Record Activity Log

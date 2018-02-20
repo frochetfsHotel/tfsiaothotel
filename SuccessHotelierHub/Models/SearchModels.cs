@@ -2007,6 +2007,46 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Advance Package Search
+
+    public class SearchAdvancePackageParametersVM
+    {
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        [DisplayName("Price")]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public double? Price { get; set; }
+
+        [DisplayName("Calculation Ratio")]
+        public Guid? CalculationRatioId { get; set; }
+    }
+
+    public class SearchAdvancePackageResultVM
+    {
+        public int RowNum { get; set; }        
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        [DisplayName("Price")]
+        [DisplayFormat(DataFormatString = "{0:C0}")]
+        public double Price { get; set; }
+
+        [DisplayName("Calculation Ratio")]
+        public Guid? CalculationRatioId { get; set; }
+
+        public string CalculationRatio { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }        
+    }
+
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

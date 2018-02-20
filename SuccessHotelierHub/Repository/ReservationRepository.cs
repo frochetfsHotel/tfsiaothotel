@@ -88,8 +88,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateCodeId", Value = reservation.RateCodeId },
                     new SqlParameter { ParameterName = "@IsFixedRate", Value = reservation.IsFixedRate },
                     new SqlParameter { ParameterName = "@Rate", Value = reservation.Rate },
-                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },
-                    new SqlParameter { ParameterName = "@PackageId", Value = reservation.PackageId },
+                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },                    
                     new SqlParameter { ParameterName = "@BlockCodeId", Value = reservation.BlockCodeId },
                     new SqlParameter { ParameterName = "@ETA", Value = reservation.ETA },
                     new SqlParameter { ParameterName = "@ReservationTypeId", Value = reservation.ReservationTypeId },
@@ -164,8 +163,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RateCodeId", Value = reservation.RateCodeId },
                     new SqlParameter { ParameterName = "@IsFixedRate", Value = reservation.IsFixedRate },
                     new SqlParameter { ParameterName = "@Rate", Value = reservation.Rate },
-                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },
-                    new SqlParameter { ParameterName = "@PackageId", Value = reservation.PackageId },
+                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },                    
                     new SqlParameter { ParameterName = "@BlockCodeId", Value = reservation.BlockCodeId },
                     new SqlParameter { ParameterName = "@ETA", Value = reservation.ETA },
                     new SqlParameter { ParameterName = "@ReservationTypeId", Value = reservation.ReservationTypeId },
@@ -612,6 +610,21 @@ namespace SuccessHotelierHub.Repository
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPackageMappingByReservation", parameters));
 
             return id;
+        }
+
+        public string DeleteReservationPackageMapping(Guid id, int updatedBy)
+        {
+            string mappingId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPackageMapping", parameters));
+
+            return mappingId;
         }
 
         public List<ReservationPackageMappingVM> GetReservationPackageMapping(Guid? reservationId, Guid? packageId)

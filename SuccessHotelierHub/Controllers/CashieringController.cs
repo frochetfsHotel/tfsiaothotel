@@ -365,14 +365,15 @@ namespace SuccessHotelierHub.Controllers
                     {
                         #region Add Entry for Minus All the Expenses
 
-                        var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
+                        var checkOutCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
 
                         double totalAmount = model.Amount.HasValue ? model.Amount.Value : 0;
 
                         ReservationChargeVM reservationCharge = new ReservationChargeVM();
                         reservationCharge.ReservationId = reservation.Id;
-                        reservationCharge.AdditionalChargeId = roomRentCharge.Id;
-                        reservationCharge.Code = roomRentCharge.Code;
+                        reservationCharge.AdditionalChargeId = checkOutCharge.Id;
+                        reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
+                        reservationCharge.Code = checkOutCharge.Code;
                         reservationCharge.Description = model.PaymentMethod;
                         reservationCharge.TransactionDate = model.CheckOutDate.Value;
                         reservationCharge.Amount = -(totalAmount);
@@ -656,8 +657,8 @@ namespace SuccessHotelierHub.Controllers
 
             //Get Amount.
 
-            var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("9004").FirstOrDefault(); //Check out
-            var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("1000").FirstOrDefault(); //Room Rent
+            var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault(); //Check out
+            var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault(); //Room Rent
 
             double checkOutPaidPayment = 0;
             foreach (var item in transactions)
@@ -851,8 +852,8 @@ namespace SuccessHotelierHub.Controllers
 
                 double checkOutPaidPayment = 0;
 
-                var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("9004").FirstOrDefault(); //Check out
-                var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode("1000").FirstOrDefault(); //Room Rent
+                var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault(); //Check out
+                var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault(); //Room Rent
 
                 foreach (var item in transactions)
                 {

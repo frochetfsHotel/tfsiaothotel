@@ -1,0 +1,226 @@
+﻿@model SuccessHotelierHub.Models.SearchAdvancePackageParametersVM
+@using SuccessHotelierHub.Models
+@{
+    var sourceRedirectionParam = "";
+
+    sourceRedirectionParam = (string)ViewData["Source"];
+    
+}
+
+<form id="frmAdvancePackageSearch" name="frmAdvancePackageSearch" enctype="multipart/form-data" method="post">
+
+    <div class="pt_10 pl_10 pr_10 col-xs-12 searchBox_Border">
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Name)
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Description)
+                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Price)
+                @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)", value = "0.00" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group mt_25">
+                <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchPackage()">Search</button>
+                <button type="button" class="btn btn-danger" id="btnClear" onclick="clearPackageSearch()">Clear</button>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 text-right m-t-sm m-b-sm padding-zero">
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchPackageOk">OK</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+    </div>
+
+    <div class="row m-t-sm" id="divPackage" style="display:none;">
+        <div class="col-md-12 form-group">
+            <label class="m-l-n col-md-2 control-label m-r-n-xl"> Packages : </label>
+            <div class="col-md-10" id="selectedPackages">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 m-b-sm padding-zero">
+        <div class="table-responsive m-t-md table_maxheight">
+            <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblPackage">
+                <thead>
+                    <tr>
+                        <th width="5%;"></th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Calculation Ratio</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+
+
+<div class="clearfix"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("form#frmAdvancePackageSearch select").change(function () {
+            searchPackage();
+        });
+
+        $("form#frmAdvancePackageSearch input").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                searchPackage();
+            }
+        });
+    });
+
+    function selectDeSelectPackage(element) {
+        if (element) {
+
+            var isChecked = $(element).prop("checked");
+            var id = $(element).val();
+            var packageName = $(element).attr("data-package");
+            var price = $(element).attr("data-price");
+
+            if (isChecked) {
+                var html = generatePackageItemButton(id, packageName, price);
+
+                $("form#frmAdvancePackageSearch #selectedPackages").append(html)
+
+            } else {
+                if ($('form#frmAdvancePackageSearch span#spnPackage_' + id).length > 0) {
+                    $('form#frmAdvancePackageSearch span#spnPackage_' + id).remove();
+                }
+            }
+        }
+
+        var selectedPackageCount = $('form#frmAdvancePackageSearch #selectedPackages span').length;
+        if (!IsNullOrEmpty(selectedPackageCount) && parseInt(selectedPackageCount) > 0) {
+            $('#divPackage').show();
+        } else {
+            $('#divPackage').hide();
+        }
+    }
+
+    function generatePackageItemButton(packageId, packageName, price) {
+        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_" + packageId + "'>" + packageName + " <i class='fa fa-remove m-l-sm' onclick='removePackageItem(this);' data-packageid='" + packageId + "' data-price='" + price + "'></i></span>";
+    }
+
+    function onSelectPackage(element) {
+        var isChecked = $('#' + element).prop("checked");
+
+        $('#' + element).prop("checked", !isChecked);
+
+        selectDeSelectPackage($('#' + element));
+    }
+
+
+    function searchPackage() {
+        var selectedPackageIds = getCheckedPackageIds();
+        var selectedPackageIdsArr = [];
+        if (!IsNullOrEmpty(selectedPackageIds)) {
+            selectedPackageIdsArr = selectedPackageIds.split(Delimeter.COMMA);
+        }
+
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/Package/SearchAdvancePackage")',
+            type: 'POST',
+            data: $('#frmAdvancePackageSearch').serialize(),
+            success: function (response) {
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    //Show data in table.
+                    var result = response.data;
+
+                    $("form#frmAdvancePackageSearch #tblPackage tbody").empty();
+                    var tbody = $("form#frmAdvancePackageSearch #tblPackage tbody");
+
+                    var markup = "";
+
+                    if (result.length > 0) {
+                        //Add the data rows.
+                        for (var i = 0; i < result.length; i++) {
+                            markup += "<tr>";
+
+                            var checked = "";
+
+                            if (selectedPackageIdsArr != null && selectedPackageIdsArr.length > 0) {
+                                if (arrayContains(result[i].Id, selectedPackageIdsArr) == true) {
+                                    checked = "checked";
+                                }
+                            }
+
+                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkPackage cursor-P\' id=\'chkPackage_" + result[i].Id + "\' name=\'chkPackage\' value=\'" + result[i].Id + "\'  data-packagedescription=\'" + result[i].Description + "\'  data-package=\'" + result[i].Name + "\' data-price=\'" + result[i].Price + "\' onchange=\'selectDeSelectPackage(this);\' " + checked + "/><span class=\'checkmark\'></span></label></td>";
+
+                            markup += "<td onclick=\"onSelectPackage('chkPackage_" + result[i].Id + "');\">" + result[i].Name + "</td>";
+                            markup += "<td onclick=\"onSelectPackage('chkPackage_" + result[i].Id + "');\">" + result[i].Description + "</td>";
+                            markup += "<td onclick=\"onSelectPackage('chkPackage_" + result[i].Id + "');\">" + result[i].Price + "</td>";
+                            markup += "<td onclick=\"onSelectPackage('chkPackage_" + result[i].Id + "');\">" + result[i].CalculationRatio + "</td>";
+
+                            markup += "</tr>";
+                        }
+                    } else {
+                        markup += "<tr><td colspan =\'4\' class=\'text-center\'>No data available.</td></tr>";
+                    }
+
+                    tbody.append(markup);
+                }
+            }
+        });
+    }
+
+    function clearPackageSearch() {
+        $('form#frmAdvancePackageSearch #Name').val('');
+        $('form#frmAdvancePackageSearch #Description').val('');
+        $('form#frmAdvancePackageSearch #Price').val('');
+
+        $("form#frmAdvancePackageSearch #tblPackage tbody").empty();
+    }
+
+
+    function addNewPackage() {
+        var url = '@Url.Content("~/Package/Create")' + "?source=@sourceRedirectionParam";
+        redirectTo(url);
+    }
+
+    function editSelectedPackage() {
+        var selectedPackage = $('input[name=chkPackage]:checked', '#frmAdvancePackageSearch');
+
+        if (selectedPackage.val()) {
+            var packageId = $(selectedPackage).val();
+            var url = '@Url.Content("~/Package/Edit")' + "?id=" + packageId + "&source=@sourceRedirectionParam";
+            redirectTo(url);
+        } else {
+            showToaster("Please select any one package.", ToasterType.ERROR);
+        }
+    }
+
+    function getCheckedPackageIds() {
+        var packageIds = "";
+        $("form#frmAdvancePackageSearch #selectedPackages span i").each(function () {
+            packageIds += $(this).data("packageid") + ",";
+        });
+
+        packageIds = RemoveLastCharacter(packageIds, Delimeter.COMMA);
+        return packageIds;
+    }
+
+
+</script>

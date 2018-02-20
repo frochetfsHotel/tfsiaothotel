@@ -27653,7 +27653,34 @@ BEGIN
 	SET NOCOUNT ON;
 
     SELECT RM.Id,RM.ReservationId,ISNULL(RM.Remarks,'') AS Remarks, RM.CreatedOn,
-		  UD.[Name] AS UserName, RM.CreatedBy
+		  UD.[Name] AS UserName, RM.CreatedBy,
+		  (CASE	WHEN (ISNULL(RM.UpdatedBy,0) <> 0 AND RM.UpdatedOn IS NOT NULL)
+				THEN
+					CONCAT(
+							CONVERT(VARCHAR(10),RM.UpdatedOn,103), 
+							' ', 
+							'at', 
+							' ', 
+							CONVERT(VARCHAR, RM.UpdatedOn, 108),
+							' ',
+							'updated by ',
+							UD.[Name]
+						)
+				WHEN (ISNULL(RM.CreatedBy,0) <> 0 AND RM.CreatedOn IS NOT NULL)
+				THEN
+					CONCAT(
+							CONVERT(VARCHAR(10),RM.CreatedOn,103), 
+							' ', 
+							'at', 
+							' ', 
+							CONVERT(VARCHAR, RM.CreatedOn, 108),
+							' ',
+							'added by ',
+							UD.[Name]
+						)
+				ELSE ''
+			END) AS TrackLog
+ 
 		FROM [dbo].[ReservationRemarks] RM
 			LEFT JOIN UserDetail UD ON UD.UserId = RM.CreatedBy
 				AND ISNULL(UD.IsDeleted,0) = 0
@@ -28285,3 +28312,1046 @@ BEGIN
 		ORDER BY RPM.CreatedOn
 
 END
+
+
+/*************************************************************************************************************/
+Name : Nilesh
+Date : 20-FEB-2018
+/**********************************************************************************************************/
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchAdvancePackage
+	Comment : Create SP SearchAdvancePackage	
+***********************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[SearchAdvancePackage]    Script Date: 2/20/2018 11:37:38 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvancePackage]
+			@Name				=	''		,
+			@Description		=	''		,
+			@Price				=	NULL	,
+			@CalculationRatioId	=	NULL	
+*/
+CREATE PROCEDURE [dbo].[SearchAdvancePackage]
+	@Name					NVARCHAR(500)		=	NULL	,		
+	@Description			NVARCHAR(MAX)		=	NULL	,
+	@Price					NUMERIC(18,2)		=	NULL	,
+	@CalculationRatioId		UNIQUEIDENTIFIER	=	NULL	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  PK.[Name] ASC
+
+				) AS RowNum,
+				PK.[Id],								
+				PK.[Name],
+				ISNULL(PK.[Description],'') AS [Description],
+				PK.Price,
+				PK.CalculationRatioId,
+				ISNULL(PCR.[Name],'') AS [CalculationRatio],
+				PK.[CreatedOn],
+				PK.[IsActive]
+			FROM [dbo].[Package] PK
+				LEFT JOIN [dbo].[PackageCalculationRatio] PCR ON PCR.Id = PK.CalculationRatioId
+					AND ISNULL(PCR.IsDeleted,0) = 0
+			WHERE	ISNULL(PK.IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR PK.[Name] LIKE '%'+ @Name +'%')  					 
+					AND (ISNULL(@Description,'') = '' OR PK.[Description] LIKE '%'+ @Description +'%')  	
+					AND (@Price IS NULL OR PK.[Price] = @Price)
+					AND (@CalculationRatioId IS NULL OR PK.[CalculationRatioId] = @CalculationRatioId)
+						
+
+
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationPackageMapping
+	Comment : Create SP DeleteReservationPackageMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationPackageMapping]    Script Date: 2/19/2018 6:22:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationPackageMapping]	
+	@Id			UNIQUEIDENTIFIER				,
+	@UpdatedBy	INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationPackageMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+	
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationPreferenceMapping
+	Comment : Create SP DeleteReservationPreferenceMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationPreferenceMapping]    Script Date: 2/20/2018 1:30:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationPreferenceMapping]	
+	@Id		UNIQUEIDENTIFIER = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DELETE FROM [dbo].[ReservationPreferenceMapping] 
+		WHERE	Id = @Id
+	
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteProfilePreferenceMapping
+	Comment : Create SP DeleteProfilePreferenceMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteProfilePreferenceMapping]    Script Date: 2/20/2018 1:32:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteProfilePreferenceMapping]
+	@Id	UNIQUEIDENTIFIER
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DELETE FROM [dbo].[ProfilePreferenceMapping] 
+		WHERE	Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationRoomMapping
+	Comment : Create SP DeleteReservationRoomMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationRoomMapping]    Script Date: 2/20/2018 1:38:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationRoomMapping]	
+	@Id				UNIQUEIDENTIFIER		,
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationRoomMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+	
+
+	SELECT @Id AS Id
+    
+END
+
+/*** Add required data (pacakge) in AdditionalCharges table *****/
+
+INSERT INTO [dbo].[AdditionalCharges] ([Id],[Code],[Description], [Price], [CreatedBy], [CreatedOn], [IsActive]) 
+	VALUES (NEWID(), '9005' ,'Package', 0, 1, GETDATE(), 1)
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationCharges
+	Comment : Changes in SP GetReservationCharges	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 2/20/2018 3:09:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'3836abff-095a-43f8-98ea-b5c5db75bcc9',
+		@AdditionalChargeId		=	NULL
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId		UNIQUEIDENTIFIER = NULL,
+	@AdditionalChargeId	UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+
+	UNION
+
+	
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9005') -- Package
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9005') -- Package
+	UNION
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RE.CreditCardNo, 4)) END )AS Code,
+		RC.Description,4 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+
+
+	ORDER BY SortOrder
+END
+
+/********** DROP Foreign Key FK_ReservationCharges_AdditionalCharges  **************/
+
+ALTER TABLE [dbo].[ReservationCharges] DROP CONSTRAINT [FK_ReservationCharges_AdditionalCharges]
+GO
+
+/********* Add new column AdditionalChargeSource into ReservationCharges table ****************/
+
+ALTER TABLE ReservationCharges ADD AdditionalChargeSource NVARCHAR(500) NULL
+GO
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchAdvanceAdditionalCharge
+	Comment : Changes in SP SearchAdvanceAdditionalCharge	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceAdditionalCharge]    Script Date: 2/20/2018 3:36:11 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceAdditionalCharge]
+			@Code	= ''			
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceAdditionalCharge]
+	@Code		NVARCHAR(50)	=	NULL
+	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  AC.[Code] ASC
+
+				) AS RowNum,
+				AC.[Id], 
+				AC.[Code],
+				AC.[Description],
+				AC.[Price],
+				AC.[CreatedOn], 
+				AC.[IsActive]
+			FROM [dbo].[AdditionalCharges] AC					
+				WHERE	ISNULL(IsActive,0)  = 1 AND ISNULL(AC.IsDeleted,0) = 0
+						AND (
+								ISNULL(@Code,'') = '' OR 
+								(AC.[Code] LIKE '%'+ @Code +'%' 
+									OR AC.[Description] LIKE '%'+ @Code +'%')
+							)
+
+						--Avoid Room Rent, Package and CheckOut
+						AND ISNULL(AC.[Code],'') NOT IN ('1000','9004', '9005')
+END
+
+/*********** Update default Reservation Charge Source  = 'AC' **********************/
+
+UPDATE ReservationCharges SET AdditionalChargeSource = 'AC' WHERE ISNULL(IsDeleted,0) = 0
+
+
+
+/************************************************************************************************************************ 
+	SP Name : AddReservationCharges
+	Comment : Changes in SP AddReservationCharges	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddReservationCharges]    Script Date: 2/20/2018 3:51:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@Code					NVARCHAR(25)		=	NULL	,
+	@Description			NVARCHAR(1000)		=	NULL	,
+	@TransactionDate		DATETIME			=	NULL	,
+	@Amount					DECIMAL(18,2)		=	NULL	,
+	@Qty					INT					=	NULL	,
+	@Supplement				NVARCHAR(255)		=	NULL	,
+	@Reference				NVARCHAR(500)		=	NULL	,
+	@AdditionalChargeSource	NVARCHAR(500)		=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@CreatedBy				INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationCharges]
+           ([Id]		   
+           ,[ReservationId]
+           ,[AdditionalChargeId]
+		   ,[Code]
+		   ,[Description]
+		   ,[TransactionDate]
+		   ,[Amount]
+		   ,[Qty]
+		   ,[Supplement]
+		   ,[Reference]
+		   ,[AdditionalChargeSource]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@ReservationId
+			   ,@AdditionalChargeId
+			   ,@Code
+			   ,@Description
+			   ,@TransactionDate
+			   ,@Amount
+			   ,@Qty
+			   ,@Supplement
+			   ,@Reference
+			   ,@AdditionalChargeSource
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateReservationCharges
+	Comment : Changes in SP UpdateReservationCharges	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateReservationCharges]    Script Date: 2/20/2018 3:53:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateReservationCharges]
+	@Id						UNIQUEIDENTIFIER				,
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@Code					NVARCHAR(25)		=	NULL	,
+	@Description			NVARCHAR(1000)		=	NULL	,
+	@TransactionDate		DATETIME			=	NULL	,
+	@Amount					DECIMAL(18,2)		=	NULL	,
+	@Qty					INT					=	NULL	,
+	@Supplement				NVARCHAR(255)		=	NULL	,
+	@Reference				NVARCHAR(500)		=	NULL	,
+	@AdditionalChargeSource	NVARCHAR(500)		=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@UpdatedBy				INT					=	NULL
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationCharges] 
+		SET	[ReservationId]				=	@ReservationId
+           ,[AdditionalChargeId]		=	@AdditionalChargeId
+		   ,[Code]						=	@Code
+		   ,[Description]				=	@Description
+		   ,[TransactionDate]			=	@TransactionDate
+		   ,[Amount]					=	@Amount
+		   ,[Qty]						=	@Qty
+		   ,[Supplement]				=	@Supplement
+		   ,[Reference]					=	@Reference
+		   ,[AdditionalChargeSource]	=	@AdditionalChargeSource
+		   ,[UpdatedBy]					=	@UpdatedBy
+		   ,[IsActive]					=	@IsActive
+		   ,[UpdatedOn]					=	GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationChargesByAdditionalChargeSource
+	Comment : Create SP GetReservationChargesByAdditionalChargeSource	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationChargesByAdditionalChargeSource]    Script Date: 2/20/2018 4:09:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationChargesByAdditionalChargeSource]
+		@ReservationId				=	'3836abff-095a-43f8-98ea-b5c5db75bcc9'	,
+		@AdditionalChargeId			=	'148D7278-4954-483A-BA28-7141713E755A'	,
+		@AdditionalChargeSource		=	'PKM'								
+*/
+
+CREATE PROCEDURE [dbo].[GetReservationChargesByAdditionalChargeSource]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeSource	NVARCHAR(500)		=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND (ISNULL(@AdditionalChargeSource,'') = '' OR RC.AdditionalChargeSource = @AdditionalChargeSource)
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : AddUpdateReservationPackageMapping
+	Comment : Changes in SP AddUpdateReservationPackageMapping	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[AddUpdateReservationPackageMapping]    Script Date: 2/20/2018 4:15:57 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddUpdateReservationPackageMapping]
+	@ReservationId		UNIQUEIDENTIFIER			,	
+	@PackageId			UNIQUEIDENTIFIER			,
+	@CreatedBy			INT					=	NULL,
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	
+	SET @Id = (SELECT TOP 1 Id FROM [ReservationPackageMapping] 
+						WHERE ISNULL(IsDeleted,0) = 0 AND [ReservationId] = @ReservationId AND PackageId = @PackageId)
+
+	IF @Id IS NULL
+	BEGIN
+
+		SET @Id = NEWID()
+
+		INSERT INTO [dbo].[ReservationPackageMapping]
+			   ([Id]
+			   ,[ReservationId]			   
+			   ,[PackageId]
+			   ,[CreatedBy]
+			   ,[CreatedOn])
+		 VALUES
+				(
+					@Id
+					,@ReservationId					
+					,@PackageId
+					,@CreatedBy
+					,GETDATE()
+				)
+	END
+	ELSE
+	BEGIN
+		UPDATE [dbo].[ReservationPackageMapping]
+			SET		[UpdatedBy] = @UpdatedBy
+					,[UpdatedOn]	= GETDATE()
+			WHERE	ISNULL(IsDeleted,0) = 0 
+					AND [ReservationId] = @ReservationId 
+					AND [PackageId] = @PackageId
+					AND [Id] = @Id
+	END
+			
+	SELECT @Id AS Id
+    
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationCharges
+	Comment : Changes in SP GetReservationCharges	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 2/20/2018 4:34:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'3836abff-095a-43f8-98ea-b5c5db75bcc9',
+		@AdditionalChargeId		=	NULL
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId		UNIQUEIDENTIFIER = NULL,
+	@AdditionalChargeId	UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeSource = 'AC' -- Additional  Charge
+
+	UNION
+
+	
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeSource = 'PKM' -- Package
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND RC.AdditionalChargeSource <> 'PKM' -- Package
+	UNION
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,RC.Amount,RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RE.CreditCardNo, 4)) END )AS Code,
+		RC.Description,4 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+
+
+	ORDER BY SortOrder
+END
+
+
+/********** DROP Foreign Key 'FK_Reservation_Package'  **************/
+
+ALTER TABLE [dbo].[Reservation] DROP CONSTRAINT [FK_Reservation_Package]
+GO
+
+/******** Remove Package Id column from Reservation Table ********/
+
+ALTER TABLE Reservation DROP COLUMN PackageId 
+GO
+
+
+
+/************************************************************************************************************************ 
+	SP Name : AddReservation
+	Comment : Changes in SP AddReservation	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddReservation]    Script Date: 2/20/2018 5:19:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservation]	
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@ProfileId				UNIQUEIDENTIFIER	=	NULL	,
+	@MemberTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@LanguageId				UNIQUEIDENTIFIER	=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@PhoneNo				NVARCHAR(50)		=	NULL	,
+	@MemberNo				NVARCHAR(255)		=	NULL	,
+	@MemberLvt				NVARCHAR(255)		=	NULL	,
+	@AgentId				UNIQUEIDENTIFIER	=	NULL	,
+	@CompanyId				UNIQUEIDENTIFIER	=	NULL	,
+	@GroupId				UNIQUEIDENTIFIER	=	NULL	,
+	@SourceId				UNIQUEIDENTIFIER	=	NULL	,
+	@ContactId				UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate			DATETIME			=	NULL	,
+	@NoOfNight				INT					=	NULL	,
+	@DepartureDate			DATETIME			=	NULL	,
+	@NoOfAdult				INT					=	NULL	,
+	@NoOfChildren			INT					=	NULL	,
+	@NoOfInfant				INT					=	NULL	,
+	@NoOfRoom				INT					=	NULL	,
+	@RoomTypeId				UNIQUEIDENTIFIER	=	NULL	,
+	@RtcId					UNIQUEIDENTIFIER	=	NULL	,	
+	@ExtnId					UNIQUEIDENTIFIER	=	NULL	,
+	@RateCodeId				UNIQUEIDENTIFIER	=	NULL	,
+	@IsFixedRate			BIT					=	NULL	,
+	@Rate					DECIMAL(18,2)		=	NULL	,
+	@CurrencyId				UNIQUEIDENTIFIER	=	NULL	,	
+	@BlockCodeId			UNIQUEIDENTIFIER	=	NULL	,
+	@ETA					TIME(7)				=	NULL	,
+	@ReservationTypeId		UNIQUEIDENTIFIER	=	NULL	,
+	@MarketId				UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationSourceId	UNIQUEIDENTIFIER	=	NULL	,
+	@OriginId				UNIQUEIDENTIFIER	=	NULL	,
+	@PaymentMethodId		UNIQUEIDENTIFIER	=	NULL	,
+	@CreditCardNo			NVARCHAR(255)		=	NULL	,
+	@CardExpiryDate			NVARCHAR(50)		=	NULL	,
+	@CVVNo					NVARCHAR(255)		=	NULL	,
+	@ApprovalCode			NVARCHAR(255)		=	NULL	,
+	@ApprovalAmount			DECIMAL(18,2)		=	NULL	,
+	@SuitWith				NVARCHAR(255)		=	NULL	,
+	@IsEmailConfirmation	BIT					=	NULL	,
+	@GuestBalance			DECIMAL(18,2)		=	NULL	,
+	@DiscountAmount			DECIMAL(18,2)		=	NULL	,
+	@DiscountPercentage		DECIMAL(18,2)		=	NULL	,
+	@DiscountApprovedBy		UNIQUEIDENTIFIER	=	NULL	,
+	@DiscountReason			NVARCHAR(MAX)		=	NULL	,
+	@TARecordLocator		NVARCHAR(255)		=	NULL	,
+	@SpecialsId				UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationComments	NVARCHAR(MAX)		=	NULL	,
+	@InHouseComments		NVARCHAR(MAX)		=	NULL	,
+	@CashieringComments		NVARCHAR(MAX)		=	NULL	,
+	@HouseKeepingComments	NVARCHAR(MAX)		=	NULL	,
+	@ItemInventoryId		UNIQUEIDENTIFIER	=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@ConfirmationNumber		NVARCHAR(255)					,
+	@TotalPrice				DECIMAL(18,2)		=	NULL	,	
+	@FolioNumber			BIGINT				=	NULL	,
+	@IsActive				BIT					=	NULL	,
+	@CreatedBy				INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @ReservationId UNIQUEIDENTIFIER
+	SET @ReservationId = NEWID()
+
+	DECLARE @ETATime TIME(7) = NULL
+
+	--IF ISNULL(@ETA,'') <> ''
+	--BEGIN
+	--	SET @ETATime = CAST(@ETA AS TIME(7))
+	--END
+
+	SET @ETATime = @ETA
+
+	INSERT INTO [dbo].[Reservation]
+           ([Id]
+           ,[TitleId]
+           ,[LastName]
+           ,[FirstName]
+           ,[ProfileId]
+           ,[MemberTypeId]
+           ,[CountryId]
+           ,[LanguageId]
+           ,[VipId]
+           ,[PhoneNo]
+           ,[MemberNo]
+           ,[MemberLvt]
+           ,[AgentId]
+           ,[CompanyId]
+           ,[GroupId]
+           ,[SourceId]
+           ,[ContactId]
+           ,[ArrivalDate]
+           ,[NoOfNight]
+           ,[DepartureDate]
+           ,[NoOfAdult]
+           ,[NoOfChildren]
+		   ,[NoOfInfant]
+           ,[NoOfRoom]
+           ,[RoomTypeId]
+           ,[RtcId]           
+           ,[ExtnId]
+           ,[RateCodeId]
+           ,[IsFixedRate]
+           ,[Rate]
+           ,[CurrencyId]           
+           ,[BlockCodeId]
+           ,[ETA]
+           ,[ReservationTypeId]
+           ,[MarketId]
+           ,[ReservationSourceId]
+           ,[OriginId]
+           ,[PaymentMethodId]
+           ,[CreditCardNo]
+           ,[CardExpiryDate]
+           ,[CVVNo]
+           ,[ApprovalCode]
+           ,[ApprovalAmount]
+           ,[SuitWith]
+           ,[IsEmailConfirmation]
+           ,[GuestBalance]
+           ,[DiscountAmount]
+           ,[DiscountPercentage]
+           ,[DiscountApprovedBy]
+		   ,[DiscountReason]
+           ,[TARecordLocator]
+           ,[SpecialsId]
+           ,[ReservationComments]
+		   ,[InHouseComments]
+		   ,[CashieringComments]
+		   ,[HouseKeepingComments]
+           ,[ItemInventoryId]
+           ,[Remarks]
+		   ,[ConfirmationNumber]
+		   ,[TotalPrice]		   
+		   ,[FolioNumber]
+           ,[CreatedBy]
+           ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+				@ReservationId
+				, @TitleId							
+				, @LastName						
+				, @FirstName						
+				, @ProfileId			
+				, @MemberTypeId		
+				, @CountryId			
+				, @LanguageId			
+				, @VipId				
+				, @PhoneNo			
+				, @MemberNo			
+				, @MemberLvt			
+				, @AgentId			
+				, @CompanyId			
+				, @GroupId			
+				, @SourceId			
+				, @ContactId			
+				, @ArrivalDate		
+				, @NoOfNight			
+				, @DepartureDate		
+				, @NoOfAdult			
+				, @NoOfChildren
+				, @NoOfInfant
+    			, @NoOfRoom			
+				, @RoomTypeId			
+				, @RtcId								
+				, @ExtnId				
+				, @RateCodeId			
+				, @IsFixedRate		
+				, @Rate				
+				, @CurrencyId							
+				, @BlockCodeId		
+				, @ETATime				
+				, @ReservationTypeId	
+				, @MarketId			
+				, @ReservationSourceId
+				, @OriginId			
+				, @PaymentMethodId	
+				, @CreditCardNo		
+				, @CardExpiryDate		
+				, @CVVNo				
+				, @ApprovalCode		
+				, @ApprovalAmount		
+				, @SuitWith			
+				, @IsEmailConfirmation
+				, @GuestBalance		
+				, @DiscountAmount		
+				, @DiscountPercentage	
+				, @DiscountApprovedBy
+				, @DiscountReason
+				, @TARecordLocator	
+				, @SpecialsId			
+				, @ReservationComments			
+				, @InHouseComments
+				, @CashieringComments
+				, @HouseKeepingComments
+				, @ItemInventoryId	
+				, @Remarks		
+			    , @ConfirmationNumber	
+				, @TotalPrice				
+				, @FolioNumber
+				, @CreatedBy
+				, GETDATE()
+				, @IsActive		
+			)	
+			
+			
+		SELECT @ReservationId AS ReservationId				
+
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateReservation
+	Comment : Changes in SP UpdateReservation	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[UpdateReservation]    Script Date: 2/20/2018 5:20:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateReservation]	
+	@Id						UNIQUEIDENTIFIER	=	NULL	,
+	@TitleId				UNIQUEIDENTIFIER	=	NULL	,
+	@LastName				NVARCHAR(255)		=	NULL	,
+	@FirstName				NVARCHAR(255)		=	NULL	,
+	@ProfileId				UNIQUEIDENTIFIER	=	NULL	,
+	@MemberTypeId			UNIQUEIDENTIFIER	=	NULL	,
+	@CountryId				INT					=	NULL	,
+	@LanguageId				UNIQUEIDENTIFIER	=	NULL	,
+	@VipId					UNIQUEIDENTIFIER	=	NULL	,
+	@PhoneNo				NVARCHAR(50)		=	NULL	,
+	@MemberNo				NVARCHAR(255)		=	NULL	,
+	@MemberLvt				NVARCHAR(255)		=	NULL	,
+	@AgentId				UNIQUEIDENTIFIER	=	NULL	,
+	@CompanyId				UNIQUEIDENTIFIER	=	NULL	,
+	@GroupId				UNIQUEIDENTIFIER	=	NULL	,
+	@SourceId				UNIQUEIDENTIFIER	=	NULL	,
+	@ContactId				UNIQUEIDENTIFIER	=	NULL	,
+	@ArrivalDate			DATETIME			=	NULL	,
+	@NoOfNight				INT					=	NULL	,
+	@DepartureDate			DATETIME			=	NULL	,
+	@NoOfAdult				INT					=	NULL	,
+	@NoOfChildren			INT					=	NULL	,
+	@NoOfInfant				INT					=	NULL	,
+	@NoOfRoom				INT					=	NULL	,
+	@RoomTypeId				UNIQUEIDENTIFIER	=	NULL	,
+	@RtcId					UNIQUEIDENTIFIER	=	NULL	,	
+	@ExtnId					UNIQUEIDENTIFIER	=	NULL	,
+	@RateCodeId				UNIQUEIDENTIFIER	=	NULL	,
+	@IsFixedRate			BIT					=	NULL	,
+	@Rate					DECIMAL(18,2)		=	NULL	,
+	@CurrencyId				UNIQUEIDENTIFIER	=	NULL	,	
+	@BlockCodeId			UNIQUEIDENTIFIER	=	NULL	,
+	@ETA					TIME(7)				=	NULL	,
+	@ReservationTypeId		UNIQUEIDENTIFIER	=	NULL	,
+	@MarketId				UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationSourceId	UNIQUEIDENTIFIER	=	NULL	,
+	@OriginId				UNIQUEIDENTIFIER	=	NULL	,
+	@PaymentMethodId		UNIQUEIDENTIFIER	=	NULL	,
+	@CreditCardNo			NVARCHAR(255)		=	NULL	,
+	@CardExpiryDate			NVARCHAR(50)		=	NULL	,
+	@CVVNo					NVARCHAR(255)		=	NULL	,
+	@ApprovalCode			NVARCHAR(255)		=	NULL	,
+	@ApprovalAmount			DECIMAL(18,2)		=	NULL	,
+	@SuitWith				NVARCHAR(255)		=	NULL	,
+	@IsEmailConfirmation	BIT					=	NULL	,
+	@GuestBalance			DECIMAL(18,2)		=	NULL	,
+	@DiscountAmount			DECIMAL(18,2)		=	NULL	,
+	@DiscountPercentage		DECIMAL(18,2)		=	NULL	,
+	@DiscountApprovedBy		UNIQUEIDENTIFIER	=	NULL	,
+	@DiscountReason			NVARCHAR(MAX)		=	NULL	,
+	@TARecordLocator		NVARCHAR(255)		=	NULL	,
+	@SpecialsId				UNIQUEIDENTIFIER	=	NULL	,
+	@ReservationComments	NVARCHAR(MAX)		=	NULL	,
+	@InHouseComments		NVARCHAR(MAX)		=	NULL	,
+	@CashieringComments		NVARCHAR(MAX)		=	NULL	,
+	@HouseKeepingComments	NVARCHAR(MAX)		=	NULL	,
+	@ItemInventoryId		UNIQUEIDENTIFIER	=	NULL	,
+	@Remarks				NVARCHAR(MAX)		=	NULL	,
+	@TotalPrice				DECIMAL(18,2)		=	NULL	,	
+	@IsActive				BIT					=	NULL	,
+	@UpdatedBy				INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	DECLARE @ETATime TIME(7) = NULL
+
+	--IF ISNULL(@ETA,'') <> ''
+	--BEGIN
+	--	SET @ETATime = CAST(@ETA AS TIME(7))
+	--END
+
+	SET @ETATime = @ETA
+
+	UPDATE [dbo].[Reservation] SET           
+		[TitleId]				=	@TitleId
+		,[LastName]				=	@LastName
+		,[FirstName]			=	@FirstName	
+		,[ProfileId]			=	@ProfileId
+		,[MemberTypeId]			=	@MemberTypeId
+		,[CountryId]			=	@CountryId
+		,[LanguageId]			=	@LanguageId
+		,[VipId]				=	@VipId
+		,[PhoneNo]				=	@PhoneNo
+		,[MemberNo]				=	@MemberNo
+		,[MemberLvt]			=	@MemberLvt
+		,[AgentId]				=	@AgentId
+		,[CompanyId]			=	@CompanyId
+		,[GroupId]				=	@GroupId
+		,[SourceId]				=	@SourceId
+		,[ContactId]			=	@ContactId
+		,[ArrivalDate]			=	@ArrivalDate
+		,[NoOfNight]			=	@NoOfNight
+		,[DepartureDate]		=	@DepartureDate
+		,[NoOfAdult]			=	@NoOfAdult
+		,[NoOfChildren]			=	@NoOfChildren
+		,[NoOfInfant]			=	@NoOfInfant
+		,[NoOfRoom]				=	@NoOfRoom
+		,[RoomTypeId]			=	@RoomTypeId
+		,[RtcId]				=	@RtcId		
+		,[ExtnId]				=	@ExtnId
+		,[RateCodeId]			=	@RateCodeId
+		,[IsFixedRate]			=	@IsFixedRate
+		,[Rate]					=	@Rate
+		,[CurrencyId]			=	@CurrencyId		
+		,[BlockCodeId]			=	@BlockCodeId
+		,[ETA]					=	@ETATime
+		,[ReservationTypeId]	=	@ReservationTypeId
+		,[MarketId]				=	@MarketId
+		,[ReservationSourceId]	=	@ReservationSourceId
+		,[OriginId]				=	@OriginId
+		,[PaymentMethodId]		=	@PaymentMethodId
+		,[CreditCardNo]			=	@CreditCardNo
+		,[CardExpiryDate]		=	@CardExpiryDate
+		,[CVVNo]				=	@CVVNo
+		,[ApprovalCode]			=	@ApprovalCode
+		,[ApprovalAmount]		=	@ApprovalAmount
+		,[SuitWith]				=	@SuitWith
+		,[IsEmailConfirmation]	=	@IsEmailConfirmation
+		,[GuestBalance]			=	@GuestBalance
+		,[DiscountAmount]		=	@DiscountAmount
+		,[DiscountPercentage]	=	@DiscountPercentage
+		,[DiscountApprovedBy]	=	@DiscountApprovedBy
+		,[DiscountReason]		=	@DiscountReason
+		,[TARecordLocator]		=	@TARecordLocator
+		,[SpecialsId]			=	@SpecialsId
+		,[ReservationComments]	=	@ReservationComments
+		,[InHouseComments]		=	@InHouseComments
+		,[CashieringComments]	=	@CashieringComments
+		,[HouseKeepingComments]	=	@HouseKeepingComments
+		,[ItemInventoryId]		=	@ItemInventoryId
+		,[Remarks]				=	@Remarks
+		,[TotalPrice]			=	@TotalPrice		
+		,[UpdatedBy]			=	@UpdatedBy
+		,[UpdatedOn]			=	GETDATE()
+		,[IsActive]				=	@IsActive
+	WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+			
+			
+	SELECT @Id AS ReservationId				
+
+END
+

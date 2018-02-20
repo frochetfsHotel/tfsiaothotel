@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize(Roles = "ADMIN")]
+    
     public class PackageController : Controller
     {
         #region Declaration
@@ -24,6 +24,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
             var calculationRatioList = new SelectList(packageRepository.GetPackageCalculationRatio(), "Id", "Name").ToList();
@@ -32,6 +33,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(PackageVM model)
@@ -74,6 +76,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
             var package = packageRepository.GetPackageById(id);
@@ -94,6 +97,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("List");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(PackageVM model)
@@ -135,6 +139,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -171,6 +176,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
             var calculationRatioList = new SelectList(packageRepository.GetPackageCalculationRatio(), "Id", "Name").ToList();
@@ -180,6 +186,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult Search(SearchPackageParametersVM model)
         {
@@ -221,6 +228,28 @@ namespace SuccessHotelierHub.Controllers
             catch (Exception e)
             {
                 Utility.Utility.LogError(e, "Search");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
+        public ActionResult SearchAdvancePackage(SearchAdvancePackageParametersVM model)
+        {
+            try
+            {
+                var packages = packageRepository.SearchAdvancePackage(model);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = packages
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SearchAdvancePackage");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

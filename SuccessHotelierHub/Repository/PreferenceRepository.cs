@@ -178,6 +178,20 @@ namespace SuccessHotelierHub.Repository
             return preferenceId;
         }
 
+        public string DeleteProfilePreferenceMapping(Guid id)
+        {
+            string mappingId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id }
+                };
+
+            mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteProfilePreferenceMapping", parameters));
+
+            return mappingId;
+        }
+
         #endregion #region Profile Preference Mapping
 
         #region Reservation Preference Mapping 
@@ -210,6 +224,20 @@ namespace SuccessHotelierHub.Repository
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPreferenceMappingByReservation", parameters));
 
             return id;
+        }
+
+        public string DeleteReservationPreferenceMapping(Guid id)
+        {
+            string mappingId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id }
+                };
+
+            mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPreferenceMapping", parameters));
+
+            return mappingId;
         }
 
         public List<ReservationPreferenceMappingVM> GetReservationPreferenceMapping(Guid? reservationId, Guid? preferenceId)

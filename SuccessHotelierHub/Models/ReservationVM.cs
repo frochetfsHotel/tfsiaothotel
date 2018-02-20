@@ -124,8 +124,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Currency")]
         public Guid? CurrencyId { get; set; }
 
-        [DisplayName("Packages")]
-        public Guid? PackageId { get; set; }
+        //[DisplayName("Packages")]
+        //public Guid? PackageId { get; set; }
 
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }

@@ -113,6 +113,24 @@ namespace SuccessHotelierHub.Repository
             return packages;
         }
 
+        public List<SearchAdvancePackageResultVM> SearchAdvancePackage(SearchAdvancePackageParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Description", Value = model.Description },
+                    new SqlParameter { ParameterName = "@Price", Value = model.Price },
+                    new SqlParameter { ParameterName = "@CalculationRatioId", Value = model.CalculationRatioId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvancePackage", parameters);
+
+            var packages = new List<SearchAdvancePackageResultVM>();
+            packages = DALHelper.CreateListFromTable<SearchAdvancePackageResultVM>(dt);
+
+            return packages;
+        }
+
         #endregion
 
         #region Package Calculation Ration

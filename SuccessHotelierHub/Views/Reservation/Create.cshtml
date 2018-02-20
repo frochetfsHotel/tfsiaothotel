@@ -19,6 +19,19 @@
         departureDayOfWeek = SuccessHotelierHub.Utility.Utility.WeekdayName((int)Model.DepartureDate.Value.DayOfWeek);
     }
 
+    #region Package Mapping
+    var selectedPacakges = (List<PackageVM>)ViewBag.SelectedPacakges;
+    var selectedPacakgesHtml = string.Empty;
+
+    if (selectedPacakges != null && selectedPacakges.Count > 0)
+    {
+        foreach (var package in selectedPacakges)
+        {
+            selectedPacakgesHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePackageItem(this)' data-packageid='{1}' data-price='{2}'></i></span>", package.Description, package.Id, package.Price);
+        }
+    }
+    #endregion
+
     var marketLEISId = Convert.ToString((Guid?)ViewBag.MarketLEISId);
     var reservationSourceId = Convert.ToString((Guid?)ViewBag.ReservationSourceId);
 
@@ -318,14 +331,7 @@
 
                 </div>
 
-                <div class="row" id="divArrivalTime">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.PackageId)
-                        @Html.DropDownListFor(m => m.PackageId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.PackageList, "Value", "Text"),
-                                "--Select Package--",
-                                new { @class = "form-control" })                     
-                    </div>
+                <div class="row" id="divArrivalTime">                  
                     @*<div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.BlockCodeId)
                             <select class="form-control" id="BlockCodeId" name="BlockCodeId">
@@ -537,7 +543,8 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row m-t-md">
+                                <hr />
                                 <div class="col-xs-1 form-group">
                                     <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
                                         Preference
@@ -550,7 +557,22 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <hr />
+                                <div class="col-xs-1 form-group">
+                                    <button type="button" class="btn bg-navy btn-sm" onclick="openPackageModal();">
+                                        Packages
+                                    </button>
+                                </div>
+                                <div class="col-md-11 form-group" style="display:none;" id="divSelectedPackage">
+                                    <label for="ListOfSelectedPackages" class="m-l-n col-sm-3 control-label m-r-n-xl">
+                                        Selected Packages :
+                                    </label>
+                                    <div class="col-sm-9" id="ListOfSelectedPackages">
 
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
             <!-- /.box-body -->
@@ -653,6 +675,27 @@
     </div>
 </div>
 <!-- Room Modal Popup END -->
+
+<!-- Package Modal Popup START -->
+<div class="modal fade" id="packageModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Packages</h4>
+            </div>
+            <div class="modal-body modal-body_padding">
+                @Html.Partial("~/Views/Package/_Packages.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "EditReservation" }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Package Modal Popup END -->
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -840,17 +883,34 @@
                 showToaster("Please enter remarks", ToasterType.ERROR);
                 return false;
             }
-            if (!IsNullOrEmpty(remarkId)) {                
+            if (!IsNullOrEmpty(remarkId)) {
                 //Update remarks in table.
-                UpdateReservationRemark(remarkId);               
+                UpdateReservationRemark(remarkId);
             } else {
                 //Add remarks in table.
                 AddReservationRemark();
             }
         });
 
-        //Reservation Packages
-       
+        //Show Selected Packages.
+        showSelectedPackages();
+
+        //Package
+        $('.btnAdvanceSearchPackageOk').click(function (e) {
+            var selectedPackageCount = 0;
+            selectedPackageCount = $('form#frmAdvancePackageSearch #selectedPackages span').length;
+
+            if (!IsNullOrEmpty(selectedPackageCount) && selectedPackageCount > 0) {
+                var selectedPackageElement = $('form#frmAdvancePackageSearch #selectedPackages').html();
+                $("#ListOfSelectedPackages").html(selectedPackageElement);
+
+                $('#divSelectedPackage').show();
+
+                //Close Package Search Modal.
+                $('#packageModal').modal('toggle');
+            }
+        });
+
     });
 
     function arrivalDateChanged(e) {
@@ -895,7 +955,7 @@
             $("form#frmAdvancePreferenceSearch #divPreferences").show();
         }
 
-        selectPrefereceGroup("ROOOM FEATURES");
+        selectPreferenceGroup("ROOOM FEATURES");
         $("form#frmAdvancePreferenceSearch #btnSearch").click();
 
         $('#preferenceModal').modal('toggle');
@@ -1051,6 +1111,15 @@
             var preferenceIds = getSelectedPreferenceItemIds();
             $('form#frmReservation #PreferenceItems').val(preferenceIds);
 
+            //Get Selected Packages.
+            var packageList = [];            
+            $("form#frmReservation #ListOfSelectedPackages span i").each(function () {
+                var modelPackageVM = {};
+                modelPackageVM.Id = $(this).data("packageid");
+                modelPackageVM.Price = $(this).data("price");
+                packageList.push(modelPackageVM);
+            });
+
             //Reservation Remarks.
             var reservationRemarkList = [];
             $("form#frmReservation #tblReservationRemark tbody tr").each(function () {
@@ -1062,10 +1131,10 @@
 
                     var remarks = $('#Remarks_' + rowNumber).val();
                     modelReservationRemark.Remarks = remarks;
-                    
+
                     var dateTimeObj = $('#RemarksCreatedOn_' + rowNumber).val();
                     modelReservationRemark.CreatedOn = dateTimeObj;
-                    
+
                     reservationRemarkList.push(modelReservationRemark);
                 }
             });
@@ -1074,7 +1143,8 @@
             var formData = $('#frmReservation').serializeObject();
 
             //Add additional property in form data.
-            $.extend(formData, { RemarksList: reservationRemarkList });                        
+            $.extend(formData, { RemarksList: reservationRemarkList });
+            $.extend(formData, { PackageList: packageList });
 
             //Ajax Request to create reservation.
             $.ajax({
@@ -1088,7 +1158,8 @@
                     hideLoader();
                 },
                 url: '@Url.Content("~/Reservation/Create")',
-                type: 'POST',               
+                type: 'POST',
+                //data: $('#frmReservation').serialize(),
                 data: formData,
                 success: function (response) {
                     if (!IsNullOrEmpty(response)) {
@@ -1464,8 +1535,8 @@
         }
     }
 
-    //Reservation Remarks
-    function AddReservationRemark(){        
+    //Reservation Remarks : START
+    function AddReservationRemark(){
 
         var rowNumber = $('#hdnTotalReservationRemarks').val();
 
@@ -1529,7 +1600,7 @@
             var html = "";
             var trId = "#tr_" + rowNumber;
 
-            //Remarks                        
+            //Remarks
             html += remarks;
             html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
             $('form#frmReservation #tblReservationRemark tbody ' + trId + ' #Remarks_' + rowNumber).val(remarks);
@@ -1538,12 +1609,12 @@
 
             //TrackLog
             var userName = '@LogInManager.UserName';
-            var dateObj = new Date();            
+            var dateObj = new Date();
             var createdDate = GetDate(dateObj, DateFormat.DDMMYYYY);
             var createdTime = GetTime(dateObj);
             var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
             var trackLog = createdDate + " at " + createdTime + " added by " + userName;
-            
+
             html = "";
             html += trackLog;
             html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
@@ -1565,7 +1636,7 @@
         }
     }
 
-    function deleteReservationRemark(element) {        
+    function deleteReservationRemark(element) {
         $(element).closest("tr").remove();
         ClearRemarks();
         //showToaster("Remark deleted successfully", ToasterType.SUCCESS);
@@ -1576,6 +1647,61 @@
         $('form#frmReservation #Remarks').val('');
         $('form#frmReservation #btnReservationRemarks').html("Add Remarks");
     }
+    //Reservation Remarks : END
+
+    //Packages : START
+    function openPackageModal() {
+        clearPackageSearch();
+
+        var selectedPackageCount = 0;
+        selectedPackageCount = $('#ListOfSelectedPackages span').length
+
+        if (!IsNullOrEmpty(selectedPackageCount) && selectedPackageCount > 0) {
+            var selectedPackageElement = $('#ListOfSelectedPackages').html();
+            $("form#frmAdvancePackageSearch #selectedPackages").html(selectedPackageElement)
+            $("form#frmAdvancePackageSearch #divPackage").show();
+        }
+
+        $("form#frmAdvancePackageSearch #btnSearch").click();
+
+        $('#packageModal').modal('toggle');
+    }
+
+    function showSelectedPackages() {
+        var selectedPackagesHtml = "@Html.Raw(selectedPacakgesHtml)";
+        if (!IsNullOrEmpty(selectedPackagesHtml)) {
+            $('#divSelectedPackage').show();
+            $('#ListOfSelectedPackages').html(selectedPackagesHtml);
+        }
+    }
+
+    function removePackageItem(element) {
+        if (element) {
+            var packageId = $(element).data("packageid");
+            $(element).parent("span").remove();
+
+            //Check Package Modal Is Open.
+            if ($('#packageModal').hasClass('in')) {
+                //Uncheck package after remove.
+                $('form#frmAdvancePackageSearch #chkPackage_' + packageId).prop("checked", false);
+            }
+        }
+    }
+
+    function getSelectedPackageItemIds() {
+        var packageIds = "";
+        $("#ListOfSelectedPackages span i").each(function () {
+            packageIds += $(this).data("packageid") + ",";
+        });
+
+        packageIds = RemoveLastCharacter(packageIds, Delimeter.COMMA);
+        return packageIds;
+    }
+
+    function generatePackageButton(packageId, packageName, price) {
+        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_" + packageId + "'>" + packageName + " <i class='fa fa-remove m-l-sm' onclick='removePackageItem(this);' data-packageid='" + packageId + "'  data-price='" + price + "'></i></span>";
+    }
+    //Packages : END
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation

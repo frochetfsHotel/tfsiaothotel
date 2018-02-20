@@ -2115,6 +2115,7 @@
     <Content Include="Views\RTC\List.cshtml" />
     <Content Include="Views\RTC\Create.cshtml" />
     <Content Include="Views\PropertyCalendar\_RoomInfo.cshtml" />
+    <Content Include="Views\Package\_Packages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

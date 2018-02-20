@@ -27,6 +27,23 @@ namespace SuccessHotelierHub.Repository
             return charges;
         }
 
+        public List<ReservationChargeVM> GetReservationChargesByAdditionalChargeSource(Guid? reservationId, Guid? additionalChargeId, string additionalChargeSource)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@AdditionalChargeId", Value = additionalChargeId },
+                    new SqlParameter { ParameterName = "@AdditionalChargeSource", Value = additionalChargeSource }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationChargesByAdditionalChargeSource", parameters);
+
+            var charges = new List<ReservationChargeVM>();
+            charges = DALHelper.CreateListFromTable<ReservationChargeVM>(dt);
+
+            return charges;
+        }
+
         public List<ReservationChargeVM> GetReservationChargesById(Guid id)
         {
             SqlParameter[] parameters =
@@ -59,6 +76,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Qty", Value = reservationCharge.Qty },
                     new SqlParameter { ParameterName = "@Supplement", Value = reservationCharge.Supplement },
                     new SqlParameter { ParameterName = "@Reference", Value = reservationCharge.Reference },
+                    new SqlParameter { ParameterName = "@AdditionalChargeSource", Value = reservationCharge.AdditionalChargeSource },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservationCharge.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = reservationCharge.CreatedBy }
                 };
@@ -84,6 +102,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Qty", Value = reservationCharge.Qty },
                     new SqlParameter { ParameterName = "@Supplement", Value = reservationCharge.Supplement },
                     new SqlParameter { ParameterName = "@Reference", Value = reservationCharge.Reference },
+                    new SqlParameter { ParameterName = "@AdditionalChargeSource", Value = reservationCharge.AdditionalChargeSource },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservationCharge.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = reservationCharge.UpdatedBy }
                 };

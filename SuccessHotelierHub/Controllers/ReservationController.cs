@@ -68,18 +68,17 @@ namespace SuccessHotelierHub.Controllers
 
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
-            //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
-            //var packageList = packageRepository.GetPackages();
-            var packageList = new SelectList(
-                   packageRepository.GetPackages()
-                   .Select(
-                       m => new SelectListItem()
-                       {
-                           Value = m.Id.ToString(),
-                            //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
-                            Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-                       }
-                   ), "Value", "Text").ToList();
+            //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();            
+            //var packageList = new SelectList(
+            //       packageRepository.GetPackages()
+            //       .Select(
+            //           m => new SelectListItem()
+            //           {
+            //               Value = m.Id.ToString(),
+            //               //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+            //               Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+            //           }
+            //       ), "Value", "Text").ToList();
 
             //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
             var marketList = new SelectList(
@@ -187,8 +186,13 @@ namespace SuccessHotelierHub.Controllers
 
                 model.TotalPrice = totalPrice;
                 
+                if (rateQuery.PackageId.HasValue)
+                {
+                    //Get Packages
+                    var packages = packageRepository.GetPackageById(rateQuery.PackageId.Value);
 
-                model.PackageId = rateQuery.PackageId;
+                    ViewBag.SelectedPacakges = packages;
+                }
             }
 
             #region Profile Info From Profile Page
@@ -243,7 +247,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.ReservationTypeList = reservationTypeList;
-            ViewBag.PackageList = packageList;
+            //ViewBag.PackageList = packageList;
             ViewBag.MarketList = marketList;
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
@@ -453,6 +457,15 @@ namespace SuccessHotelierHub.Controllers
 
                 #endregion
 
+                #region Package Mapping
+
+                //Get Package Mapping
+                var selectedPacakges = reservationRepository.GetReservationPackageMapping(model.Id, null);
+
+                ViewBag.SelectedPacakges = selectedPacakges;
+
+                #endregion
+
                 #region Profile Info From Edit Profile Page
 
                 var profileId = (string)TempData["ProfileId"];
@@ -514,18 +527,18 @@ namespace SuccessHotelierHub.Controllers
                                         ), "Value", "Text").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
-                //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
-                //var packageList = packageRepository.GetPackages();
-                var packageList = new SelectList(
-                         packageRepository.GetPackages()
-                         .Select(
-                             m => new SelectListItem()
-                             {
-                                 Value = m.Id.ToString(),
-                                   //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
-                                   Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-                             }
-                         ), "Value", "Text").ToList();
+                //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();                
+                //var packageList = new SelectList(
+                //         packageRepository.GetPackages()
+                //         .Select(
+                //             m => new SelectListItem()
+                //             {
+                //                 Value = m.Id.ToString(),
+                //                 //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                //                 Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+                //             }
+                //         ), "Value", "Text").ToList();
+
                 //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
                 var marketList = new SelectList(
                               marketRepository.GetMarkets()
@@ -582,7 +595,7 @@ namespace SuccessHotelierHub.Controllers
                        ), "Value", "Text").ToList();
 
                 var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
-                
+
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -591,7 +604,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.RateTypeList = rateTypeList;
                 ViewBag.RoomTypeList = roomTypeList;
                 ViewBag.ReservationTypeList = reservationTypeList;
-                ViewBag.PackageList = packageList;
+                //ViewBag.PackageList = packageList;
                 ViewBag.MarketList = marketList;
                 ViewBag.ReservationSourceList = reservationSourceList;
                 ViewBag.PaymentMethodList = paymentMethodList;
@@ -651,102 +664,246 @@ namespace SuccessHotelierHub.Controllers
                     }
 
                     #region Save Reservation Room Mapping
+
                     var roomIds = model.RoomIds;
 
-                    //Delete Existing Reservation Room Mapping.
-                    roomRepository.DeleteReservationRoomMappingByReservation(model.Id, LogInManager.LoggedInUserId);
-
+                    string[] roomIdsArr = null;
                     if (!string.IsNullOrWhiteSpace(roomIds))
                     {
-                        var roomIdsArr = roomIds.Split(',');
-
+                        roomIdsArr = roomIds.Split(',');
                         if (roomIdsArr != null)
                         {
                             //Remove Duplication.
                             roomIdsArr = roomIdsArr.Distinct().ToArray();
+                        }
+                    }
 
-                            foreach (var item in roomIdsArr)
+
+                    //Delete Existing Reservation Room Mapping.
+                    //roomRepository.DeleteReservationRoomMappingByReservation(model.Id, LogInManager.LoggedInUserId);
+
+                    #region Delete Room Mapping
+
+                    var roomMappings = roomRepository.GetReservationRoomMapping(model.Id, null);
+
+                    if (roomMappings != null && roomMappings.Count > 0)
+                    {
+                        List<Guid> roomMappingIds = new List<Guid>();
+
+                        foreach (var roomMapping in roomMappings)
+                        {
+                            if (roomMapping.RoomId.HasValue)
                             {
-                                //Save Reservation Room Mapping.
-                                ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
-                                reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
-                                reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
-                                reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
-                                reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
-
-                                roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
-
-
-                                #region Remove Existing reservation if room status are dirty.
-
-                                var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
-
-                                if (reservationLog != null)
+                                if (roomIdsArr == null || !roomIdsArr.Contains(roomMapping.RoomId.Value.ToString()))
                                 {
-                                    //Delete Reservation.
-                                    reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
-
-                                    //Delete Reservation Room Mapping.
-                                    roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
-
-                                    //Delete Reservation Log.
-                                    reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                                    roomMappingIds.Add(roomMapping.Id);
                                 }
+                            }
+                        }
 
-                                #endregion Remove Existing reservation if room status are dirty.
-
+                        //Delete Room Mapping
+                        if (roomMappingIds != null && roomMappingIds.Count > 0)
+                        {
+                            foreach (var mappingId in roomMappingIds)
+                            {
+                                roomRepository.DeleteReservationRoomMapping(mappingId, LogInManager.LoggedInUserId);
                             }
                         }
                     }
+
+                    #endregion
+
+                    if (roomIdsArr != null)
+                    {
+                        foreach (var item in roomIdsArr)
+                        {
+                            //Save Reservation Room Mapping.
+                            ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
+                            reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
+                            reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
+
+
+                            #region Remove Existing reservation if room status are dirty.
+
+                            var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+
+                            if (reservationLog != null)
+                            {
+                                //Delete Reservation.
+                                reservationRepository.DeleteReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                //Delete Reservation Room Mapping.
+                                roomRepository.DeleteReservationRoomMappingByReservation(reservationLog.ReservationId.Value, LogInManager.LoggedInUserId);
+
+                                //Delete Reservation Log.
+                                reservationLogRepository.DeleteReservationLog(reservationLog.Id, LogInManager.LoggedInUserId);
+                            }
+
+                            #endregion Remove Existing reservation if room status are dirty.
+
+                        }
+                    }
+                   
                     #endregion
 
                     #region Save Reservation Preference Mapping
 
                     var preferenceItems = model.PreferenceItems;
 
-                    //Delete Existing Reservation Preference Mapping.
-                    preferenceRepository.DeleteReservationPreferenceMappingByReservation(model.Id);
+                    string[] preferenceItemsArr = null;
 
                     if (!string.IsNullOrWhiteSpace(preferenceItems))
                     {
-                        var preferenceItemsArr = preferenceItems.Split(',');
+                        preferenceItemsArr = preferenceItems.Split(',');
 
                         if (preferenceItemsArr != null)
                         {
                             //Remove Duplication.
                             preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
+                        }
+                    }
 
-                            foreach (var item in preferenceItemsArr)
+                    //Delete Existing Reservation Preference Mapping.
+                    //preferenceRepository.DeleteReservationPreferenceMappingByReservation(model.Id);
+
+                    #region Delete Preference Mapping
+
+                    var preferenceMappings = preferenceRepository.GetReservationPreferenceMapping(model.Id, null);
+
+                    if (preferenceMappings != null && preferenceMappings.Count > 0)
+                    {
+                        List<Guid> preferenceMappingIds = new List<Guid>();
+
+                        foreach (var preferenceMapping in preferenceMappings)
+                        {
+                            if (preferenceMapping.PreferenceId.HasValue)
                             {
-                                //Save Reservation Preference Mapping.
-                                ReservationPreferenceMappingVM reservationPreferenceMapping = new ReservationPreferenceMappingVM();
-                                reservationPreferenceMapping.PreferenceId = Guid.Parse(item);
-                                reservationPreferenceMapping.ReservationId = Guid.Parse(reservationId);
-                                reservationPreferenceMapping.CreatedBy = LogInManager.LoggedInUserId;
+                                if (preferenceItemsArr == null || !preferenceItemsArr.Contains(preferenceMapping.PreferenceId.Value.ToString()))
+                                {
+                                    preferenceMappingIds.Add(preferenceMapping.Id);
+                                }
+                            }
+                        }
 
-                                preferenceRepository.AddReservationPreferenceMapping(reservationPreferenceMapping);
+                        //Delete Preference Mapping
+                        if (preferenceMappingIds != null && preferenceMappingIds.Count > 0)
+                        {
+                            foreach (var mappingId in preferenceMappingIds)
+                            {
+                                preferenceRepository.DeleteReservationPreferenceMapping(mappingId);
                             }
                         }
                     }
+
                     #endregion
 
-                    #region Save Reservation Package Mapping               
+                    if (preferenceItemsArr != null)
+                    {
+                        foreach (var item in preferenceItemsArr)
+                        {
+                            //Save Reservation Preference Mapping.
+                            ReservationPreferenceMappingVM reservationPreferenceMapping = new ReservationPreferenceMappingVM();
+                            reservationPreferenceMapping.PreferenceId = Guid.Parse(item);
+                            reservationPreferenceMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationPreferenceMapping.CreatedBy = LogInManager.LoggedInUserId;
+
+                            preferenceRepository.AddReservationPreferenceMapping(reservationPreferenceMapping);
+                        }
+                    }
+
+                    #endregion
+
+                    #region Save Reservation Package Mapping      
+
+                    #region Delete Package Mapping
+
+                    var packageMappings = reservationRepository.GetReservationPackageMapping(Guid.Parse(reservationId), null);
+
+                    if (packageMappings != null && packageMappings.Count > 0)
+                    {
+                        List<Guid> packageMappingIds = new List<Guid>();
+
+                        foreach (var packageMapping in packageMappings)
+                        {
+                            if (packageMapping.PackageId.HasValue)
+                            {
+                                if (model.PackageList == null || !model.PackageList.Select(m => m.Id).Contains(packageMapping.PackageId.Value))
+                                {
+                                    packageMappingIds.Add(packageMapping.Id);
+                                }
+                            }
+                        }
+
+                        //Delete Package Mapping
+                        if (packageMappingIds != null && packageMappingIds.Count > 0)
+                        {
+                            foreach (var id in packageMappingIds)
+                            {
+                                reservationRepository.DeleteReservationPackageMapping(id, LogInManager.LoggedInUserId);
+
+                                //If Flag IsCheckIn = true & Reservation charge contains this package info then delete.
+                                if (model.IsCheckIn == true)
+                                {
+                                    var packageCharges = reservationChargeRepository.GetReservationChargesByAdditionalChargeSource(Guid.Parse(reservationId), id, AdditionalChargeSource.PACKAGE_MAPPING);
+
+                                    if (packageCharges != null && packageCharges.Count > 0)
+                                    {
+                                        foreach (var charge in packageCharges)
+                                        {
+                                            reservationChargeRepository.DeleteReservationCharges(charge.Id, LogInManager.LoggedInUserId);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    #endregion        
 
                     if (model.PackageList != null && model.PackageList.Count > 0)
                     {
-                        //Delete Existing Reservation Package Mapping.
-                        //reservationRepository.DeleteReservationPackageMappingByReservation(Guid.Parse(reservationId), LogInManager.LoggedInUserId);
-
-                        foreach (var pacakge in model.PackageList)
+                        foreach (var package in model.PackageList)
                         {
-                            //Save Reservation Package Mapping.
-                            ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
-                            reservationPackageMapping.PackageId = pacakge.Id;
-                            reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
-                            reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                            reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                            var packageDetail = packageRepository.GetPackageById(package.Id).FirstOrDefault();
 
-                            reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                            if (packageDetail != null)
+                            {
+                                //Save Reservation Package Mapping.
+                                ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
+                                reservationPackageMapping.PackageId = packageDetail.Id;
+                                reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                                reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                                reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                var reservationPackageMappingId = reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+
+                                //If Flag IsCheckIn = true & Reservation charge not contains this package info then add them.
+                                if (model.IsCheckIn == true && !string.IsNullOrWhiteSpace(reservationPackageMappingId))
+                                {
+                                    var packageCharges = reservationChargeRepository.GetReservationChargesByAdditionalChargeSource(Guid.Parse(reservationId), Guid.Parse(reservationPackageMappingId), AdditionalChargeSource.PACKAGE_MAPPING);
+
+                                    if (packageCharges == null || packageCharges.Count == 0)
+                                    {
+                                        ReservationChargeVM packageMappingCharge = new ReservationChargeVM();
+                                        packageMappingCharge.ReservationId = Guid.Parse(reservationId);
+                                        packageMappingCharge.AdditionalChargeId = Guid.Parse(reservationPackageMappingId); //Package Mapping Id.
+                                        packageMappingCharge.AdditionalChargeSource = AdditionalChargeSource.PACKAGE_MAPPING;
+                                        packageMappingCharge.Code = AdditionalChargeCode.PACKAGE;
+                                        packageMappingCharge.Description = string.Format("{0} {1}", packageDetail.Name, packageDetail.Description);
+                                        packageMappingCharge.TransactionDate = DateTime.Now;
+                                        packageMappingCharge.Amount = packageDetail.Price;
+                                        packageMappingCharge.Qty = 1;
+                                        packageMappingCharge.IsActive = true;
+                                        packageMappingCharge.CreatedBy = LogInManager.LoggedInUserId;
+
+                                        reservationChargeRepository.AddReservationCharges(packageMappingCharge);
+
+                                    }
+                                }
+                            }
                         }
                     }
                     #endregion
@@ -761,6 +918,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         reservationCharge.ReservationId = Guid.Parse(reservationId);
                         reservationCharge.AdditionalChargeId = roomRentCharge.Id;
+                        reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                         reservationCharge.Code = roomRentCharge.Code;
                         reservationCharge.Description = roomRentCharge.Description;
                         reservationCharge.TransactionDate = model.ArrivalDate;
@@ -781,11 +939,11 @@ namespace SuccessHotelierHub.Controllers
                         double totalGuestBalance = Utility.Utility.CalculateTotalBalance(Guid.Parse(reservationId));
 
                         //Update Total Balance.
-                        reservationRepository.UpdateReservationTotalBalance(Guid.Parse(reservationId), totalGuestBalance, LogInManager.LoggedInUserId);                        
+                        reservationRepository.UpdateReservationTotalBalance(Guid.Parse(reservationId), totalGuestBalance, LogInManager.LoggedInUserId);
                     }
 
                     #endregion
-                    
+
                     #region Record Activity Log
                     RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Updated reservation, Confirmation# : {0}", model.ConfirmationNumber));
                     #endregion
@@ -1346,8 +1504,8 @@ namespace SuccessHotelierHub.Controllers
                      m => new SelectListItem()
                      {
                          Value = m.Id.ToString(),
-                           //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
-                           Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+                         //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                         Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
                      }
                  ), "Value", "Text").ToList();
 
@@ -1688,7 +1846,7 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 var remarks = reservationRepository.GetReservationRemarks(reservationId, null);
-               
+
 
                 return Json(new
                 {
