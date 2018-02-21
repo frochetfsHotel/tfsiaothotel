@@ -124,8 +124,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Currency")]
         public Guid? CurrencyId { get; set; }
 
-        //[DisplayName("Packages")]
-        //public Guid? PackageId { get; set; }
+        [DisplayName("Packages")]
+        public Guid? PackageId { get; set; }
 
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }
@@ -156,7 +156,7 @@ namespace SuccessHotelierHub.Models
         public Guid? PaymentMethodId { get; set; }
 
         [DisplayName("Credit Card #")]
-        [StringLength(16, MinimumLength = 16, ErrorMessage = "Please enter valid credit card number. It must be 16 digits.")]
+        [StringLength(4, MinimumLength = 4, ErrorMessage = "Please enter only last 4 digits of your credit card.")]
         public string CreditCardNo { get; set; }
 
         [DisplayName("Exp. Date (MM/YY)")]
@@ -245,7 +245,7 @@ namespace SuccessHotelierHub.Models
         public bool IsDeleted { get; set; }
 
         public List<ReservationRemarkVM> RemarksList { get; set; }
-        
+
         public List<PackageVM> PackageList { get; set; }
 
         public List<AddOnsVM> AddOnsList { get; set; }

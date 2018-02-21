@@ -84,15 +84,15 @@
 
     #endregion
 
-    #region Package Mapping
-    var selectedPacakges = (List<ReservationPackageMappingVM>)ViewBag.SelectedPacakges;
-    var selectedPacakgesHtml = string.Empty;
+    #region Add Ons Mapping
+    var selectedAddOns = (List<ReservationAddOnsMappingVM>)ViewBag.SelectedAddOns;
+    var selectedAddOnsHtml = string.Empty;
 
-    if (selectedPacakges != null && selectedPacakges.Count > 0)
+    if (selectedAddOns != null && selectedAddOns.Count > 0)
     {
-        foreach (var package in selectedPacakges)
+        foreach (var addOns in selectedAddOns)
         {
-            selectedPacakgesHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePackageItem(this)' data-packageid='{1}' data-price='{2}'></i></span>", package.PackageName, package.PackageId, package.PackagePrice);
+            selectedAddOnsHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this)' data-addonsid='{1}' data-price='{2}' data-addons='{3}'></i></span>", addOns.AddOnsName, addOns.AddOnsId, addOns.AddOnsPrice, addOns.AddOnsName);
         }
     }
     #endregion
@@ -114,10 +114,7 @@
         }
     }
     #endregion
-
-    var marketLEISId = Convert.ToString((Guid?)ViewBag.MarketLEISId);
-    var reservationSourceId = Convert.ToString((Guid?)ViewBag.ReservationSourceId);
-
+    
     #region Reservation Status
 
     var reservationStatus = "";
@@ -135,6 +132,8 @@
     }
 
     #endregion
+
+    var packageList = (List<PackageVM>)ViewBag.PackageList;
 }
 
 
@@ -194,6 +193,7 @@
             @Html.HiddenFor(m => m.IsReservationCancel);
             <input type="hidden" id="PreferenceItems" name="PreferenceItems" value="@preferenceItems" />
             <input type="hidden" id="Source" name="Source" value="@sourceParam" />
+            <input type="hidden" id="hdnWeekEndPrice" name="hdnWeekEndPrice" value="@(ViewBag.WeekEndPrice)" />
             <!-- HIDDEN FIELD -->
 
             <div class="box-body pt_10 pb-0">
@@ -337,7 +337,7 @@
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfNight)
-                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control",  onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "calculateTotalPrice();" })
+                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control",  onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "LoadTransactionSummary();" })
                     </div>
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" })
@@ -359,7 +359,7 @@
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.NoOfInfant, new { @class = "form-control", @placeholder = "0-3", onkeydown = "onlyDigits(event)" })
                             <span class="input-group-addon"></span>
-                            @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", @placeholder = "3-12", onkeydown = "onlyDigits(event)", onblur = "calculateTotalPrice();" })
+                            @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", @placeholder = "3-12", onkeydown = "onlyDigits(event)", onblur = "LoadTransactionSummary();" })
                         </div>
                     </div>
 
@@ -425,7 +425,7 @@
 
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Rate)
-                        @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model.Rate.HasValue ? Model.Rate.Value : 0), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "calculateTotalPrice();" })
+                        @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model.Rate.HasValue ? Model.Rate.Value : 0), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "LoadTransactionSummary();" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">                                               
                         <label class="container1" for="IsFixedRate">
@@ -447,16 +447,22 @@
 
                 </div>
 
-                <div class="row">
-                    @*<div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.BlockCodeId)
-                        <select class="form-control" id="BlockCodeId" name="BlockCodeId">
-                            <option value="">--Select Group Code--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group Code 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
-                        </select>
-                    </div>*@
+                <div class="row" id="divArrivalTime">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.PackageId)
+                        <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
+                            <option value="">--Select Package--</option>
+                            @if (packageList != null && packageList.Count > 0)
+                            {
+                                foreach (var package in packageList)
+                                {
+                                    <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
+                                        @(package.Name + (!string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : ""))
+                                    </option>
+                                }
+                            }
+                        </select>                        
+                    </div>
                     <div class="col-md-3 form-group">
                         <div class="bootstrap-timepicker">
                             @Html.LabelFor(m => m.ETAText)
@@ -532,7 +538,7 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "4" })
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
@@ -571,33 +577,23 @@
                     </div>
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DiscountAmount)
-                        @Html.TextBoxFor(m => m.DiscountAmount, Utility.FormatAmountWithTwoDecimal(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)",  onchange ="ClearDiscountPercentage();", onblur = "calculateTotalPrice();" })
+                        @Html.TextBoxFor(m => m.DiscountAmount, Utility.FormatAmountWithTwoDecimal(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)",  onchange ="ClearDiscountPercentage();", onblur = "LoadTransactionSummary();" })
                     </div>
                     <div class="col-md-2 form-group">                        
                         @Html.LabelFor(m => m.DiscountPercentage)
-                        @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountAmount();", onblur = "calculateTotalPrice();" })
+                        @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountAmount();", onblur = "LoadTransactionSummary();" })
                     </div>
-                    <div class="col-md-2 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DiscountApprovedBy)
                         @Html.DropDownListFor(m => m.DiscountApprovedBy,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.DiscountApprovedList, "Value", "Text"),
                                 "--Select Discount Approved By--",
                                 new { @class = "form-control" })
                     </div>
-                    <div class="col-md-2 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DiscountReason)
                         @Html.TextBoxFor(m => m.DiscountReason, new { @class = "form-control", placeholder = "Discount Reason" })
-                    </div>
-                    <div class="col-md-2 form-group m-t">
-                        <label>
-                            Total Price : <span id="totalPrice">&euro; 0.00</span>
-                            <br />
-                            <span>
-                                [Nights <span class="text-blue" id="spnNoOfNight"
-                                data-nights="@Model.NoOfNight">(@Model.NoOfNight)</span>  * Rate <span class="text-blue" id="spnRate" data-rate="@Model.Rate">(&euro;  @Model.Rate)</span>]
-                            </span>
-                        </label>
-                    </div>
+                    </div>                  
                 </div>
 
                 @*<div class="row">
@@ -628,6 +624,33 @@
                         @Html.TextAreaFor(m => m.HouseKeepingComments, new { @class = "form-control", placeholder = "House Keeping Comments", rows = "3" })
                     </div>
                 </div>*@
+
+                <div class="row" id="totalSummary" style="display:none;">
+                    <div class="col-md-12 form-group">
+                        <label class="label-bold">Transaction Summary :</label>
+                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
+                        <div class="table-responsive table_maxTransactionSummary">
+                            <table class="table table-bordered table-striped" id="tblTransactionSummary">
+                                <thead>
+                                    <tr>
+                                        <th class="width_60">Notes</th>
+                                        <th class="width_20">Rate</th>                                        
+                                        <th class="width_20">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="text-bold"  data-total-price="">
+                                        <td></td>
+                                        <td>Total Price : </td>
+                                        <td class="tdTotalPrice"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-9 form-group">
                         @Html.LabelFor(m => m.Remarks)
@@ -645,12 +668,12 @@
                     </div>                    
                 </div>
                 <div class="row" id="divReservationRemark" style="display:none;">
-                    <div class="col-md-12 table-responsive table_maxheight m-b-md">
+                    <div class="col-md-12 table-responsive table_maxRemarks">
                         <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
                             <thead>
-                                <tr>
-                                    <th class="width_50">Remarks Details</th>
+                                <tr>                                    
                                     <th class="width_35">Track</th>
+                                    <th class="width_50">Remarks</th>
                                     <th class="width_15">Action</th>
                                 </tr>
                             </thead>
@@ -659,7 +682,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="row m-t-md">
+                <div class="row">
                     <hr/>
                     <div class="col-xs-1 form-group">
                         <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
@@ -677,15 +700,15 @@
                 <div class="row">
                     <hr/>
                     <div class="col-xs-1 form-group">
-                        <button type="button" class="btn bg-navy btn-sm" onclick="openPackageModal();">
-                            Packages
+                        <button type="button" class="btn bg-navy btn-sm" onclick="openAddOnsModal();">
+                            Add Ons
                         </button>
                     </div>
-                    <div class="col-md-11 form-group" style="display:none;" id="divSelectedPackage">
-                        <label for="ListOfSelectedPackages" class="m-l-n col-sm-3 control-label m-r-n-xl"> 
-                            Selected Packages : 
+                    <div class="col-md-11 form-group" style="display:none;" id="divSelectedAddOns">
+                        <label for="ListOfSelectedAddOns" class="m-l-n col-sm-3 control-label m-r-n-xl"> 
+                            Selected Add Ons : 
                         </label>
-                        <div class="col-sm-9" id="ListOfSelectedPackages">
+                        <div class="col-sm-9" id="ListOfSelectedAddOns">
 
                         </div>
                     </div>
@@ -804,17 +827,17 @@
 </div>
 <!-- Room Modal Popup END -->
 
-<!-- Package Modal Popup START -->
-<div class="modal fade" id="packageModal" role="dialog" tabindex="-1">
+<!-- Add Ons Modal Popup START -->
+<div class="modal fade" id="addOnsModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Packages</h4>
+                <h4 class="modal-title">Add Ons</h4>
             </div>
             <div class="modal-body modal-body_padding">
-                @Html.Partial("~/Views/Package/_Packages.cshtml",
+                @Html.Partial("~/Views/AddOns/_AddOns.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "EditReservation" }
                                 })
@@ -823,7 +846,7 @@
         </div>
     </div>
 </div>
-<!-- Package Modal Popup END -->
+<!-- Add Ons Modal Popup END -->
 
 <script type="text/javascript">
     var grdReservationRemarks;
@@ -882,9 +905,8 @@
         });
 
         //Show value of selected drop down.
-        $('#Rate').val('@strRate');
-
-        calculateTotalPrice();
+        $('form#frmReservation #PackageId').val('@Model.PackageId');
+        $('form#frmReservation #Rate').val('@strRate');
 
         //Show Selected Rooms
         showSelectedRooms();
@@ -993,7 +1015,10 @@
 
                 $('form#frmReservation #RateCodeId').val(rateTypeId);
 
-                $('form#frmReservation #Rate').val(amount).trigger('blur'); // Call function calculateTotalPrice on blur event.
+                $('form#frmReservation #Rate').val(amount).trigger('blur'); // Call function LoadTransactionSummary() on blur event.
+
+
+                getPriceDetails(); //Get Week Day & Week End Price.
 
                 //Close Room Type Search Modal.
                 $('#roomTypeModal').modal('toggle');
@@ -1038,7 +1063,6 @@
             }
         });
 
-        //RateTypeChange();
 
         //If Client checked out then disabled below fields.
         var isCheckedOut = parseBoolean('@Model.IsCheckOut');
@@ -1157,24 +1181,30 @@
             }
         });
 
-        //Show Selected Packages.
-        showSelectedPackages();
+        //Show Selected AddOns.
+        showSelectedAddOns();
 
-        //Package
-        $('.btnAdvanceSearchPackageOk').click(function (e) {
-            var selectedPackageCount = 0;
-            selectedPackageCount = $('form#frmAdvancePackageSearch #selectedPackages span').length;
+        //Add Ons
+        $('.btnAdvanceSearchAddOnsOk').click(function (e) {
+            var selectedAddOnsCount = 0;
+            selectedAddOnsCount = $('form#frmAdvanceAddOnsSearch #selectedAddOns span').length;
 
-            if (!IsNullOrEmpty(selectedPackageCount) && selectedPackageCount > 0) {
-                var selectedPackageElement = $('form#frmAdvancePackageSearch #selectedPackages').html();
-                $("#ListOfSelectedPackages").html(selectedPackageElement);
+            if (!IsNullOrEmpty(selectedAddOnsCount) && selectedAddOnsCount > 0) {
+                var selectedAddOnsElement = $('form#frmAdvanceAddOnsSearch #selectedAddOns').html();
+                $("#ListOfSelectedAddOns").html(selectedAddOnsElement);
 
-                $('#divSelectedPackage').show();
+                $('#divSelectedAddOns').show();
 
-                //Close Package Search Modal.
-                $('#packageModal').modal('toggle');
+                //Load Transaction Summary.
+                LoadTransactionSummary();
+
+                //Close Add Ons Search Modal.
+                $('#addOnsModal').modal('toggle');
             }
         });
+
+        //Load Transaction Summary.
+        LoadTransactionSummary();
 
     });
 
@@ -1217,6 +1247,9 @@
             var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
             $("form#frmAdvancePreferenceSearch #selectedPreferences").html(selectedPreferenceElement)
             $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        } else {
+            $("form#frmAdvancePreferenceSearch #selectedPreferences").html('')
+            $("form#frmAdvancePreferenceSearch #divPreferences").hide();
         }
 
         selectPreferenceGroup("ROOOM FEATURES");
@@ -1292,7 +1325,7 @@
                     blnValid = false;
                 } else {
                     if (!IsValidCreditCardNo(creditCardNo)) {
-                        errorText += "Please enter valid credit card number. It must be 16 digits." + Delimeter.BREAKLINE;
+                        errorText += "Please enter only last 4 digits of your credit card." + Delimeter.BREAKLINE;
                         blnValid = false;
                     }
                 }
@@ -1329,13 +1362,13 @@
             var preferenceIds = getSelectedPreferenceItemIds();
             $('form#frmReservation #PreferenceItems').val(preferenceIds);
 
-            //Get Selected Packages.
-            var packageList = [];            
-            $("form#frmReservation #ListOfSelectedPackages span i").each(function () {
-                var modelPackageVM = {};
-                modelPackageVM.Id = $(this).data("packageid");
-                modelPackageVM.Price = $(this).data("price");
-                packageList.push(modelPackageVM);
+            //Get Selected AddOns.
+            var addOnsList = [];
+            $("form#frmReservation #ListOfSelectedAddOns span i").each(function () {
+                var modelAddOnsVM = {};
+                modelAddOnsVM.Id = $(this).data("addonsid");
+                modelAddOnsVM.Price = $(this).data("price");
+                addOnsList.push(modelAddOnsVM);
             });
 
 
@@ -1351,7 +1384,7 @@
             var formData = $('#frmReservation').serializeObject();
 
             //Add additional property in form data.
-            $.extend(formData, { PackageList: packageList });
+            $.extend(formData, { AddOnsList: addOnsList });
 
             //Ajax Request to edit reservation.
             $.ajax({
@@ -1500,7 +1533,7 @@
 
             $('form#frmReservation #NoOfNight').val(noOfNight);
 
-            calculateTotalPrice();
+            LoadTransactionSummary();
         }
     }
 
@@ -1526,7 +1559,7 @@
                 $("form#frmReservation #DepartureDate").datepicker("setDate", dt);
             }
 
-            calculateTotalPrice();
+            LoadTransactionSummary();
         }
     }
 
@@ -1774,7 +1807,7 @@
         if (!IsNullOrEmpty('@Model.CurrencyId'))
             $('label[for="CurrencyId"]').addClass("label-bold");
 
-        
+
 
         //BlockCode
         if (!IsNullOrEmpty('@Model.BlockCodeId'))
@@ -1857,6 +1890,10 @@
         if (!IsNullOrEmpty('@Model.Remarks'))
             $('label[for="Remarks"]').addClass("label-bold");
 
+        //Package
+        if (!IsNullOrEmpty('@Model.PackageId'))
+            $('label[for="PackageId"]').addClass("label-bold");
+
     }
 
     function SelectPaymentMethod() {
@@ -1884,7 +1921,7 @@
     }
 
     function RateTypeChange() {
-       if (!IsNullOrEmpty($('form#frmReservation #RateCodeId').val())) {
+        if (!IsNullOrEmpty($('form#frmReservation #RateCodeId').val())) {
             var text = $('form#frmReservation #RateCodeId option:selected').text();
 
             var rateCode = text;
@@ -1900,25 +1937,12 @@
                 $("form#frmReservation #ReservationSourceId").val('');
             }
 
-            //var isLeisType = false;
-            //if (Contains(rateCode, '-')) {
-            //    if (!IsNullOrEmpty(trim(rateCode.split('-')[1])) && trim(rateCode.split('-')[1]) == "LEIS") {
-            //        isLeisType = true;
-            //    }
-            //}
+            getPriceDetails(); //Get Week Day & Week End Price.
 
-            @*if (isLeisType) {
-                //Select LEIS in Market & Reservation Source Dropdown.
-                $("form#frmReservation #MarketId").val('@marketLEISId');
-                $("form#frmReservation #ReservationSourceId").val('@reservationSourceId');
-            } else {
-                $("form#frmReservation #MarketId").val('');
-                $("form#frmReservation #ReservationSourceId").val('');
-            }*@
-       } else {
-           $("form#frmReservation #MarketId").val('');
-           $("form#frmReservation #ReservationSourceId").val('');
-       }
+        } else {
+            $("form#frmReservation #MarketId").val('');
+            $("form#frmReservation #ReservationSourceId").val('');
+        }
     }
 
     function ClearDiscountPercentage() {
@@ -1999,8 +2023,13 @@
                             for (var i = 0; i < result.length; i++) {
                                 markup += "<tr id='tr_" + result[i].Id + "'>";
 
-                                markup += "<td class='remarks'>" + result[i].Remarks + "</td>";
+                                //TrackLog
                                 markup += "<td class='tracklog'>" + result[i].TrackLog + "</td>";
+
+                                //Remarks
+                                markup += "<td class='remarks'>" + result[i].Remarks + "</td>";
+
+                                //Action
                                 markup += "<td><a href=\"javascript:void(0);\" onclick=\"editReservationRemark('" + result[i].Id + "','" + html_entity_decode(result[i].Remarks) + "');\" class=\"text-success font_18 m-r-md\"><i class='fa fa-edit'/></a><a href=\"javascript:void(0);\" class=\"text-danger font_18 m-r-md \" onclick=\"deleteReservationRemark('" + result[i].Id + "');\"><i class='fa fa-trash'/></a></td> ";
 
                                 markup += "</tr>";
@@ -2060,60 +2089,363 @@
     }
     //Reservation Remarks : END
 
-    //Packages : START
-    function openPackageModal() {
-        clearPackageSearch();
-        var selectedPackageCount = 0;
-        selectedPackageCount = $('#ListOfSelectedPackages span').length
+    //Add Ons : START
+    function openAddOnsModal() {
+        clearAddOnsSearch();
+        var selectedAddOnsCount = 0;
+        selectedAddOnsCount = $('#ListOfSelectedAddOns span').length
 
-        if (!IsNullOrEmpty(selectedPackageCount) && selectedPackageCount > 0) {
-            var selectedPackageElement = $('#ListOfSelectedPackages').html();
-            $("form#frmAdvancePackageSearch #selectedPackages").html(selectedPackageElement)
-            $("form#frmAdvancePackageSearch #divPackage").show();
+        if (!IsNullOrEmpty(selectedAddOnsCount) && selectedAddOnsCount > 0) {
+            var selectedAddOnsElement = $('#ListOfSelectedAddOns').html();
+            $("form#frmAdvanceAddOnsSearch #selectedAddOns").html(selectedAddOnsElement)
+            $("form#frmAdvanceAddOnsSearch #divAddOns").show();
+        } else {
+            $("form#frmAdvanceAddOnsSearch #selectedAddOns").html('');
+            $("form#frmAdvanceAddOnsSearch #divAddOns").hide();
         }
-        
-        $("form#frmAdvancePackageSearch #btnSearch").click();
 
-        $('#packageModal').modal('toggle');
+        $("form#frmAdvanceAddOnsSearch #btnSearch").click();
+
+        $('#addOnsModal').modal('toggle');
     }
 
 
-    function showSelectedPackages() {
-        var selectedPackagesHtml = "@Html.Raw(selectedPacakgesHtml)";
-        if (!IsNullOrEmpty(selectedPackagesHtml)) {
-            $('#divSelectedPackage').show();
-            $('#ListOfSelectedPackages').html(selectedPackagesHtml);
+    function showSelectedAddOns() {
+        var selectedAddOnsHtml = "@Html.Raw(selectedAddOnsHtml)";
+        if (!IsNullOrEmpty(selectedAddOnsHtml)) {
+            $('#divSelectedAddOns').show();
+            $('#ListOfSelectedAddOns').html(selectedAddOnsHtml);
         }
     }
 
-    function removePackageItem(element) {
+    function removeAddOnsItem(element) {
         if (element) {
-            var packageId = $(element).data("packageid");
+            var addOnsId = $(element).data("addonsid");
             $(element).parent("span").remove();
 
-            //Check Package Modal Is Open.
-            if ($('#packageModal').hasClass('in')) {
-                //Uncheck package after remove.
-                $('form#frmAdvancePackageSearch #chkPackage_' + packageId).prop("checked", false);
+            //Check Add Ons Modal Is Open.
+            if ($('#addOnsModal').hasClass('in')) {
+                //Uncheck Add Ons after remove.
+                $('form#frmAdvanceAddOnsSearch #chkAddOns_' + addOnsId).prop("checked", false);
             }
+
+            LoadTransactionSummary();
         }
     }
 
-    function getSelectedPackageItemIds() {
-        var packageIds = "";
-        $("#ListOfSelectedPackages span i").each(function () {
-            packageIds += $(this).data("packageid") + ",";
+    function getSelectedAddOnsItemIds() {
+        var addOnsIds = "";
+        $("#ListOfSelectedAddOns span i").each(function () {
+            addOnsIds += $(this).data("addonsid") + ",";
         });
 
-        packageIds = RemoveLastCharacter(packageIds, Delimeter.COMMA);
-        return packageIds;
+        addOnsIds = RemoveLastCharacter(addOnsIds, Delimeter.COMMA);
+        return addOnsIds;
     }
 
-    function generatePackageButton(packageId, packageName, price) {
-        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_" + packageId + "'>" + packageName + " <i class='fa fa-remove m-l-sm' onclick='removePackageItem(this);' data-packageid='" + packageId + "'  data-price='" + price + "'></i></span>";
+    function generateAddOnsButton(addOnsId, addOnsName, price) {
+        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_" + addOnsId + "'>" + addOnsName + " <i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this);' data-addonsid='" + addOnsId + "'  data-price='" + price + "' data-addons='" + addOnsName + "'></i></span>";
     }
-    //Packages : END
+    //AddOns : END
 
+
+    //Get Price Details.
+    function getPriceDetails(){
+        var roomTypeId = "", rateTypeId = "";
+
+        roomTypeId = $('form#frmReservation #RoomTypeId').val();
+        rateTypeId = $('form#frmReservation #RateCodeId').val();
+                
+        if (!IsNullOrEmpty(roomTypeId) && !IsNullOrEmpty(rateTypeId)) {
+            //Ajax request to get price details.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Reservation/GetPriceDetails")',
+                type: 'POST',
+                data: { roomTypeId: roomTypeId, rateTypeId: rateTypeId },
+                success: function (response) {
+                    if (response != null) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var result = response.data;
+
+                            if (!IsNullOrEmpty(result)) {
+                                var weekDayPrice = parseFloat(result.WeekDayPrice);
+                                var weekEndPrice = parseFloat(result.WeekEndPrice);
+
+                                $('form#frmReservation #hdnWeekEndPrice').val(FormatNumberWithTwoDecimal(weekEndPrice));
+
+                                //$('form#frmReservation #Rate').val(FormatNumberWithTwoDecimal(weekDayPrice)).trigger("blur");
+
+                                //Load Transaction Summary
+                                //LoadTransactionSummary();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function LoadTransactionSummary() {        
+        var noOfNights = $("form#frmReservation #NoOfNight").val();
+
+        var arrivalDate = $("form#frmReservation #ArrivalDate").val();
+        var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+
+        var departureDate = $("form#frmReservation #DepartureDate").val();
+        var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
+
+        var rate = $('form#frmReservation #Rate').val();
+        var weekEndPrice = $('form#frmReservation #hdnWeekEndPrice').val();
+        var weekDayPrice = 0;
+
+        var noOfChildren = $('form#frmReservation #NoOfChildren').val();
+        var discountAmount = $('form#frmReservation #DiscountAmount').val();
+        var discountPercentage = $('form#frmReservation #DiscountPercentage').val();
+
+
+        var totalPrice = "0.00";
+        var totalDiscount = 0;
+        var childrenCharges = 0;
+
+        if (IsNullOrEmpty(noOfNights)) { noOfNights = 1; }
+        if (IsNullOrEmpty(rate)) { rate = 1; }
+        if (IsNullOrEmpty(weekEndPrice)) { weekEndPrice = rate; }
+        if (IsNullOrEmpty(noOfChildren)) { noOfChildren = 0; }
+        if (IsNullOrEmpty(discountAmount)) { discountAmount = 0; }
+        if (IsNullOrEmpty(discountPercentage)) { discountPercentage = 0; }
+
+        noOfNights = parseInt(noOfNights);
+        rate = parseFloat(rate);
+        weekEndPrice = parseFloat(weekEndPrice);
+        noOfChildren = parseInt(noOfChildren);
+        discountAmount = parseFloat(discountAmount);
+        discountPercentage = parseFloat(discountPercentage);
+
+        weekDayPrice = rate;
+
+        ////Calculate children charges. (Default euro 5.)
+        //if (noOfChildren > 0)
+        //    childrenCharges = (noOfChildren * 5);
+
+        var html = "";
+
+        var totalNoOfDays = noOfNights;
+
+        var startDate = objArrivalDate;
+
+        for (i = 1; i <= totalNoOfDays; i++) {
+
+            var date = GetDate(startDate, DateFormat.DDMMYYYY);
+            rate = weekDayPrice;
+
+            //Check Week End.
+            var weekDay = startDate.getDay();
+            var dayOfWeek = GetDayOfWeek(weekDay);
+
+            var isWeekEnd = false;
+
+            if (dayOfWeek == 'Friday' || dayOfWeek == 'Saturday') {
+                isWeekEnd = true;
+                rate = weekEndPrice;
+            }
+
+            //Calculate Discount.            
+            var discount = 0;            
+            if (discountPercentage > 0) {
+                discount = parseFloat((rate * discountPercentage) / 100);
+            }
+            else {
+                discount = parseFloat(discountAmount);
+            }
+
+            totalDiscount = totalDiscount + discount;
+
+            //Deduct Discount from rate.
+            //rate = (rate - totalDiscount);
+
+            var qty = 1;
+            var total = (rate * qty);
+
+
+            html += "<tr data-rate='" + rate + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Night " +  i + " : " + "(" + date +  ") " + (isWeekEnd ? " - Week End " : "");
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(rate) + " * " + qty;
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+
+            //Increment date.
+            startDate.setDate(startDate.getDate() + 1);
+        }
+
+        //Children Charges.
+        if (!IsNullOrEmpty(noOfChildren) && noOfChildren > 0) {
+
+            childrenCharges = 5 // Default euro 5.
+
+            var qty = parseInt(noOfChildren);
+            var total = (childrenCharges * qty);
+
+            html += "<tr data-rate='" + childrenCharges + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Children : (" + noOfChildren + ")";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(childrenCharges) + " * " + qty;
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+        }
+
+        //Package.
+        var packageId = $('form#frmReservation #PackageId').val();
+        if (!IsNullOrEmpty(packageId)) {
+            var selectedPackage = $('form#frmReservation #PackageId option:selected');
+
+            var packagePrice = parseFloat(selectedPackage.attr("data-package-price"));
+            var packageName = selectedPackage.attr("data-package-name");
+
+            var qty = 1;
+            var total = (packagePrice * qty);
+
+            html += "<tr data-rate='" + packagePrice + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Package : " + packageName + "";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice) + " * " + qty;
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+        }
+
+        //Add Ons.
+        $("form#frmReservation #ListOfSelectedAddOns span i").each(function () {
+            var addOnsId = $(this).data("addonsid");
+            var addOnsName = $(this).data("addons");
+            var addOnsPrice = parseFloat($(this).data("price"));
+
+            var qty = 1;
+            var total = (addOnsPrice * qty);
+
+            html += "<tr data-rate='" + addOnsPrice + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Add Ons : " + addOnsName + "";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice) + " * " + qty;
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+
+        });
+
+
+        //Discount.
+        if (parseFloat(totalDiscount) > 0) {
+
+            var qty = 1;
+            var total = (ConvertToNegative(totalDiscount) * qty);
+
+            html += "<tr data-rate='" + ConvertToNegative(totalDiscount) + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Discount : ";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount)) + "";
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount));
+            html += "</td>";
+
+            html += "</tr>";
+        }
+
+
+        $('form#frmReservation #tblTransactionSummary tbody').empty().append(html);
+
+        $('form#frmReservation #totalSummary').show();
+
+        //Update Total Price.
+        calculateTotalTransactionSummaryPrice();
+    }
+
+    function calculateTotalTransactionSummaryPrice() {
+        var totalPrice = 0;
+
+        $("form#frmReservation #tblTransactionSummary tbody tr").each(function () {
+            totalPrice  += parseFloat($(this).attr("data-total-price"));
+        });
+
+        totalPrice = FormatNumberWithTwoDecimal(totalPrice);
+
+        //Set total price
+        $('span#totalPrice').html("&euro; " + totalPrice);
+
+        $("form#frmReservation #tblTransactionSummary tfoot tr").attr("data-total-price", totalPrice);
+        $("form#frmReservation #tblTransactionSummary tfoot tr td.tdTotalPrice").html("&euro; " + totalPrice);
+    }
+
+    function PackageChange() {
+        LoadTransactionSummary();
+    }
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation

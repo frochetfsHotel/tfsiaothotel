@@ -79,7 +79,7 @@
         </div>
         <div class="col-md-4 divCreditCardInfo">
             @Html.LabelFor(m => m.CreditCardNo)
-            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)" })
+            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "4" })
         </div>
         <div class="col-md-4 divCreditCardInfo divCardExpiryDate">
             @Html.LabelFor(m => m.CardExpiryDate)
@@ -178,7 +178,7 @@
 
 
         if (!IsNullOrEmpty(creditCardNo) && !IsValidCreditCardNo(creditCardNo)) {
-            showToaster("Please enter valid credit card number. It must be 16 digits.", ToasterType.ERROR);
+            showToaster("Please enter only last 4 digits of your credit card.", ToasterType.ERROR);
             return false;
         }
 

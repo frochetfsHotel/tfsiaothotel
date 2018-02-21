@@ -656,6 +656,116 @@ namespace SuccessHotelierHub.Utility
             return Math.Round(dblTotalBalance, 2);
         }
 
+        public static double CalculateReservationTotalPrice(Guid reservationId)
+        {
+            ReservationRepository reservationRepository = new ReservationRepository();
+            RateRepository rateRepository = new RateRepository();
+
+            var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+
+            double dblTotalPrice = 0;
+
+            if (reservation != null)
+            {
+                int noOfNights;
+                double rate;
+                int? noOfChildren;
+                double? discountAmount;
+                double? discountPercentage;
+                bool blnIsDisocuntInPercentage = false;
+
+                double totalDiscount = 0;
+                double childrenCharges = 0;
+
+                noOfNights = reservation.NoOfNight;
+                rate = reservation.Rate.HasValue ? reservation.Rate.Value  : 0;
+                noOfChildren = reservation.NoOfChildren;
+                discountAmount = reservation.DiscountAmount;
+                discountPercentage = reservation.DiscountPercentage;
+
+                if (discountPercentage.HasValue) { blnIsDisocuntInPercentage = true; }
+
+                double? dblWeekEndPrice = rate;        
+                        
+                if (reservation.RoomTypeId.HasValue && reservation.RateCodeId.HasValue)
+                {
+                    var weekEndPrice = rateRepository.GetWeekEndPrice(reservation.RoomTypeId.Value, reservation.RateCodeId.Value).FirstOrDefault();
+
+                    if (weekEndPrice != null)
+                    {
+                        dblWeekEndPrice = weekEndPrice.Amount;
+                    }
+                }
+
+                int totalNoOfDays = noOfNights;
+
+                DateTime dtStartDate = reservation.ArrivalDate.Value;
+
+                for (int i = 1; i <= totalNoOfDays; i++)
+                {
+                    double discount = 0;
+                    rate = reservation.Rate.HasValue ? reservation.Rate.Value : 0;
+
+                    if (dtStartDate.DayOfWeek == DayOfWeek.Friday || dtStartDate.DayOfWeek == DayOfWeek.Saturday)
+                    {
+                        rate = dblWeekEndPrice.HasValue ? dblWeekEndPrice.Value : rate;
+                    }
+
+                    if (blnIsDisocuntInPercentage)
+                    {
+                        if (discountPercentage.HasValue && discountPercentage.Value > 0)
+                            discount = (rate * discountPercentage.Value) / 100;
+                    }
+                    else
+                    {
+                        if (discountAmount.HasValue)
+                            discount = discountAmount.Value;
+                    }
+
+                    totalDiscount = totalDiscount + discount;
+                    
+                    dblTotalPrice += (1 * rate); // Each night (1, 2, 3 etc...). Here 1 = current night
+
+                    dtStartDate = dtStartDate.AddDays(1);
+                }
+
+                //Deduct Discount from total price.
+                if (totalDiscount > 0)
+                {
+                    dblTotalPrice = (dblTotalPrice - totalDiscount);
+                }
+
+
+                //Default 5 Euro for the one children.
+                if (noOfChildren.HasValue)
+                    childrenCharges = (noOfChildren.Value * 5);
+
+                //dblTotalPrice = (noOfNights * rate) + childrenCharges;
+                dblTotalPrice += childrenCharges;
+
+                //Append Add-Ons Price.
+                var addOnsDetails = reservationRepository.GetReservationAddOnsMapping(reservation.Id, null);
+                if (addOnsDetails != null && addOnsDetails.Count > 0)
+                {
+                    var totalAddOnsPrice = addOnsDetails.Where(m => m.AddOnsPrice.HasValue).Sum(m => m.AddOnsPrice);
+
+                    dblTotalPrice += (totalAddOnsPrice.HasValue) ? totalAddOnsPrice.Value : 0;
+                }
+
+                //Append Package Price.
+                var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
+                if (packageDetails != null && packageDetails.Count > 0)
+                {
+                    var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
+
+                    dblTotalPrice += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
+                }
+                
+            }
+
+            return Math.Round(dblTotalPrice, 2);
+        }
+
         public static double CalculateTotalBalance(Guid reservationId)
         {
             double dblTotalBalance = 0;
@@ -681,23 +791,31 @@ namespace SuccessHotelierHub.Utility
                 }
                 else
                 {
-                    double totalRoomRentCharge = CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+                    double totalRoomRentCharge = 0;
+                    //totalRoomRentCharge = CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+
+                    totalRoomRentCharge = CalculateReservationTotalPrice(reservation.Id);
 
                     dblTotalBalance = totalRoomRentCharge;
 
-                    //Package Price
-                    var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
-                    if (packageDetails != null && packageDetails.Count > 0)
-                    {
-                        var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
+                    ////Package Price
+                    //var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
+                    //if (packageDetails != null && packageDetails.Count > 0)
+                    //{
+                    //    var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
 
-                        dblTotalBalance += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
-                    }
+                    //    dblTotalBalance += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
+                    //}
                 }
                 
             }
 
             return Math.Round(dblTotalBalance, 2);
+        }
+
+        public static double ConvertToNegative(double number)
+        {
+            return -Math.Abs(number);
         }
 
         #region 'Mask Credit Card Numbers'

@@ -350,6 +350,22 @@ namespace SuccessHotelierHub.Repository
             return reservationId;
         }
 
+        public string UpdateReservationTotalPrice(Guid id, double totalPrice, int updatedBy)
+        {
+            string reservationId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = totalPrice },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateReservationTotalPrice", parameters));
+
+            return reservationId;
+        }
+
         public string UpdateReservationStatus(Guid id, Guid? reservationStatusId, int updatedBy)
         {
             string reservationId = string.Empty;
@@ -641,6 +657,73 @@ namespace SuccessHotelierHub.Repository
             reservationPackageMapping = DALHelper.CreateListFromTable<ReservationPackageMappingVM>(dt);
 
             return reservationPackageMapping;
+        }
+
+        #endregion
+
+        #region Reservation Add Ons Mapping 
+
+        public string AddUpdateReservationAddOnsMapping(ReservationAddOnsMappingVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = model.ReservationId },
+                    new SqlParameter { ParameterName = "@AddOnsId", Value = model.AddOnsId } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUpdateReservationAddOnsMapping", parameters));
+
+            return id;
+        }
+
+        public string DeleteReservationAddOnsMappingByReservation(Guid reservationId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationAddOnsMappingByReservation", parameters));
+
+            return id;
+        }
+
+        public string DeleteReservationAddOnsMapping(Guid id, int updatedBy)
+        {
+            string mappingId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationAddOnsMapping", parameters));
+
+            return mappingId;
+        }
+
+        public List<ReservationAddOnsMappingVM> GetReservationAddOnsMapping(Guid? reservationId, Guid? addOnsId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@AddOnsId", Value = (object) addOnsId ?? DBNull.Value }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationAddOnsMapping", parameters);
+
+            var reservationAddOnsMapping = new List<ReservationAddOnsMappingVM>();
+            reservationAddOnsMapping = DALHelper.CreateListFromTable<ReservationAddOnsMappingVM>(dt);
+
+            return reservationAddOnsMapping;
         }
 
         #endregion

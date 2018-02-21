@@ -106,7 +106,7 @@
     }
 
     function generateAddOnsItemButton(addOnsId, addOnsName, price) {
-        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_" + addOnsId + "'>" + addOnsName + " <i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this);' data-addonsid='" + addOnsId + "' data-price='" + price + "'></i></span>";
+        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_" + addOnsId + "'>" + addOnsName + " <i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this);' data-addonsid='" + addOnsId + "' data-price='" + price + "' data-addons='" + addOnsName + "'></i></span>";
     }
 
     function onSelectAddOns(element) {

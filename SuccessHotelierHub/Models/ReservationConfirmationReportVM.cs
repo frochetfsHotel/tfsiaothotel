@@ -17,6 +17,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Last Name")]
         public string GuestName { get; set; }
 
+        [DisplayName("Cashier Name")]
+        public string CashierName { get; set; }
+
         [DisplayName("Confirmation #")]
         public string ConfirmationNumber { get; set; }
 

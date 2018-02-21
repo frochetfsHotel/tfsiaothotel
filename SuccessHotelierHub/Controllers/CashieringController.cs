@@ -187,7 +187,7 @@ namespace SuccessHotelierHub.Controllers
                 model.RateCodeId = reservation.RateCodeId;
                 model.RateCode = rateType.RateTypeCode;
                 model.Rate = reservation.Rate;
-                model.RoomRent = reservation.TotalPrice;
+                model.RoomRent = reservation.TotalPrice;                
 
                 model.RoomTypeId = reservation.RoomTypeId;
                 model.RoomTypeCode = roomType.RoomTypeCode;
@@ -1004,9 +1004,11 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Update Reservation
 
-                    double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+                    //double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+                    double totalPrice = Utility.Utility.CalculateReservationTotalPrice(reservation.Id);
 
-                    reservation.GuestBalance = totalPrice;
+                    //reservation.GuestBalance = totalPrice;
+                    reservation.GuestBalance = 0;
                     reservation.TotalPrice = totalPrice;
 
                     reservation.UpdatedBy = LogInManager.LoggedInUserId;

@@ -920,3 +920,13 @@ Html, body{
 .font_25 {
     font-size:25px !important;
 }
+
+.table_maxRemarks{
+    max-height: 150px;
+    overflow: auto;
+}
+
+.table_maxTransactionSummary{
+    max-height: 200px;
+    overflow: auto;
+}

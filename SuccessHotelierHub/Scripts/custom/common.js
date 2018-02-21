@@ -602,10 +602,14 @@ function parseBoolean(value) {
 
 function IsValidCreditCardNo(number) {
     if (!IsNullOrEmpty(number)) {
-        if (number.length != 16) {
+        if (number.length != 4) {
             return false;
         }
         return true;
     }
     return false;
+}
+
+function ConvertToNegative(num) {
+    return -Math.abs(num);
 }

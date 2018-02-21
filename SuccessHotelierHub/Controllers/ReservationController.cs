@@ -43,6 +43,8 @@ namespace SuccessHotelierHub.Controllers
         private OriginRepository originRepository = new OriginRepository();
         private DiscountApprovedRepository discountApprovedRepository = new DiscountApprovedRepository();
         private RTCRepository rtcRepository = new RTCRepository();
+        private AddOnsRepository addOnsRepository = new AddOnsRepository();
+        private RateRepository rateRepository = new RateRepository();
 
         #endregion
 
@@ -54,33 +56,29 @@ namespace SuccessHotelierHub.Controllers
             var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
             var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
-            //var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
             var rateTypeList = new SelectList(
                     rateTypeRepository.GetRateType(string.Empty)
                     .Select(
                         m => new SelectListItem()
                         {
                             Value = m.Id.ToString(),
-                            //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
                             Text = m.RateTypeCode
                         }
                     ), "Value", "Text").ToList();
 
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
-            //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();            
+            var packageList = packageRepository.GetPackages();
             //var packageList = new SelectList(
-            //       packageRepository.GetPackages()
-            //       .Select(
-            //           m => new SelectListItem()
-            //           {
-            //               Value = m.Id.ToString(),
-            //               //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
-            //               Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-            //           }
-            //       ), "Value", "Text").ToList();
-
-            //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
+            //    packageRepository.GetPackages()
+            //    .Select(
+            //        m => new SelectListItem()
+            //        {
+            //            Value = m.Id.ToString(),
+            //            Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+            //        }
+            //    ), "Value", "Text").ToList();
+            
             var marketList = new SelectList(
                               marketRepository.GetMarkets()
                               .Select(
@@ -90,10 +88,7 @@ namespace SuccessHotelierHub.Controllers
                                       Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                   }
                       ), "Value", "Text").ToList();
-
-            var marketLEISId = marketRepository.GetMarketByName("LEIS").FirstOrDefault().Id;
-
-            //var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+            
             var reservationSourceList = new SelectList(
                              reservationSourceRepository.GetReservationSources()
                              .Select(
@@ -103,10 +98,8 @@ namespace SuccessHotelierHub.Controllers
                                      Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                  }
                      ), "Value", "Text").ToList();
-
-            var reservationSourceId = reservationSourceRepository.GetReservationSourceByName("LEIS").FirstOrDefault().Id;
-
-            //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+            
+            
             var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
                     .Select(
@@ -118,15 +111,6 @@ namespace SuccessHotelierHub.Controllers
                  ), "Value", "Text").ToList();
 
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
-
-            //var originList = new SelectList(originRepository.GetOrigins().Select
-            //            (
-            //                   m => new SelectListItem()
-            //                   {
-            //                       Value = m.Id.ToString(),
-            //                       Text = (m.Code + " - " + m.Description)
-            //                   }
-            //            ), "Value", "Text").ToList();
 
             var discountApprovedList = new SelectList(discountApprovedRepository.GetDiscountApprovedDetail().Select
                        (
@@ -178,21 +162,21 @@ namespace SuccessHotelierHub.Controllers
                 model.Rate = rateQuery.Amount; //Rate
                 model.IsWeekEndPrice = rateQuery.IsWeekEndPrice; // Week End Price.
 
-                double totalBalance = 0, totalPrice = 0;
+                model.PackageId = rateQuery.PackageId;
 
-                totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
-
-                totalBalance = totalPrice;
-
-                model.TotalPrice = totalPrice;
-                
-                if (rateQuery.PackageId.HasValue)
+                double? dblWeekEndPrice = model.Rate;
+                if (model.RoomTypeId.HasValue && model.RateCodeId.HasValue)
                 {
-                    //Get Packages
-                    var packages = packageRepository.GetPackageById(rateQuery.PackageId.Value);
+                    var weekEndPrice = rateRepository.GetWeekEndPrice(model.RoomTypeId.Value, model.RateCodeId.Value).FirstOrDefault();
 
-                    ViewBag.SelectedPacakges = packages;
+                    if (weekEndPrice != null)
+                    {
+                        dblWeekEndPrice = weekEndPrice.Amount;
+                    }
                 }
+
+                ViewBag.WeekEndPrice = dblWeekEndPrice;
+
             }
 
             #region Profile Info From Profile Page
@@ -247,15 +231,12 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.ReservationTypeList = reservationTypeList;
-            //ViewBag.PackageList = packageList;
+            ViewBag.PackageList = packageList;
             ViewBag.MarketList = marketList;
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
-            ViewBag.RoomFeaturesList = roomFeaturesList;
-            //ViewBag.OriginList = originList;
-            ViewBag.DiscountApprovedList = discountApprovedList;
-            ViewBag.MarketLEISId = marketLEISId;
-            ViewBag.ReservationSourceId = reservationSourceId;
+            ViewBag.RoomFeaturesList = roomFeaturesList;            
+            ViewBag.DiscountApprovedList = discountApprovedList;                        
             ViewBag.RtcList = rtcList;
 
 
@@ -307,6 +288,7 @@ namespace SuccessHotelierHub.Controllers
                                     obj.NoOfNight = model.NoOfNight;
                                     obj.NoOfAdult = model.NoOfAdult;
                                     obj.NoOfChildren = model.NoOfChildren;
+                                    obj.CashierName = LogInManager.UserName;
 
                                     //Method Of Payment.
                                     if (model.PaymentMethodId.HasValue)
@@ -420,11 +402,7 @@ namespace SuccessHotelierHub.Controllers
                         model.IsWeekEndPrice = true;
                     }
                 }
-
-                //if (!model.GuestBalance.HasValue)
-                //{
-                //    model.GuestBalance = model.TotalBalance;
-                //}
+                
 
                 #region Room Type
                 //Get Room Type Details.
@@ -457,12 +435,24 @@ namespace SuccessHotelierHub.Controllers
 
                 #endregion
 
+                #region Add Ons Mapping
+
+                //Get AddOns Mapping
+                var selectedAddOns= reservationRepository.GetReservationAddOnsMapping(model.Id, null);
+
+                ViewBag.SelectedAddOns = selectedAddOns;
+
+                #endregion
+
                 #region Package Mapping
 
-                //Get Package Mapping
-                var selectedPacakges = reservationRepository.GetReservationPackageMapping(model.Id, null);
+                //Get AddOns Mapping
+                var selectedPackage = reservationRepository.GetReservationPackageMapping(model.Id, null).FirstOrDefault();
 
-                ViewBag.SelectedPacakges = selectedPacakges;
+                if(selectedPackage != null)
+                {
+                    model.PackageId = selectedPackage.PackageId;
+                }
 
                 #endregion
 
@@ -514,32 +504,28 @@ namespace SuccessHotelierHub.Controllers
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
                 var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
-                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
-                //var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty), "Id", "RateTypeCode").ToList();
+                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();                
                 var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty)
                                         .Select(
                                             m => new SelectListItem()
                                             {
-                                                Value = m.Id.ToString(),
-                                                //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
+                                                Value = m.Id.ToString(),                                                
                                                 Text = m.RateTypeCode
                                             }
                                         ), "Value", "Text").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
-                //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();                
+                var packageList = packageRepository.GetPackages();
                 //var packageList = new SelectList(
-                //         packageRepository.GetPackages()
-                //         .Select(
-                //             m => new SelectListItem()
-                //             {
-                //                 Value = m.Id.ToString(),
-                //                 //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
-                //                 Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-                //             }
-                //         ), "Value", "Text").ToList();
+                //        packageRepository.GetPackages()
+                //        .Select(
+                //            m => new SelectListItem()
+                //            {
+                //                Value = m.Id.ToString(),
+                //                Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+                //            }
+                //        ), "Value", "Text").ToList();
 
-                //var marketList = new SelectList(marketRepository.GetMarkets(), "Id", "Name").ToList();
                 var marketList = new SelectList(
                               marketRepository.GetMarkets()
                               .Select(
@@ -549,10 +535,8 @@ namespace SuccessHotelierHub.Controllers
                                       Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                   }
                       ), "Value", "Text").ToList();
-
-                var marketLEISId = marketRepository.GetMarketByName("LEIS").FirstOrDefault().Id;
-
-                //var reservationSourceList = new SelectList(reservationSourceRepository.GetReservationSources(), "Id", "Name").ToList();
+                                
+                
                 var reservationSourceList = new SelectList(
                               reservationSourceRepository.GetReservationSources()
                               .Select(
@@ -562,10 +546,8 @@ namespace SuccessHotelierHub.Controllers
                                       Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                   }
                       ), "Value", "Text").ToList();
-
-                var reservationSourceId = reservationSourceRepository.GetReservationSourceByName("LEIS").FirstOrDefault().Id;
-
-                //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
+                                
+                
                 var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
                     .Select(
@@ -576,14 +558,6 @@ namespace SuccessHotelierHub.Controllers
                         }
                     ), "Value", "Text").ToList();
                 var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
-                //var originList = new SelectList(originRepository.GetOrigins().Select
-                //       (
-                //              m => new SelectListItem()
-                //              {
-                //                  Value = m.Id.ToString(),
-                //                  Text = (m.Code + " - " + m.Description)
-                //              }
-                //       ), "Value", "Text").ToList();
 
                 var discountApprovedList = new SelectList(discountApprovedRepository.GetDiscountApprovedDetail().Select
                        (
@@ -604,16 +578,26 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.RateTypeList = rateTypeList;
                 ViewBag.RoomTypeList = roomTypeList;
                 ViewBag.ReservationTypeList = reservationTypeList;
-                //ViewBag.PackageList = packageList;
+                ViewBag.PackageList = packageList;
                 ViewBag.MarketList = marketList;
                 ViewBag.ReservationSourceList = reservationSourceList;
                 ViewBag.PaymentMethodList = paymentMethodList;
-                ViewBag.RoomFeaturesList = roomFeaturesList;
-                //ViewBag.OriginList = originList;
-                ViewBag.DiscountApprovedList = discountApprovedList;
-                ViewBag.MarketLEISId = marketLEISId;
-                ViewBag.ReservationSourceId = reservationSourceId;
+                ViewBag.RoomFeaturesList = roomFeaturesList;                
+                ViewBag.DiscountApprovedList = discountApprovedList;                                
                 ViewBag.RtcList = rtcList;
+
+                double? dblWeekEndPrice = model.Rate;
+                if (model.RoomTypeId.HasValue && model.RateCodeId.HasValue)
+                {
+                    var weekEndPrice = rateRepository.GetWeekEndPrice(model.RoomTypeId.Value, model.RateCodeId.Value).FirstOrDefault();
+
+                    if (weekEndPrice != null)
+                    {
+                        dblWeekEndPrice = weekEndPrice.Amount;
+                    }
+                }
+
+                ViewBag.WeekEndPrice = dblWeekEndPrice;
 
                 return View(model);
             }
@@ -677,10 +661,7 @@ namespace SuccessHotelierHub.Controllers
                             roomIdsArr = roomIdsArr.Distinct().ToArray();
                         }
                     }
-
-
-                    //Delete Existing Reservation Room Mapping.
-                    //roomRepository.DeleteReservationRoomMappingByReservation(model.Id, LogInManager.LoggedInUserId);
+                    
 
                     #region Delete Room Mapping
 
@@ -766,9 +747,7 @@ namespace SuccessHotelierHub.Controllers
                             preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
                         }
                     }
-
-                    //Delete Existing Reservation Preference Mapping.
-                    //preferenceRepository.DeleteReservationPreferenceMappingByReservation(model.Id);
+                    
 
                     #region Delete Preference Mapping
 
@@ -817,95 +796,92 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
-                    #region Save Reservation Package Mapping      
+                    #region Save Reservation Add Ons Mapping      
 
-                    #region Delete Package Mapping
+                    #region Delete Add Ons Mapping
 
-                    var packageMappings = reservationRepository.GetReservationPackageMapping(Guid.Parse(reservationId), null);
+                    var addOnsMappings = reservationRepository.GetReservationAddOnsMapping(Guid.Parse(reservationId), null);
 
-                    if (packageMappings != null && packageMappings.Count > 0)
+                    if (addOnsMappings != null && addOnsMappings.Count > 0)
                     {
-                        List<Guid> packageMappingIds = new List<Guid>();
+                        List<Guid> addOnsMappingIds = new List<Guid>();
 
-                        foreach (var packageMapping in packageMappings)
+                        foreach (var addOnsMapping in addOnsMappings)
                         {
-                            if (packageMapping.PackageId.HasValue)
+                            if (addOnsMapping.AddOnsId.HasValue)
                             {
-                                if (model.PackageList == null || !model.PackageList.Select(m => m.Id).Contains(packageMapping.PackageId.Value))
+                                if (model.AddOnsList == null || !model.AddOnsList.Select(m => m.Id).Contains(addOnsMapping.AddOnsId.Value))
                                 {
-                                    packageMappingIds.Add(packageMapping.Id);
+                                    addOnsMappingIds.Add(addOnsMapping.Id);
                                 }
                             }
                         }
 
-                        //Delete Package Mapping
-                        if (packageMappingIds != null && packageMappingIds.Count > 0)
+                        //Delete AddOns Mapping
+                        if (addOnsMappingIds != null && addOnsMappingIds.Count > 0)
                         {
-                            foreach (var id in packageMappingIds)
+                            foreach (var id in addOnsMappingIds)
                             {
-                                reservationRepository.DeleteReservationPackageMapping(id, LogInManager.LoggedInUserId);
-
-                                //If Flag IsCheckIn = true & Reservation charge contains this package info then delete.
-                                if (model.IsCheckIn == true)
-                                {
-                                    var packageCharges = reservationChargeRepository.GetReservationChargesByAdditionalChargeSource(Guid.Parse(reservationId), id, AdditionalChargeSource.PACKAGE_MAPPING);
-
-                                    if (packageCharges != null && packageCharges.Count > 0)
-                                    {
-                                        foreach (var charge in packageCharges)
-                                        {
-                                            reservationChargeRepository.DeleteReservationCharges(charge.Id, LogInManager.LoggedInUserId);
-                                        }
-                                    }
-                                }
+                                reservationRepository.DeleteReservationAddOnsMapping(id, LogInManager.LoggedInUserId);
                             }
                         }
                     }
                     #endregion        
 
-                    if (model.PackageList != null && model.PackageList.Count > 0)
+                    if (model.AddOnsList != null && model.AddOnsList.Count > 0)
                     {
-                        foreach (var package in model.PackageList)
+                        foreach (var addOns in model.AddOnsList)
                         {
-                            var packageDetail = packageRepository.GetPackageById(package.Id).FirstOrDefault();
+                            var addOnsDetail = addOnsRepository.GetAddOnsById(addOns.Id).FirstOrDefault();
 
-                            if (packageDetail != null)
+                            if (addOnsDetail != null)
                             {
-                                //Save Reservation Package Mapping.
-                                ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
-                                reservationPackageMapping.PackageId = packageDetail.Id;
-                                reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
-                                reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                                reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                                //Save Reservation Add Ons Mapping.
+                                ReservationAddOnsMappingVM reservationAddOnsMapping = new ReservationAddOnsMappingVM();
+                                reservationAddOnsMapping.AddOnsId = addOnsDetail.Id;
+                                reservationAddOnsMapping.ReservationId = Guid.Parse(reservationId);
+                                reservationAddOnsMapping.CreatedBy = LogInManager.LoggedInUserId;
+                                reservationAddOnsMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
-                                var reservationPackageMappingId = reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
-
-                                //If Flag IsCheckIn = true & Reservation charge not contains this package info then add them.
-                                if (model.IsCheckIn == true && !string.IsNullOrWhiteSpace(reservationPackageMappingId))
-                                {
-                                    var packageCharges = reservationChargeRepository.GetReservationChargesByAdditionalChargeSource(Guid.Parse(reservationId), Guid.Parse(reservationPackageMappingId), AdditionalChargeSource.PACKAGE_MAPPING);
-
-                                    if (packageCharges == null || packageCharges.Count == 0)
-                                    {
-                                        ReservationChargeVM packageMappingCharge = new ReservationChargeVM();
-                                        packageMappingCharge.ReservationId = Guid.Parse(reservationId);
-                                        packageMappingCharge.AdditionalChargeId = Guid.Parse(reservationPackageMappingId); //Package Mapping Id.
-                                        packageMappingCharge.AdditionalChargeSource = AdditionalChargeSource.PACKAGE_MAPPING;
-                                        packageMappingCharge.Code = AdditionalChargeCode.PACKAGE;
-                                        packageMappingCharge.Description = string.Format("{0} {1}", packageDetail.Name, packageDetail.Description);
-                                        packageMappingCharge.TransactionDate = DateTime.Now;
-                                        packageMappingCharge.Amount = packageDetail.Price;
-                                        packageMappingCharge.Qty = 1;
-                                        packageMappingCharge.IsActive = true;
-                                        packageMappingCharge.CreatedBy = LogInManager.LoggedInUserId;
-
-                                        reservationChargeRepository.AddReservationCharges(packageMappingCharge);
-
-                                    }
-                                }
+                                var reservationAddOnsMappingId = reservationRepository.AddUpdateReservationAddOnsMapping(reservationAddOnsMapping);
                             }
                         }
                     }
+                    #endregion
+
+                    #region Save Reservation Package Mapping               
+
+                    if (model.PackageId.HasValue)
+                    {
+                        //Save Reservation Package Mapping.
+                        ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
+                        reservationPackageMapping.PackageId = model.PackageId;
+                        reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                        reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                        reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                    }
+                    else
+                    {
+                        var packageDetails = reservationRepository.GetReservationPackageMapping(Guid.Parse(reservationId), null);
+
+                        //If Package mapping exist then delete.
+                        if(packageDetails != null && packageDetails.Count > 0)
+                        {
+                            reservationRepository.DeleteReservationPackageMappingByReservation(Guid.Parse(reservationId), LogInManager.LoggedInUserId);
+                        }
+                    }
+
+                    #endregion
+                    
+                    #region Update Reservation Total Price
+
+                    totalPrice = Utility.Utility.CalculateReservationTotalPrice(Guid.Parse(reservationId));
+
+                    //Update Total Price.
+                    reservationRepository.UpdateReservationTotalPrice(Guid.Parse(reservationId), totalPrice, LogInManager.LoggedInUserId);
+
                     #endregion
 
                     #region Update Room Rent Charges 
@@ -931,6 +907,7 @@ namespace SuccessHotelierHub.Controllers
                     }
 
                     #endregion
+
 
                     #region Update Reservation Total Balance.
 
@@ -1194,8 +1171,7 @@ namespace SuccessHotelierHub.Controllers
             model.ConfirmationNumber = confirmationNo;
 
             #endregion
-
-
+            
             #region Generate Folio Number
             Int64 folioSuffix = 1;
 
@@ -1256,7 +1232,7 @@ namespace SuccessHotelierHub.Controllers
                             //Save Reservation Room Mapping.
                             ReservationRoomMappingVM reservationRoomMapping = new ReservationRoomMappingVM();
                             reservationRoomMapping.RoomId = Guid.Parse(item.Trim());
-                            reservationRoomMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationRoomMapping.ReservationId = model.Id;
                             reservationRoomMapping.CreatedBy = LogInManager.LoggedInUserId;
                             reservationRoomMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
@@ -1264,7 +1240,7 @@ namespace SuccessHotelierHub.Controllers
 
                             #region Remove Existing reservation if room status are dirty.
 
-                            var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), Guid.Parse(reservationId), Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
+                            var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate).FirstOrDefault();
 
                             if (reservationLog != null)
                             {
@@ -1301,7 +1277,7 @@ namespace SuccessHotelierHub.Controllers
                             //Save Reservation Preference Mapping.
                             ReservationPreferenceMappingVM reservationPreferenceMapping = new ReservationPreferenceMappingVM();
                             reservationPreferenceMapping.PreferenceId = Guid.Parse(item);
-                            reservationPreferenceMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationPreferenceMapping.ReservationId = model.Id;
                             reservationPreferenceMapping.CreatedBy = LogInManager.LoggedInUserId;
 
                             preferenceRepository.AddReservationPreferenceMapping(reservationPreferenceMapping);
@@ -1310,23 +1286,39 @@ namespace SuccessHotelierHub.Controllers
                 }
                 #endregion
 
-                #region Save Reservation Package Mapping               
+                #region Save Reservation Add Ons Mapping               
 
-                if (model.PackageList != null && model.PackageList.Count > 0)
+                if (model.AddOnsList != null && model.AddOnsList.Count > 0)
                 {
-                    foreach (var pacakge in model.PackageList)
+                    foreach (var addOns in model.AddOnsList)
                     {
-                        //Save Reservation Package Mapping.
-                        ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
-                        reservationPackageMapping.PackageId = pacakge.Id;
-                        reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
-                        reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                        reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                        //Save Reservation AddOns Mapping.
+                        ReservationAddOnsMappingVM reservationAddOnsMapping = new ReservationAddOnsMappingVM();
+                        reservationAddOnsMapping.AddOnsId = addOns.Id;
+                        reservationAddOnsMapping.ReservationId = model.Id;
+                        reservationAddOnsMapping.CreatedBy = LogInManager.LoggedInUserId;
+                        reservationAddOnsMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
-                        reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                        reservationRepository.AddUpdateReservationAddOnsMapping(reservationAddOnsMapping);
                     }
                 }
-                #endregion                        
+                #endregion
+
+                #region Save Reservation Package Mapping               
+
+                if (model.PackageId.HasValue)
+                {
+                    //Save Reservation Package Mapping.
+                    ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
+                    reservationPackageMapping.PackageId = model.PackageId;
+                    reservationPackageMapping.ReservationId = model.Id;
+                    reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                    reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                }
+                #endregion 
+
 
                 #region Reservation Remarks 
 
@@ -1334,7 +1326,7 @@ namespace SuccessHotelierHub.Controllers
                 {
                     foreach (var remark in model.RemarksList)
                     {
-                        remark.ReservationId = Guid.Parse(reservationId);
+                        remark.ReservationId = model.Id;
                         remark.CreatedBy = LogInManager.LoggedInUserId;
 
                         reservationRepository.AddReservationRemark(remark);
@@ -1343,12 +1335,21 @@ namespace SuccessHotelierHub.Controllers
 
                 #endregion
 
+                #region Update Reservation Total Price
+
+                totalPrice = Utility.Utility.CalculateReservationTotalPrice(model.Id);
+
+                //Update Total Price.
+                reservationRepository.UpdateReservationTotalPrice(model.Id, totalPrice, LogInManager.LoggedInUserId);
+
+                #endregion
+
                 #region Update Reservation Total Balance.
 
-                double totalGuestBalance = Utility.Utility.CalculateTotalBalance(Guid.Parse(reservationId));
+                double totalGuestBalance = Utility.Utility.CalculateTotalBalance(model.Id);
 
                 //Update Total Balance.
-                reservationRepository.UpdateReservationTotalBalance(Guid.Parse(reservationId), totalGuestBalance, LogInManager.LoggedInUserId);
+                reservationRepository.UpdateReservationTotalBalance(model.Id, totalGuestBalance, LogInManager.LoggedInUserId);
 
                 #endregion
 
@@ -1420,6 +1421,7 @@ namespace SuccessHotelierHub.Controllers
                                 model.NoOfAdult = reservation.NoOfAdult.HasValue ? reservation.NoOfAdult.Value : 0;
                                 model.NoOfChildren = reservation.NoOfChildren.HasValue ? reservation.NoOfChildren.Value : 0;
                                 model.Rate = reservation.Rate;
+                                model.CashierName = LogInManager.UserName;
 
                                 model.RatePerNight = Utility.Utility.FormatAmountWithTwoDecimal(reservation.Rate.HasValue ? reservation.Rate.Value : 0);
 
@@ -1483,6 +1485,43 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult GetPriceDetails(Guid roomTypeId, Guid rateTypeId)
+        {
+            try
+            {
+                var weekDayPrice =  rateRepository.GetWeekDayPrice(roomTypeId, rateTypeId).FirstOrDefault();
+
+                var weekEndPrice =  rateRepository.GetWeekEndPrice(roomTypeId, rateTypeId).FirstOrDefault();
+
+                if (weekDayPrice != null || weekEndPrice != null)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            WeekDayPrice = (weekDayPrice != null ? weekDayPrice.Amount : 0),
+                            WeekEndPrice = (weekEndPrice != null ? weekEndPrice.Amount : 0)
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Price details not found."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetPriceDetails");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
         #endregion
 
         #region Rate Query
@@ -1492,19 +1531,16 @@ namespace SuccessHotelierHub.Controllers
             var profileId = (string)TempData["ProfileId"];
             var firstName = (string)TempData["FirstName"];
             var lastName = (string)TempData["LastName"];
-
-            //var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+                        
             var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, DateTime.Now.ToString("MM/dd/yyyy"));
 
-            var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
-            //var packageList = new SelectList(packageRepository.GetPackages(), "Id", "Name").ToList();
+            var rateTypeList = rateTypeRepository.GetRateType(string.Empty);            
             var packageList = new SelectList(
                  packageRepository.GetPackages()
                  .Select(
                      m => new SelectListItem()
                      {
                          Value = m.Id.ToString(),
-                         //Text = (m.IsLeisRateType ? (m.RateTypeCode + " - LEIS") : m.RateTypeCode)
                          Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
                      }
                  ), "Value", "Text").ToList();
@@ -1555,8 +1591,7 @@ namespace SuccessHotelierHub.Controllers
                         blnShowWeekEndPrice = true;
                     }
                 }
-
-                //var roomTypeList = roomTypeRepository.GetRoomType(string.Empty);
+                                
                 var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, model.ArrivalDate.Value.ToString("MM/dd/yyyy"));
                 var rateTypeList = rateTypeRepository.GetRateType(model.RateTypeCode);
 

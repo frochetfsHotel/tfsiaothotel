@@ -30041,3 +30041,445 @@ BEGIN
 END
 
 
+
+/****************** Replace credit card number with last 4 digits in reservation table. ************/
+
+UPDATE Reservation SET CreditCardNo = RIGHT(LTRIM(RTRIM(CreditCardNo)),4) WHERE ISNULL(CreditCardNo,'') <> ''
+
+
+
+/**************** Add new  table ReservationAddOnsMapping *************/
+
+
+/****** Object:  Table [dbo].[ReservationAddOnsMapping]    Script Date: 2/19/2018 11:01:04 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ReservationAddOnsMapping](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[ReservationId] [uniqueidentifier] NOT NULL,
+	[AddOnsId]	[uniqueidentifier] NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_ReservationAddOnsMapping] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/**** Add Foreign Key of ReservationId in ReservationAddOnsMapping Table****/
+
+ALTER TABLE [dbo].[ReservationAddOnsMapping] WITH NOCHECK
+	ADD CONSTRAINT [FK_ReservationAddOnsMapping_Reservation] FOREIGN KEY ([ReservationId]) REFERENCES [dbo].[Reservation] ([Id]);
+
+
+/************************************************************************************************************************ 
+	SP Name : AddUpdateReservationAddOnsMapping
+	Comment : Create SP AddUpdateReservationAddOnsMapping
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddUpdateReservationAddOnsMapping]    Script Date: 2/21/2018 2:22:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUpdateReservationAddOnsMapping]
+	@ReservationId		UNIQUEIDENTIFIER				,	
+	@AddOnsId			UNIQUEIDENTIFIER				,
+	@CreatedBy			INT					=	NULL	,
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	
+	SET @Id = (SELECT TOP 1 Id FROM [ReservationAddOnsMapping] 
+						WHERE ISNULL(IsDeleted,0) = 0 AND [ReservationId] = @ReservationId AND AddOnsId = @AddOnsId)
+
+	IF @Id IS NULL
+	BEGIN
+
+		SET @Id = NEWID()
+
+		INSERT INTO [dbo].[ReservationAddOnsMapping]
+			   ([Id]
+			   ,[ReservationId]			   
+			   ,[AddOnsId]
+			   ,[CreatedBy]
+			   ,[CreatedOn])
+		 VALUES
+				(
+					@Id
+					,@ReservationId					
+					,@AddOnsId
+					,@CreatedBy
+					,GETDATE()
+				)
+	END
+	ELSE
+	BEGIN
+		UPDATE [dbo].[ReservationAddOnsMapping]
+			SET		[UpdatedBy] = @UpdatedBy
+					,[UpdatedOn]	= GETDATE()
+			WHERE	ISNULL(IsDeleted,0) = 0 
+					AND [ReservationId] = @ReservationId 
+					AND [AddOnsId] = @AddOnsId
+					AND [Id] = @Id
+	END
+			
+	SELECT @Id AS Id
+    
+END
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationAddOnsMappingByReservation
+	Comment : Create SP DeleteReservationAddOnsMappingByReservation	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationAddOnsMappingByReservation]    Script Date: 2/21/2018 2:24:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationAddOnsMappingByReservation]	
+	@ReservationId	UNIQUEIDENTIFIER		,
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationAddOnsMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND ReservationId = @ReservationId
+	
+
+	SELECT @ReservationId AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservationAddOnsMapping
+	Comment : Create SP DeleteReservationAddOnsMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationAddOnsMapping]    Script Date: 2/21/2018 2:24:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteReservationAddOnsMapping]	
+	@Id			UNIQUEIDENTIFIER				,
+	@UpdatedBy	INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ReservationAddOnsMapping] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+	
+
+	SELECT @Id AS Id
+    
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationAddOnsMapping
+	Comment : Create SP GetReservationAddOnsMapping	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationAddOnsMapping]    Script Date: 2/21/2018 2:25:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationAddOnsMapping] 		
+		@ReservationId = NULL,
+		@AddOnsId = NULL
+*/
+CREATE PROCEDURE [dbo].[GetReservationAddOnsMapping]		
+	@ReservationId	UNIQUEIDENTIFIER = NULL,
+	@AddOnsId		UNIQUEIDENTIFIER = NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT	RAM.*,
+			ADO.[Name] AS [AddOnsName], ADO.[Description] AS AddOnsDescription, ADO.[Price] AS AddOnsPrice
+
+	 FROM [dbo].[ReservationAddOnsMapping] RAM
+			INNER JOIN [dbo].[AddOns] ADO ON ADO.Id = RAM.AddOnsId 
+				AND ISNULL(ADO.IsDeleted,0) = 0				
+		WHERE	ISNULL(RAM.IsDeleted,0) = 0
+				AND (@ReservationId IS NULL OR RAM.ReservationId = @ReservationId)
+				AND (@AddOnsId IS NULL OR RAM.AddOnsId = @AddOnsId)
+		ORDER BY RAM.CreatedOn
+
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteAllReservation
+	Comment : Changes in SP DeleteAllReservation	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteAllReservation]    Script Date: 2/21/2018 3:42:43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/****
+	EXEC [DeleteAllReservation]
+***/
+
+ALTER PROCEDURE [dbo].[DeleteAllReservation]	
+	@UpdatedBy	INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	-- ReservationRoomMapping	
+	UPDATE [dbo].[ReservationRoomMapping] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	
+	-- ReservationPreferenceMapping
+	DELETE FROM [dbo].[ReservationPreferenceMapping] 	
+		
+	-- CheckInCheckOutDetail
+	UPDATE [dbo].[CheckInCheckOutDetail] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	-- ReservationCharges
+	UPDATE [dbo].[ReservationCharges] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+		
+	-- ReservationLog
+	UPDATE [dbo].[ReservationLog] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+
+	-- ReservationRemarks
+	UPDATE [dbo].[ReservationRemarks] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+
+
+	-- ReservationPackageMapping
+	UPDATE [dbo].[ReservationPackageMapping] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+
+	-- ReservationAddOnsMapping
+	UPDATE [dbo].[ReservationAddOnsMapping] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				
+	-- Reservation
+	UPDATE [dbo].[Reservation] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+END
+
+
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteReservation
+	Comment : Changes in SP DeleteReservation	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservation]    Script Date: 2/21/2018 3:43:48 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[DeleteReservation]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+
+	--Delete Reservation Preference Mapping
+	DELETE FROM [dbo].[ReservationPreferenceMapping] 
+		WHERE ReservationId = @Id			
+
+	--Delete Reservation Package Mapping
+	UPDATE [dbo].[ReservationPackageMapping] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete Reservation Remarks
+	UPDATE [dbo].[ReservationRemarks]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete Reservation Charges
+	UPDATE [dbo].[ReservationCharges]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete Reservation AddOns Mapping
+	UPDATE [dbo].[ReservationAddOnsMapping]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete Reservation Room Mapping
+	UPDATE [dbo].[ReservationRoomMapping]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete CheckIn CheckOut Detail
+	UPDATE [dbo].[CheckInCheckOutDetail]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete Reservation Log
+	UPDATE [dbo].[ReservationLog]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ReservationId = @Id
+
+	--Delete Reservation
+	UPDATE [dbo].[Reservation] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateReservationTotalPrice
+	Comment : Create SP UpdateReservationTotalPrice	
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[UpdateReservationTotalPrice]    Script Date: 2/21/2018 3:59:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateReservationTotalPrice]	
+	@Id					UNIQUEIDENTIFIER	=	NULL	,	
+	@TotalPrice			DECIMAL(18,2)		=	NULL	,	
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+
+	UPDATE [dbo].[Reservation] SET		
+		 [TotalPrice]			=	@TotalPrice
+		,[UpdatedBy]			=	@UpdatedBy
+		,[UpdatedOn]			=	GETDATE()		
+	WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+			
+	SELECT @Id AS ReservationId				
+END
+
+
+
+/*******************************************************************************************************************
+	SP Name : GetWeekEndPrice
+	Comment   Create new SP GetWeekEndPrice
+*******************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetWeekEndPrice]    Script Date: 2/21/2018 5:01:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetWeekEndPrice] 
+		@RoomTypeId		=	'9B6A0D01-E581-4651-9C73-6A2A45DD8171', 
+		@RateTypeId		=	'81C6FAD4-E347-48BF-A55B-0B6322C22B2F'
+*/
+
+CREATE PROCEDURE [dbo].[GetWeekEndPrice]
+	@RoomTypeId	UNIQUEIDENTIFIER	,
+	@RateTypeId	UNIQUEIDENTIFIER	
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * 
+		FROM [RoomTypeRateTypeMapping] RTRTM 
+		WHERE	ISNULL(IsDeleted,0) = 0 AND ISNULL(IsActive,0) = 1
+				AND RTRTM.RateTypeId = @RateTypeId 
+				AND RTRTM.RoomTypeId = @RoomTypeId
+				AND ISNULL(RTRTM.IsWeekEndPrice,0) = 1
+		ORDER BY CreatedOn DESC
+END

@@ -5,7 +5,7 @@
 <head>
     <style>
         body {
-            font-size: 18px;
+            font-size: 14px;
             color: #333;
             font-weight: 400;
             font-family: Calibri;
@@ -28,15 +28,49 @@
         .text-bold {
             font-weight: bold;
         }
+        .img_margin {
+            margin: auto;
+            display: block;
+            width:250%;
+            /*border-bottom: 1px solid #7c7c7c;*/
+        }
+        .border-none{
+			border: 0px !important;
+		}
+        .text-right {
+            text-align: right !important;
+        }
+		
+		.footer{
+            height: 100px;
+            background: #0b2d4c;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
     </style>
     <title></title>
 </head>
 <body>
-    <div style="margin-top: 10px;margin-bottom: 20px;">
+    <div class="row">
+        <div style="text-align:center;">
+            <div style="font-size: 14px; color: #333; font-weight: 400; text-align: center; font-family: Calibri;  margin-top: 10px;margin-bottom: 20px;">
+                <table class="border-none">
+                    <tr>
+                        <td style="width:100%;" class="border-none">
+                            <img src="http://www.tfshotelierhub.com/Content/img/invoice_logo.png" class="img_margin" />
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </div>
+    </div>
+    <div style="clear:both"></div>  
+    <div style="margin-top: 10px;margin-bottom: 20px;padding-left: 5px;">
         <p>Dear @Model.UserName</p>
         <p>We are delighted to confirm the following booking for you:</p>
         <br />
-        <table>
+        <table style="font-size:14px;">
             <tr>
                 <td class="text-bold">Reservation Number :</td>
                 <td>@Model.ConfirmationNumber</td>
@@ -88,9 +122,14 @@
         <p>Thank you for choosing to stay at the Roche International Hotel and Spa, we look forward to welcoming you. If we can be of any further assistance, please feel free to contact us.</p>
         <br />
         <p>Kind Regards,</p>
-        <p>Admin - HotelierHub</p>
-        <p>Website:<a href="http://tfshotelierhub.com/" target="_blank">http://tfshotelierhub.com</a></p></div>
+        <p>@Model.CashierName - HotelierHub</p>
+        <p>Website:<a href="http://www.tfshotelierhub.com/" target="_blank"> www.tfshotelierhub.com</a></p></div>
 
     <div style="clear:both"></div>
+    <footer style="text-align:center;">
+        <div class="col-md-12 padding-zero footer">
+
+        </div>
+    </footer>
 </body>
 </html>

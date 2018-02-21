@@ -267,7 +267,8 @@ namespace SuccessHotelierHub.Controllers
                     #region Save Room Rent Charges 
 
                     //double totalPrice = (double)(reservation.Rate * reservation.NoOfNight);
-                    double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+                    //double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
+                    double totalPrice = Utility.Utility.CalculateReservationTotalPrice(reservation.Id);
 
                     var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
 
@@ -286,32 +287,7 @@ namespace SuccessHotelierHub.Controllers
                     reservationChargeRepository.AddReservationCharges(reservationCharge);
 
                     #endregion
-
-                    #region Save Package Reservation Charge
-
-                    var packageMappings = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
-
-                    if (packageMappings != null && packageMappings.Count > 0)
-                    {
-                        foreach (var packageMapping in packageMappings)
-                        {
-                            reservationCharge = new ReservationChargeVM();
-                            reservationCharge.ReservationId = reservation.Id;
-                            reservationCharge.AdditionalChargeId = packageMapping.Id;
-                            reservationCharge.AdditionalChargeSource = AdditionalChargeSource.PACKAGE_MAPPING;
-                            reservationCharge.Code = AdditionalChargeCode.PACKAGE;
-                            reservationCharge.Description = string.Format("{0} {1}", packageMapping.PackageName, packageMapping.PackageDescription);
-                            reservationCharge.TransactionDate = DateTime.Now;
-                            reservationCharge.Amount = packageMapping.PackagePrice;
-                            reservationCharge.Qty = 1;
-                            reservationCharge.IsActive = true;
-                            reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
-
-                            reservationChargeRepository.AddReservationCharges(reservationCharge);
-                        }
-                    }
-
-                    #endregion
+                    
 
                     #region Save Reservation Room Mapping & Update Room Occupied Flag
 
@@ -516,6 +492,12 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region  Remove Reservation Charges                    
+
+                    reservationChargeRepository.DeleteReservationChargesByReservation(reservation.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
                     #region  Remove Reservation Log (Room Occupied)
 
                     reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId);
@@ -537,6 +519,25 @@ namespace SuccessHotelierHub.Controllers
                     #region Update Reservation Status (NULL)
 
                     reservationRepository.UpdateReservationStatus(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Update Reservation Total Price
+
+                    double totalPrice = Utility.Utility.CalculateReservationTotalPrice(reservation.Id);
+
+                    //Update Total Price.
+                    reservationRepository.UpdateReservationTotalPrice(reservation.Id, totalPrice, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Update Reservation Total Balance.
+
+                    double totalGuestBalance = 0;
+                    //totalGuestBalance  = Utility.Utility.CalculateTotalBalance(reservation.Id);
+
+                    //Update Total Balance.
+                    reservationRepository.UpdateReservationTotalBalance(reservation.Id, totalGuestBalance, LogInManager.LoggedInUserId);
 
                     #endregion
 

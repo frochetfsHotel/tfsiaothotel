@@ -139,6 +139,22 @@ namespace SuccessHotelierHub.Repository
             return roomTypeRateTypeMapping;
         }
 
+        public List<RoomTypeRateTypeMappingVM> GetWeekEndPrice(Guid roomTypeId, Guid rateTypeId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@RateTypeId", Value = rateTypeId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetWeekEndPrice", parameters);
+
+            var roomTypeRateTypeMapping = new List<RoomTypeRateTypeMappingVM>();
+            roomTypeRateTypeMapping = DALHelper.CreateListFromTable<RoomTypeRateTypeMappingVM>(dt);
+
+            return roomTypeRateTypeMapping;
+        }
+
         #endregion
     }
 }

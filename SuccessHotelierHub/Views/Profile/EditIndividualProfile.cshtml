@@ -319,6 +319,9 @@
             var selectedPreferenceElement = $('#ListOfSelectedPreferences').html();
             $("form#frmAdvancePreferenceSearch #selectedPreferences").html(selectedPreferenceElement)
             $("form#frmAdvancePreferenceSearch #divPreferences").show();
+        } else {
+            $("form#frmAdvancePreferenceSearch #selectedPreferences").html('')
+            $("form#frmAdvancePreferenceSearch #divPreferences").hide();
         }
 
         selectPreferenceGroup("ROOOM FEATURES");

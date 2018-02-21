@@ -291,6 +291,7 @@
     <Compile Include="Models\RateQueryVM.cs" />
     <Compile Include="Models\RateSheetResultVM.cs" />
     <Compile Include="Models\RateTypeVM.cs" />
+    <Compile Include="Models\ReservationAddOnsMappingVM.cs" />
     <Compile Include="Models\ReservationCancellationReasonVM.cs" />
     <Compile Include="Models\ReservationChargeVM.cs" />
     <Compile Include="Models\ReservationConfirmationReportVM.cs" />
