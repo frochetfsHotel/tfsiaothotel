@@ -92,7 +92,7 @@
     {
         foreach (var package in selectedPacakges)
         {
-            selectedPacakgesHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePackageItem(this)' data-packageid='{1}' data-price='{2}'></i></span>", package.PackageDescription, package.PackageId, package.PackagePrice);
+            selectedPacakgesHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnPackage_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePackageItem(this)' data-packageid='{1}' data-price='{2}'></i></span>", package.PackageName, package.PackageId, package.PackagePrice);
         }
     }
     #endregion

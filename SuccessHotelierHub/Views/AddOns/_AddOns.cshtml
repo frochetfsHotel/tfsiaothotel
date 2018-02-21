@@ -1,0 +1,222 @@
+﻿@model SuccessHotelierHub.Models.SearchAdvanceAddOnsParametersVM
+@using SuccessHotelierHub.Models
+@{
+    var sourceRedirectionParam = "";
+
+    sourceRedirectionParam = (string)ViewData["Source"];
+}
+
+<form id="frmAdvanceAddOnsSearch" name="frmAdvanceAddOnsSearch" enctype="multipart/form-data" method="post">
+    <div class="pt_10 pl_10 pr_10 col-xs-12 searchBox_Border">
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Name)
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Description)
+                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                @Html.LabelFor(m => m.Price)
+                @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)", value = "0.00" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12 form-group mt_25">
+                <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchAddOns()">Search</button>
+                <button type="button" class="btn btn-danger" id="btnClear" onclick="clearAddOnsSearch()">Clear</button>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 text-right m-t-sm m-b-sm padding-zero">
+        <button type="button" class="btn btn-primary m-r-xs btnAdvanceSearchAddOnsOk">OK</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+    </div>
+
+    <div class="row m-t-sm" id="divAddOns" style="display:none;">
+        <div class="col-md-12 form-group">
+            <label class="m-l-n col-md-2 control-label m-r-n-xl"> Add Ons : </label>
+            <div class="col-md-10" id="selectedAddOns">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 m-b-sm padding-zero">
+        <div class="table-responsive m-t-md table_maxheight">
+            <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblAddOns">
+                <thead>
+                    <tr>
+                        <th width="5%;"></th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>                        
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+
+
+<div class="clearfix"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("form#frmAdvanceAddOnsSearch select").change(function () {
+            searchAddOns();
+        });
+
+        $("form#frmAdvanceAddOnsSearch input").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                searchAddOns();
+            }
+        });
+    });
+
+    function selectDeSelectAddOns(element) {
+        if (element) {
+
+            var isChecked = $(element).prop("checked");
+            var id = $(element).val();
+            var addOnsName = $(element).attr("data-addons");
+            var price = $(element).attr("data-price");
+
+            if (isChecked) {
+                var html = generateAddOnsItemButton(id, addOnsName, price);
+
+                $("form#frmAdvanceAddOnsSearch #selectedAddOns").append(html)
+
+            } else {
+                if ($('form#frmAdvanceAddOnsSearch span#spnAddOns_' + id).length > 0) {
+                    $('form#frmAdvanceAddOnsSearch span#spnAddOns_' + id).remove();
+                }
+            }
+        }
+
+        var selectedAddOnsCount = $('form#frmAdvanceAddOnsSearch #selectedAddOns span').length;
+        if (!IsNullOrEmpty(selectedAddOnsCount) && parseInt(selectedAddOnsCount) > 0) {
+            $('#divAddOns').show();
+        } else {
+            $('#divAddOns').hide();
+        }
+    }
+
+    function generateAddOnsItemButton(addOnsId, addOnsName, price) {
+        return "<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_" + addOnsId + "'>" + addOnsName + " <i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this);' data-addonsid='" + addOnsId + "' data-price='" + price + "'></i></span>";
+    }
+
+    function onSelectAddOns(element) {
+        var isChecked = $('#' + element).prop("checked");
+
+        $('#' + element).prop("checked", !isChecked);
+
+        selectDeSelectAddOns($('#' + element));
+    }
+
+
+    function searchAddOns() {
+        var selectedAddOnsIds = getCheckedAddOnsIds();
+        var selectedAddOnsIdsArr = [];
+        if (!IsNullOrEmpty(selectedAddOnsIds)) {
+            selectedAddOnsIdsArr = selectedAddOnsIds.split(Delimeter.COMMA);
+        }
+
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/AddOns/SearchAdvanceAddOns")',
+            type: 'POST',
+            data: $('#frmAdvanceAddOnsSearch').serialize(),
+            success: function (response) {
+                if (response.IsSuccess == false) {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+                else {
+                    //Show data in table.
+                    var result = response.data;
+
+                    $("form#frmAdvanceAddOnsSearch #tblAddOns tbody").empty();
+                    var tbody = $("form#frmAdvanceAddOnsSearch #tblAddOns tbody");
+
+                    var markup = "";
+
+                    if (result.length > 0) {
+                        //Add the data rows.
+                        for (var i = 0; i < result.length; i++) {
+                            markup += "<tr>";
+
+                            var checked = "";
+
+                            if (selectedAddOnsIdsArr != null && selectedAddOnsIdsArr.length > 0) {
+                                if (arrayContains(result[i].Id, selectedAddOnsIdsArr) == true) {
+                                    checked = "checked";
+                                }
+                            }
+
+                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkAddOns cursor-P\' id=\'chkAddOns_" + result[i].Id + "\' name=\'chkAddOns\' value=\'" + result[i].Id + "\'  data-addonsdescription=\'" + result[i].Description + "\'  data-addons=\'" + result[i].Name + "\' data-price=\'" + result[i].Price + "\' onchange=\'selectDeSelectAddOns(this);\' " + checked + "/><span class=\'checkmark\'></span></label></td>";
+
+                            markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + result[i].Name + "</td>";
+                            markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + result[i].Description + "</td>";
+                            markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + result[i].Price + "</td>";
+
+                            markup += "</tr>";
+                        }
+                    } else {
+                        markup += "<tr><td colspan =\'4\' class=\'text-center\'>No data available.</td></tr>";
+                    }
+
+                    tbody.append(markup);
+                }
+            }
+        });
+    }
+
+    function clearAddOnsSearch() {
+        $('form#frmAdvanceAddOnsSearch #Name').val('');
+        $('form#frmAdvanceAddOnsSearch #Description').val('');
+        $('form#frmAdvanceAddOnsSearch #Price').val('');
+
+        $("form#frmAdvanceAddOnsSearch #tblAddOns tbody").empty();
+    }
+
+
+    function addNewAddOns() {
+        var url = '@Url.Content("~/AddOns/Create")' + "?source=@sourceRedirectionParam";
+        redirectTo(url);
+    }
+
+    function editSelectedAddOns() {
+        var selectedAddOns = $('input[name=chkAddOns]:checked', '#frmAdvanceAddOnsSearch');
+
+        if (selectedAddOns.val()) {
+            var addOnsId = $(selectedAddOns).val();
+            var url = '@Url.Content("~/AddOns/Edit")' + "?id=" + addOnsId + "&source=@sourceRedirectionParam";
+            redirectTo(url);
+        } else {
+            showToaster("Please select any one Add Ons.", ToasterType.ERROR);
+        }
+    }
+
+    function getCheckedAddOnsIds() {
+        var addOnsIds = "";
+        $("form#frmAdvanceAddOnsSearch #selectedAddOns span i").each(function () {
+            addOnsIds += $(this).data("addonsid") + ",";
+        });
+
+        addOnsIds = RemoveLastCharacter(addOnsIds, Delimeter.COMMA);
+        return addOnsIds;
+    }
+
+
+</script>

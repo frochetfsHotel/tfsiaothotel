@@ -29680,3 +29680,364 @@ BEGIN
 
 END
 
+/*************************************************************************************************
+
+Name : Nilesh
+Date : 21-FEB-2018
+
+/****************************************************************************************************/
+
+/****************** Create new table AddOns *****************/
+
+
+/****** Object:  Table [dbo].[AddOns]    Script Date: 2/21/2018 10:31:04 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[AddOns](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](500) NOT NULL,
+	[Description] [nvarchar](max) NULL,
+	[Price] [numeric](18, 2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_AddOns] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/**********************************************************************************************************************
+	SP Name : AddAddOns
+	Comment : Create SP AddAddOns	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddAddOns]    Script Date: 2/21/2018 10:34:15 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddAddOns]	
+	@Name					NVARCHAR(500)					,	
+	@Description			NVARCHAR(MAX)		=	NULL	,	
+	@Price					NUMERIC(18,2)		=	NULL	,	
+	@IsActive				BIT					=	NULL	,	
+	@CreatedBy				INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[AddOns]
+           ([Id]           
+           ,[Name]		
+		   ,[Description] 
+		   ,[Price]		     		   
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name	
+			   ,@Description	
+			   ,@Price			   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/**********************************************************************************************************************
+	SP Name : UpdateAddOns
+	Comment : Create SP UpdateAddOns	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateAddOns]    Script Date: 2/21/2018 10:46:21 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateAddOns]
+	@Id						UNIQUEIDENTIFIER				,	
+	@Name					NVARCHAR(500)					,	
+	@Description			NVARCHAR(MAX)		=	NULL	,
+	@Price					NUMERIC(18,2)		=	NULL	,	
+	@IsActive				BIT					=	NULL	,	
+	@UpdatedBy				INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[AddOns]
+		SET	[Name]					=	@Name		
+		   ,[Description]			=	@Description   	
+		   ,[Price]					=	@Price		   
+		   ,[UpdatedBy]				=	@UpdatedBy
+		   ,[UpdatedOn]				=	GETDATE()
+		   ,[IsActive]				=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/**********************************************************************************************************************
+	SP Name : DeleteAddOns
+	Comment : Create SP DeleteAddOns	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteAddOns]    Script Date: 2/21/2018 10:46:52 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteAddOns]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[AddOns] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/**********************************************************************************************************************
+	SP Name : GetAddOnsById
+	Comment : Create SP GetAddOnsById	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetAddOnsById]    Script Date: 2/21/2018 10:47:18 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetAddOnsById]
+	@Id UNIQUEIDENTIFIER
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[AddOns]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+		ORDER BY [Name]
+END
+
+
+/**********************************************************************************************************************
+	SP Name : GetAddOns
+	Comment : Create SP GetAddOns	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetAddOns]    Script Date: 2/21/2018 10:47:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetAddOns]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[AddOns]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+/**********************************************************************************************************************
+	SP Name : SearchAddOns
+	Comment : Create SP SearchAddOns	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAddOns]    Script Date: 2/21/2018 10:48:27 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAddOns] '', '', NULL, 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchAddOns]					
+	@Name					NVARCHAR(500)		=	NULL	,		
+	@Description			NVARCHAR(MAX)		=	NULL	,
+	@Price					NUMERIC(18,2)		=	NULL	,	
+	@PageNum				INT					=	1		,
+	@PageSize				INT					=	10		,
+	@SortColumn				NVARCHAR(255)		=	NULL	,
+	@SortDirection			NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempAddOns
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(255)		NOT NULL	
+		,	[Description]			NVARCHAR(MAX)		NULL	
+		,	[Price]					NUMERIC(18,2)		NULL		
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT ADO.Id) 
+						FROM [dbo].[AddOns] ADO																	
+							WHERE	ISNULL(ADO.IsDeleted,0) = 0								
+									AND (ISNULL(@Name,'') = '' OR ADO.[Name] LIKE '%'+ @Name +'%')  					 
+									AND (ISNULL(@Description,'') = '' OR ADO.[Description] LIKE '%'+ @Description +'%')  	
+									AND (@Price IS NULL OR ADO.[Price] = @Price)									
+						)
+
+
+		INSERT INTO #tempAddOns 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Description], 
+			[Price],
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN ADO.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN ADO.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN ADO.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN ADO.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Price' and @SortDirection = 'asc'
+							THEN ADO.Price END ASC,
+						CASE WHEN @SortColumn = 'Price' and @SortDirection = 'desc'
+							THEN ADO.Price END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN ADO.[Name] END ASC
+
+				) AS RowNum,
+				ADO.[Id],								
+				ADO.[Name],
+				ISNULL(ADO.[Description],'') AS [Description],
+				ADO.Price,				
+				ADO.[CreatedOn],
+				ADO.[IsActive]
+		FROM [dbo].[AddOns] ADO																	
+		WHERE	ISNULL(ADO.IsDeleted,0) = 0								
+				AND (ISNULL(@Name,'') = '' OR ADO.[Name] LIKE '%'+ @Name +'%')  					 
+				AND (ISNULL(@Description,'') = '' OR ADO.[Description] LIKE '%'+ @Description +'%')  	
+				AND (@Price IS NULL OR ADO.[Price] = @Price)
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Name],	
+			temp.[Description],	
+			temp.[Price],
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempAddOns AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/**********************************************************************************************************************
+	SP Name : SearchAdvanceAddOns
+	Comment : Create SP SearchAdvanceAddOns	
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceAddOns]    Script Date: 2/21/2018 11:36:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceAddOns]
+			@Name				=	''		,
+			@Description		=	''		,
+			@Price				=	NULL	
+*/
+CREATE PROCEDURE [dbo].[SearchAdvanceAddOns]
+	@Name					NVARCHAR(500)		=	NULL	,		
+	@Description			NVARCHAR(MAX)		=	NULL	,
+	@Price					NUMERIC(18,2)		=	NULL		
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  ADO.[Name] ASC
+
+				) AS RowNum,
+				ADO.[Id],								
+				ADO.[Name],
+				ISNULL(ADO.[Description],'') AS [Description],
+				ADO.Price,
+				ADO.[CreatedOn],
+				ADO.[IsActive]
+			FROM [dbo].[AddOns] ADO				
+			WHERE	ISNULL(ADO.IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR ADO.[Name] LIKE '%'+ @Name +'%')  					 
+					AND (ISNULL(@Description,'') = '' OR ADO.[Description] LIKE '%'+ @Description +'%')  	
+					AND (@Price IS NULL OR ADO.[Price] = @Price)					
+
+END
+
+

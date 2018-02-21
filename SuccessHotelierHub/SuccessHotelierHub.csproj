@@ -214,6 +214,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdditionalChargeController.cs" />
+    <Compile Include="Controllers\AddOnsController.cs" />
     <Compile Include="Controllers\CashieringController.cs" />
     <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
@@ -255,6 +256,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdditionalChargeVM.cs" />
+    <Compile Include="Models\AddOnsVM.cs" />
     <Compile Include="Models\BillingInfoVM.cs" />
     <Compile Include="Models\BillingTransactionReportVM.cs" />
     <Compile Include="Models\BulkReservationVM.cs" />
@@ -329,6 +331,7 @@
     <Compile Include="Models\VipVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\AdditionalChargeRepository.cs" />
+    <Compile Include="Repository\AddOnsRepository.cs" />
     <Compile Include="Repository\CalendarNotesRepository.cs" />
     <Compile Include="Repository\CheckInCheckOutRepository.cs" />
     <Compile Include="Repository\CityRepository.cs" />
@@ -2121,6 +2124,10 @@
     <Content Include="Views\DiscountApproved\Edit.cshtml" />
     <Content Include="Views\DiscountApproved\List.cshtml" />
     <Content Include="Views\DiscountApproved\Create.cshtml" />
+    <Content Include="Views\AddOns\Create.cshtml" />
+    <Content Include="Views\AddOns\Edit.cshtml" />
+    <Content Include="Views\AddOns\List.cshtml" />
+    <Content Include="Views\AddOns\_AddOns.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
