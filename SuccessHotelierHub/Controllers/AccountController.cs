@@ -60,6 +60,12 @@ namespace SuccessHotelierHub.Controllers
                     case LoginStatus.Success:
                         RecordActivityLog.RecordActivity(Pages.LOGIN, "Loggedin successfully.");
 
+                        if (LogInManager.HasRights("STUDENT"))
+                        {
+                            //Create Dummy Reservation.
+                            TempReservation.CreateDummyReservation();
+                        }
+
                         return Json(new
                         {
                             IsSuccess = true,

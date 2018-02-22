@@ -197,6 +197,10 @@ namespace SuccessHotelierHub.Controllers
 
                 model.CheckInDate = reservation.ArrivalDate;
                 model.CheckInTime = reservation.ETA;
+                if (reservation.ETA.HasValue)
+                {
+                    model.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", reservation.ETA.Value);
+                }
 
                 model.NoOfRoom = reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1;
                 model.Name = Convert.ToString(reservation.LastName + " " + reservation.FirstName).Trim();
@@ -259,6 +263,11 @@ namespace SuccessHotelierHub.Controllers
                         checkInTime = time.TimeOfDay;
 
                         reservation.ETA = checkInTime;
+                    }
+
+                    if(reservation.ETA.HasValue)
+                    {
+                        checkInTime = reservation.ETA.Value;
                     }
 
                     reservation.UpdatedBy = LogInManager.LoggedInUserId;

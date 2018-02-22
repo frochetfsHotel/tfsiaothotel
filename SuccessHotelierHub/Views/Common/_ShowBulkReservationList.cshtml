@@ -1,16 +1,18 @@
 ﻿@using SuccessHotelierHub.Models
 @using SuccessHotelierHub.Repository
+@using SuccessHotelierHub.Utility
 @{
     var sourceRedirectionParam = "";
 
     sourceRedirectionParam = (string)ViewData["Source"];
 
     PreferenceRepository preferenceRepository = new PreferenceRepository();
+    RateTypeRepository rateTypeRepository = new RateTypeRepository();
 
-    var profiles = (List<IndividualProfileVM>)ViewData["ProfileList"];
+    var reservations = (List<TempBulkReservationVM>)ViewData["TempBulkReservationList"];
 }
 
-@if (profiles != null && profiles.Count > 0)
+@if (reservations != null && reservations.Count > 0)
 {
     int rowNumber = 0;
     <div class="table-responsive" id="divReservationList">
@@ -18,7 +20,7 @@
             <thead>
                 <tr>
                     <th class="width_3">#</th>
-                    <th class="width_2"></th>
+                    @*<th class="width_2"></th>*@
                     <th class="width_10">Last Name</th>
                     <th class="width_10">First Name</th>
                     <th class="width_15">Arrival</th>
@@ -30,39 +32,37 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var profile in profiles)
+                @foreach (var reservation in reservations)
                 {
                     rowNumber = rowNumber + 1;
-                    var preferenceItems = "";
 
-                    #region Preference Mapping
-                    //Get Preference Mapping
-                    var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(profile.ProfileTypeId, profile.Id, null);
+                    bool isWeekEndPrice = false;
 
-                    if (selectedPreferences != null && selectedPreferences.Count > 0)
+                    if (reservation.ArrivalDate.Value.DayOfWeek == DayOfWeek.Friday || reservation.ArrivalDate.Value.DayOfWeek == DayOfWeek.Saturday)
                     {
-                        preferenceItems = String.Join(",", selectedPreferences.Select(m => m.PreferenceId).ToArray());
+                        isWeekEndPrice = true;
                     }
 
-                    #endregion
+                    var rateTypes = rateTypeRepository.GetRateTypeDetailsByRoomType(reservation.RoomTypeId.Value, isWeekEndPrice);
 
-                    <tr data-row-id="@profile.Id" data-lastname="@profile.LastName" data-firstname="@profile.FirstName"
-                        data-titleid="@profile.TitleId" data-countryid="@profile.CountryId">
+                    <tr data-row-id="@reservation.Id" data-lastname="@reservation.LastName" 
+                        data-firstname="@reservation.FirstName" data-titleid="@reservation.TitleId" 
+                        data-countryid="@reservation.CountryId" data-reservation-id="@reservation.Id"
+                        data-profile-id="@reservation.ProfileId" >
                         <td>@rowNumber</td>
-                        <td>
-                            <label class="container1" for="@("chkIsAddReservation_" + profile.Id)">
-                                <input type="checkbox" id="@("chkIsAddReservation_" + profile.Id)"
-                                       name="@("chkIsAddReservation_" + profile.Id)" checked value="@profile.Id" />
+                        @*<td>
+                            <label class="container1" for="@("chkIsAddReservation_" + reservation.Id)">
+                                <input type="checkbox" id="@("chkIsAddReservation_" + reservation.Id)"
+                                       name="@("chkIsAddReservation_" + reservation.Id)" checked value="@reservation.Id" />
                                 <span class="checkmark"></span>
                             </label>
-                            <input type="hidden" id="@("PreferenceItems_"+ profile.Id)" name="@("PreferenceItems_"+ profile.Id)" value="@preferenceItems" />
-                        </td>
-                        <td>@profile.LastName</td>
-                        <td>@profile.FirstName</td>
+                        </td>*@
+                        <td>@reservation.LastName</td>
+                        <td>@reservation.FirstName</td>
                         <td>
                             <div class="input-group date">
-                                <input type="text" id="@("ArrivalDate_"+ profile.Id)"
-                                       name="@("ArrivalDate_"+ profile.Id)"
+                                <input type="text" id="@("ArrivalDate_"+ reservation.Id)"
+                                       name="@("ArrivalDate_"+ reservation.Id)"
                                        class="form-control arrivalDatePicker" placeholder="dd/MM/yyyy" 
                                        onchange="arrivalDateChanged(this);"/>
                                 <div class="input-group-addon">
@@ -72,8 +72,8 @@
                         </td>
                         <td>
                             <div class="input-group date">
-                                <input type="text" id="@("DepartureDate_"+ profile.Id)"
-                                       name="@("DepartureDate_"+ profile.Id)"
+                                <input type="text" id="@("DepartureDate_"+ reservation.Id)"
+                                       name="@("DepartureDate_"+ reservation.Id)"
                                        class="form-control departureDatePicker" placeholder="dd/MM/yyyy"
                                        onchange="departureDateChanged(this);" />
                                 <div class="input-group-addon">
@@ -82,31 +82,46 @@
                             </div>
                         </td>
                         <td>
-                            <input type="text" id="@("NoOfNight_" + profile.Id)" name="@("NoOfNight_" + profile.Id)"
-                                   class="form-control" value="1" onkeydown="onlyDigits(event)"
+                            <input type="text" id="@("NoOfNight_" + reservation.Id)" name="@("NoOfNight_" + reservation.Id)"
+                                   class="form-control" value="@reservation.NoOfNight" onkeydown="onlyDigits(event)"
                                    onchange="noOfNightsChanged(this);" />
                         </td>
                         <td>
                             <div class="input-group">
-                                <input type="text" id="@("RoomNumber_" + profile.Id)" name="@("RoomNumber_" + profile.Id)"
+                                <input type="text" id="@("RoomNumber_" + reservation.Id)"
+                                        name="@("RoomNumber_" + reservation.Id)"
+                                       value="@reservation.RoomNo"
                                        class="form-control" placeholder="Room #" readonly="readonly" />
-                                <div class="input-group-addon cursor-P" onclick="openRoomSearchModal('@profile.Id');">
+                                <div class="input-group-addon cursor-P" onclick="openRoomSearchModal('@reservation.Id');">
                                     <i class="fa fa-search"></i>
                                 </div>
                             </div>
-                            <input type="hidden" id="@("RoomId_" + profile.Id)" name="@("RoomId_" + profile.Id)" />
-                            <input type="hidden" id="@("RoomTypeId_" + profile.Id)" name="@("RoomTypeId_" + profile.Id)" />
-                            <input type="hidden" id="@("IsWeekEndPrice_" + profile.Id)" name="@("IsWeekEndPrice_" + profile.Id)" />
+                            <input type="hidden" id="@("RoomId_" + reservation.Id)" name="@("RoomId_" + reservation.Id)"
+                                 value="@reservation.RoomId" />
+                            <input type="hidden" id="@("RoomTypeId_" + reservation.Id)" name="@("RoomTypeId_" + reservation.Id)"    value="@reservation.RoomTypeId" />
+                            <input type="hidden" id="@("IsWeekEndPrice_" + reservation.Id)" name="@("IsWeekEndPrice_" + reservation.Id)" value="@isWeekEndPrice"/>
                         </td>
                         <td>
-                            <select class="form-control" id="@("RateType_" + profile.Id)"
-                                    name="@("RateType_" + profile.Id)" onchange="GetRateTypeAmount(this);">
+                            <select class="form-control" id="@("RateType_" + reservation.Id)"
+                                    name="@("RateType_" + reservation.Id)" onchange="GetRateTypeAmount(this);">
                                 <option value="" data-ratecode="" data-rateamount="0">--Select Rate Type--</option>
+                                @if (rateTypes != null && rateTypes.Count > 0)
+                                {
+                                    foreach (var rateType in rateTypes)
+                                    {
+                                        <option value="@rateType.RateTypeId" data-ratecode="@rateType.RateTypeCode" 
+                                                data-rateamount="@rateType.Amount" 
+                                                @(rateType.RateTypeId == reservation.RateCodeId.Value ? "selected" : "")>
+                                            @rateType.RateTypeCode
+                                        </option>
+                                    }
+                                }
                             </select>
                         </td>
                         <td>
-                            <input type="text" id="@("Rate_" + profile.Id)" name="@("Rate_" + profile.Id)"
-                                   class="form-control" placeholder="Rate" />
+                            <input type="text" id="@("Rate_" + reservation.Id)" name="@("Rate_" + reservation.Id)"
+                                   class="form-control" placeholder="Rate" 
+                                   value="@(Utility.FormatAmountWithTwoDecimal(reservation.Rate.Value))"/>
                         </td>
                     </tr>
                 }
@@ -120,7 +135,7 @@ else
 {
     <div class="row">
         <div class="col-md-12">
-            <h4>No profiles found.</h4>
+            <h4>No data available.</h4>
         </div>
     </div>
 }
@@ -129,15 +144,13 @@ else
     $(document).ready(function () {
 
         //Date picker
-        $('.arrivalDatePicker').datepicker({
-            startDate: new Date(),
+        $('.arrivalDatePicker').datepicker({            
             autoclose: true,
             format: 'dd/mm/yyyy'
         });
 
 
-        $('.departureDatePicker').datepicker({
-            startDate: new Date(),
+        $('.departureDatePicker').datepicker({            
             autoclose: true,
             format: 'dd/mm/yyyy'
         });
@@ -156,7 +169,7 @@ else
             if (!IsNullOrEmpty(rowId)) {
                 $('#ArrivalDate_' + rowId).datepicker("setDate", dt);
             }
-            dt.setDate(dt.getDate() + 2);
+            //dt.setDate(dt.getDate() + 2);
         });
     }
 

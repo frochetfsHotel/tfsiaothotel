@@ -837,7 +837,7 @@ namespace SuccessHotelierHub.Utility
         }
 
         #endregion
-
+        
     }
 
 
@@ -1001,5 +1001,39 @@ namespace SuccessHotelierHub.Utility
         public const string SEARCHTUTOR = "Search Tutor";
         public const string SEARCHSTUDENT = "Search Student";
         public const string VIEWSTUDENT_ACTIVITY = "View Student Activity";
+    }
+
+    public static class ExtensionMethod
+    {
+        public static List<List<T>> Split<T>(this IEnumerable<T> collection, int size)
+        {
+            var chunks = new List<List<T>>();
+            var count = 0;
+            var temp = new List<T>();
+
+            foreach (var element in collection)
+            {
+                if (count++ == size)
+                {
+                    chunks.Add(temp);
+                    temp = new List<T>();
+                    count = 1;
+                }
+                temp.Add(element);
+            }
+            chunks.Add(temp);
+
+            return chunks;
+        }
+
+
+        public static IEnumerable<List<T>> splitList<T>(List<T> locations, int nSize = 10)
+        {
+            for (int i = 0; i < locations.Count; i += nSize)
+            {
+                yield return locations.GetRange(i, Math.Min(nSize, locations.Count - i));
+            }
+        }
+
     }
 }

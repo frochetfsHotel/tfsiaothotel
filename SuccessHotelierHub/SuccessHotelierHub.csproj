@@ -322,6 +322,7 @@
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
     <Compile Include="Models\StoredProcedure\UserPageAccessRightsResultVM.cs" />
+    <Compile Include="Models\TempBulkReservationVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
     <Compile Include="Models\UserPagesVM.cs" />
@@ -378,6 +379,7 @@
     <Compile Include="Utility\HotelierHubAuthorize.cs" />
     <Compile Include="Utility\LoginManager.cs" />
     <Compile Include="Utility\RecordActivityLog.cs" />
+    <Compile Include="Utility\TempReservation.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Content Include="Content\css\AdminLTE\select2\select2-bootstrap.css" />
     <Content Include="Content\css\AdminLTE\select2\select2-spinner.gif" />

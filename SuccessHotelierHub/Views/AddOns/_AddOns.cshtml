@@ -168,7 +168,7 @@
 
                             markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + result[i].Name + "</td>";
                             markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + result[i].Description + "</td>";
-                            markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + result[i].Price + "</td>";
+                            markup += "<td onclick=\"onSelectAddOns('chkAddOns_" + result[i].Id + "');\">" + FormatNumberWithTwoDecimal(result[i].Price) + "</td>";
 
                             markup += "</tr>";
                         }

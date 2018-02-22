@@ -22,7 +22,7 @@
         <form class="frmBulkReservation" id="frmBulkReservation" name="frmBulkReservation"
               nctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
-                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border" style="display:none;">
                     <div class="row">
                         <div class="col-md-4 form-group">
                             <label for="LastName" class="">Last Name</label>
@@ -41,7 +41,6 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
-
 
                 <div class="col-xs-12 padding-zero m-t" id="divBulkReservationList">
                
@@ -231,15 +230,13 @@
             var rowId = $(this).attr("data-row-id");
 
             rowNumber = rowNumber + 1;
-            
+            blnValid = true;
 
             if (!IsNullOrEmpty(rowId)) {
-                var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
-
-                if (isAddReservation) {
-
-                    var errorMessage = "";
-
+                //var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
+                //if (isAddReservation) {
+                
+                    var errorMessage = "";                    
                     var arrivalDate = $('#ArrivalDate_' + rowId).val();
                     var departureDate = $('#DepartureDate_' + rowId).val();
                     var roomNumber = $('#RoomNumber_' + rowId).val();
@@ -287,10 +284,10 @@
                         errorText += Delimeter.BREAKLINE;
                     }
                 }
-            }
+            //}
         });
 
-        if (blnValid == false) {
+        if (!IsNullOrEmpty(errorText)) {
             showToaster(errorText, ToasterType.ERROR);
             return false;
         }
@@ -305,6 +302,8 @@
 
             $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
                 var rowId = $(this).attr("data-row-id");
+                var reservationId = $(this).attr("data-reservation-id");
+                var profileId = $(this).attr("data-profile-id");
                 var lastName = $(this).attr("data-lastname");
                 var firstName = $(this).attr("data-firstname");
                 var titleId = $(this).attr("data-titleid");
@@ -312,15 +311,20 @@
 
                 if (!IsNullOrEmpty(rowId)) {
 
-                    var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
-                    if (isAddReservation) {
+                    //var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
+                    //if (isAddReservation) {
                         var isWeekEndPrice = $('#IsWeekEndPrice_' + rowId).val();
 
-                        if (isWeekEndPrice == 'true' || isWeekEndPrice == 'True') { isWeekEndPrice = true; } else { isWeekEndPrice = false; }
+                        if (isWeekEndPrice == 'true' || isWeekEndPrice == 'True') {
+                            isWeekEndPrice = true;
+                        } else {
+                            isWeekEndPrice = false;
+                        }
 
                         var modelReservation = {};
 
-                        modelReservation.ProfileId = rowId;
+                        modelReservation.Id = reservationId;
+                        modelReservation.ProfileId = profileId;
                         modelReservation.LastName = lastName;
                         modelReservation.FirstName = firstName;
                         modelReservation.TitleId = titleId;
@@ -329,17 +333,16 @@
                         modelReservation.ArrivalDate = $('#ArrivalDate_' + rowId).val();
                         modelReservation.DepartureDate = $('#DepartureDate_' + rowId).val();
                         modelReservation.NoOfNight = $('#NoOfNight_' + rowId).val();
-                        modelReservation.RoomNumber = $('#RoomNumber_' + rowId).val();
+                        modelReservation.RoomNo = $('#RoomNumber_' + rowId).val();
                         modelReservation.RoomId = $('#RoomId_' + rowId).val();
                         modelReservation.RoomTypeId = $('#RoomTypeId_' + rowId).val();
                         modelReservation.IsWeekEndPrice = isWeekEndPrice;
-                        modelReservation.RateTypeId = $('#RateType_' + rowId).val();
-                        modelReservation.Rate = $('#Rate_' + rowId).val();
-                        modelReservation.PreferenceItems = $('#PreferenceItems_' + rowId).val();
+                        modelReservation.RateCodeId = $('#RateType_' + rowId).val();
+                        modelReservation.Rate = $('#Rate_' + rowId).val();                        
                         modelReservation.IsActive = true;
 
                         listReservation.push(modelReservation);
-                    }
+                    //}
 
                 }
             });
@@ -366,8 +369,8 @@
                            
                             showToaster("Bulk reservation created successfully.", ToasterType.SUCCESS);
 
-                            $('#divBulkReservationList').html('');
-                            $('#divButtons').hide();
+                            //$('#divBulkReservationList').html('');
+                            //$('#divButtons').hide();
                         }
                         return false;
                     }

@@ -104,69 +104,52 @@ namespace SuccessHotelierHub.Controllers
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
-        public ActionResult BulkReservation(List<BulkReservationVM> models)
+        public ActionResult BulkReservation(List<TempBulkReservationVM> models)
         {
-
             try
             {
                 if (models != null && models.Count > 0)
                 {
-                    var reservationType = reservationTypeRepository.GetReservationTypes().FirstOrDefault();
-                    var market = marketRepository.GetMarkets().FirstOrDefault();
-                    var reservationSource = reservationSourceRepository.GetReservationSources().FirstOrDefault();
-
-                    var paymentMethods = paymentMethodRepository.GetPaymentMethods();
-                    var paymentMethod = paymentMethods.Where(m => m.Name == "Cash").FirstOrDefault();
-
                     foreach (var model in models)
                     {
-                        ReservationVM reservation = new ReservationVM();
-                        reservation.ProfileId = model.ProfileId;
-                        reservation.LastName = model.LastName;
-                        reservation.FirstName = model.FirstName;
-                        reservation.TitleId = model.TitleId;
-                        reservation.CountryId = model.CountryId;
-                        
-                        reservation.ArrivalDate = model.ArrivalDate;
-                        reservation.ETA = DateTime.Now.TimeOfDay;
-                        reservation.DepartureDate = model.DepartureDate;
-                        reservation.NoOfNight = model.NoOfNight;
-                        reservation.NoOfRoom = 1;
-                        reservation.NoOfAdult = 1;
+                        //Get temp bulk reservation by id.
+                        var tempReservation = reservationRepository.GetTempBulkReservationById(model.Id);
 
-                        reservation.RoomNumbers = model.RoomNumber;
-                        reservation.RoomIds = Convert.ToString(model.RoomId);
+                        if (tempReservation != null)
+                        {
+                            tempReservation.ProfileId = model.ProfileId;
+                            tempReservation.LastName = model.LastName;
+                            tempReservation.FirstName = model.FirstName;
+                            tempReservation.TitleId = model.TitleId;
+                            tempReservation.CountryId = model.CountryId;
+                            tempReservation.ArrivalDate = model.ArrivalDate;
+                            tempReservation.DepartureDate = model.DepartureDate;
+                            tempReservation.NoOfNight = model.NoOfNight;
+                            tempReservation.RoomNo = model.RoomNo;
+                            tempReservation.RoomId = model.RoomId;
+                            tempReservation.RoomTypeId = model.RoomTypeId;
+                            tempReservation.IsWeekEndPrice = model.IsWeekEndPrice;
+                            tempReservation.RateCodeId = model.RateCodeId;
+                            tempReservation.Rate = model.Rate;
+                            tempReservation.IsActive = model.IsActive;
+                            tempReservation.UpdatedBy = LogInManager.LoggedInUserId;
 
-                        reservation.RoomTypeId = model.RoomTypeId;
-                        reservation.RateCodeId = model.RateTypeId;
-
-                        reservation.IsWeekEndPrice = model.IsWeekEndPrice;
-                        reservation.Rate = model.Rate;
-                        reservation.IsActive = model.IsActive;
-
-                        reservation.ReservationTypeId = reservationType.Id;
-                        reservation.MarketId = market.Id;
-                        reservation.ReservationSourceId = reservationSource.Id;
-                        reservation.PaymentMethodId = paymentMethod.Id;
-
-                        reservation.PreferenceItems = model.PreferenceItems;
-                        
-
-                        var result = new ReservationController().CreateReservation(reservation);
+                            //Update Temp Bulk Reservation.
+                            reservationRepository.UpdateTempBulkReservation(tempReservation);
+                        }
                     }
 
                     return Json(new
                     {
                         IsSuccess = true                        
                     }, JsonRequestBehavior.AllowGet);
-
                 }
                 else
                 {
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "Please select at lease one profile to create reservation."
+                        errorMessage = "Please select at lease one profile to create temp reservation."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -182,10 +165,13 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var profiles = profileRepository.GetIndividualProfiles(lastName, firstName);
+               // var profiles = profileRepository.GetIndividualProfiles(lastName, firstName);
+
+                var reservations = reservationRepository.GetTempBulkReservation();
 
                 ViewData["Source"] = "BulkReservation";
-                ViewData["ProfileList"] = profiles;                
+                //ViewData["ProfileList"] = profiles;
+                ViewData["TempBulkReservationList"] = reservations;
 
                 return PartialView("_ShowBulkReservationList");                
             }

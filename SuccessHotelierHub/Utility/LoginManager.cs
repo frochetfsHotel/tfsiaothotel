@@ -43,6 +43,9 @@ namespace SuccessHotelierHub
             LogInManager.UserPageAccessRights = userPageAccessRights;
             LogInManager.UserRoleName = GetUserRoleName(userRoles);
 
+            //Update Last LoggedIn Date.
+            userRepository.UpdateUsersLastLoginTime(user.Id);
+
             return LoginStatus.Success;
         }
 
@@ -179,24 +182,24 @@ namespace SuccessHotelierHub
             }
         }
 
-        public static UserPageAccessRightsResultVM HasPageAccessRights(string userRightsCode)
+        public static UserPageAccessRightsResultVM HasPageAccessRights(string pageCode)
         {
             if (UserPageAccessRights != null && UserPageAccessRights.Count > 0)
             {
                 var returnVal = UserPageAccessRights
-                                .Where(m => m.PageCode == userRightsCode)
+                                .Where(m => m.PageCode == pageCode)
                                 .FirstOrDefault();
                 return returnVal;
             }
             return null;
         }
 
-        public static bool HasRights(string pageCode)
+        public static bool HasRights(string code)
         {
             if (UsersRoles != null)
             {
                 var returnVal = UsersRoles
-                                .Where(m => m.Code == pageCode)
+                                .Where(m => m.Code == code)
                                 .Any();
                 return returnVal;
             }

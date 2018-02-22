@@ -182,6 +182,20 @@ namespace SuccessHotelierHub.Repository
             return userId;
         }
 
+        public string UpdateUsersLastLoginTime(Guid id)
+        {
+            string userId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id }
+                };
+
+            userId = Convert.ToString(DALHelper.ExecuteScalar("UpdateUsersLastLoginTime", parameters));
+
+            return userId;
+        }
+
         #endregion
 
         #region User Role Mapping
