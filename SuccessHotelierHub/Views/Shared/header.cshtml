@@ -45,8 +45,8 @@
                         <i class="fa fa-money font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Cashiering</span>
                     </a>
                 </li>
-            }
-            @if (LogInManager.HasRights("ADMIN"))
+            } 
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuEndOfDayScreen">
                     <a href="javascript:void(0);">
@@ -54,7 +54,7 @@
                     </a>
                 </li>
             }
-            @if (LogInManager.HasRights("ADMIN"))
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuBillingScreen">
                     <a href="javascript:void(0);">
