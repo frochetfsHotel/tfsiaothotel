@@ -201,14 +201,15 @@ namespace SuccessHotelierHub.Repository
             return reservationId;
         }
 
-        public string DeleteReservation(Guid reservationId, int updatedBy)
+        public string DeleteReservation(Guid reservationId, int updatedBy, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservation", parameters));
@@ -233,11 +234,12 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public List<ReservationVM> GetReservationById(Guid reservationId)
+        public List<ReservationVM> GetReservationById(Guid reservationId, int userId)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@Id", Value = reservationId }
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationById", parameters);
@@ -382,23 +384,25 @@ namespace SuccessHotelierHub.Repository
             return reservationId;
         }
 
-        public void DeleteAllReservation(int updatedBy)
+        public void DeleteAllReservation(int updatedBy, int userId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             DALHelper.ExecuteScalar("DeleteAllReservation", parameters);
         }
 
-        public void DeleteReservationAndRoomMappingByRoom(Guid roomId, Guid reservationId, int updatedBy)
+        public void DeleteReservationAndRoomMappingByRoom(Guid roomId, Guid reservationId, int updatedBy, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@RoomId", Value = roomId },
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             DALHelper.ExecuteScalar("DeleteReservationAndRoomMappingByRoom", parameters);
@@ -482,13 +486,14 @@ namespace SuccessHotelierHub.Repository
 
         #region Room Plan
 
-        public List<RoomPlanReservationDetailVM> GetReservationDetailsForRoomPlan(Guid? roomId, string startDate, string endDate)
+        public List<RoomPlanReservationDetailVM> GetReservationDetailsForRoomPlan(Guid? roomId, string startDate, string endDate, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@RoomId", Value = roomId },                    
                     new SqlParameter { ParameterName = "@StartDate", Value = startDate },
-                    new SqlParameter { ParameterName = "@EndDate", Value = endDate }
+                    new SqlParameter { ParameterName = "@EndDate", Value = endDate },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationDetailsForRoomPlan", parameters);
@@ -539,12 +544,13 @@ namespace SuccessHotelierHub.Repository
         
         #region Reservation Remarks
 
-        public List<ReservationRemarksResultVM> GetReservationRemarks(Guid reservationId, Guid? id)
+        public List<ReservationRemarksResultVM> GetReservationRemarks(Guid reservationId, Guid? id, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@Id", Value = id }
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRemarks", parameters);
@@ -555,11 +561,12 @@ namespace SuccessHotelierHub.Repository
             return remarks;
         }
 
-        public List<ReservationRemarkVM> GetReservationRemarkById(Guid id)
+        public List<ReservationRemarkVM> GetReservationRemarkById(Guid id, int userId)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@Id", Value = id }
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRemarkById", parameters);
@@ -605,14 +612,15 @@ namespace SuccessHotelierHub.Repository
             return remarkId;
         }
 
-        public string DeleteReservationRemark(Guid id, int updatedBy)
+        public string DeleteReservationRemark(Guid id, int updatedBy, int userId)
         {
             string remarkId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             remarkId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationRemark", parameters));
@@ -641,14 +649,15 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationPackageMappingByReservation(Guid reservationId, int updatedBy)
+        public string DeleteReservationPackageMappingByReservation(Guid reservationId, int updatedBy, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPackageMappingByReservation", parameters));
@@ -656,14 +665,15 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationPackageMapping(Guid id, int updatedBy)
+        public string DeleteReservationPackageMapping(Guid id, int updatedBy, int userId)
         {
             string mappingId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPackageMapping", parameters));
@@ -671,12 +681,13 @@ namespace SuccessHotelierHub.Repository
             return mappingId;
         }
 
-        public List<ReservationPackageMappingVM> GetReservationPackageMapping(Guid? reservationId, Guid? packageId)
+        public List<ReservationPackageMappingVM> GetReservationPackageMapping(Guid? reservationId, Guid? packageId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@PackageId", Value = (object) packageId ?? DBNull.Value }
+                    new SqlParameter { ParameterName = "@PackageId", Value = (object) packageId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationPackageMapping", parameters);
@@ -708,14 +719,15 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationAddOnsMappingByReservation(Guid reservationId, int updatedBy)
+        public string DeleteReservationAddOnsMappingByReservation(Guid reservationId, int updatedBy, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationAddOnsMappingByReservation", parameters));
@@ -723,14 +735,15 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationAddOnsMapping(Guid id, int updatedBy)
+        public string DeleteReservationAddOnsMapping(Guid id, int updatedBy, int userId)
         {
             string mappingId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationAddOnsMapping", parameters));
@@ -738,12 +751,13 @@ namespace SuccessHotelierHub.Repository
             return mappingId;
         }
 
-        public List<ReservationAddOnsMappingVM> GetReservationAddOnsMapping(Guid? reservationId, Guid? addOnsId)
+        public List<ReservationAddOnsMappingVM> GetReservationAddOnsMapping(Guid? reservationId, Guid? addOnsId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@AddOnsId", Value = (object) addOnsId ?? DBNull.Value }
+                    new SqlParameter { ParameterName = "@AddOnsId", Value = (object) addOnsId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationAddOnsMapping", parameters);
@@ -758,9 +772,13 @@ namespace SuccessHotelierHub.Repository
 
         #region Temp Bulk Reservation
 
-        public List<TempBulkReservationVM> GetTempBulkReservation()
+        public List<TempBulkReservationVM> GetTempBulkReservation(int userId)
         {
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTempBulkReservation");
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTempBulkReservation", parameters);
 
             var reservations = new List<TempBulkReservationVM>();
             reservations = DALHelper.CreateListFromTable<TempBulkReservationVM>(dt);
@@ -768,12 +786,13 @@ namespace SuccessHotelierHub.Repository
             return reservations;
         }
 
-        public TempBulkReservationVM GetTempBulkReservationById(Guid reservationId)
+        public TempBulkReservationVM GetTempBulkReservationById(Guid reservationId, int userId)
         {
             SqlParameter[] parameters =
               {
-                    new SqlParameter { ParameterName = "@Id", Value = reservationId }
-                };
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+             };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTempBulkReservationById", parameters);
 
@@ -857,6 +876,17 @@ namespace SuccessHotelierHub.Repository
             reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateTempBulkReservation", parameters));
 
             return reservationId;
+        }
+
+        public void LoadTempBulkReservation(int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            DALHelper.Execute("LoadTempBulkReservation", parameters);
+
         }
 
         #endregion

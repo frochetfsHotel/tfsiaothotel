@@ -129,13 +129,14 @@ namespace SuccessHotelierHub.Repository
 
         #region Profile Preference Mapping
 
-        public List<ProfilePreferenceMappingVM> GetProfilePreferenceMapping(Guid? profileTypeId, Guid? profileId, Guid? preferenceId)
+        public List<ProfilePreferenceMappingVM> GetProfilePreferenceMapping(Guid? profileTypeId, Guid? profileId, Guid? preferenceId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ProfileTypeId", Value = (object) profileTypeId ?? DBNull.Value },
                     new SqlParameter { ParameterName = "@ProfileId", Value = (object) profileId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@PreferenceId", Value = (object) preferenceId ?? DBNull.Value }
+                    new SqlParameter { ParameterName = "@PreferenceId", Value = (object) preferenceId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetProfilePreferenceMapping", parameters);
@@ -163,14 +164,15 @@ namespace SuccessHotelierHub.Repository
             return profilePreferenceMappingId;
         }
 
-        public string DeleteProfilePreferenceMappingByProfile(Guid? profileTypeId, Guid? profileId)
+        public string DeleteProfilePreferenceMappingByProfile(Guid? profileTypeId, Guid? profileId, int userId)
         {
             string preferenceId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ProfileTypeId", Value = (object) profileTypeId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@ProfileId", Value = (object) profileId ?? DBNull.Value }
+                    new SqlParameter { ParameterName = "@ProfileId", Value = (object) profileId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             preferenceId = Convert.ToString(DALHelper.ExecuteScalar("DeleteProfilePreferenceMappingByProfile", parameters));
@@ -178,13 +180,14 @@ namespace SuccessHotelierHub.Repository
             return preferenceId;
         }
 
-        public string DeleteProfilePreferenceMapping(Guid id)
+        public string DeleteProfilePreferenceMapping(Guid id, int userId)
         {
             string mappingId = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = id }
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteProfilePreferenceMapping", parameters));
@@ -212,13 +215,14 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationPreferenceMappingByReservation(Guid reservationId)
+        public string DeleteReservationPreferenceMappingByReservation(Guid reservationId, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId }
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPreferenceMappingByReservation", parameters));
@@ -226,13 +230,14 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationPreferenceMapping(Guid id)
+        public string DeleteReservationPreferenceMapping(Guid id, int userId)
         {
             string mappingId = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = id }
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationPreferenceMapping", parameters));
@@ -240,12 +245,13 @@ namespace SuccessHotelierHub.Repository
             return mappingId;
         }
 
-        public List<ReservationPreferenceMappingVM> GetReservationPreferenceMapping(Guid? reservationId, Guid? preferenceId)
+        public List<ReservationPreferenceMappingVM> GetReservationPreferenceMapping(Guid? reservationId, Guid? preferenceId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@PreferenceId", Value = (object) preferenceId ?? DBNull.Value }
+                    new SqlParameter { ParameterName = "@PreferenceId", Value = (object) preferenceId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationPreferenceMapping", parameters);

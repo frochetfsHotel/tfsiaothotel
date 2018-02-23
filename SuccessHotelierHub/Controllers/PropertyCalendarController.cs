@@ -33,7 +33,7 @@ namespace SuccessHotelierHub.Controllers
             ViewData["Year"] = year;
 
             //Room Details.
-            var results = roomRepository.GetTotalRoomAvailableByCalendar(month, year);
+            var results = roomRepository.GetTotalRoomAvailableByCalendar(month, year, LogInManager.LoggedInUserId);
             ViewData["RoomDetails"] = results;
 
             //Holidays.
@@ -41,7 +41,7 @@ namespace SuccessHotelierHub.Controllers
             ViewData["Holidays"] = holidays;
 
             //Calendar Notes.
-            var calendarNotes = calendarNotesRepository.GetCalendarNotesOfCurrentMonth(month, year);
+            var calendarNotes = calendarNotesRepository.GetCalendarNotesOfCurrentMonth(month, year, LogInManager.LoggedInUserId);
             ViewData["CalendarNotes"] = calendarNotes;
 
             return PartialView("_Calendar");
@@ -169,7 +169,7 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult GetAvailableRoomInfo(string date)
         {
             //Room Details.
-            var results = roomRepository.GetAvailableRoomInfoByDate(date);
+            var results = roomRepository.GetAvailableRoomInfoByDate(date, LogInManager.LoggedInUserId);
             ViewData["RoomInfo"] = results;
 
             return PartialView("_RoomInfo");

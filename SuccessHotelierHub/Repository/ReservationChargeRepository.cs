@@ -11,12 +11,13 @@ namespace SuccessHotelierHub.Repository
     {
         #region Reservation Charge
 
-        public List<ReservationChargeVM> GetReservationCharges(Guid? reservationId, Guid? additionalChargeId)
+        public List<ReservationChargeVM> GetReservationCharges(Guid? reservationId, Guid? additionalChargeId, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@AdditionalChargeId", Value = additionalChargeId }
+                    new SqlParameter { ParameterName = "@AdditionalChargeId", Value = additionalChargeId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationCharges", parameters);
@@ -27,13 +28,14 @@ namespace SuccessHotelierHub.Repository
             return charges;
         }
 
-        public List<ReservationChargeVM> GetReservationChargesByAdditionalChargeSource(Guid? reservationId, Guid? additionalChargeId, string additionalChargeSource)
+        public List<ReservationChargeVM> GetReservationChargesByAdditionalChargeSource(Guid? reservationId, Guid? additionalChargeId, string additionalChargeSource, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
                     new SqlParameter { ParameterName = "@AdditionalChargeId", Value = additionalChargeId },
-                    new SqlParameter { ParameterName = "@AdditionalChargeSource", Value = additionalChargeSource }
+                    new SqlParameter { ParameterName = "@AdditionalChargeSource", Value = additionalChargeSource },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationChargesByAdditionalChargeSource", parameters);
@@ -44,11 +46,12 @@ namespace SuccessHotelierHub.Repository
             return charges;
         }
 
-        public List<ReservationChargeVM> GetReservationChargesById(Guid id)
+        public List<ReservationChargeVM> GetReservationChargesById(Guid id, int userId)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@Id", Value = id}
+                    new SqlParameter { ParameterName = "@Id", Value = id},
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationChargesById", parameters);
@@ -112,14 +115,15 @@ namespace SuccessHotelierHub.Repository
             return chargeId;
         }
 
-        public string DeleteReservationCharges(Guid id, int updatedBy)
+        public string DeleteReservationCharges(Guid id, int updatedBy, int userId)
         {
             string chargeId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             chargeId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationCharges", parameters));
@@ -127,14 +131,15 @@ namespace SuccessHotelierHub.Repository
             return chargeId;
         }
 
-        public string DeleteReservationChargesByReservation(Guid reservationId, int updatedBy)
+        public string DeleteReservationChargesByReservation(Guid reservationId, int updatedBy, int userId)
         {
             string chargeId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             chargeId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationChargesByReservation", parameters));

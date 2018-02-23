@@ -17,7 +17,7 @@
 
     if (!string.IsNullOrWhiteSpace(profileId))
     {
-        var profile = profileRepository.GetIndividualProfileById(Guid.Parse(profileId)).FirstOrDefault();
+        var profile = profileRepository.GetIndividualProfileById(Guid.Parse(profileId), LogInManager.LoggedInUserId).FirstOrDefault();
 
         if (profile != null)
         {

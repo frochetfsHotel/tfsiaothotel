@@ -391,6 +391,8 @@ namespace SuccessHotelierHub.Models
 
         public bool IsWeekEndPrice { get; set; }
 
+        public int UserId { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -465,6 +467,8 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Inspected")]
         public bool IsInspected { get; set; }
+
+        public int UserId { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }

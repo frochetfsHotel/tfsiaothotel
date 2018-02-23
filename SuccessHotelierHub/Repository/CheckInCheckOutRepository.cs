@@ -65,12 +65,13 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public List<CheckInCheckOutVM> GetCheckInDetails(Guid reservationId, Guid profileId)
+        public List<CheckInCheckOutVM> GetCheckInDetails(Guid reservationId, Guid profileId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@ProfileId", Value = profileId }
+                    new SqlParameter { ParameterName = "@ProfileId", Value = profileId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetCheckInDetails", parameters);
@@ -140,14 +141,15 @@ namespace SuccessHotelierHub.Repository
 
         #endregion Check Out
 
-        public string DeleteCheckInCheckOutDetailByReservation(Guid reservationId, int updatedBy)
+        public string DeleteCheckInCheckOutDetailByReservation(Guid reservationId, int updatedBy, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteCheckInCheckOutDetailByReservation", parameters));

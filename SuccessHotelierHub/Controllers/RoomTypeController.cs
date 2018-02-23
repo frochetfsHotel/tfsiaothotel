@@ -323,6 +323,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                model.UserId = LogInManager.LoggedInUserId;
                 var roomTypes = roomTypeRepository.SearchAdvanceRoomType(model);
 
                 return Json(new
@@ -344,7 +345,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var roomTypeStatus = roomTypeRepository.GetRoomTypeStatusInfo(date, roomTypeId).FirstOrDefault();
+                var roomTypeStatus = roomTypeRepository.GetRoomTypeStatusInfo(date, roomTypeId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 ViewData["RoomTypeInfo"] = roomTypeStatus;
 

@@ -203,7 +203,7 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult EditIndividualProfile(Guid id)
         {
             IndividualProfileVM model = new IndividualProfileVM();
-            var profile = profileRepository.GetIndividualProfileById(id);
+            var profile = profileRepository.GetIndividualProfileById(id, LogInManager.LoggedInUserId);
 
             if (profile != null && profile.Count > 0)
             {
@@ -213,7 +213,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Preference Mapping
                 //Get Preference Mapping
-                var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null);
+                var selectedPreferences = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null, LogInManager.LoggedInUserId);
                 
                 ViewBag.SelectedPreferences = selectedPreferences;
                 #endregion
@@ -289,7 +289,7 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Delete Preference Mapping
 
-                    var preferenceMappings = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null);
+                    var preferenceMappings = preferenceRepository.GetProfilePreferenceMapping(model.ProfileTypeId, model.Id, null, LogInManager.LoggedInUserId);
 
                     if (preferenceMappings != null && preferenceMappings.Count > 0)
                     {
@@ -311,7 +311,7 @@ namespace SuccessHotelierHub.Controllers
                         {
                             foreach (var mappingId in preferenceMappingIds)
                             {
-                                preferenceRepository.DeleteProfilePreferenceMapping(mappingId);
+                                preferenceRepository.DeleteProfilePreferenceMapping(mappingId, LogInManager.LoggedInUserId);
                             }
                         }
                     }
@@ -443,7 +443,7 @@ namespace SuccessHotelierHub.Controllers
                 string profileId = string.Empty;
                 
                 //Delete Individual Profile.
-                profileId = profileRepository.DeleteIndividualProfile(id, LogInManager.LoggedInUserId);
+                profileId = profileRepository.DeleteIndividualProfile(id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                 if (!string.IsNullOrWhiteSpace(profileId))
                 {
@@ -563,12 +563,12 @@ namespace SuccessHotelierHub.Controllers
             
             try
             {
-                var profile = profileRepository.GetIndividualProfileById(profileId).FirstOrDefault();
+                var profile = profileRepository.GetIndividualProfileById(profileId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (profile != null)
                 {
                     //Get Preference Mapping
-                    var preferences = preferenceRepository.GetProfilePreferenceMapping(profile.ProfileTypeId, profileId, null);
+                    var preferences = preferenceRepository.GetProfilePreferenceMapping(profile.ProfileTypeId, profileId, null, LogInManager.LoggedInUserId);
 
                     return Json(new
                     {
@@ -594,7 +594,7 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 //Delete all Reservation.
-                profileRepository.DeleteAllProfile(LogInManager.LoggedInUserId);
+                profileRepository.DeleteAllProfile(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                 return Json(new
                 {

@@ -15,6 +15,26 @@ namespace SuccessHotelierHub.Utility
             ReservationRepository reservationRepository = new ReservationRepository();
             RoomRepository roomRepository = new RoomRepository();
             PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
+            ProfileRepository profileRepository = new ProfileRepository();
+
+            //Get Profiles by user id.
+            var profiles = profileRepository.GetIndividualProfileByUserId(LogInManager.LoggedInUserId);
+
+            if (profiles == null || profiles.Count == 0)
+            {
+                //Load Default Profile by user id.
+                profileRepository.LoadDefaultIndividualProfile(LogInManager.LoggedInUserId);
+            }
+
+            //Get temp bulk reservation by user id.
+            var tempReservations = reservationRepository.GetTempBulkReservation(LogInManager.LoggedInUserId);
+
+            if (tempReservations == null || tempReservations.Count == 0)
+            {
+                //Load Default temp bulk reservation by user id.
+                reservationRepository.LoadTempBulkReservation(LogInManager.LoggedInUserId);
+            }
+
 
             var reservations = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
 
@@ -22,13 +42,12 @@ namespace SuccessHotelierHub.Utility
             {
                 //Delete existing reservation by user.
                 reservationRepository.DeleteReservationByUserId(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
-
-                //Get temp bulk reservation.
-                var tempReservations = reservationRepository.GetTempBulkReservation();
-
+                
                 ReservationController reservationController = new ReservationController();
                 FrontDeskController frontDeskController = new FrontDeskController();
                 CashieringController cashieringController = new CashieringController();
+
+                tempReservations = reservationRepository.GetTempBulkReservation(LogInManager.LoggedInUserId);
 
                 if (tempReservations != null && tempReservations.Count > 0)
                 {
@@ -52,9 +71,9 @@ namespace SuccessHotelierHub.Utility
                         reservation.GroupId = tempReservation.GroupId;
                         reservation.SourceId = tempReservation.SourceId;
                         reservation.ContactId = tempReservation.ContactId;
-                        reservation.ArrivalDate = tempReservation.ArrivalDate;
+                        reservation.ArrivalDate = DateTime.Now;
                         reservation.NoOfNight = tempReservation.NoOfNight;
-                        reservation.DepartureDate = tempReservation.DepartureDate;
+                        reservation.DepartureDate = DateTime.Now.AddDays(tempReservation.NoOfNight);
                         reservation.NoOfAdult = tempReservation.NoOfAdult;
                         reservation.NoOfChildren = tempReservation.NoOfChildren;
                         reservation.NoOfInfant = tempReservation.NoOfInfant;
@@ -109,7 +128,7 @@ namespace SuccessHotelierHub.Utility
 
                     if (reservationList != null && reservationList.Count > 0)
                     {
-                        var results = ExtensionMethod.Split(reservationList, 1);
+                        var results = ExtensionMethod.Split(reservationList, 20); //split reservations.
 
                         if (results != null && results.Count >= 3)
                         {
@@ -117,7 +136,7 @@ namespace SuccessHotelierHub.Utility
                             foreach (var result in results[0])
                             {
                                 #region Room Mapping
-                                var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null);
+                                var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
                                 var roomIds = string.Empty;
                                 var roomNumbers = string.Empty;
 
@@ -161,11 +180,11 @@ namespace SuccessHotelierHub.Utility
                                 frontDeskController.CheckIn(modelCheckInPaymentMethod);
                             }
 
-                            //Checked Out : Top 21 to 40
+                            //Checked Out : 21 to 40
                             foreach (var result in results[1])
                             {
                                 #region Room Mapping
-                                var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null);
+                                var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
                                 var roomIds = string.Empty;
                                 var roomNumbers = string.Empty;
 

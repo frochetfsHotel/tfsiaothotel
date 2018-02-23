@@ -12,11 +12,12 @@ namespace SuccessHotelierHub.Repository
     {
         #region ReservationLog
 
-        public List<ReservationLogVM> GetReservationLogById(Guid reservationLogId)
+        public List<ReservationLogVM> GetReservationLogById(Guid reservationLogId, int userId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = reservationLogId }
+                    new SqlParameter { ParameterName = "@Id", Value = reservationLogId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationLogById", parameters);
@@ -27,13 +28,14 @@ namespace SuccessHotelierHub.Repository
             return reservationLog;
         }
 
-        public List<ReservationLogVM> GetReservationLogDetails(Guid? reservationId, Guid? roomId, Guid? reservationLogId)
+        public List<ReservationLogVM> GetReservationLogDetails(Guid? reservationId, Guid? roomId, Guid? reservationLogId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = reservationLogId },
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@RoomId", Value = roomId }
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
 
                 };
 
@@ -92,14 +94,15 @@ namespace SuccessHotelierHub.Repository
             return reservationLogId;
         }
 
-        public string DeleteReservationLog(Guid id, int updatedBy)
+        public string DeleteReservationLog(Guid id, int updatedBy, int userId)
         {
             string reservationLogId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             reservationLogId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationLog", parameters));
@@ -107,14 +110,15 @@ namespace SuccessHotelierHub.Repository
             return reservationLogId;
         }
 
-        public string DeleteReservationLogByReservation(Guid reservationId, int updatedBy)
+        public string DeleteReservationLogByReservation(Guid reservationId, int updatedBy, int userId)
         {
             string reservationLogId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             reservationLogId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationLogByReservation", parameters));
@@ -122,7 +126,7 @@ namespace SuccessHotelierHub.Repository
             return reservationLogId;
         }
 
-        public List<ReservationLogVM> GetReservationLogByRoom(Guid? roomId, Guid? reservationId, Guid? roomStatusId, DateTime? arrivaldate, DateTime? departureDate)
+        public List<ReservationLogVM> GetReservationLogByRoom(Guid? roomId, Guid? reservationId, Guid? roomStatusId, DateTime? arrivaldate, DateTime? departureDate, int userId)
         {
             SqlParameter[] parameters =
                 {
@@ -130,7 +134,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
                     new SqlParameter { ParameterName = "@RoomStatusId", Value = roomStatusId },
                     new SqlParameter { ParameterName = "@Arrivaldate", Value = arrivaldate },
-                    new SqlParameter { ParameterName = "@DepartureDate", Value = departureDate }
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = departureDate },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
 
                 };
 

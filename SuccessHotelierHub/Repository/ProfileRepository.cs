@@ -85,14 +85,15 @@ namespace SuccessHotelierHub.Repository
             return profileId;
         }
 
-        public string DeleteIndividualProfile(Guid profileId, int updatedBy)
+        public string DeleteIndividualProfile(Guid profileId, int updatedBy, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = profileId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteIndividualProfile", parameters));
@@ -100,11 +101,12 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public List<IndividualProfileVM> GetIndividualProfileById(Guid profileId)
+        public List<IndividualProfileVM> GetIndividualProfileById(Guid profileId, int userId)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@Id", Value = profileId }
+                    new SqlParameter { ParameterName = "@Id", Value = profileId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetIndividualProfileById", parameters);
@@ -170,12 +172,13 @@ namespace SuccessHotelierHub.Repository
             return profiles;
         }
 
-        public List<IndividualProfileVM> GetIndividualProfiles(string lastName, string firstName)
+        public List<IndividualProfileVM> GetIndividualProfiles(string lastName, string firstName, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@LastName", Value = lastName },
                     new SqlParameter { ParameterName = "@FirstName", Value = firstName },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetIndividualProfiles", parameters);
@@ -187,14 +190,42 @@ namespace SuccessHotelierHub.Repository
             return profiles;
         }
 
-        public void DeleteAllProfile(int updatedBy)
+        public void DeleteAllProfile(int updatedBy, int userId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             DALHelper.ExecuteScalar("DeleteAllProfile", parameters);
+        }
+
+        public List<IndividualProfileVM> GetIndividualProfileByUserId(int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetIndividualProfileByUserId", parameters);
+
+
+            var profile = new List<IndividualProfileVM>();
+            profile = DALHelper.CreateListFromTable<IndividualProfileVM>(dt);
+
+            return profile;
+        }
+
+        public void LoadDefaultIndividualProfile(int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            DALHelper.Execute("LoadDefaultIndividualProfile", parameters);
+            
         }
     }
 }

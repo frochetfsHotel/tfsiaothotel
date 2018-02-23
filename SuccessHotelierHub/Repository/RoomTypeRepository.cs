@@ -130,7 +130,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Description", Value = model.Description },
                     new SqlParameter { ParameterName = "@AvailableRooms", Value = model.AvailableRooms },
                     new SqlParameter { ParameterName = "@RoomCapacity", Value = model.RoomCapacity },
-                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = model.IsWeekEndPrice }
+                    new SqlParameter { ParameterName = "@IsWeekEndPrice", Value = model.IsWeekEndPrice },
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceRoomType", parameters);
@@ -157,12 +158,13 @@ namespace SuccessHotelierHub.Repository
             return roomType;
         }
 
-        public List<RateSheetRoomTypeVM> GetRoomTypeDetailsForRateSheet(string roomTypeCode, string arrivalDate)
+        public List<RateSheetRoomTypeVM> GetRoomTypeDetailsForRateSheet(string roomTypeCode, string arrivalDate, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@RoomTypeCode", Value = roomTypeCode},
                     new SqlParameter { ParameterName = "@ArrivalDate", Value = arrivalDate},
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomTypeDetailsForRateSheet", parameters);
@@ -174,12 +176,13 @@ namespace SuccessHotelierHub.Repository
         }
 
 
-        public List<RoomTypeStatusInfoResultVM> GetRoomTypeStatusInfo(string date, Guid roomTypeId)
+        public List<RoomTypeStatusInfoResultVM> GetRoomTypeStatusInfo(string date, Guid roomTypeId, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@Date", Value = date },
-                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId }
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomTypeStatusInfo", parameters);

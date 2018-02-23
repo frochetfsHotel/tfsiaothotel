@@ -12,11 +12,12 @@ namespace SuccessHotelierHub.Repository
     {
         #region Calendar Notes
 
-        public List<CalendarNotesVM> GetNotesById(Guid notesId)
+        public List<CalendarNotesVM> GetNotesById(Guid notesId, int userId)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@Id", Value = notesId }
+                    new SqlParameter { ParameterName = "@Id", Value = notesId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetNotesById", parameters);
@@ -63,12 +64,13 @@ namespace SuccessHotelierHub.Repository
             return notesId;
         }
       
-        public List<CalendarNotesVM> GetCalendarNotesOfCurrentMonth(int month, int year)
+        public List<CalendarNotesVM> GetCalendarNotesOfCurrentMonth(int month, int year, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@Month" , Value = month },
-                    new SqlParameter { ParameterName = "@Year"  , Value = year }
+                    new SqlParameter { ParameterName = "@Year"  , Value = year },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetCalendarNotesOfCurrentMonth", parameters);

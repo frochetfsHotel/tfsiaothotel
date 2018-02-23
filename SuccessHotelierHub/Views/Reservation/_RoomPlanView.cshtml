@@ -185,7 +185,7 @@
                             statusBGColor = room.RoomStatusColor;
                         }
 
-                        var reservationDetail = reservationRepository.GetReservationDetailsForRoomPlan(room.Id, startDate, endDate);
+                        var reservationDetail = reservationRepository.GetReservationDetailsForRoomPlan(room.Id, startDate, endDate, LogInManager.LoggedInUserId);
 
                         <tr data-roomid="@(room.Id)" data-roomtypeid="@(room.RoomTypeId)" data-roomtypecode="@(room.RoomTypeCode)" data-roomno="@(room.RoomNo)" data-tr-id="@("tr_" + room.Id)" id="@("tr_" + room.Id)">
                             <td width='8%'>@room.RoomNo</td>

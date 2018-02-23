@@ -24,7 +24,7 @@ namespace SuccessHotelierHub.Utility
 {
     public class Utility
     {
-        
+
 
         #region 'SCALE-IMAGE'
         /// <summary>
@@ -134,7 +134,7 @@ namespace SuccessHotelierHub.Utility
         }
 
         #endregion
-        
+
 
         #region 'ERROR-LOG'
         /// <summary>
@@ -470,7 +470,7 @@ namespace SuccessHotelierHub.Utility
 
         public static string EncryptionKey = System.Configuration.ConfigurationManager.AppSettings.Get("EncryptionKey");
 
-        public static string Encrypt(string clearText,string encryptionKey)
+        public static string Encrypt(string clearText, string encryptionKey)
         {
             byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
             using (Aes encryptor = Aes.Create())
@@ -608,12 +608,12 @@ namespace SuccessHotelierHub.Utility
             {
                 ip = System.Web.HttpContext.Current.Request.UserHostAddress;
             }
-            return  ip;
+            return ip;
         }
 
         public static string GetCurrentPageURL()
         {
-            return System.Web.HttpContext.Current.Request.Url.AbsoluteUri; 
+            return System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
         }
 
         public static string ToUpperCase(string text)
@@ -661,7 +661,7 @@ namespace SuccessHotelierHub.Utility
             ReservationRepository reservationRepository = new ReservationRepository();
             RateRepository rateRepository = new RateRepository();
 
-            var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+            var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
             double dblTotalPrice = 0;
 
@@ -678,15 +678,15 @@ namespace SuccessHotelierHub.Utility
                 double childrenCharges = 0;
 
                 noOfNights = reservation.NoOfNight;
-                rate = reservation.Rate.HasValue ? reservation.Rate.Value  : 0;
+                rate = reservation.Rate.HasValue ? reservation.Rate.Value : 0;
                 noOfChildren = reservation.NoOfChildren;
                 discountAmount = reservation.DiscountAmount;
                 discountPercentage = reservation.DiscountPercentage;
 
                 if (discountPercentage.HasValue) { blnIsDisocuntInPercentage = true; }
 
-                double? dblWeekEndPrice = rate;        
-                        
+                double? dblWeekEndPrice = rate;
+
                 if (reservation.RoomTypeId.HasValue && reservation.RateCodeId.HasValue)
                 {
                     var weekEndPrice = rateRepository.GetWeekEndPrice(reservation.RoomTypeId.Value, reservation.RateCodeId.Value).FirstOrDefault();
@@ -723,7 +723,7 @@ namespace SuccessHotelierHub.Utility
                     }
 
                     totalDiscount = totalDiscount + discount;
-                    
+
                     dblTotalPrice += (1 * rate); // Each night (1, 2, 3 etc...). Here 1 = current night
 
                     dtStartDate = dtStartDate.AddDays(1);
@@ -744,7 +744,7 @@ namespace SuccessHotelierHub.Utility
                 dblTotalPrice += childrenCharges;
 
                 //Append Add-Ons Price.
-                var addOnsDetails = reservationRepository.GetReservationAddOnsMapping(reservation.Id, null);
+                var addOnsDetails = reservationRepository.GetReservationAddOnsMapping(reservation.Id, null, LogInManager.LoggedInUserId);
                 if (addOnsDetails != null && addOnsDetails.Count > 0)
                 {
                     var totalAddOnsPrice = addOnsDetails.Where(m => m.AddOnsPrice.HasValue).Sum(m => m.AddOnsPrice);
@@ -753,14 +753,14 @@ namespace SuccessHotelierHub.Utility
                 }
 
                 //Append Package Price.
-                var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null);
+                var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId);
                 if (packageDetails != null && packageDetails.Count > 0)
                 {
                     var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
 
                     dblTotalPrice += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
                 }
-                
+
             }
 
             return Math.Round(dblTotalPrice, 2);
@@ -771,7 +771,7 @@ namespace SuccessHotelierHub.Utility
             double dblTotalBalance = 0;
 
             ReservationRepository reservationRepository = new ReservationRepository();
-            var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+            var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
             ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
 
@@ -780,7 +780,7 @@ namespace SuccessHotelierHub.Utility
                 if (reservation.IsCheckIn == true)
                 {
                     //Reservation Charges
-                    var reservationCharges = reservationChargeRepository.GetReservationCharges(reservationId, null);
+                    var reservationCharges = reservationChargeRepository.GetReservationCharges(reservationId, null, LogInManager.LoggedInUserId);
                     if (reservationCharges != null && reservationCharges.Count > 0)
                     {
                         var totalReservationCharges = reservationCharges.Where(m => m.Amount.HasValue)
@@ -807,7 +807,7 @@ namespace SuccessHotelierHub.Utility
                     //    dblTotalBalance += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
                     //}
                 }
-                
+
             }
 
             return Math.Round(dblTotalBalance, 2);
@@ -837,7 +837,7 @@ namespace SuccessHotelierHub.Utility
         }
 
         #endregion
-        
+
     }
 
 
@@ -923,7 +923,7 @@ namespace SuccessHotelierHub.Utility
         public const string INDIVIDUAL = "Individual";
         public const string COMPANY = "Company";
         public const string TRAVELAGENT = "Travel Agent";
-        public const string GROUP = "Group";  
+        public const string GROUP = "Group";
     }
 
     public static class RoomStatusType
@@ -1035,5 +1035,18 @@ namespace SuccessHotelierHub.Utility
             }
         }
 
+    }
+
+    public static class Delimeter
+    {
+        public const string BREAKLINE = "<br/>";
+        public const string NEWLINE = "\n";
+        public const string COMMA = ",";
+        public const string SEMICOLON = ";";
+        public const string PIPE = "|";
+        public const string DOUBLEPIPE = "||";
+        public const string DOT = ".";
+        public const string HASH = "#";
+        public const string SPACE = " ";
     }
 }

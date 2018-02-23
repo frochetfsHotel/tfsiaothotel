@@ -110,7 +110,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
                 var paymentMethodList = new SelectList(
@@ -126,7 +126,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Room Mapping
 
                 //Get Room Mapping
-                var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null);
+                var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null, LogInManager.LoggedInUserId);
                 var roomIds = string.Empty;
                 var roomNumbers = string.Empty;
 
@@ -160,6 +160,7 @@ namespace SuccessHotelierHub.Controllers
                     searchRoomModel.RoomNo = string.Empty;
                     searchRoomModel.Type = string.Empty;
                     searchRoomModel.IsClean = true; //only take clean room.
+                    searchRoomModel.UserId = LogInManager.LoggedInUserId;
 
                     var availableRoomList = roomRepository.SearchAdvanceRoom(searchRoomModel);
 
@@ -235,7 +236,7 @@ namespace SuccessHotelierHub.Controllers
                 ReservationChargeVM reservationCharge = new ReservationChargeVM();
 
                 //Get Reservation detail.
-                var reservation = reservationRepository.GetReservationById(model.ReservationId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(model.ReservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (reservation != null)
                 {
@@ -318,7 +319,7 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Delete Room Mapping
 
-                    var roomMappings = roomRepository.GetReservationRoomMapping(reservation.Id, null);
+                    var roomMappings = roomRepository.GetReservationRoomMapping(reservation.Id, null, LogInManager.LoggedInUserId);
 
                     if (roomMappings != null && roomMappings.Count > 0)
                     {
@@ -340,7 +341,7 @@ namespace SuccessHotelierHub.Controllers
                         {
                             foreach (var mappingId in roomMappingIds)
                             {
-                                roomRepository.DeleteReservationRoomMapping(mappingId, LogInManager.LoggedInUserId);
+                                roomRepository.DeleteReservationRoomMapping(mappingId, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
                             }
                         }
                     }
@@ -366,16 +367,16 @@ namespace SuccessHotelierHub.Controllers
 
                             ////Update Room Status CLEAN to DIRTY.
                             //roomRepository.UpdateRoomCheckInStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.DIRTY), true, LogInManager.LoggedInUserId);
-
+                            
                             #region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
 
-                            reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId);
+                            reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                             #endregion
 
                             #region Add Reservation Log
 
-                            var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null).FirstOrDefault();
+                            var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
 
                             if (lstReservationLog != null)
                             {
@@ -483,7 +484,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (reservation != null)
                 {
@@ -492,24 +493,24 @@ namespace SuccessHotelierHub.Controllers
 
                     var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
 
-                    var reservationCharge = reservationChargeRepository.GetReservationCharges(reservation.Id, roomRentCharge.Id).FirstOrDefault();
+                    var reservationCharge = reservationChargeRepository.GetReservationCharges(reservation.Id, roomRentCharge.Id, LogInManager.LoggedInUserId).FirstOrDefault();
 
                     if (reservationCharge != null)
                     {
-                        reservationChargeRepository.DeleteReservationCharges(reservationCharge.Id, LogInManager.LoggedInUserId);
+                        reservationChargeRepository.DeleteReservationCharges(reservationCharge.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
                     }
 
                     #endregion
 
                     #region  Remove Reservation Charges                    
 
-                    reservationChargeRepository.DeleteReservationChargesByReservation(reservation.Id, LogInManager.LoggedInUserId);
+                    reservationChargeRepository.DeleteReservationChargesByReservation(reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #endregion
 
                     #region  Remove Reservation Log (Room Occupied)
 
-                    reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId);
+                    reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #endregion
 
@@ -521,7 +522,7 @@ namespace SuccessHotelierHub.Controllers
 
                     #region  Remove Check In Details
 
-                    checkInCheckOutRepository.DeleteCheckInCheckOutDetailByReservation(reservation.Id, LogInManager.LoggedInUserId);
+                    checkInCheckOutRepository.DeleteCheckInCheckOutDetailByReservation(reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #endregion
 

@@ -93,6 +93,8 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult BulkReservation()
         {
+            return RedirectToAction("Index", "Home");
+
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
@@ -108,12 +110,14 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                return RedirectToAction("Index", "Home");
+
                 if (models != null && models.Count > 0)
                 {
                     foreach (var model in models)
                     {
                         //Get temp bulk reservation by id.
-                        var tempReservation = reservationRepository.GetTempBulkReservationById(model.Id);
+                        var tempReservation = reservationRepository.GetTempBulkReservationById(model.Id, LogInManager.LoggedInUserId);
 
                         if (tempReservation != null)
                         {
@@ -165,9 +169,11 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-               // var profiles = profileRepository.GetIndividualProfiles(lastName, firstName);
+                return RedirectToAction("Index", "Home");
 
-                var reservations = reservationRepository.GetTempBulkReservation();
+                // var profiles = profileRepository.GetIndividualProfiles(lastName, firstName, LogInManager.LoggedInUserId);
+
+                var reservations = reservationRepository.GetTempBulkReservation(LogInManager.LoggedInUserId);
 
                 ViewData["Source"] = "BulkReservation";
                 //ViewData["ProfileList"] = profiles;

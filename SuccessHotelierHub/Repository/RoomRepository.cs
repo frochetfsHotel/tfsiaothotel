@@ -132,7 +132,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@RoomFeatures", Value = model.RoomFeaturesIds },
                     new SqlParameter { ParameterName = "@IsClean", Value = model.IsClean },
                     new SqlParameter { ParameterName = "@IsDirty", Value = model.IsDirty },
-                    new SqlParameter { ParameterName = "@IsInspected", Value = model.IsInspected }
+                    new SqlParameter { ParameterName = "@IsInspected", Value = model.IsInspected },
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId }
 
                 };
 
@@ -144,7 +145,7 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
-        public List<RoomPlanRoomVM> GetRoomDetailsForRoomPlan(Guid? roomTypeId, Guid? floorId, string roomNo, string startDate, string endDate)
+        public List<RoomPlanRoomVM> GetRoomDetailsForRoomPlan(Guid? roomTypeId, Guid? floorId, string roomNo, string startDate, string endDate, int userId)
         {
             SqlParameter[] parameters =
                {
@@ -152,8 +153,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@FloorId", Value = floorId },
                     new SqlParameter { ParameterName = "@RoomNo", Value = roomNo },
                     new SqlParameter { ParameterName = "@StartDate", Value = startDate },
-                    new SqlParameter { ParameterName = "@EndDate", Value = endDate }
-
+                    new SqlParameter { ParameterName = "@EndDate", Value = endDate },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomDetailsForRoomPlan", parameters);
@@ -283,14 +284,15 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationRoomMappingByReservation(Guid reservationId, int updatedBy)
+        public string DeleteReservationRoomMappingByReservation(Guid reservationId, int updatedBy, int userId)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             id = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationRoomMappingByReservation", parameters));
@@ -298,14 +300,15 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteReservationRoomMapping(Guid id, int updatedBy)
+        public string DeleteReservationRoomMapping(Guid id, int updatedBy, int userId)
         {
             string mappingId = string.Empty;
 
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             mappingId = Convert.ToString(DALHelper.ExecuteScalar("DeleteReservationRoomMapping", parameters));
@@ -313,12 +316,13 @@ namespace SuccessHotelierHub.Repository
             return mappingId;
         }
 
-        public List<ReservationRoomMappingVM> GetReservationRoomMapping(Guid? reservationId, Guid? roomId)
+        public List<ReservationRoomMappingVM> GetReservationRoomMapping(Guid? reservationId, Guid? roomId, int userId)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
-                    new SqlParameter { ParameterName = "@RoomId", Value = (object) roomId ?? DBNull.Value }
+                    new SqlParameter { ParameterName = "@RoomId", Value = (object) roomId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRoomMapping", parameters);
@@ -401,12 +405,13 @@ namespace SuccessHotelierHub.Repository
 
         #region Property Calendar
 
-        public List<TotalRoomAvailableByCalendarResultVM> GetTotalRoomAvailableByCalendar(int month, int year)
+        public List<TotalRoomAvailableByCalendarResultVM> GetTotalRoomAvailableByCalendar(int month, int year, int userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@Month", Value = month },
-                    new SqlParameter { ParameterName = "@Year", Value = year }
+                    new SqlParameter { ParameterName = "@Year", Value = year },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTotalRoomAvailableByCalendar", parameters);
@@ -417,11 +422,12 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
-        public List<AvailableRoomInfoByDateResultVM> GetAvailableRoomInfoByDate(string date)
+        public List<AvailableRoomInfoByDateResultVM> GetAvailableRoomInfoByDate(string date, int userId)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@Date", Value = date }
+                    new SqlParameter { ParameterName = "@Date", Value = date },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetAvailableRoomInfoByDate", parameters);

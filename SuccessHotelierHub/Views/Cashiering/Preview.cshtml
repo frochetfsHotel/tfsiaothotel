@@ -116,10 +116,7 @@
                             <td style="width:50%;text-align:left" valign="top">
                                 <label class="mb5"><b>@Model.Title @Model.Name</b></label>
                                 <br />
-                                <label class="mb5"><b>@Model.Address</b></label> <br />
-                                <label class="mb5"><b>@Model.City</b></label> <br />
-                                <label class="mb5"><b>@Model.State</b></label> <br />
-                                <label class="mb5"><b>@Model.Country</b></label> <br />
+                                <label class="mb5"><b>@Html.Raw(Model.Address)</b></label> <br />                                
                             </td>
                             <td style="width:50%;">
                                 <table>

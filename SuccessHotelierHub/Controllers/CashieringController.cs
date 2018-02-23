@@ -113,12 +113,12 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 #region Room Mapping
 
                 //Get Room Mapping
-                var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null);
+                var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null, LogInManager.LoggedInUserId);
                 var roomIds = string.Empty;
                 var roomNumbers = string.Empty;
 
@@ -146,7 +146,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Reservation Charges
 
-                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null);
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
                 #endregion
 
@@ -264,7 +264,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
                 //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
                 var paymentMethodList = new SelectList(
                      paymentMethodRepository.GetPaymentMethods()
@@ -279,7 +279,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Room Mapping
 
                 //Get Room Mapping
-                var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null);
+                var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null, LogInManager.LoggedInUserId);
                 var roomIds = string.Empty;
                 var roomNumbers = string.Empty;
 
@@ -343,7 +343,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 CheckInCheckOutVM checkOut = new CheckInCheckOutVM();
 
-                var checkInDetails = checkInCheckOutRepository.GetCheckInDetails(model.ReservationId, model.ProfileId.Value).FirstOrDefault();
+                var checkInDetails = checkInCheckOutRepository.GetCheckInDetails(model.ReservationId, model.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (checkInDetails != null)
                 {
@@ -359,7 +359,7 @@ namespace SuccessHotelierHub.Controllers
                     }
 
                     //Get Reservation detail.
-                    var reservation = reservationRepository.GetReservationById(model.ReservationId).FirstOrDefault();
+                    var reservation = reservationRepository.GetReservationById(model.ReservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                     if (reservation != null)
                     {
@@ -407,7 +407,7 @@ namespace SuccessHotelierHub.Controllers
 
                                     #region Add Reservation Log
 
-                                    var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null).FirstOrDefault();
+                                    var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
 
                                     if (lstReservationLog != null)
                                     {
@@ -546,12 +546,12 @@ namespace SuccessHotelierHub.Controllers
 
             BillingTransactionReportVM model = new BillingTransactionReportVM();
 
-            var reservation = reservationRepository.GetReservationById(Id.Value).FirstOrDefault();
+            var reservation = reservationRepository.GetReservationById(Id.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
             #region Room Mapping
 
             //Get Room Mapping
-            var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null);
+            var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, LogInManager.LoggedInUserId);
             var roomIds = string.Empty;
             var roomNumbers = string.Empty;
 
@@ -573,7 +573,7 @@ namespace SuccessHotelierHub.Controllers
 
             #region Reservation Charges
 
-            var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null);
+            var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
             #endregion
 
@@ -582,7 +582,7 @@ namespace SuccessHotelierHub.Controllers
             var profile = new IndividualProfileVM();
 
             if (reservation.ProfileId.HasValue)
-                profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value).FirstOrDefault();
+                profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
             #endregion
 
@@ -610,8 +610,8 @@ namespace SuccessHotelierHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(profile.CityName))
             {
-                //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
-                model.City = profile.CityName;
+                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.CityName) : profile.CityName;
+                //model.City = profile.CityName;
             }
 
             //if (profile.StateId.HasValue)
@@ -626,8 +626,8 @@ namespace SuccessHotelierHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(profile.StateName))
             {
-                //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
-                model.State = profile.StateName;
+                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.StateName) : profile.StateName;
+               // model.State = profile.StateName;
             }
 
             if (profile.CountryId.HasValue)
@@ -636,8 +636,8 @@ namespace SuccessHotelierHub.Controllers
 
                 if (country != null)
                 {
-                    //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
-                    model.Country = country.Name;
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + country.Name) : country.Name;
+                    //model.Country = country.Name;
                 }
             }
             #endregion
@@ -740,12 +740,12 @@ namespace SuccessHotelierHub.Controllers
 
                 BillingTransactionReportVM model = new BillingTransactionReportVM();
 
-                var reservation = reservationRepository.GetReservationById(Id.Value).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(Id.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 #region Room Mapping
 
                 //Get Room Mapping
-                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null);
+                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, LogInManager.LoggedInUserId);
                 var roomIds = string.Empty;
                 var roomNumbers = string.Empty;
 
@@ -767,7 +767,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Reservation Charges
 
-                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null);
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
                 #endregion
 
@@ -776,7 +776,7 @@ namespace SuccessHotelierHub.Controllers
                 var profile = new IndividualProfileVM();
 
                 if (reservation.ProfileId.HasValue)
-                    profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value).FirstOrDefault();
+                    profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 #endregion
 
@@ -804,8 +804,8 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(profile.CityName))
                 {
-                    //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.CityName) : profile.CityName;
-                    model.City = profile.CityName;
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.CityName) : profile.CityName;
+                    //model.City = profile.CityName;
                 }
 
                 //if (profile.StateId.HasValue)
@@ -820,8 +820,8 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(profile.StateName))
                 {
-                    //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + profile.StateName) : profile.StateName;
-                    model.State = profile.StateName;
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.StateName) : profile.StateName;
+                    // model.State = profile.StateName;
                 }
 
                 if (profile.CountryId.HasValue)
@@ -830,8 +830,8 @@ namespace SuccessHotelierHub.Controllers
 
                     if (country != null)
                     {
-                        //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (" , " + country.Name) : country.Name;
-                        model.Country = country.Name;
+                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + country.Name) : country.Name;
+                        //model.Country = country.Name;
                     }
                 }
                 #endregion
@@ -971,26 +971,26 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var reservation = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (reservation != null)
                 {
 
                     #region  Remove Reservation Charges                    
 
-                    reservationChargeRepository.DeleteReservationChargesByReservation(reservation.Id, LogInManager.LoggedInUserId);
+                    reservationChargeRepository.DeleteReservationChargesByReservation(reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #endregion
 
                     #region  Remove Reservation Log (Room Occupied)
 
-                    reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId);
+                    reservationLogRepository.DeleteReservationLogByReservation(reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #endregion
 
                     #region  Remove Check Out Details
 
-                    checkInCheckOutRepository.DeleteCheckInCheckOutDetailByReservation(reservation.Id, LogInManager.LoggedInUserId);
+                    checkInCheckOutRepository.DeleteCheckInCheckOutDetailByReservation(reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #endregion
 

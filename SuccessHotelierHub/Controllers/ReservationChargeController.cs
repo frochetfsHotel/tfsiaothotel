@@ -52,7 +52,7 @@ namespace SuccessHotelierHub.Controllers
                     var reservation = new ReservationVM();
 
                     if(model.ReservationId.HasValue)
-                        reservation = reservationRepository.GetReservationById(model.ReservationId.Value).FirstOrDefault();
+                        reservation = reservationRepository.GetReservationById(model.ReservationId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                     double totalBalance = 0;
                     if (reservation != null)
@@ -160,7 +160,7 @@ namespace SuccessHotelierHub.Controllers
                     var reservation = new ReservationVM();
 
                     if (reservationId.HasValue)
-                        reservation = reservationRepository.GetReservationById(reservationId.Value).FirstOrDefault();
+                        reservation = reservationRepository.GetReservationById(reservationId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                     if (reservation != null)
                     {
@@ -211,7 +211,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 double totalBalance = 0;
 
-                var chargeDetail = reservationChargeRepository.GetReservationChargesById(id).FirstOrDefault();
+                var chargeDetail = reservationChargeRepository.GetReservationChargesById(id, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (chargeDetail != null)
                 {
@@ -228,13 +228,13 @@ namespace SuccessHotelierHub.Controllers
                     chargeAmount = (chargeDetail.Amount.HasValue ? (chargeDetail.Amount.Value * qty) : 0);
 
                     //Delete Reservation Charge
-                    reservationChargeRepository.DeleteReservationCharges(chargeDetail.Id, LogInManager.LoggedInUserId);
+                    reservationChargeRepository.DeleteReservationCharges(chargeDetail.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
 
                     #region Update Reservation Total Balance.
                     var reservation = new ReservationVM();
 
                     if (reservationId.HasValue)
-                        reservation = reservationRepository.GetReservationById(reservationId.Value).FirstOrDefault();
+                        reservation = reservationRepository.GetReservationById(reservationId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                     if (reservation != null)
                     {

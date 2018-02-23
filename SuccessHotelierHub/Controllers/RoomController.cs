@@ -258,6 +258,8 @@ namespace SuccessHotelierHub.Controllers
                     model.RoomFeaturesIds = String.Join(",", model.RoomFeatures.ToArray());
                 }
 
+                model.UserId = LogInManager.LoggedInUserId;
+
                 var rooms = roomRepository.SearchAdvanceRoom(model);
 
                 return Json(new
@@ -627,7 +629,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var reservationDetail = reservationRepository.GetReservationById(reservationId).FirstOrDefault();
+                var reservationDetail = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if (reservationDetail != null)
                 {
