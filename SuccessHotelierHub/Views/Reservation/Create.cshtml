@@ -411,7 +411,7 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "4" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
@@ -470,62 +470,8 @@
                     </div>
                 </div>
 
-                <div class="row" id="totalSummary" style="display:none;">
-                    <div class="col-md-12 form-group">
-                        <label class="label-bold">Transaction Summary :</label>
-                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
-                        <div class="table-responsive table_maxTransactionSummary">
-                            <table class="table table-bordered table-striped" id="tblTransactionSummary">
-                                <thead>
-                                    <tr>
-                                        <th class="width_60">Notes</th>
-                                        <th class="width_20">Rate</th>
-                                        <th class="width_20">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot>
-                                    <tr class="text-bold" data-total-price="">
-                                        <td></td>
-                                        <td>Total Price : </td>
-                                        <td class="tdTotalPrice"></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-9 form-group">
-                        @Html.LabelFor(m => m.Remarks)
-                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
-                        <input type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
-                        <input type="hidden" id="hdnTotalReservationRemarks" name="hdnTotalReservationRemarks" value="0" />
-                    </div>
-                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
-                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
-                            Add Remarks
-                        </button>
-                        <button type="button" class="btn btn-default btn-sm btnCancelReservationRemarks" id="btnCancelReservationRemarks"
-                                onclick="ClearRemarks();">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-                <div class="row" id="divReservationRemark" style="display:none;">
-                    <div class="col-md-12 table-responsive table_maxRemarks">
-                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
-                            <thead>
-                                <tr>
-                                    <th class="width_35">Track</th>
-                                    <th class="width_50">Remarks</th>
-                                    <th class="width_15">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
+                
+                
                 <div class="row">
                     <hr />
                     <div class="col-xs-1 form-group">
@@ -553,6 +499,66 @@
                         </label>
                         <div class="col-sm-9" id="ListOfSelectedAddOns">
 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <hr/>
+                    <div class="col-md-9 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                        <input type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
+                        <input type="hidden" id="hdnTotalReservationRemarks" name="hdnTotalReservationRemarks" value="0" />
+                    </div>
+                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
+                            Add Remarks
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm btnCancelReservationRemarks" id="btnCancelReservationRemarks"
+                                onclick="ClearRemarks();">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <div class="row" id="divReservationRemark" style="display:none;">
+                    <div class="col-md-12 table-responsive table_maxRemarks">
+                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
+                            <thead>
+                                <tr>
+                                    <th class="width_50">Remarks</th>
+                                    <th class="width_35">Track</th>
+                                    <th class="width_15">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row" id="totalSummary" style="display:none;">
+                    <hr />
+                    <div class="col-md-12 form-group">
+                        <label class="label-bold">Transaction Summary :</label>
+                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
+                        <div class="table-responsive table_maxTransactionSummary">
+                            <table class="table table-bordered table-striped" id="tblTransactionSummary">
+                                <thead>
+                                    <tr>
+                                        <th class="width_60">Notes</th>
+                                        <th class="width_20">Rate</th>
+                                        <th class="width_20">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr class="text-bold" data-total-price="">
+                                        <td></td>
+                                        <td>Total Price : </td>
+                                        <td class="tdTotalPrice"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -1046,7 +1052,7 @@
                     blnValid = false;
                 } else {
                     if (!IsValidCreditCardNo(creditCardNo)) {
-                        errorText += "Please enter only last 4 digits of your credit card." + Delimeter.BREAKLINE;
+                        errorText += "Please enter 16 digits of your credit card." + Delimeter.BREAKLINE;
                         blnValid = false;
                     }
                 }
@@ -1531,6 +1537,11 @@
         //Create New Row
         html += "<tr data-rownumber='" + rowNumber + "' id='tr_" + rowNumber + "'>";
 
+        //Remarks
+        html += "<td class='remarks'>";
+        html += remarks;
+        html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+        html += "</td>";
 
         //TrackLog
         var userName = '@LogInManager.UserName';
@@ -1545,11 +1556,7 @@
         html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
         html += "</td>";
 
-        //Remakrs
-        html += "<td class='remarks'>";
-        html += remarks;
-        html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
-        html += "</td>";
+       
 
         //Action
         html += "<td>";
@@ -1579,6 +1586,11 @@
             var html = "";
             var trId = "#tr_" + rowNumber;
 
+            //Remarks
+            html = "";
+            html += remarks;
+            html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' #Remarks_' + rowNumber).val(remarks);
 
             //TrackLog
             var userName = '@LogInManager.UserName';
@@ -1593,11 +1605,7 @@
             html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
             $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.tracklog').html(html);
 
-            //Remarks
-            html = "";
-            html += remarks;
-            html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
-            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' #Remarks_' + rowNumber).val(remarks);
+            
 
             $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.remarks').html(html);
 
@@ -1818,7 +1826,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(rate) + " * " + qty;
+            html += "&euro; " + FormatNumberWithTwoDecimal(rate);
             html += "</td>";
 
             //Total
@@ -1880,7 +1888,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice) + " * " + qty;
+            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice);
             html += "</td>";
 
             //Total
@@ -1909,7 +1917,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice) + " * " + qty;
+            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice);
             html += "</td>";
 
             //Total

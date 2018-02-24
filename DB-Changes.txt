@@ -37943,3 +37943,127 @@ BEGIN
 
    
 END
+
+
+/******************************************************************************************************/
+
+Date : 24-FEB-2018
+Name : Nilesh
+
+/******************************************************************************************************/
+
+/*********************** Create new table TempBulkReservationMaster ***********/
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TempBulkReservationMaster](
+	[Id] [uniqueidentifier] NOT NULL,
+	[TitleId] [uniqueidentifier] NULL,
+	[LastName] [nvarchar](255) NULL,
+	[FirstName] [nvarchar](255) NULL,
+	[ProfileId] [uniqueidentifier] NULL,
+	[MemberTypeId] [uniqueidentifier] NULL,
+	[CountryId] [int] NULL,
+	[LanguageId] [uniqueidentifier] NULL,
+	[VipId] [uniqueidentifier] NULL,
+	[PhoneNo] [nvarchar](50) NULL,
+	[MemberNo] [nvarchar](255) NULL,
+	[MemberLvt] [nvarchar](255) NULL,
+	[AgentId] [uniqueidentifier] NULL,
+	[CompanyId] [uniqueidentifier] NULL,
+	[GroupId] [uniqueidentifier] NULL,
+	[SourceId] [uniqueidentifier] NULL,
+	[ContactId] [uniqueidentifier] NULL,
+	[ArrivalDate] [datetime] NOT NULL,
+	[NoOfNight] [int] NULL,
+	[DepartureDate] [datetime] NULL,
+	[NoOfAdult] [int] NULL,
+	[NoOfChildren] [int] NULL,
+	[NoOfRoom] [int] NULL,
+	[RoomTypeId] [uniqueidentifier] NULL,
+	[RtcId] [uniqueidentifier] NULL,
+	[ExtnId] [uniqueidentifier] NULL,
+	[RateCodeId] [uniqueidentifier] NULL,
+	[IsFixedRate] [bit] NULL,
+	[Rate] [decimal](18, 2) NULL,
+	[CurrencyId] [uniqueidentifier] NULL,
+	[BlockCodeId] [uniqueidentifier] NULL,
+	[ETA] [time](7) NULL,
+	[ReservationTypeId] [uniqueidentifier] NULL,
+	[MarketId] [uniqueidentifier] NULL,
+	[ReservationSourceId] [uniqueidentifier] NULL,
+	[OriginId] [uniqueidentifier] NULL,
+	[PaymentMethodId] [uniqueidentifier] NULL,
+	[CreditCardNo] [nvarchar](255) NULL,
+	[CardExpiryDate] [nvarchar](50) NULL,
+	[CVVNo] [nvarchar](255) NULL,
+	[ApprovalCode] [nvarchar](255) NULL,
+	[ApprovalAmount] [decimal](18, 2) NULL,
+	[SuitWith] [nvarchar](255) NULL,
+	[IsEmailConfirmation] [bit] NULL,
+	[GuestBalance] [decimal](18, 2) NULL,
+	[DiscountAmount] [decimal](18, 2) NULL,
+	[DiscountPercentage] [decimal](18, 2) NULL,
+	[DiscountApprovedBy] [uniqueidentifier] NULL,
+	[TARecordLocator] [nvarchar](255) NULL,
+	[SpecialsId] [uniqueidentifier] NULL,
+	[ReservationComments] [nvarchar](max) NULL,
+	[ItemInventoryId] [uniqueidentifier] NULL,
+	[Remarks] [nvarchar](max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+	[InHouseComments] [nvarchar](max) NULL,
+	[CashieringComments] [nvarchar](max) NULL,
+	[HouseKeepingComments] [nvarchar](max) NULL,
+	[ConfirmationNumber] [nvarchar](255) NULL,
+	[CancellationReasonId] [uniqueidentifier] NULL,
+	[CancellationReasonComment] [nvarchar](2000) NULL,
+	[IsReservationCancel] [bit] NULL,
+	[IsCheckIn] [bit] NULL,
+	[IsCheckOut] [bit] NULL,
+	[TotalPrice] [decimal](18, 2) NULL,
+	[ReservationStatusId] [uniqueidentifier] NULL,
+	[FolioNumber] [bigint] NULL,
+	[NoOfInfant] [int] NULL,
+	[DiscountReason] [nvarchar](max) NULL,
+	[RoomNo] [nvarchar](500) NULL,
+	[RoomId] [uniqueidentifier] NULL,
+ CONSTRAINT [PK_TempBulkReservationMaster] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchBulkReservationTempMaster
+	Comment : Create new SP SearchBulkReservationTempMaster
+***********************************************************************************************************************/ 
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchBulkReservationTempMaster
+	Comment : Create new SP SearchBulkReservationTempMaster
+***********************************************************************************************************************/ 
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchBulkReservationTempMaster
+	Comment : Create new SP SearchBulkReservationTempMaster
+***********************************************************************************************************************/ 
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchBulkReservationTempMaster
+	Comment : Create new SP SearchBulkReservationTempMaster
+***********************************************************************************************************************/ 

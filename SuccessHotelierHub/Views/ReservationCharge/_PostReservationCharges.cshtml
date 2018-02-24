@@ -100,11 +100,11 @@
         clearReservationChargesData();
 
         //Default Transaction Date. (Set today's date).
-        $("#TransactionDate_1").datepicker("setDate", new Date());
+        $("form#frmReservationCharge #TransactionDate_1").datepicker("setDate", new Date());
     })
 
     function AddNewTransactionRow() {
-        var rowNumber = $('#hdnTotalTransactionCharges').val();
+        var rowNumber = $('form#frmReservationCharge #hdnTotalTransactionCharges').val();
 
         if (!IsNullOrEmpty(rowNumber)) {
             rowNumber = parseInt(rowNumber) + 1;
@@ -172,15 +172,15 @@
 
         $('form#frmReservationCharge #tblTransactionCharges tbody').append(html);
 
-        $('#hdnTotalTransactionCharges').val(rowNumber);
+        $('form#frmReservationCharge #hdnTotalTransactionCharges').val(rowNumber);
 
         //Bind DatePicker
-        $("#TransactionDate_" + rowNumber).datepicker({
+        $("form#frmReservationCharge #TransactionDate_" + rowNumber).datepicker({
             autoclose: true,
             format: 'dd/mm/yyyy'
         })
 
-        $("#TransactionDate_" + rowNumber).datepicker("setDate", new Date());
+        $("form#frmReservationCharge #TransactionDate_" + rowNumber).datepicker("setDate", new Date());
     }
 
     function removeRow(element) {
@@ -195,9 +195,9 @@
             var rowNumber = $(this).attr("data-rownumber");            
             if (!IsNullOrEmpty(rowNumber)) {
                 rowNumber = parseInt(rowNumber);
-                var code = $('#Code_' + rowNumber).val();
-                var chargeId = $('#AdditionalChargeId_' + rowNumber).val();
-                var amount = $('#Amount_' + rowNumber).val();
+                var code = $('form#frmReservationCharge #Code_' + rowNumber).val();
+                var chargeId = $('form#frmReservationCharge #AdditionalChargeId_' + rowNumber).val();
+                var amount = $('form#frmReservationCharge #Amount_' + rowNumber).val();
 
                 if (IsNullOrEmpty(code) || IsNullOrEmpty(chargeId)) {
                     blnValid = false;
@@ -237,15 +237,15 @@
 
                     var modelReservationCharge = {};
 
-                    modelReservationCharge.ReservationId = $('#ReservationId').val();
-                    modelReservationCharge.TransactionDate = $('#TransactionDate_' + rowNumber).val();
-                    modelReservationCharge.AdditionalChargeId = $('#AdditionalChargeId_' + rowNumber).val();
-                    modelReservationCharge.Code = $('#Code_' + rowNumber).val();
-                    modelReservationCharge.Description = $('#Description_' + rowNumber).val();
-                    modelReservationCharge.Amount = $('#Amount_' + rowNumber).val();
-                    modelReservationCharge.Qty = $('#Qty_' + rowNumber).val();
-                    //modelReservationCharge.Supplement = $('#Supplement_' + rowNumber).val();
-                    modelReservationCharge.Reference = $('#Reference_' + rowNumber).val();
+                    modelReservationCharge.ReservationId = $('form#frmReservationCharge #ReservationId').val();
+                    modelReservationCharge.TransactionDate = $('form#frmReservationCharge #TransactionDate_' + rowNumber).val();
+                    modelReservationCharge.AdditionalChargeId = $('form#frmReservationCharge #AdditionalChargeId_' + rowNumber).val();
+                    modelReservationCharge.Code = $('form#frmReservationCharge #Code_' + rowNumber).val();
+                    modelReservationCharge.Description = $('form#frmReservationCharge #Description_' + rowNumber).val();
+                    modelReservationCharge.Amount = $('form#frmReservationCharge #Amount_' + rowNumber).val();
+                    modelReservationCharge.Qty = $('form#frmReservationCharge #Qty_' + rowNumber).val();
+                    //modelReservationCharge.Supplement = $('form#frmReservationCharge #Supplement_' + rowNumber).val();
+                    modelReservationCharge.Reference = $('form#frmReservationCharge #Reference_' + rowNumber).val();
                     modelReservationCharge.IsActive = true;
 
                     listReservationCharge.push(modelReservationCharge);
@@ -297,15 +297,15 @@
     }
 
     function clearReservationChargesData() {
-        $("#TransactionDate_1").datepicker("setDate", new Date());
-        $('#Code_1').val('');
-        $('#Description_1').val('');
-        $('#Amount_1').val('0.00');
-        $('#Qty_1').val('1');
-        //$('#Supplement_1').val('');
-        $('#Reference_1').val('');
-        $('#AdditionalChargeId_1').val('');
-        $('#hdnTotalTransactionCharges').val('1');
+        $("form#frmReservationCharge #TransactionDate_1").datepicker("setDate", new Date());
+        $('form#frmReservationCharge #Code_1').val('');
+        $('form#frmReservationCharge #Description_1').val('');
+        $('form#frmReservationCharge #Amount_1').val('0.00');
+        $('form#frmReservationCharge #Qty_1').val('1');
+        //$('form#frmReservationCharge #Supplement_1').val('');
+        $('form#frmReservationCharge #Reference_1').val('');
+        $('form#frmReservationCharge #AdditionalChargeId_1').val('');
+        $('form#frmReservationCharge #hdnTotalTransactionCharges').val('1');
 
         //Remove all the rows except first one.
         $("form#frmReservationCharge  #tblTransactionCharges tbody").find("tr:gt(0)").remove();

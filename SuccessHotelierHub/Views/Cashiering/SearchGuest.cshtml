@@ -32,7 +32,7 @@
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="frmReservationList" enctype="multipart/form-data" method="post">
+        <form class="frmReservationList" id="frmReservationList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
@@ -428,17 +428,17 @@
 
 
     function SearchReservationParameters(d) {
-        var roomNo = $('#RoomNo').val();
-        var lastName = $('#LastName').val();
-        var firstName = $('#FirstName').val();
-        var confirmationNo = $('#ConfirmationNo').val();
-        var companyId = $('#CompanyId').val();
-        var groupId = $('#GroupId').val();
-        var blockCodeId = $('#BlockCodeId').val();
-        var departureDate = $('#DepartureDate').val();
-        var isShowCheckedOut = $('#IsShowCheckedOut').prop('checked');
-        var isShowCheckedIn = $('#IsShowCheckedIn').prop('checked');
-        var isShowDueOut = $('#IsShowDueOut').prop('checked');
+        var roomNo = $('form#frmReservationList #RoomNo').val();
+        var lastName = $('form#frmReservationList #LastName').val();
+        var firstName = $('form#frmReservationList #FirstName').val();
+        var confirmationNo = $('form#frmReservationList #ConfirmationNo').val();
+        var companyId = $('form#frmReservationList #CompanyId').val();
+        var groupId = $('form#frmReservationList #GroupId').val();
+        var blockCodeId = $('form#frmReservationList #BlockCodeId').val();
+        var departureDate = $('form#frmReservationList #DepartureDate').val();
+        var isShowCheckedOut = $('form#frmReservationList #IsShowCheckedOut').prop('checked');
+        var isShowCheckedIn = $('form#frmReservationList #IsShowCheckedIn').prop('checked');
+        var isShowDueOut = $('form#frmReservationList #IsShowDueOut').prop('checked');
 
         d.PageNum = currentPage;
         d.LastName = lastName;
@@ -844,18 +844,18 @@
     }
 
     function clearGuest() {
-        $('#RoomNo').val('');
-        $('#LastName').val('');
-        $('#FirstName').val('');
-        $('#ConfirmationNo').val('');
+        $('form#frmReservationList #RoomNo').val('');
+        $('form#frmReservationList #LastName').val('');
+        $('form#frmReservationList #FirstName').val('');
+        $('form#frmReservationList #ConfirmationNo').val('');
 
-        $('#CompanyId').val('');
-        $('#GroupId').val('');
-        $('#BlockCodeId').val('');
-        $('#DepartureDate').val('');
-        $('#IsShowCheckedOut').prop('checked', false);
-        $('#IsShowCheckedIn').prop('checked', false);
-        $('#IsShowDueOut').prop('checked', false);
+        $('form#frmReservationList #CompanyId').val('');
+        $('form#frmReservationList #GroupId').val('');
+        $('form#frmReservationList #BlockCodeId').val('');
+        $('form#frmReservationList #DepartureDate').val('');
+        $('form#frmReservationList #IsShowCheckedOut').prop('checked', false);
+        $('form#frmReservationList #IsShowCheckedIn').prop('checked', false);
+        $('form#frmReservationList #IsShowDueOut').prop('checked', false);
 
         searchGuest();
     }

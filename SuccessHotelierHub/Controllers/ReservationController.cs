@@ -279,7 +279,7 @@ namespace SuccessHotelierHub.Controllers
                                 if (!string.IsNullOrWhiteSpace(email))
                                 {
                                     ReservationConfirmationReportVM obj = new ReservationConfirmationReportVM();
-                                    obj.UserName = profile.LastName;
+                                    obj.UserName = profile.FirstName;
                                     obj.GuestName = profileName;
                                     obj.ConfirmationNumber = model.ConfirmationNumber;
                                     obj.ArrivalDate = model.ArrivalDate.Value.ToString("dd MMM yyyy");
@@ -401,6 +401,11 @@ namespace SuccessHotelierHub.Controllers
                     {
                         model.IsWeekEndPrice = true;
                     }
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
+                {
+                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
                 }
                 
 
@@ -635,6 +640,9 @@ namespace SuccessHotelierHub.Controllers
 
                 //model.GuestBalance = totalBalance;                
                 model.TotalPrice = totalPrice;
+
+                //Credit Card No.
+                model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
 
                 reservationId = reservationRepository.UpdateReservation(model);
 
@@ -1208,6 +1216,9 @@ namespace SuccessHotelierHub.Controllers
 
             model.GuestBalance = totalBalance;
             model.TotalPrice = totalPrice;
+
+            //Credit Card No.
+            model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
 
             reservationId = reservationRepository.AddReservation(model);
 

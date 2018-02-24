@@ -836,6 +836,18 @@ namespace SuccessHotelierHub.Utility
             //return (suffix.ToString("00000"));
         }
 
+        public static string ExtractCreditCardNoLastFourDigits(string number)
+        {
+            string text = "";
+
+            if (!string.IsNullOrWhiteSpace(number) && number.Length > 4)
+            {
+                text = number.Substring(number.Length - 4, 4);
+            }
+
+            return text;
+        }
+
         #endregion
 
     }

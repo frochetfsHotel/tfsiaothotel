@@ -156,7 +156,7 @@ namespace SuccessHotelierHub.Models
         public Guid? PaymentMethodId { get; set; }
 
         [DisplayName("Credit Card #")]
-        [StringLength(4, MinimumLength = 4, ErrorMessage = "Please enter only last 4 digits of your credit card.")]
+        [StringLength(16, MinimumLength = 16, ErrorMessage = "Please enter 16 digits of your credit card.")]
         public string CreditCardNo { get; set; }
 
         [DisplayName("Exp. Date (MM/YY)")]

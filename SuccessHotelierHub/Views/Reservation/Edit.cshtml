@@ -538,7 +538,7 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "4" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
@@ -596,92 +596,7 @@
                     </div>                  
                 </div>
 
-                @*<div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.SpecialsId)
-                        <select class="form-control" id="SpecialsId" name="SpecialsId">
-                            <option value="">--Select Specials--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Early Check in</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Down pillow</option>
-                        </select>
-                    </div>
-                </div>*@
-                @*<div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ReservationComments)
-                        @Html.TextAreaFor(m => m.ReservationComments, new { @class = "form-control", placeholder = "Reservation Comments", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.InHouseComments)
-                        @Html.TextAreaFor(m => m.InHouseComments, new { @class = "form-control", placeholder = "In-House Comments", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CashieringComments)
-                        @Html.TextAreaFor(m => m.CashieringComments, new { @class = "form-control", placeholder = "Cashiering Comments", rows = "3" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.HouseKeepingComments)
-                        @Html.TextAreaFor(m => m.HouseKeepingComments, new { @class = "form-control", placeholder = "House Keeping Comments", rows = "3" })
-                    </div>
-                </div>*@
-
-                <div class="row" id="totalSummary" style="display:none;">
-                    <div class="col-md-12 form-group">
-                        <label class="label-bold">Transaction Summary :</label>
-                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
-                        <div class="table-responsive table_maxTransactionSummary">
-                            <table class="table table-bordered table-striped" id="tblTransactionSummary">
-                                <thead>
-                                    <tr>
-                                        <th class="width_60">Notes</th>
-                                        <th class="width_20">Rate</th>                                        
-                                        <th class="width_20">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="text-bold"  data-total-price="">
-                                        <td></td>
-                                        <td>Total Price : </td>
-                                        <td class="tdTotalPrice"></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-9 form-group">
-                        @Html.LabelFor(m => m.Remarks)
-                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
-                        <input  type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
-                    </div>
-                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
-                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
-                            Add Remarks
-                        </button>
-                        <button type="button" class="btn btn-default btn-sm btnCancelReservationRemarks" id="btnCancelReservationRemarks"
-                                onclick="ClearRemarks();">
-                            Cancel
-                        </button>
-                    </div>                    
-                </div>
-                <div class="row" id="divReservationRemark" style="display:none;">
-                    <div class="col-md-12 table-responsive table_maxRemarks">
-                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
-                            <thead>
-                                <tr>                                    
-                                    <th class="width_35">Track</th>
-                                    <th class="width_50">Remarks</th>
-                                    <th class="width_15">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                
                 <div class="row">
                     <hr/>
                     <div class="col-xs-1 form-group">
@@ -714,6 +629,65 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <hr/>
+                    <div class="col-md-9 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                        <input type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
+                    </div>
+                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
+                            Add Remarks
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm btnCancelReservationRemarks" id="btnCancelReservationRemarks"
+                                onclick="ClearRemarks();">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <div class="row" id="divReservationRemark" style="display:none;">
+                    <div class="col-md-12 table-responsive table_maxRemarks">
+                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblReservationRemark">
+                            <thead>
+                                <tr>
+                                    <th class="width_50">Remarks</th>
+                                    <th class="width_35">Track</th>
+                                    <th class="width_15">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="row" id="totalSummary" style="display:none;">
+                    <hr/>
+                    <div class="col-md-12 form-group">
+                        <label class="label-bold">Transaction Summary :</label>
+                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
+                        <div class="table-responsive table_maxTransactionSummary">
+                            <table class="table table-bordered table-striped" id="tblTransactionSummary">
+                                <thead>
+                                    <tr>
+                                        <th class="width_60">Notes</th>
+                                        <th class="width_20">Rate</th>
+                                        <th class="width_20">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr class="text-bold" data-total-price="">
+                                        <td></td>
+                                        <td>Total Price : </td>
+                                        <td class="tdTotalPrice"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
@@ -1325,7 +1299,7 @@
                     blnValid = false;
                 } else {
                     if (!IsValidCreditCardNo(creditCardNo)) {
-                        errorText += "Please enter only last 4 digits of your credit card." + Delimeter.BREAKLINE;
+                        errorText += "Please enter 16 digits of your credit card." + Delimeter.BREAKLINE;
                         blnValid = false;
                     }
                 }
@@ -2023,11 +1997,12 @@
                             for (var i = 0; i < result.length; i++) {
                                 markup += "<tr id='tr_" + result[i].Id + "'>";
 
-                                //TrackLog
-                                markup += "<td class='tracklog'>" + result[i].TrackLog + "</td>";
-
                                 //Remarks
                                 markup += "<td class='remarks'>" + result[i].Remarks + "</td>";
+
+                                //TrackLog
+                                markup += "<td class='tracklog'>" + result[i].TrackLog + "</td>";
+                                                                
 
                                 //Action
                                 markup += "<td><a href=\"javascript:void(0);\" onclick=\"editReservationRemark('" + result[i].Id + "','" + html_entity_decode(result[i].Remarks) + "');\" class=\"text-success font_18 m-r-md\"><i class='fa fa-edit'/></a><a href=\"javascript:void(0);\" class=\"text-danger font_18 m-r-md \" onclick=\"deleteReservationRemark('" + result[i].Id + "');\"><i class='fa fa-trash'/></a></td> ";
@@ -2288,7 +2263,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(rate) + " * " + qty;
+            html += "&euro; " + FormatNumberWithTwoDecimal(rate);
             html += "</td>";
 
             //Total
@@ -2350,7 +2325,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice) + " * " + qty;
+            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice);
             html += "</td>";
 
             //Total
@@ -2379,7 +2354,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice) + " * " + qty;
+            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice);
             html += "</td>";
 
             //Total

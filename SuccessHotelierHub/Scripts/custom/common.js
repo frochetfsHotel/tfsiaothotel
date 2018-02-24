@@ -602,7 +602,7 @@ function parseBoolean(value) {
 
 function IsValidCreditCardNo(number) {
     if (!IsNullOrEmpty(number)) {
-        if (number.length != 4) {
+        if (number.length != 16) {
             return false;
         }
         return true;

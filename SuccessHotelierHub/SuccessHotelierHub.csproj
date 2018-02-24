@@ -322,6 +322,7 @@
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
     <Compile Include="Models\StoredProcedure\UserPageAccessRightsResultVM.cs" />
+    <Compile Include="Models\TempBulkReservationMasterVM.cs" />
     <Compile Include="Models\TempBulkReservationVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
@@ -2131,6 +2132,7 @@
     <Content Include="Views\AddOns\Edit.cshtml" />
     <Content Include="Views\AddOns\List.cshtml" />
     <Content Include="Views\AddOns\_AddOns.cshtml" />
+    <Content Include="Views\Common\EditBulkReservation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

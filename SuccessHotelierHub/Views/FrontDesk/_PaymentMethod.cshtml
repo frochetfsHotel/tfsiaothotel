@@ -79,7 +79,7 @@
         </div>
         <div class="col-md-4 divCreditCardInfo">
             @Html.LabelFor(m => m.CreditCardNo)
-            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "4" })
+            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
         </div>
         <div class="col-md-4 divCreditCardInfo divCardExpiryDate">
             @Html.LabelFor(m => m.CardExpiryDate)
@@ -166,6 +166,7 @@
 
     //Check In
     function validateCheckIn() {
+        var blnValid = true;
         var selectedRoomNumbers = $('form#frmCheckInPayment #RoomNumbers').val();
         var selectedRoomIds = $('form#frmCheckInPayment #RoomIds').val();
 
@@ -177,9 +178,39 @@
         }
 
 
-        if (!IsNullOrEmpty(creditCardNo) && !IsValidCreditCardNo(creditCardNo)) {
-            showToaster("Please enter only last 4 digits of your credit card.", ToasterType.ERROR);
-            return false;
+        if (!IsNullOrEmpty($('form#frmCheckInPayment #PaymentMethodId').val())) {
+            var paymentMethod = $('form#frmCheckInPayment #PaymentMethodId option:selected').text();
+
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) != 'Cash') {
+                var creditCardNo = $('form#frmCheckInPayment #CreditCardNo').val();
+                var cardExpiryDate = $('form#frmCheckInPayment #CardExpiryDate').val();                
+
+                var errorText = "";
+                if (IsNullOrEmpty(creditCardNo)) {
+                    errorText += "Please enter credit card number." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                } else {
+                    if (!IsValidCreditCardNo(creditCardNo)) {
+                        errorText += "Please enter 16 digits of your credit card." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
+                }
+
+                if (IsNullOrEmpty(cardExpiryDate)) {
+                    errorText += "Please enter card expiry date." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                }
+
+                if (blnValid == false) {
+                    showToaster(errorText, ToasterType.ERROR);
+                    return false;
+                }
+            }
         }
 
         if ($("form#frmCheckInPayment").valid() == false) {

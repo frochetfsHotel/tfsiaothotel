@@ -316,7 +316,11 @@ namespace SuccessHotelierHub.Controllers
                 model.NoOfRoom = reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1;
                 model.Name = Convert.ToString(reservation.LastName + " " + reservation.FirstName).Trim();
                 model.PaymentMethodId = reservation.PaymentMethodId;
-                model.CreditCardNo = reservation.CreditCardNo;
+                //model.CreditCardNo = reservation.CreditCardNo;
+                if (!string.IsNullOrWhiteSpace(reservation.CreditCardNo))
+                {
+                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(reservation.CreditCardNo);
+                }
                 model.CardExpiryDate = reservation.CardExpiryDate;
                 model.RoomNumbers = roomNumbers;
                 model.RoomIds = roomIds;
@@ -464,7 +468,11 @@ namespace SuccessHotelierHub.Controllers
                         #region Update Reservation
 
                         reservation.PaymentMethodId = model.PaymentMethodId;
-                        reservation.CreditCardNo = model.CreditCardNo;
+                        //reservation.CreditCardNo = model.CreditCardNo;
+                        if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
+                        {
+                            reservation.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
+                        }
                         reservation.CardExpiryDate = model.CardExpiryDate;
 
                         //Replace Departure date with  check out date.
@@ -914,7 +922,8 @@ namespace SuccessHotelierHub.Controllers
                 using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/SendFolioReport.html")))
                 {
                     bodyMsg = sr.ReadToEnd();
-                    bodyMsg = bodyMsg.Replace("[@UserName]", model.Name);
+                    //bodyMsg = bodyMsg.Replace("[@UserName]", model.Name);
+                    bodyMsg = bodyMsg.Replace("[@UserName]", profile.FirstName);
                     bodyMsg = bodyMsg.Replace("[@ConfirmationNo]", model.ConfirmationNo);
                 }
 
