@@ -1428,7 +1428,7 @@ namespace SuccessHotelierHub.Controllers
                             if (!string.IsNullOrWhiteSpace(email))
                             {
 
-                                model.UserName = profile.LastName;
+                                model.UserName = profile.FirstName;
                                 model.GuestName = profileName;
                                 model.ConfirmationNumber = reservation.ConfirmationNumber;
                                 model.ArrivalDate = reservation.ArrivalDate.Value.ToString("dd MMM yyyy");
