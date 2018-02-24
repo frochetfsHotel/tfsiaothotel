@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SuccessHotelierHub.Models
 {
-    public class TempBulkReservationVM
+    public class TempBulkReservationMasterVM
     {
         public Guid Id { get; set; }
 
@@ -98,6 +98,7 @@ namespace SuccessHotelierHub.Models
         public Guid? RtcId { get; set; }
 
         [DisplayName("Room")]
+        [Required(ErrorMessage = "Please select room.")]
         public Guid? RoomId { get; set; }
 
         public string RoomIds { get; set; }
@@ -235,7 +236,6 @@ namespace SuccessHotelierHub.Models
 
         public double? TotalPrice { get; set; }
 
-
         public Guid? ReservationStatusId { get; set; }
 
         public bool IsWeekEndPrice { get; set; }
@@ -252,6 +252,5 @@ namespace SuccessHotelierHub.Models
         public List<PackageVM> PackageList { get; set; }
 
         public List<AddOnsVM> AddOnsList { get; set; }
-
     }
 }

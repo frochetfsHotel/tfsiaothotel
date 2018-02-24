@@ -786,6 +786,21 @@ namespace SuccessHotelierHub.Repository
             return reservations;
         }
 
+        public List<TempBulkReservationVM> GetTempBulkReservationByDate(DateTime date, int userId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Date", Value = date },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTempBulkReservationByDate", parameters);
+
+            var reservations = new List<TempBulkReservationVM>();
+            reservations = DALHelper.CreateListFromTable<TempBulkReservationVM>(dt);
+
+            return reservations;
+        }
+
         public TempBulkReservationVM GetTempBulkReservationById(Guid reservationId, int userId)
         {
             SqlParameter[] parameters =
@@ -887,6 +902,125 @@ namespace SuccessHotelierHub.Repository
 
             DALHelper.Execute("LoadTempBulkReservation", parameters);
 
+        }
+
+        public List<SearchBulkReservationResultVM> SearchBulkReservation(SearchBulkReservationParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
+                    new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
+                    new SqlParameter { ParameterName = "@ArrivalFrom", Value = model.ArrivalFrom },
+                    new SqlParameter { ParameterName = "@ArrivalTo", Value = model.ArrivalTo },
+                    new SqlParameter { ParameterName = "@RateTypeId", Value = model.RateTypeId },
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = model.RoomTypeId },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = model.RoomNo },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchBulkReservation", parameters);
+
+            var reservations = new List<SearchBulkReservationResultVM>();
+            reservations = DALHelper.CreateListFromTable<SearchBulkReservationResultVM>(dt);
+
+            return reservations;
+        }
+
+
+        public TempBulkReservationMasterVM GetTempBulkReservationMassterById(Guid reservationId, int userId)
+        {
+            SqlParameter[] parameters =
+              {
+                    new SqlParameter { ParameterName = "@Id", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+             };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTempBulkReservationMassterById", parameters);
+
+
+            var reservation = new TempBulkReservationMasterVM();
+            reservation = DALHelper.CreateListFromTable<TempBulkReservationMasterVM>(dt).FirstOrDefault();
+
+            return reservation;
+        }
+
+        public string UpdateTempBulkReservationMaster(TempBulkReservationMasterVM reservation)
+        {
+            string reservationId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = reservation.Id },
+                    new SqlParameter { ParameterName = "@TitleId", Value = reservation.TitleId },
+                    new SqlParameter { ParameterName = "@LastName", Value = reservation.LastName } ,
+                    new SqlParameter { ParameterName = "@FirstName", Value = reservation.FirstName },
+                    new SqlParameter { ParameterName = "@ProfileId", Value = reservation.ProfileId },
+                    new SqlParameter { ParameterName = "@MemberTypeId", Value = reservation.MemberTypeId },
+                    new SqlParameter { ParameterName = "@CountryId", Value = reservation.CountryId },
+                    new SqlParameter { ParameterName = "@LanguageId", Value = reservation.LanguageId },
+                    new SqlParameter { ParameterName = "@VipId", Value = reservation.VipId },
+                    new SqlParameter { ParameterName = "@PhoneNo", Value = reservation.PhoneNo },
+                    new SqlParameter { ParameterName = "@MemberNo", Value = reservation.MemberNo },
+                    new SqlParameter { ParameterName = "@MemberLvt", Value = reservation.MemberLvt },
+                    new SqlParameter { ParameterName = "@AgentId", Value = reservation.AgentId },
+                    new SqlParameter { ParameterName = "@CompanyId", Value = reservation.CompanyId },
+                    new SqlParameter { ParameterName = "@GroupId", Value = reservation.GroupId },
+                    new SqlParameter { ParameterName = "@SourceId", Value = reservation.SourceId },
+                    new SqlParameter { ParameterName = "@ContactId", Value = reservation.ContactId },
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = reservation.ArrivalDate },
+                    new SqlParameter { ParameterName = "@NoOfNight", Value = reservation.NoOfNight },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = reservation.DepartureDate },
+                    new SqlParameter { ParameterName = "@NoOfAdult", Value = reservation.NoOfAdult },
+                    new SqlParameter { ParameterName = "@NoOfChildren", Value = reservation.NoOfChildren },
+                    new SqlParameter { ParameterName = "@NoOfRoom", Value = reservation.NoOfRoom },
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = reservation.RoomTypeId },
+                    new SqlParameter { ParameterName = "@RtcId", Value = reservation.RtcId },
+                    new SqlParameter { ParameterName = "@ExtnId", Value = reservation.ExtnId },
+                    new SqlParameter { ParameterName = "@RateCodeId", Value = reservation.RateCodeId },
+                    new SqlParameter { ParameterName = "@IsFixedRate", Value = reservation.IsFixedRate },
+                    new SqlParameter { ParameterName = "@Rate", Value = reservation.Rate },
+                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },
+                    new SqlParameter { ParameterName = "@BlockCodeId", Value = reservation.BlockCodeId },
+                    new SqlParameter { ParameterName = "@ETA", Value = reservation.ETA },
+                    new SqlParameter { ParameterName = "@ReservationTypeId", Value = reservation.ReservationTypeId },
+                    new SqlParameter { ParameterName = "@MarketId", Value = reservation.MarketId },
+                    new SqlParameter { ParameterName = "@ReservationSourceId", Value = reservation.ReservationSourceId },
+                    new SqlParameter { ParameterName = "@OriginId", Value = reservation.OriginId },
+                    new SqlParameter { ParameterName = "@PaymentMethodId", Value = reservation.PaymentMethodId },
+                    new SqlParameter { ParameterName = "@CreditCardNo", Value = reservation.CreditCardNo },
+                    new SqlParameter { ParameterName = "@CardExpiryDate", Value = reservation.CardExpiryDate },
+                    new SqlParameter { ParameterName = "@CVVNo", Value = reservation.CVVNo },
+                    new SqlParameter { ParameterName = "@ApprovalCode", Value = reservation.ApprovalCode },
+                    new SqlParameter { ParameterName = "@ApprovalAmount", Value = reservation.ApprovalAmount },
+                    new SqlParameter { ParameterName = "@SuitWith", Value = reservation.SuitWith },
+                    new SqlParameter { ParameterName = "@IsEmailConfirmation", Value = reservation.IsEmailConfirmation },
+                    new SqlParameter { ParameterName = "@GuestBalance", Value = reservation.GuestBalance },
+                    new SqlParameter { ParameterName = "@DiscountAmount", Value = reservation.DiscountAmount },
+                    new SqlParameter { ParameterName = "@DiscountPercentage", Value = reservation.DiscountPercentage },
+                    new SqlParameter { ParameterName = "@DiscountApprovedBy", Value = reservation.DiscountApprovedBy },
+                    new SqlParameter { ParameterName = "@DiscountReason", Value = reservation.DiscountReason },
+                    new SqlParameter { ParameterName = "@TARecordLocator", Value = reservation.TARecordLocator },
+                    new SqlParameter { ParameterName = "@SpecialsId", Value = reservation.SpecialsId },
+                    new SqlParameter { ParameterName = "@ReservationComments", Value = reservation.ReservationComments },
+                    new SqlParameter { ParameterName = "@InHouseComments", Value = reservation.InHouseComments },
+                    new SqlParameter { ParameterName = "@CashieringComments", Value = reservation.CashieringComments },
+                    new SqlParameter { ParameterName = "@HouseKeepingComments", Value = reservation.HouseKeepingComments },
+                    new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
+                    new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
+                    new SqlParameter { ParameterName = "@RoomId", Value = reservation.RoomId },
+                    new SqlParameter { ParameterName = "@RoomNo", Value = reservation.RoomNo },
+                    new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = reservation.UpdatedBy }
+                };
+
+            reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateTempBulkReservationMaster", parameters));
+
+            return reservationId;
         }
 
         #endregion

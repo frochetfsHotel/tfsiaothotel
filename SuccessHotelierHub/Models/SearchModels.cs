@@ -2127,6 +2127,71 @@ namespace SuccessHotelierHub.Models
 
     #endregion
 
+    #region Search Bulk Reservation
+
+    public class SearchBulkReservationParametersVM
+    {
+        public SearchBulkReservationParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+        
+        [DisplayName("Arrival From")]
+        public string ArrivalFrom { get; set; }
+
+        [DisplayName("Arrival To")]
+        public string ArrivalTo { get; set; }
+
+        [DisplayName("Rate Type")]
+        public Guid? RateTypeId { get; set; }
+
+        [DisplayName("Room Type")]
+        public Guid? RoomTypeId { get; set; }
+
+        [DisplayName("Room #")]
+        public string RoomNo { get; set; }
+
+        public int? CreatedBy { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchBulkReservationResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+
+        [DisplayName("Phone #")]
+        public string PhoneNo { get; set; }
+        public string ArrivalDate { get; set; }
+        public int NoOfNight { get; set; }
+        public string DepartureDate { get; set; }
+        public int NoOfAdult { get; set; }
+        public int NoOfChildren { get; set; }
+        public int NoOfRoom { get; set; }
+        public string RoomNo { get; set; }
+        public string RoomTypeCode { get; set; }
+        public string RateTypeCode { get; set; }        
+        public DateTime? CreatedOn { get; set; }
+        public int TotalCount { get; set; }
+    }
+
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

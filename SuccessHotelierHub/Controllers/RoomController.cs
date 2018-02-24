@@ -673,6 +673,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+
         public bool CheckRoomNoAvailable(Guid? roomId, string roomNo)
         {
             bool blnAvailable = true;
@@ -685,6 +686,30 @@ namespace SuccessHotelierHub.Controllers
             }
 
             return blnAvailable;
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult GetRoomByRoomType(Guid roomTypeId)
+        {
+            try
+            {
+                var roomList = roomRepository.GetRoomByRoomTypeId(roomTypeId);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = roomList
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetRoomByRoomType");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
         }
 
 

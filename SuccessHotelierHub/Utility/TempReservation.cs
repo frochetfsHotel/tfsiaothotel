@@ -27,7 +27,7 @@ namespace SuccessHotelierHub.Utility
             }
 
             //Get temp bulk reservation by user id.
-            var tempReservations = reservationRepository.GetTempBulkReservation(LogInManager.LoggedInUserId);
+            var tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
 
             if (tempReservations == null || tempReservations.Count == 0)
             {
@@ -47,7 +47,7 @@ namespace SuccessHotelierHub.Utility
                 FrontDeskController frontDeskController = new FrontDeskController();
                 CashieringController cashieringController = new CashieringController();
 
-                tempReservations = reservationRepository.GetTempBulkReservation(LogInManager.LoggedInUserId);
+                tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
 
                 if (tempReservations != null && tempReservations.Count > 0)
                 {
@@ -105,16 +105,8 @@ namespace SuccessHotelierHub.Utility
                         reservation.DiscountApprovedBy = tempReservation.DiscountApprovedBy;
                         reservation.DiscountReason = tempReservation.DiscountReason;
                         reservation.TARecordLocator = tempReservation.TARecordLocator;
-                        reservation.SpecialsId = tempReservation.SpecialsId;
-                        reservation.ReservationComments = tempReservation.ReservationComments;
-                        reservation.InHouseComments = tempReservation.InHouseComments;
-                        reservation.CashieringComments = tempReservation.CashieringComments;
-                        reservation.HouseKeepingComments = tempReservation.HouseKeepingComments;
-                        reservation.ItemInventoryId = tempReservation.ItemInventoryId;
-                        reservation.Remarks = tempReservation.Remarks;
-                        reservation.ConfirmationNumber = tempReservation.ConfirmationNumber;
-                        reservation.TotalPrice = tempReservation.TotalPrice;
-                        reservation.FolioNumber = tempReservation.FolioNumber;
+                        reservation.ItemInventoryId = tempReservation.ItemInventoryId;                                                
+                        reservation.TotalPrice = tempReservation.TotalPrice;                        
                         reservation.RoomNumbers = tempReservation.RoomNo;
                         reservation.RoomIds = Convert.ToString(tempReservation.RoomId);
                         reservation.CreatedBy = LogInManager.LoggedInUserId;                        

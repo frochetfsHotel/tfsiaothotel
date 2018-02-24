@@ -1,192 +1,213 @@
-﻿@using SuccessHotelierHub.Models
+﻿@model SuccessHotelierHub.Models.SearchBulkReservationParametersVM
+@using SuccessHotelierHub.Models
 @{
-    ViewBag.Title = "Bulk Reservation";
+    ViewBag.Title = "Bulk Reservation List";
+}
+
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "BulkReservationGrid";
 }
 
 <section class="content-header">
     <h1>
-        Bulk Reservation <small>Add</small>
+        Bulk Reservation <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="">Bulk Reservation</li>
-        <li class="active">Add</li>
+        <li class="active">List</li>
     </ol>
 </section>
+
 
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Bulk Reservation Details</h3>
+            <h3 class="box-title">Search Bulk Reservation</h3>
         </div>
-        <form class="frmBulkReservation" id="frmBulkReservation" name="frmBulkReservation"
-              nctype="multipart/form-data" method="post">
-            <div class="box-body box-body-list">
-                <div class="pt_10 pl_10 pr_10 searchBox_Border" style="display:none;">
+        <form class="frmReservationList" enctype="multipart/form-data" method="post">
+
+            <!-- HIDDEN FIELD -->
+            <input type="hidden" id="hdnReservationId" name="hdnReservationId" value="" />
+            <!-- HIDDEN FIELD -->
+
+            <div class="box-body">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
-                        <div class="col-md-4 form-group">
-                            <label for="LastName" class="">Last Name</label>
-                            <input type="text" id="LastName" name="LastName" class="form-control" />
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.LastName)
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
                         </div>
-                        <div class="col-md-4 form-group">
-                            <label for="FirstName" class="">First Name</label>
-                            <input type="text" id="FirstName" name="FirstName" class="form-control" />
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.FirstName)
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
                         </div>
-                        <div class="col-md-4 form-group mt_25">
-                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchBulkReservationList();">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.RoomTypeId)
+                            @Html.DropDownListFor(m => m.RoomTypeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
+                                "--Select Room Type--",
+                                new { @class = "form-control" })                            
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.RoomNo)
+                            @Html.TextBoxFor(m => m.RoomNo, new { @class = "form-control", placeholder = "Room #" })
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.RateTypeId)
+                            @Html.DropDownListFor(m => m.RateTypeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
+                                "--Select Rate Type--",
+                                new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ArrivalFrom)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalFrom, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.ArrivalTo)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalTo, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 form-group text-right">
+                            <button type="button" id="btnSearch"
+                                    class="btn btn-success m-r-xs" onclick="searchReservation()">
                                 Search
                             </button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearData()">Clear</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearReservation()">Clear</button>
                         </div>
                         <div class="clearfix"></div>
                     </div>
                 </div>
 
-                <div class="col-xs-12 padding-zero m-t" id="divBulkReservationList">
-               
-                </div>
-                <div class="col-xs12 text-right m-t-lg m-b-sm" style="display:none;" id="divButtons">
-                    <button type="button" class="btn btn-success" id="btnSave" onclick="createBulkReservation();">Create Bulk Reservations</button>
-                </div>
 
+
+                <div class="col-xs-12 padding-zero m-t">
+                    <div class="table-responsive" id="divReservationList">
+                        <table class="table table-bordered table-hover table-striped" id="tblReservation">
+                            <thead>
+                                <tr>
+                                    <th>CreatedOn</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>                                    
+                                    <th>Arrival</th>
+                                    <th>Nights</th>
+                                    <th>Departure</th>
+                                    <th>Adults</th>
+                                    <th>Child</th>                                    
+                                    <th>Room #</th>
+                                    <th>Room Type</th>
+                                    <th>Rate Type</th>
+                                    <th width="10%;">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
+                   {
+                       TokenForEnableDisableButtons = PagerName,
+                       PageChangeMethod = "ReservationGridPageChange"
+                   })
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </section>
 
-<!-- Room Modal Popup START -->
-<div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Room Search</h4>
-            </div>
-            <div class="modal-body modal-body_padding">
-                @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
-                        new ViewDataDictionary {
-                                    { "Source", "BulkReservation" },
-                                    { "RoomType", ViewBag.RoomTypeList },
-                                    { "RoomFeatures", ViewBag.RoomFeaturesList }
-                                })
-            </div>
-            <div class="clearfix"></div>
-        </div>
-    </div>
-</div>
-<!-- Room Modal Popup END -->
-
 <script type="text/javascript">
+
+    var currentPage = 1;
+    var grdReservation;
+    var IsSearchButtonClicked = false;
+
     $(document).ready(function () {
-        searchBulkReservationList();
 
-        //Room
-        $('.btnAdvanceSearchRoomOk').click(function (e) {
-            var roomNumbers = "";
-            var roomIds = "";
-            var roomTypeId = "";
+        $('#ArrivalFrom').datepicker("setDate", new Date());
 
-            var selectedNoOfRooms = $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").length;
-            var noOfRoom = 1;
-            var rowNumber = $('form#frmAdvanceRoomSearch #hdnRowNumber').val();
+        setTimeout(InitializeReservationGrid, 200);
 
-            if (!IsNullOrEmpty(selectedNoOfRooms)) {
-
-                if (noOfRoom != selectedNoOfRooms) {
-                    showToaster("Please select only " + noOfRoom + " room details.", ToasterType.ERROR);
-                    return false;
-                }
-
-                $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").each(function () {
-                    //get selected room.
-                    roomNumbers = $(this).data("roomno");
-                    roomIds = $(this).val();
-                    roomTypeId = $(this).data("roomtypeid");
-                });
-
-                if (!IsNullOrEmpty(roomNumbers)) {
-
-                    $('form#frmBulkReservation #RoomNumber_' + rowNumber).val(roomNumbers);
-                    $('form#frmBulkReservation #RoomId_' + rowNumber).val(roomIds);
-                    $('form#frmBulkReservation #RoomTypeId_' + rowNumber).val(roomTypeId);
-
-                    //Popuplate Rate Types.
-                    BindRateType(rowNumber);
-
-                    //Close Room Search Modal.
-                    CloseModal("roomModal");
-                }
+        $("#frmReservationList input[type=text]").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnSearch").click();
             }
         });
     });
 
-    function searchBulkReservationList() {
-        var firstName = $('#FirstName').val();
+
+    function SearchReservationParameters(d) {
         var lastName = $('#LastName').val();
+        var firstName = $('#FirstName').val();
+        var rateTypeId = $('#RateTypeId').val();
+        var arrivalFrom = $('#ArrivalFrom').val();
+        var arrivalTo = $('#ArrivalTo').val();
+        var roomTypeId = $('#RoomTypeId').val();
+        var roomNo = $('#RoomNo').val();
+        var rateTypeId = $('#RateTypeId').val();
 
-        //Ajax request to get bulk reservation details.
-        $.ajax({
-            beforeSend: function (xhr) {
-                showLoader();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                ShowErrorMessage(jqXHR.status, errorThrown);
-            },
-            complete: function () {
-                hideLoader();
-            },
-            url: '@Url.Content("~/Common/SearchBulkReservationList")',
-            type: 'GET',
-            data: { lastName: lastName, firstName: firstName },
-            success: function (response) {
-                if (response.IsSuccess == false) {
-                    showToaster(response.errorMessage, ToasterType.ERROR);
-                }
-                else {
-                    $('form#frmBulkReservation #divBulkReservationList').html();
-                    $('form#frmBulkReservation #divBulkReservationList').html(response);
-                    $('form#frmBulkReservation #divButtons').show();
-                }
+
+        d.PageNum = currentPage;
+        d.LastName = lastName;
+        d.FirstName = firstName;
+        d.RateTypeId = rateTypeId;       
+        d.ArrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
+        d.ArrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
+        d.RoomTypeId = roomTypeId;
+        d.RoomNo = roomNo;
+        d.RateTypeId = rateTypeId;
+    }
+
+    function ReservationGridDataBound(response) {
+        if (response.IsSuccess == true) {
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            if (IsSearchButtonClicked) {
+                goToByScroll("divReservationList");
             }
-        });
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
     }
 
-    function clearData() {
-        $('#FirstName').val('');
-        $('#LastName').val('');
 
-        searchBulkReservationList();
+    function ReloadReservationGrid() {
+        grdReservation.ajax.url("@Url.Content("~/Common/SearchBulkReservation")").load();
     }
 
-    function openRoomSearchModal(id) {
-
-        clearRoomSearch();
-
-        $("form#frmAdvanceRoomSearch #ArrivalDate").datepicker("setDate", GetDateObject($('form#frmBulkReservation #ArrivalDate_' + id).val(), DateSeprator.SLASH));
-        $("form#frmAdvanceRoomSearch #DepartureDate").datepicker("setDate", GetDateObject($('form#frmBulkReservation #DepartureDate_' + id).val(), DateSeprator.SLASH));
-
-        $("form#frmAdvanceRoomSearch #NoOfNight").val($('form#frmBulkReservation #NoOfNight_' + id).val());
-
-        $("form#frmAdvanceRoomSearch #hdnSelectedRoomIds").val($('form#frmBulkReservation #RoomId_' + id).val());
-        $("form#frmAdvanceRoomSearch #hdnSelectedRoomNumbers").val($('form#frmBulkReservation #RoomNumber_' + id).val());
-        $("form#frmAdvanceRoomSearch #hdnNoOfRoomsUptoSelect").val(1);
-        $("form#frmAdvanceRoomSearch #hdnRowNumber").val(id);
-
-        $("form#frmAdvanceRoomSearch #btnSearch").click();
-
-        OpenModal("roomModal", true);
+    function ReservationGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadReservationGrid();
     }
 
-    function BindRateType(id) {
-        if (!IsNullOrEmpty(id)) {
-                        
-            var roomTypeId = $('form#frmBulkReservation #RoomTypeId_' + id).val();
-            var isWeekEndPrice = $('form#frmBulkReservation #IsWeekEndPrice_' + id).val();
 
-            if (isWeekEndPrice == 'true' || isWeekEndPrice == 'True') { isWeekEndPrice = true; } else { isWeekEndPrice = false; }
-
-            $.ajax({
+    function InitializeReservationGrid() {
+        grdReservation = $('#tblReservation').DataTable({
+            serverSide: true,
+            ajax: {
                 beforeSend: function (xhr) {
                     showLoader();
                 },
@@ -196,193 +217,209 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/RateType/GetRateTypeDetailsByRoomType")',
-                type: 'GET',
-                data: {
-                    roomTypeId: roomTypeId,
-                    isWeekEndPrice: isWeekEndPrice
-                },
-                success: function (result) {                    
-                    if (!IsNullOrEmpty(result)) {
-                        
-                        var optionHtml = "";
-                        optionHtml += "<option value='' data-ratecode='' data-rateamount='0'>-- Select Rate Type --</option>";
-                        if (result.IsSuccess == true) {
-                            for (i = 0; i < result.data.length; i++) {
-                                optionHtml += "<option value='" + result.data[i].RateTypeId + "' data-ratecode='" + result.data[i].RateTypeCode + "' data-rateamount='" + result.data[i].Amount + "'>" + result.data[i].RateTypeCode + "</option>";
-                            }
-                        }
+                url: '@Url.Content("~/Common/SearchBulkReservation")',
+                data: SearchReservationParameters,
+                dataSrc: ReservationGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: true,
+                "visible": false
+            },
+            {
+                targets: 1,
+                data: "LastName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
 
-                        $('form#frmBulkReservation #RateType_' + id).html(optionHtml);
-                    }
                 }
-            });
-        }
+            },
+            {
+                targets: 2,
+                data: "FirstName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.FirstName + '</a> ';
+
+                }
+            },            
+            {
+                targets: 3,
+                data: "ArrivalDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
+                }
+            },
+            {
+                targets: 4,
+                data: "NoOfNight",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfNight + '</a> ';
+
+                }
+            },
+            {
+                targets: 5,
+                data: "DepartureDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
+                }
+            },
+            {
+                targets: 6,
+                data: "NoOfAdult",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfAdult + '</a> ';
+
+                }
+            },
+            {
+                targets: 7,
+                data: "NoOfChildren",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfChildren + '</a> ';
+
+                }
+            },            
+            {
+                targets: 8,
+                data: "RoomNo",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomNo + '</a> ';
+
+                }
+            },
+            {
+                targets: 9,
+                data: "RoomTypeCode",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomTypeCode + '</a> ';
+
+                }
+            },
+            {
+                targets: 10,
+                data: "RateTypeCode",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RateTypeCode + '</a> ';
+
+                }
+            },
+            {
+                targets: 11,
+                data: "Id",
+                orderable: false,
+                className: "text-center",
+                render: function (data, type, full, meta) {
+                    var isReservationCancel = full.IsReservationCancel;
+                    var isCheckIn = full.IsCheckIn;
+                    var isCheckOut = full.IsCheckOut;
+                    var buttons = "";
+
+                    buttons += '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
+                                + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
+
+                    return buttons;
+                }
+            }
+            ],
+            order: [[1, "asc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
     }
 
-    function validateBulkReservation() {        
+    function GotoBulkReservationEdit(Id) {
+        var url = '@Url.Content("~/Common/EditBulkReservation/")' + Id;
+        redirectTo(url);
+    }
+
+    function validateReservationSearchData() {
+        var arrivalFrom = $('#ArrivalFrom').val();
+        var arrivalTo = $('#ArrivalTo').val();
+
+        var errorMessage = "";
         var blnValid = true;
-        var errorText = "";
 
-        var rowNumber = 0;
+        if (!IsNullOrEmpty(arrivalFrom) && !IsNullOrEmpty(arrivalTo)) {
+            var objArrivalFrom = GetDateObject(arrivalFrom, DateSeprator.SLASH);
+            var objArrivalTo = GetDateObject(arrivalTo, DateSeprator.SLASH);
 
-        $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
-            var rowId = $(this).attr("data-row-id");
-
-            rowNumber = rowNumber + 1;
-            blnValid = true;
-
-            if (!IsNullOrEmpty(rowId)) {
-                //var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
-                //if (isAddReservation) {
-                
-                    var errorMessage = "";                    
-                    var arrivalDate = $('#ArrivalDate_' + rowId).val();
-                    var departureDate = $('#DepartureDate_' + rowId).val();
-                    var roomNumber = $('#RoomNumber_' + rowId).val();
-                    var roomId = $('#RoomId_' + rowId).val();
-                    var rateTypeId = $('#RateType_' + rowId).val();
-                    var rate = $('#Rate_' + rowId).val();
-
-                    if (IsNullOrEmpty(arrivalDate)) {
-                        errorMessage += "Please select arrival date." + Delimeter.BREAKLINE;
-                        blnValid = false;
-                    }
-                    else if (IsNullOrEmpty(departureDate)) {
-                        errorMessage += "Please select departure date." + Delimeter.BREAKLINE;
-                        blnValid = false;
-                    } 
-                    else {
-                        var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
-                        var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
-
-                        if (objDepartureDate < objArrivalDate) {
-                            errorMessage += "Arrival date should be less than departure date." + Delimeter.BREAKLINE;
-                            blnValid = false;
-                        }
-                    }
-
-                    if (IsNullOrEmpty(roomNumber) || IsNullOrEmpty(roomId)) {
-                        errorMessage += "Please select room number." + Delimeter.BREAKLINE;
-                        blnValid = false;
-                    }
-
-                    if (IsNullOrEmpty(rateTypeId)) {
-                        errorMessage += "Please select rate type." + Delimeter.BREAKLINE;
-                        blnValid = false;
-                    }
-
-                    if (IsNullOrEmpty(rate)) {
-                        errorMessage += "Please select rate." + Delimeter.BREAKLINE;
-                        blnValid = false;
-                    }
-
-                    if (blnValid == false) {
-                        errorText += "Row # : " + rowNumber + Delimeter.BREAKLINE;
-                        errorText += "------------" + Delimeter.BREAKLINE;
-                        errorText += errorMessage;
-                        errorText += Delimeter.BREAKLINE;
-                    }
-                }
-            //}
-        });
-
-        if (!IsNullOrEmpty(errorText)) {
-            showToaster(errorText, ToasterType.ERROR);
-            return false;
+            if (objArrivalFrom > objArrivalTo) {
+                errorMessage += "Arrival from date must be less than arrival to." + Delimeter.BREAKLINE;
+                blnValid = false;
+            }
         }
 
+        if (!blnValid) {
+            showToaster(errorMessage, ToasterType.ERROR);
+            return false;
+        }
         return blnValid;
     }
 
-    function createBulkReservation() {
-
-        if (validateBulkReservation()) {
-            var listReservation = [];
-
-            $("form#frmBulkReservation #tblBulkReservation tbody tr").each(function () {
-                var rowId = $(this).attr("data-row-id");
-                var reservationId = $(this).attr("data-reservation-id");
-                var profileId = $(this).attr("data-profile-id");
-                var lastName = $(this).attr("data-lastname");
-                var firstName = $(this).attr("data-firstname");
-                var titleId = $(this).attr("data-titleid");
-                var countryId = $(this).attr("data-countryid");
-
-                if (!IsNullOrEmpty(rowId)) {
-
-                    //var isAddReservation = $('#chkIsAddReservation_' + rowId).prop("checked");
-                    //if (isAddReservation) {
-                        var isWeekEndPrice = $('#IsWeekEndPrice_' + rowId).val();
-
-                        if (isWeekEndPrice == 'true' || isWeekEndPrice == 'True') {
-                            isWeekEndPrice = true;
-                        } else {
-                            isWeekEndPrice = false;
-                        }
-
-                        var modelReservation = {};
-
-                        modelReservation.Id = reservationId;
-                        modelReservation.ProfileId = profileId;
-                        modelReservation.LastName = lastName;
-                        modelReservation.FirstName = firstName;
-                        modelReservation.TitleId = titleId;
-                        modelReservation.CountryId = countryId;
-
-                        modelReservation.ArrivalDate = $('#ArrivalDate_' + rowId).val();
-                        modelReservation.DepartureDate = $('#DepartureDate_' + rowId).val();
-                        modelReservation.NoOfNight = $('#NoOfNight_' + rowId).val();
-                        modelReservation.RoomNo = $('#RoomNumber_' + rowId).val();
-                        modelReservation.RoomId = $('#RoomId_' + rowId).val();
-                        modelReservation.RoomTypeId = $('#RoomTypeId_' + rowId).val();
-                        modelReservation.IsWeekEndPrice = isWeekEndPrice;
-                        modelReservation.RateCodeId = $('#RateType_' + rowId).val();
-                        modelReservation.Rate = $('#Rate_' + rowId).val();                        
-                        modelReservation.IsActive = true;
-
-                        listReservation.push(modelReservation);
-                    //}
-
-                }
-            });
-
-            if (listReservation != null && listReservation.length > 0) {
-                $.ajax({
-                    beforeSend: function (xhr) {
-                        showLoader();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        ShowErrorMessage(jqXHR.status, errorThrown);
-                    },
-                    complete: function () {
-                        hideLoader();
-                    },
-                    url: '@Url.Content("~/Common/BulkReservation")',
-                    type: 'POST',
-                    data: { models: listReservation },
-                    success: function (response) {
-                        if (response.IsSuccess == false) {
-                            showToaster(response.errorMessage, ToasterType.ERROR);
-                        }
-                        else {
-                           
-                            showToaster("Bulk reservation created successfully.", ToasterType.SUCCESS);
-
-                            //$('#divBulkReservationList').html('');
-                            //$('#divButtons').hide();
-                        }
-                        return false;
-                    }
-                });
-            } else {
-                showToaster("Please select at lease one profile to create reservation.", ToasterType.ERROR);
-                return false;
-            }
+    function searchReservation() {
+        if (validateReservationSearchData()) {
+            IsSearchButtonClicked = true;
+            currentPage = 1;
+            ReloadReservationGrid();
         }
-        
     }
 
-    
+    function clearReservation() {
+        $('#LastName').val('');
+        $('#FirstName').val('');
+        $('#RateTypeId').val('');        
+        $('#ArrivalFrom').val('');
+        $('#ArrivalTo').val('');
+        $('#RoomTypeId').val('');
+        $('#RoomNo').val('');
+        $('#RateTypeId').val('');
+
+        searchReservation();
+    }
+
 
 </script>
+
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}

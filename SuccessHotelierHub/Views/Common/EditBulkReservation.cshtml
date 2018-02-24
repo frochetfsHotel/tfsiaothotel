@@ -1,0 +1,1061 @@
+﻿@model SuccessHotelierHub.Models.TempBulkReservationMasterVM
+@using SuccessHotelierHub.Models
+@using SuccessHotelierHub.Utility
+@{
+    ViewBag.Title = "Edit Bulk Reservation";
+
+    var arrivalDayOfWeek = string.Empty;
+    var departureDayOfWeek = string.Empty;
+
+    if (Model.ArrivalDate != null && Model.ArrivalDate.HasValue)
+    {
+        arrivalDayOfWeek = SuccessHotelierHub.Utility.Utility.WeekdayName((int)Model.ArrivalDate.Value.DayOfWeek);
+    }
+
+    if (Model.DepartureDate != null && Model.DepartureDate.HasValue)
+    {
+        departureDayOfWeek = SuccessHotelierHub.Utility.Utility.WeekdayName((int)Model.DepartureDate.Value.DayOfWeek);
+    }
+
+    string ETAText = string.Empty;
+
+    if (Model.ETA.HasValue && Model.ETA.Value != null)
+    {
+        DateTime time = DateTime.Today.Add(Model.ETA.Value);
+        ETAText = time.ToString("HH:mm");
+    }
+
+    var strRate = "0.00";
+    if (Model.Rate.HasValue)
+    {
+        strRate = string.Format("{0:0.00}", Model.Rate.Value);
+    }
+    
+}
+
+
+@section styles{
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
+}
+
+<section class="content-header">
+    <h1>
+        Bulk Reservation <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Bulk Reservation</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Bulk Reservation Details</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        @using (Html.BeginForm("EditBulkReservation", "Common", FormMethod.Post, new { id = "frmBulkReservation", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- HIDDEN FIELD -->
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.ProfileId)
+            @Html.HiddenFor(m => m.TitleId)
+            @Html.HiddenFor(m => m.PhoneNo)
+            @Html.HiddenFor(m => m.CountryId)
+            @Html.HiddenFor(m => m.CurrencyId)
+            @Html.HiddenFor(m => m.IsWeekEndPrice);          
+            <input type="hidden" id="hdnWeekEndPrice" name="hdnWeekEndPrice" value="@(ViewBag.WeekEndPrice)" />
+            <!-- HIDDEN FIELD -->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.LastName, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name", @readonly = "readonly" })                        
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.FirstName)
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name", @readonly = "readonly" })
+                    </div>
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.NoOfRoom)
+                        @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", onkeydown = "onlyDigits(event)", @readonly = "readonly" })
+                    </div>                    
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.RoomTypeId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.RoomTypeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
+                                "--Select Room Type--",
+                                new { @class = "form-control", onchange = "RoomTypeChange();" })
+                        @Html.ValidationMessageFor(m => m.RoomTypeId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.RoomId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.RoomId,
+                            new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomList, "Value", "Text"),
+                            "--Select Room--",
+                            new { @class = "form-control", onchange = "RoomChange();" })
+                        @Html.ValidationMessageFor(m => m.RoomId, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.RoomNo)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
+                        <div class="input-group date">
+                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                        </div>
+                        <span class="text-blue m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
+                        @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-1 form-group">
+                        @Html.LabelFor(m => m.NoOfNight)
+                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "LoadTransactionSummary();" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" })
+                        <div class="input-group date">
+                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                        </div>
+                        <span class="text-blue m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
+                        @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-1 form-group">
+                        @Html.LabelFor(m => m.NoOfAdult)
+                        @Html.TextBoxFor(m => m.NoOfAdult, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
+                    </div>
+                    <div class="col-md-2 form-group">
+                        @Html.LabelFor(m => m.NoOfChildren)
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.NoOfInfant, new { @class = "form-control", @placeholder = "0-3", onkeydown = "onlyDigits(event)" })
+                            <span class="input-group-addon"></span>
+                            @Html.TextBoxFor(m => m.NoOfChildren, new { @class = "form-control", @placeholder = "3-12", onkeydown = "onlyDigits(event)", onblur = "LoadTransactionSummary();" })
+                        </div>
+                    </div>
+
+                    
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.RateCodeId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.RateCodeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
+                                "--Select Rate Code--",
+                                new { @class = "form-control", onchange = "RateTypeChange();" })
+                        @Html.ValidationMessageFor(m => m.RateCodeId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Rate)
+                        @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model.Rate.HasValue ? Model.Rate.Value : 0), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "LoadTransactionSummary();" })
+                    </div>                    
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.RtcId)
+                        @Html.DropDownListFor(m => m.RtcId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RtcList, "Value", "Text"),
+                                "--Select Rate to Charge--",
+                                new { @class = "form-control", onchange = "RtcChange();" })
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label class="container1" for="IsFixedRate">
+                            Fixed Rate
+                            @Html.CheckBoxFor(m => m.IsFixedRate)
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="row" id="divArrivalTime">
+                    <div class="col-md-3 form-group">
+                        <div class="bootstrap-timepicker">
+                            @Html.LabelFor(m => m.ETAText)
+                            <div class="input-group">
+                                <input type="text" id="ETAText" name="ETAText" value="@ETAText" class="form-control"
+                                       placeholder="HH:mm" />
+                                <div class="input-group-addon">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.ReservationTypeId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.ReservationTypeId,
+                                                new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationTypeList,
+                                                "Value", "Text"),
+                                                "--Select Reservation Type--",
+                                                new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ReservationTypeId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.MarketId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.MarketId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.MarketList, "Value", "Text"),
+                                "--Select Market--",
+                                new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.MarketId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.ReservationSourceId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.ReservationSourceId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationSourceList, "Value", "Text"),
+                                "--Select Source--",
+                                new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.PaymentMethodId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
+                                "--Select Payment Method--",
+                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
+                        @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-3 form-group divCreditCardFields">
+                        @Html.LabelFor(m => m.CreditCardNo)
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
+                        @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
+                        @Html.LabelFor(m => m.CardExpiryDate)
+                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate" />
+                    </div>
+                    <div class="col-md-3 form-group divCreditCardFields">
+                        @Html.LabelFor(m => m.CVVNo)
+                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", minlength = "3", maxlength = "4" })
+                        @Html.ValidationMessageFor(m => m.CVVNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="row" id="totalSummary" style="display:none;">
+                    <hr />
+                    <div class="col-md-12 form-group">
+                        <label class="label-bold">Transaction Summary :</label>
+                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
+                        <div class="table-responsive table_maxTransactionSummary">
+                            <table class="table table-bordered table-striped" id="tblTransactionSummary">
+                                <thead>
+                                    <tr>
+                                        <th class="width_60">Notes</th>
+                                        <th class="width_20">Rate</th>
+                                        <th class="width_20">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr class="text-bold" data-total-price="">
+                                        <td></td>
+                                        <td>Total Price : </td>
+                                        <td class="tdTotalPrice"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-success" onclick="updateBulkReservation();">Update</button>
+                    <a href="@Url.Action("BulkReservation", "Common")" class="btn btn-danger">Cancel</a>
+                </div>
+
+            </div>
+            <!-- /.box-footer -->
+        }
+    </div>
+</section>
+
+<!-- This is the add reservation form-->
+<!-- RoomType Modal Popup START -->
+<div class="modal fade" id="roomTypeModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Type Search</h4>
+            </div>
+            <div class="modal-body modal-body_padding">
+                @Html.Partial("~/Views/RoomType/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "EditReservation" },
+                                    { "RateType", ViewBag.RateTypeList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- RoomType Modal Popup END -->
+ 
+<!-- Room Modal Popup START -->
+<div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Room Search</h4>
+            </div>
+            <div class="modal-body modal-body_padding">
+                @Html.Partial("~/Views/Room/_AdvanceSearch.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "EditReservation" },
+                                    { "RoomType", ViewBag.RoomTypeList },
+                                    { "RoomFeatures", ViewBag.RoomFeaturesList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Room Modal Popup END -->
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#CardExpiryDate').attr("placeholder", "MM/YY");
+
+        $("#frmBulkReservation input[type='text'], textarea").blur(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
+
+        $("#frmBulkReservation input[type='text'], textarea").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                data_needs_saving = true;
+            }
+        });
+
+        $("#frmBulkReservation select").change(function () {
+            if (!IsNullOrEmpty($(this).val())) {
+                data_needs_saving = true;
+                $('label[for="' + $(this).attr("id") + '"]').addClass("label-bold");
+            } else {
+                $('label[for="' + $(this).attr("id") + '"]').removeClass("label-bold");
+            }
+        });
+
+        //Date picker
+        $('#ArrivalDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(arrivalDateChanged)
+        .on('changeDate', arrivalDateChanged);
+
+        $('#DepartureDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        })
+        .change(departureDateChanged)
+        .on('changeDate', departureDateChanged);
+
+
+        //Timepicker
+        $('#ETAText').timepicker({
+            showInputs: false,
+            showMeridian: false,
+            minuteStep: 5
+            //timeFormat: 'HH:mm'
+        });
+
+
+        $('form#frmBulkReservation #Rate').val('@strRate');
+
+        //Label Bold
+        SetLabelBold();
+
+        LoadTransactionSummary();
+    });
+
+    function arrivalDateChanged(e) {
+        var selectedDate = $(this).val();
+
+        var dayOfWeek = "";
+        if (!IsNullOrEmpty(selectedDate)) {
+            var objSelectedArrivalDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            if (!IsNullOrEmpty(objSelectedArrivalDate)) {
+                var weekDay = objSelectedArrivalDate.getDay();
+                dayOfWeek = GetDayOfWeek(weekDay);
+            }
+        }
+        $('form#frmBulkReservation #ArrivalDayOfWeek').html(dayOfWeek);
+    }
+
+    function departureDateChanged(e) {
+        var selectedDate = $(this).val();
+
+        var dayOfWeek = "";
+        if (!IsNullOrEmpty(selectedDate)) {
+            var objSelectedDepartureDate = GetDateObject(selectedDate, DateSeprator.SLASH);
+
+            if (!IsNullOrEmpty(objSelectedDepartureDate)) {
+                var weekDay = objSelectedDepartureDate.getDay();
+                dayOfWeek = GetDayOfWeek(weekDay);
+            }
+        }
+        $('form#frmBulkReservation  #DepartureDayOfWeek').html(dayOfWeek);
+    }
+
+    function validateBulkReservationData() {
+        var errorMessage = "";
+        var blnValid = true;
+
+        var profileId = $('form#frmBulkReservation #ProfileId').val();
+
+        if (IsNullOrEmpty(profileId)) {
+            showToaster("Please search and select profile again.", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        if (!IsNullOrEmpty($('form#frmBulkReservation #PaymentMethodId').val())) {
+            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected').text();
+
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) != 'Cash') {
+                var creditCardNo = $('form#frmBulkReservation #CreditCardNo').val();
+                var cardExpiryDate = $('form#frmBulkReservation #CardExpiryDate').val();
+                var cvvNo = $('form#frmBulkReservation #CVVNo').val();
+
+                var errorText = "";
+                if (IsNullOrEmpty(creditCardNo)) {
+                    errorText += "Please enter credit card number." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                } else {
+                    if (!IsValidCreditCardNo(creditCardNo)) {
+                        errorText += "Please enter 16 digits of your credit card." + Delimeter.BREAKLINE;
+                        blnValid = false;
+                    }
+                }
+
+                if (IsNullOrEmpty(cardExpiryDate)) {
+                    errorText += "Please enter card expiry date." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                }
+
+                if (IsNullOrEmpty(cvvNo)) {
+                    errorText += "Please enter CVV No." + Delimeter.BREAKLINE;
+                    blnValid = false;
+                }
+
+                if (blnValid == false) {
+                    showToaster(errorText, ToasterType.ERROR);
+                    return false;
+                }
+            }
+        }
+
+        if ($("#frmBulkReservation").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+    function updateBulkReservation() {
+        if (validateBulkReservationData()) {
+
+            //Enable all select box before form submit.
+            $('form#frmBulkReservation #RoomTypeId').attr("disabled", false);
+
+            var formData = $('#frmBulkReservation').serializeObject();
+
+            //Ajax Request to edit reservation.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Common/EditBulkReservation")',
+                type: 'POST',
+                //data: $('#frmBulkReservation').serialize(),
+                data: formData,
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+
+                        showToaster("Bulk Reservation details updated successfully.", ToasterType.SUCCESS);
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/Common/BulkReservation")');
+                        }, 1000);
+
+                    }
+                }
+            });
+        }
+    }
+
+    function calculateNoOfNights() {
+        var arrivalDate = $('form#frmBulkReservation #ArrivalDate').val();
+        var departureDate = $('form#frmBulkReservation #DepartureDate').val();
+        var noOfNight = 1;
+
+        if (!IsNullOrEmpty(arrivalDate) && !IsNullOrEmpty(departureDate)) {
+
+
+            var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+            var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
+
+            var timeDiff = Math.abs(objDepartureDate.getTime() - objArrivalDate.getTime());
+            var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (!IsNullOrEmpty(diffDays)) {
+                noOfNight = diffDays > 0 ? diffDays : 1;
+            }
+
+            $('form#frmBulkReservation #NoOfNight').val(noOfNight);
+
+            LoadTransactionSummary();
+        }
+    }
+
+    function calculateDepartureDate() {
+        var arrivalDate = $('form#frmBulkReservation #ArrivalDate').val();
+        var noOfNight = $('form#frmBulkReservation #NoOfNight').val();
+        var departureDate = '';
+
+        if (!IsNullOrEmpty(arrivalDate)) {
+
+            var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+
+            var dt = objArrivalDate;
+            if (!IsNullOrEmpty(noOfNight) && noOfNight > 0) {
+                dt.setDate(objArrivalDate.getDate() + parseInt(noOfNight));
+            } else {
+                dt.setDate(objArrivalDate.getDate() + 1);
+            }
+
+            if (dt != null) {
+                //dd/MM/yyyy
+                //departureDate = GetDate(dt, DateFormat.DDMMYYYY);
+                $("form#frmBulkReservation #DepartureDate").datepicker("setDate", dt);
+            }
+
+            LoadTransactionSummary();
+        }
+    }
+
+    function SetLabelBold() {
+        //FirstName
+        if (!IsNullOrEmpty('@Model.FirstName'))
+            $('label[for="FirstName"]').addClass("label-bold");
+
+        //NoOfNight
+        if (!IsNullOrEmpty('@Model.NoOfNight'))
+            $('label[for="NoOfNight"]').addClass("label-bold");
+
+        //NoOfAdult
+        if (!IsNullOrEmpty('@Model.NoOfAdult'))
+            $('label[for="NoOfAdult"]').addClass("label-bold");
+
+        //NoOfChildren
+        if (!IsNullOrEmpty('@Model.NoOfChildren'))
+            $('label[for="NoOfChildren"]').addClass("label-bold");
+
+        //NoOfRoom
+        if (!IsNullOrEmpty('@Model.NoOfRoom'))
+            $('label[for="NoOfRoom"]').addClass("label-bold");
+
+        //Rtc
+        if (!IsNullOrEmpty('@Model.RtcId'))
+            $('label[for="RtcId"]').addClass("label-bold");
+
+        //RoomNumbers
+        if (!IsNullOrEmpty('@Model.RoomNo'))
+            $('label[for="RoomNo"]').addClass("label-bold");
+        //Rate
+        if (!IsNullOrEmpty('@Model.Rate'))
+            $('label[for="Rate"]').addClass("label-bold");
+
+        //ETAText
+        if (!IsNullOrEmpty('@ETAText'))
+            $('label[for="ETAText"]').addClass("label-bold");
+
+        //CreditCardNo
+        if (!IsNullOrEmpty('@Model.CreditCardNo'))
+            $('label[for="CreditCardNo"]').addClass("label-bold");
+
+        //CardExpiryDate
+        if (!IsNullOrEmpty('@Model.CardExpiryDate'))
+            $('label[for="CardExpiryDate"]').addClass("label-bold");
+
+        //CVVNo
+        if (!IsNullOrEmpty('@Model.CVVNo'))
+            $('label[for="CVVNo"]').addClass("label-bold");
+
+    }
+
+    function SelectPaymentMethod() {
+        if (!IsNullOrEmpty($('form#frmBulkReservation #PaymentMethodId').val())) {
+            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected').text();
+
+            var paymentMethodName = paymentMethod;
+            if (Contains(paymentMethod, '-')) {
+                paymentMethodName = trim(paymentMethod.split('-')[1]);
+            }
+
+            if (trim(paymentMethodName) == 'Cash') {
+                //Remove Label Bold.
+                $('form#frmBulkReservation label[for="CreditCardNo"]').removeClass("label-bold");
+                $('form#frmBulkReservation label[for="CardExpiryDate"]').removeClass("label-bold");
+                $('form#frmBulkReservation label[for="CVVNo"]').removeClass("label-bold");
+            } else {
+                //Set Label Bold.
+                $('form#frmBulkReservation label[for="CreditCardNo"]').addClass("label-bold");
+                $('form#frmBulkReservation label[for="CardExpiryDate"]').addClass("label-bold");
+                $('form#frmBulkReservation label[for="CVVNo"]').addClass("label-bold");
+            }
+        }
+
+    }
+
+    function RateTypeChange() {
+        if (!IsNullOrEmpty($('form#frmBulkReservation #RateCodeId').val())) {
+            var text = $('form#frmBulkReservation #RateCodeId option:selected').text();
+
+            var rateCode = text;
+
+            if (rateCode == 'BAR' || rateCode == 'BARBB' || rateCode == 'BARDBB') {
+                selectMarket("Leisure");
+                selectReservationSource("Leisure");
+            }
+
+            if (rateCode == 'CORPBB' || rateCode == 'CORPDBB' || rateCode == 'CORPRO') {
+                selectMarket("Corporate");
+                //selectReservationSource("Corporate");
+                $("form#frmBulkReservation #ReservationSourceId").val('');
+            }
+
+            getPriceDetails(); //Get Week Day & Week End Price.
+
+        } else {
+            $("form#frmBulkReservation #MarketId").val('');
+            $("form#frmBulkReservation #ReservationSourceId").val('');
+        }
+    }
+
+    function RoomTypeChange() {
+        var roomTypeId = $('form#frmBulkReservation #RoomTypeId').val();
+        if (!IsNullOrEmpty(roomTypeId)) {
+
+            //Ajax request to get room numbers.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Room/GetRoomByRoomType")',
+                type: 'POST',
+                data: { roomTypeId: roomTypeId },
+                success: function (response) {
+                    if (response != null) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var result = response.data;
+
+                            if (!IsNullOrEmpty(result)) {
+                               
+                                var optionHtml = "";
+                                optionHtml += "<option value=''>--Select Room--</option>";
+
+                                for (i = 0; i < result.length; i++) {
+                                    optionHtml += "<option value='" + result[i].Id + "'>" + result[i].RoomNo + "</option>";
+                                }
+
+                                $('form#frmBulkReservation #RoomId').html(optionHtml);
+                            }
+                        }
+                    }
+                }
+            });
+
+            getPriceDetails(); //Get Week Day & Week End Price.
+        }
+    }
+
+    function RoomChange() {
+        if (!IsNullOrEmpty($('form#frmBulkReservation #RoomId').val())) {
+            debugger;
+            var roomNo = $('form#frmBulkReservation #RoomId option:selected').text();
+
+            $('form#frmBulkReservation #RoomNo').val(roomNo);
+
+        }
+    }
+
+    function RtcChange() {
+        var rtc = $('form#frmBulkReservation #RtcId').val();
+        if (!IsNullOrEmpty(rtc)) {
+            $("form#frmBulkReservation #IsFixedRate").prop("checked", true);
+        } else {
+            $("form#frmBulkReservation #IsFixedRate").prop("checked", false);
+        }
+    }
+
+    function selectMarket(name) {
+        var dd = document.getElementById('MarketId');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].text === name) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    function selectReservationSource(name) {
+        var dd = document.getElementById('ReservationSourceId');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].text === name) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+
+    //Get Price Details.
+    function getPriceDetails() {
+        var roomTypeId = "", rateTypeId = "";
+
+        roomTypeId = $('form#frmBulkReservation #RoomTypeId').val();
+        rateTypeId = $('form#frmBulkReservation #RateCodeId').val();
+
+        if (!IsNullOrEmpty(roomTypeId) && !IsNullOrEmpty(rateTypeId)) {
+            //Ajax request to get price details.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Reservation/GetPriceDetails")',
+                type: 'POST',
+                data: { roomTypeId: roomTypeId, rateTypeId: rateTypeId },
+                success: function (response) {
+                    if (response != null) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var result = response.data;
+
+                            if (!IsNullOrEmpty(result)) {
+                                var weekDayPrice = parseFloat(result.WeekDayPrice);
+                                var weekEndPrice = parseFloat(result.WeekEndPrice);
+
+                                $('form#frmBulkReservation #hdnWeekEndPrice').val(FormatNumberWithTwoDecimal(weekEndPrice));
+                                $('form#frmBulkReservation #Rate').val(FormatNumberWithTwoDecimal(weekDayPrice));
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function LoadTransactionSummary() {
+        var noOfNights = $("form#frmBulkReservation #NoOfNight").val();
+
+        var arrivalDate = $("form#frmBulkReservation #ArrivalDate").val();
+        var objArrivalDate = GetDateObject(arrivalDate, DateSeprator.SLASH);
+
+        var departureDate = $("form#frmBulkReservation #DepartureDate").val();
+        var objDepartureDate = GetDateObject(departureDate, DateSeprator.SLASH);
+
+        var rate = $('form#frmBulkReservation #Rate').val();
+        var weekEndPrice = $('form#frmBulkReservation #hdnWeekEndPrice').val();
+        var weekDayPrice = 0;
+
+        var noOfChildren = $('form#frmBulkReservation #NoOfChildren').val();
+        var discountAmount = $('form#frmBulkReservation #DiscountAmount').val();
+        var discountPercentage = $('form#frmBulkReservation #DiscountPercentage').val();
+
+
+        var totalPrice = "0.00";
+        var totalDiscount = 0;
+        var childrenCharges = 0;
+
+        if (IsNullOrEmpty(noOfNights)) { noOfNights = 1; }
+        if (IsNullOrEmpty(rate)) { rate = 1; }
+        if (IsNullOrEmpty(weekEndPrice)) { weekEndPrice = rate; }
+        if (IsNullOrEmpty(noOfChildren)) { noOfChildren = 0; }
+        if (IsNullOrEmpty(discountAmount)) { discountAmount = 0; }
+        if (IsNullOrEmpty(discountPercentage)) { discountPercentage = 0; }
+
+        noOfNights = parseInt(noOfNights);
+        rate = parseFloat(rate);
+        weekEndPrice = parseFloat(weekEndPrice);
+        noOfChildren = parseInt(noOfChildren);
+        discountAmount = parseFloat(discountAmount);
+        discountPercentage = parseFloat(discountPercentage);
+
+        weekDayPrice = rate;
+
+        ////Calculate children charges. (Default euro 5.)
+        //if (noOfChildren > 0)
+        //    childrenCharges = (noOfChildren * 5);
+
+        var html = "";
+
+        var totalNoOfDays = noOfNights;
+
+        var startDate = objArrivalDate;
+
+        for (i = 1; i <= totalNoOfDays; i++) {
+
+            var date = GetDate(startDate, DateFormat.DDMMYYYY);
+            rate = weekDayPrice;
+
+            //Check Week End.
+            var weekDay = startDate.getDay();
+            var dayOfWeek = GetDayOfWeek(weekDay);
+
+            var isWeekEnd = false;
+
+            if (dayOfWeek == 'Friday' || dayOfWeek == 'Saturday') {
+                isWeekEnd = true;
+                rate = weekEndPrice;
+            }
+
+            //Calculate Discount.
+            var discount = 0;
+            if (discountPercentage > 0) {
+                discount = parseFloat((rate * discountPercentage) / 100);
+            }
+            else {
+                discount = parseFloat(discountAmount);
+            }
+
+            totalDiscount = totalDiscount + discount;
+
+            //Deduct Discount from rate.
+            //rate = (rate - totalDiscount);
+
+            var qty = 1;
+            var total = (rate * qty);
+
+
+            html += "<tr data-rate='" + rate + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Night " + i + " : " + "(" + date + ") " + (isWeekEnd ? " - Week End " : "");
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(rate);
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+
+            //Increment date.
+            startDate.setDate(startDate.getDate() + 1);
+        }
+
+        //Children Charges.
+        if (!IsNullOrEmpty(noOfChildren) && noOfChildren > 0) {
+
+            childrenCharges = 5 // Default euro 5.
+
+            var qty = parseInt(noOfChildren);
+            var total = (childrenCharges * qty);
+
+            html += "<tr data-rate='" + childrenCharges + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Children : (" + noOfChildren + ")";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(childrenCharges) + " * " + qty;
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+        }
+
+        //Package.
+        var packageId = $('form#frmBulkReservation #PackageId').val();
+        if (!IsNullOrEmpty(packageId)) {
+            var selectedPackage = $('form#frmBulkReservation #PackageId option:selected');
+
+            var packagePrice = parseFloat(selectedPackage.attr("data-package-price"));
+            var packageName = selectedPackage.attr("data-package-name");
+
+            var qty = 1;
+            var total = (packagePrice * qty);
+
+            html += "<tr data-rate='" + packagePrice + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Package : " + packageName + "";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice);
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+        }
+
+        //Add Ons.
+        $("form#frmBulkReservation #ListOfSelectedAddOns span i").each(function () {
+            var addOnsId = $(this).data("addonsid");
+            var addOnsName = $(this).data("addons");
+            var addOnsPrice = parseFloat($(this).data("price"));
+
+            var qty = 1;
+            var total = (addOnsPrice * qty);
+
+            html += "<tr data-rate='" + addOnsPrice + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Add Ons : " + addOnsName + "";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice);
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "</td>";
+
+            html += "</tr>";
+
+        });
+
+
+        //Discount.
+        if (parseFloat(totalDiscount) > 0) {
+
+            var qty = 1;
+            var total = (ConvertToNegative(totalDiscount) * qty);
+
+            html += "<tr data-rate='" + ConvertToNegative(totalDiscount) + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Notes
+            html += "<td>";
+            html += "Discount : ";
+            html += "</td>";
+
+            //Rate
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount)) + "";
+            html += "</td>";
+
+            //Total
+            html += "<td>";
+            html += "&euro; " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount));
+            html += "</td>";
+
+            html += "</tr>";
+        }
+
+
+        $('form#frmBulkReservation #tblTransactionSummary tbody').empty().append(html);
+
+        $('form#frmBulkReservation #totalSummary').show();
+
+        //Update Total Price.
+        calculateTotalTransactionSummaryPrice();
+    }
+
+    function calculateTotalTransactionSummaryPrice() {
+        var totalPrice = 0;
+
+        $("form#frmBulkReservation #tblTransactionSummary tbody tr").each(function () {
+            totalPrice += parseFloat($(this).attr("data-total-price"));
+        });
+
+        totalPrice = FormatNumberWithTwoDecimal(totalPrice);
+
+        //Set total price
+        $('span#totalPrice').html("&euro; " + totalPrice);
+
+        $("form#frmBulkReservation #tblTransactionSummary tfoot tr").attr("data-total-price", totalPrice);
+        $("form#frmBulkReservation #tblTransactionSummary tfoot tr td.tdTotalPrice").html("&euro; " + totalPrice);
+    }
+
+    function PackageChange() {
+        LoadTransactionSummary();
+    }
+
+</script>
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
+    <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
+    <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
+}
