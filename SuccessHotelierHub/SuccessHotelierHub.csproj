@@ -382,6 +382,7 @@
     <Compile Include="Utility\RecordActivityLog.cs" />
     <Compile Include="Utility\TempReservation.cs" />
     <Compile Include="Utility\Utility.cs" />
+    <Content Include="app_offline.htm" />
     <Content Include="Content\css\AdminLTE\select2\select2-bootstrap.css" />
     <Content Include="Content\css\AdminLTE\select2\select2-spinner.gif" />
     <Content Include="Content\css\AdminLTE\select2\select2.css" />
