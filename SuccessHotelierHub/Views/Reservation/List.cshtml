@@ -218,8 +218,8 @@
                                     <th>Rooms</th>
                                     <th>Room Type</th>
                                     <th>Rate Type</th>
-                                    <th width="10%;">Status</th>
-                                    <th width="15%;">Action</th>
+                                    <th class="width_10">Status</th>
+                                    <th class="width_35">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -606,7 +606,7 @@
                 targets: 13,
                 data: "Id",
                 orderable: false,
-                className: "text-center",
+                className: "text-left-align",
                 render: function (data, type, full, meta) {
                     var isReservationCancel = full.IsReservationCancel;
                     var isCheckIn = full.IsCheckIn;

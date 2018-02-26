@@ -61,6 +61,14 @@
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 }
 
+
+<style type="text/css">
+    #tblProfileRemark thead {
+        background-color: #367FA9;
+        color: #fff;
+    }
+</style>
+
 <section class="content-header">
     <h1>
         Individual Profile <small>Create</small>
@@ -217,35 +225,81 @@
                             <span class="checkmark"></span>
                         </label>
                     </div>
-                    <div class="col-xs-2 form-group m-t-md m-t-md_media">
-                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
-                            Preference
-                        </button>
-                    </div>
-                </div>
-                <div class="row" style="display:none;" id="divSelectedPreference">
-                    <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
-                        <div class="col-sm-10" id="ListOfSelectedPreferences">                            
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12 form-group">
-                        @Html.LabelFor(m => m.Remarks)
-                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", placeholder = "Remarks" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2 m-b-xs m-r-n-lg">
+                    <div class="col-md-2 form-group m-t-lg m-r-n-lg">
                         <label for="IsActive" class="container1">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
                             <span class="checkmark"></span>
                         </label>
                     </div>
+                    @*<div class="col-xs-2 form-group m-t-md m-t-md_media">
+                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
+                            Preference
+                        </button>
+                    </div>*@
                 </div>
+                @*<div class="row" style="display:none;" id="divSelectedPreference">
+                    <div class="col-md-12 form-group">
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl"> Selected Preference : </label>
+                        <div class="col-sm-10" id="ListOfSelectedPreferences">                            
+                        </div>
+                    </div>
+                </div>*@
+
+                <div class="row">
+                    <hr class="m-t-none" />
+                    <div class="col-xs-1 form-group">
+                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
+                            Preference
+                        </button>
+                    </div>
+                    <div class="col-md-11 form-group" style="display:none;" id="divSelectedPreference">
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
+                        <div class="col-sm-9" id="ListOfSelectedPreferences">
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="row">
+                    <div class="col-md-12 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", placeholder = "Remarks" })
+                    </div>
+                </div>*@
+
+                <div class="row">
+                    <hr class="m-t-none" />
+                    <div class="col-md-12 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                        <input type="hidden" id="hdnProfileRemarkId" name="hdnProfileRemarkId" value="" />
+                        <input type="hidden" id="hdnTotalProfileRemarks" name="hdnTotalProfileRemarks" value="0" />
+                    </div>
+                    <div class="col-xs-3 form-group m-t-xl m-t-md_media" style="display:none;">
+                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnProfileRemarks" id="btnProfileRemarks">
+                            Add Remarks
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm btnCancelProfileRemarks" id="btnCancelProfileRemarks"
+                                onclick="ClearRemarks();">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <div class="row m-t-sm" id="divProfileRemark" style="display:none;">
+                    <div class="col-md-12 table-responsive table_maxRemarks">
+                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblProfileRemark">
+                            <thead>
+                                <tr>
+                                    <th class="width_50">Remarks</th>
+                                    <th class="width_35">Track</th>
+                                    <th class="width_15">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
 
             </div>
             <!-- /.box-body -->
@@ -325,6 +379,26 @@
                 $('#preferenceModal').modal('toggle');
             }
         });
+
+        //Profile Remarks
+        $('form#frmIndividualProfile #btnProfileRemarks').click(function (e) {
+            var remarkId = $('form#frmIndividualProfile #hdnProfileRemarkId').val();
+            var profileId = $('form#frmIndividualProfile #Id').val();
+            var remarks = $('form#frmIndividualProfile #Remarks').val();
+
+            if (IsNullOrEmpty(remarks)) {
+                showToaster("Please enter remarks", ToasterType.ERROR);
+                return false;
+            }
+            if (!IsNullOrEmpty(remarkId)) {
+                //Update remarks in table.
+                UpdateProfileRemark(remarkId);
+            } else {
+                //Add remarks in table.
+                AddProfileRemark();
+            }
+        });
+
     });
 
     function openPreferenceModal() {
@@ -485,6 +559,40 @@
             var preferenceIds = getSelectedPreferenceItemIds();
             $('#PreferenceItems').val(preferenceIds);
 
+
+            //Profile Remarks.
+            var profileRemarkList = [];
+            $("form#frmIndividualProfile #tblProfileRemark tbody tr").each(function () {
+                var rowNumber = $(this).attr("data-rownumber");
+                if (!IsNullOrEmpty(rowNumber)) {
+                    var modelProfileRemark = {};
+
+                    rowNumber = parseInt(rowNumber);
+
+                    var remarks = $('#Remarks_' + rowNumber).val();
+                    modelProfileRemark.Remarks = remarks;
+
+                    var dateTimeObj = $('#RemarksCreatedOn_' + rowNumber).val();
+                    modelProfileRemark.CreatedOn = dateTimeObj;
+
+                    profileRemarkList.push(modelProfileRemark);
+                }
+            });
+
+            var remarks = $("form#frmIndividualProfile #Remarks").val();
+            if (!IsNullOrEmpty(remarks)) {
+                var modelProfileRemark = {};
+                modelProfileRemark.Remarks = remarks;
+                modelProfileRemark.CreatedOn = new Date();
+
+                profileRemarkList.push(modelProfileRemark);
+            }
+
+            var formData = $('#frmIndividualProfile').serializeObject();
+
+            //Add additional property in form data.
+            $.extend(formData, { RemarksList: profileRemarkList });
+
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
@@ -497,7 +605,8 @@
                 },
                 url: '@Url.Content("~/Profile/CreateIndividualProfile")',
                 type: 'POST',
-                data: $('#frmIndividualProfile').serialize(),
+                //data: $('#frmIndividualProfile').serialize(),
+                data: formData,
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
@@ -592,6 +701,122 @@
         if (!IsNullOrEmpty('@Model.Remarks'))
             $('label[for="Remarks"]').addClass("label-bold");
     }
+
+    //Profile Remarks : START
+    function AddProfileRemark() {
+
+        var rowNumber = $('#hdnTotalProfileRemarks').val();
+
+        if (!IsNullOrEmpty(rowNumber)) {
+            rowNumber = parseInt(rowNumber) + 1;
+        } else {
+            rowNumber = 1;
+        }
+
+        var remarks = $('form#frmIndividualProfile #Remarks').val();
+
+        var html = "";
+
+        //Create New Row
+        html += "<tr data-rownumber='" + rowNumber + "' id='tr_" + rowNumber + "'>";
+
+        //Remarks
+        html += "<td class='remarks'>";
+        html += remarks;
+        html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+        html += "</td>";
+
+        //TrackLog
+        var userName = '@LogInManager.UserName';
+        var dateObj = new Date();
+        var createdDate = GetDate(dateObj, DateFormat.DDMMYYYY);
+        var createdTime = GetTime(dateObj);
+        var trackLog = createdDate + " at " + createdTime + " added by " + userName;
+        var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
+
+        html += "<td class='tracklog'>";
+        html += trackLog;
+        html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
+        html += "</td>";
+
+
+
+        //Action
+        html += "<td>";
+        //html += "<a href='javascript:void(0);' onclick='editProfileRemark(this);' class='text-success font_18 m-r-md'><i class='fa fa-edit'/></a>";
+        html += "<a href='javascript:void(0);' onclick='deleteProfileRemark(this);' class='text-danger font_18 m-r-md'><i class='fa fa-trash'/></a>";
+        html += "</td>";
+
+        html += "</tr>";
+
+
+        $('form#frmIndividualProfile #tblProfileRemark tbody').prepend(html);
+
+        $('#hdnTotalProfileRemarks').val(rowNumber);
+
+        ClearRemarks();
+
+        $("form#frmIndividualProfile #divProfileRemark").show();
+    }
+
+
+    function UpdateProfileRemark(id) {
+        var rowNumber = id;
+
+        if (!IsNullOrEmpty(rowNumber)) {
+            var remarks = $('form#frmIndividualProfile #Remarks').val();
+            
+            var html = "";
+            var trId = "#tr_" + rowNumber;
+
+            //Remarks
+            html = "";
+            html += remarks;
+            html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+            $('form#frmIndividualProfile #tblProfileRemark tbody ' + trId + ' #Remarks_' + rowNumber).val(remarks);
+            $('form#frmIndividualProfile #tblProfileRemark tbody ' + trId + ' td.remarks').html(html);
+
+            //TrackLog
+            var userName = '@LogInManager.UserName';
+            var dateObj = new Date();
+            var createdDate = GetDate(dateObj, DateFormat.DDMMYYYY);
+            var createdTime = GetTime(dateObj);
+            var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
+            var trackLog = createdDate + " at " + createdTime + " added by " + userName;
+
+            html = "";
+            html += trackLog;
+            html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
+            $('form#frmIndividualProfile #tblProfileRemark tbody ' + trId + ' td.tracklog').html(html);
+
+            //showToaster("Remark updated successfully", ToasterType.SUCCESS);
+
+            ClearRemarks();
+        }
+    }
+
+    function editProfileRemark(element) {
+
+        if (!IsNullOrEmpty(element)) {
+            var id = $(element).closest("tr").attr("data-rownumber");
+            $('form#frmIndividualProfile #hdnProfileRemarkId').val(id);
+            $('form#frmIndividualProfile #Remarks').val($('#Remarks_' + id).val());
+            $('form#frmIndividualProfile #btnProfileRemarks').html("Update Remarks");
+        }
+    }
+
+    function deleteProfileRemark(element) {
+        $(element).closest("tr").remove();
+        ClearRemarks();
+        //showToaster("Remark deleted successfully", ToasterType.SUCCESS);
+    }
+
+    function ClearRemarks() {
+        $('form#frmIndividualProfile #hdnProfileRemarkId').val('');
+        $('form#frmIndividualProfile #Remarks').val('');
+        $('form#frmIndividualProfile #btnProfileRemarks').html("Add Remarks");
+    }
+    //Profile Remarks : END
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation

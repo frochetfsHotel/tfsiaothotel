@@ -1,6 +1,7 @@
 ﻿@model SuccessHotelierHub.Models.RateQueryVM
 @using SuccessHotelierHub.Models
 @using SuccessHotelierHub.Repository
+@using SuccessHotelierHub.Utility
 @{
     ViewBag.Title = "RateQuery";
 }
@@ -8,6 +9,7 @@
 @{
     var rateTypeList = (List<RateTypeVM>)ViewBag.RateTypeList;
     var rateSheetRoomTypeList = (List<RateSheetRoomTypeVM>)ViewBag.RateSheetRoomTypeList;
+    var packageList = (List<PackageVM>)ViewBag.PackageList;
 
     ProfileRepository profileRepository = new ProfileRepository();
 
@@ -285,10 +287,23 @@
                                 </div>
                                 <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                                     @Html.LabelFor(m => m.PackageId)
-                                    @Html.DropDownListFor(m => m.PackageId,
-                                         new SelectList((IEnumerable<SelectListItem>)ViewBag.PackageList, "Value", "Text"),
-                                         "Select Package",
-                                         new { @class = "form-control" })                                    
+                                    <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
+                                        <option value="">--Select Package--</option>
+                                        @if (packageList != null && packageList.Count > 0)
+                                        {
+                                            var packageDescription = "";
+                                            foreach (var package in packageList)
+                                            {
+                                                packageDescription = package.Name;
+                                                packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
+                                                packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
+
+                                                <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
+                                                    @(packageDescription)
+                                                </option>
+                                            }
+                                        }
+                                    </select>                                   
                                 </div>
                             </div>
                             @*<div class="row">

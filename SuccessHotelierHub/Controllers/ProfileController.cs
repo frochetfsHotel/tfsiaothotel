@@ -71,6 +71,9 @@ namespace SuccessHotelierHub.Controllers
 
                 if (!string.IsNullOrWhiteSpace(profileId))
                 {
+
+                    model.Id = Guid.Parse(profileId);
+
                     #region Save Profile Preference Mapping
                     var preferenceItems = model.PreferenceItems;
 
@@ -98,6 +101,25 @@ namespace SuccessHotelierHub.Controllers
                     }
                     #endregion
 
+                    #region Profile Remarks 
+
+                    if (model.RemarksList != null && model.RemarksList.Count > 0)
+                    {
+                        foreach (var remark in model.RemarksList)
+                        {
+                            remark.ProfileId = model.Id;
+                            remark.CreatedBy = LogInManager.LoggedInUserId;
+                            if (!remark.CreatedOn.HasValue)
+                            {
+                                remark.CreatedOn = DateTime.Now;
+                            }
+
+                            profileRepository.AddProfileRemark(remark);
+                        }
+                    }
+
+                    #endregion
+
                     #region Record Activity Log
                     RecordActivityLog.RecordActivity(Pages.INDIVIDUAL_PROFILE, string.Format("Created new profile of {0} {1}.", model.LastName, model.FirstName));
                     #endregion
@@ -118,7 +140,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("RateQuery", "Reservation");                            
                         }
@@ -130,7 +152,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Create", "Reservation");
                         }
@@ -144,7 +166,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
@@ -156,7 +178,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Arrivals", "FrontDesk");
                         }
@@ -172,8 +194,6 @@ namespace SuccessHotelierHub.Controllers
                         }
                     }
                     #endregion
-
-
 
                     return Json(new
                     {
@@ -208,6 +228,8 @@ namespace SuccessHotelierHub.Controllers
             if (profile != null && profile.Count > 0)
             {
                 model = profile[0];
+
+                model.Remarks = string.Empty;
 
                 model.CarRegistrationNo = Utility.Utility.ToUpperCase(model.CarRegistrationNo);
 
@@ -332,7 +354,25 @@ namespace SuccessHotelierHub.Controllers
                             preferenceRepository.AddProfilePreferenceMapping(profilePreferenceMappingVM);
                         }
                     }
-                    
+
+                    #endregion
+
+                    #region Add Profile Remarks 
+
+                    if (!string.IsNullOrWhiteSpace(model.Remarks))
+                    {
+                        ProfileRemarkVM remark = new ProfileRemarkVM();
+                        remark.ProfileId = Guid.Parse(profileId);
+                        remark.Remarks = model.Remarks;
+                        remark.CreatedBy = LogInManager.LoggedInUserId;
+                        if (!remark.CreatedOn.HasValue)
+                        {
+                            remark.CreatedOn = DateTime.Now;
+                        }
+
+                        profileRepository.AddProfileRemark(remark);
+                    }
+
                     #endregion
 
                     #region Record Activity Log
@@ -355,7 +395,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("RateQuery", "Reservation");
                         }
@@ -367,7 +407,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Create", "Reservation");
                         }
@@ -381,7 +421,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Edit", "Reservation", new { Id = qid });
                         }
@@ -393,7 +433,7 @@ namespace SuccessHotelierHub.Controllers
                             TempData["LastName"] = model.LastName;
                             TempData["CountryId"] = model.CountryId;
                             TempData["TelephoneNo"] = model.TelephoneNo;
-                            TempData["Remarks"] = model.Remarks;
+                            //TempData["Remarks"] = model.Remarks;
 
                             url = Url.Action("Arrivals", "FrontDesk");
                         }
@@ -610,6 +650,153 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
+        #region Profile  Remarks
+
+        [HttpPost]
+        public ActionResult AddProfileRemark(ProfileRemarkVM model)
+        {
+            try
+            {
+                string remarkId = string.Empty;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.CreatedOn = DateTime.Now;
+
+                remarkId = profileRepository.AddProfileRemark(model);
+
+                if (!string.IsNullOrWhiteSpace(remarkId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RemarkId = remarkId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Remarks not saved successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "AddProfileRemark");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult UpdateProfileRemark(ProfileRemarkVM model)
+        {
+            try
+            {
+                string remarkId = string.Empty;
+                model.UpdatedOn = DateTime.Now;
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+
+                remarkId = profileRepository.UpdateProfileRemark(model);
+
+                if (!string.IsNullOrWhiteSpace(remarkId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RemarkId = remarkId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Remarks not updated successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "UpdateProfileRemark");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteProfileRemark(Guid id)
+        {
+            try
+            {
+                string remarkId = string.Empty;
+
+                remarkId = profileRepository.DeleteProfileRemark(id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(remarkId))
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            RemarkId = remarkId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Remark not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "DeleteProfileRemark");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+
+        [HttpPost]
+        public ActionResult GetProfileRemarks(Guid profileId)
+        {
+            try
+            {
+                var remarks = profileRepository.GetProfileRemarks(profileId, null, LogInManager.LoggedInUserId);
+
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = remarks
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetProfileRemarks");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+
+        #endregion
 
         #region Company Profile 
 

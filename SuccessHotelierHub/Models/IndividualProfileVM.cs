@@ -83,5 +83,7 @@ namespace SuccessHotelierHub.Models
         public IEnumerable<SelectListItem> CityList { get; set; }
 
         public string PreferenceItems { get; set; }
+
+        public List<ProfileRemarkVM> RemarksList { get; set; }
     }
 }

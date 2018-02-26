@@ -286,6 +286,7 @@
     <Compile Include="Models\PreferenceVM.cs" />
     <Compile Include="Models\IndividualProfile.cs" />
     <Compile Include="Models\ProfilePreferenceMappingVM.cs" />
+    <Compile Include="Models\ProfileRemarkVM.cs" />
     <Compile Include="Models\ProfileTypeVM.cs" />
     <Compile Include="Models\IndividualProfileVM.cs" />
     <Compile Include="Models\RateQueryVM.cs" />
@@ -315,6 +316,7 @@
     <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Models\StateVM.cs" />
     <Compile Include="Models\StoredProcedure\AvailableRoomInfoByDateResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\ProfileRemarksResultVM.cs" />
     <Compile Include="Models\StoredProcedure\RateTypeDetailsByRoomTypeResultVM.cs" />
     <Compile Include="Models\StoredProcedure\ReservationRemarksResultVM.cs" />
     <Compile Include="Models\StoredProcedure\RoomTypeStatusInfoResultVM.cs" />
@@ -382,7 +384,7 @@
     <Compile Include="Utility\RecordActivityLog.cs" />
     <Compile Include="Utility\TempReservation.cs" />
     <Compile Include="Utility\Utility.cs" />
-    <Content Include="app_offline.htm" />
+    <Content Include="_app_offline.htm" />
     <Content Include="Content\css\AdminLTE\select2\select2-bootstrap.css" />
     <Content Include="Content\css\AdminLTE\select2\select2-spinner.gif" />
     <Content Include="Content\css\AdminLTE\select2\select2.css" />

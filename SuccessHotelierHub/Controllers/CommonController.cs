@@ -251,7 +251,7 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult EditBulkReservation(Guid id)
         {
             TempBulkReservationMasterVM model = new TempBulkReservationMasterVM();
-            var reservation = reservationRepository.GetTempBulkReservationMassterById(id, LogInManager.LoggedInUserId);
+            var reservation = reservationRepository.GetTempBulkReservationMasterById(id, LogInManager.LoggedInUserId);
 
             if (reservation != null)
             {
@@ -374,6 +374,20 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                #region Check Room No Available.
+
+                if (this.CheckRoomNoExistInTempBulkReservationMaster(model.Id, model.RoomNo) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Room No : {0} already exist. Please select another room no.", model.RoomNo)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+
                 string reservationId = string.Empty;
 
                 model.UpdatedBy = LogInManager.LoggedInUserId;
@@ -416,6 +430,20 @@ namespace SuccessHotelierHub.Controllers
                 Utility.Utility.LogError(e, "EditBulkReservation");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
+        }
+
+        public bool CheckRoomNoExistInTempBulkReservationMaster(Guid? reservationId, string roomNo)
+        {
+            bool blnAvailable = true;
+
+            var reservation = reservationRepository.CheckRoomNoExistInTempBulkReservationMaster(reservationId, roomNo);
+
+            if (reservation.Any())
+            {
+                blnAvailable = false;
+            }
+
+            return blnAvailable;
         }
     }
 }

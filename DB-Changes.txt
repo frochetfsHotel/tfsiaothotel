@@ -39428,3 +39428,681 @@ BEGIN
 	END
    
 END
+
+
+
+/*****************************************************************************************************************/
+Name : Nilesh
+Date : 26-FEB-2018
+/*****************************************************************************************************************/
+
+
+/************************************************************************************************************************ 
+	SP Name : GetTitle
+	Comment : Changes in SP GetTitle
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[GetTitle]    Script Date: 2/26/2018 11:15:17 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetTitle]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT *, 1 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) = 'Mr'
+	UNION 
+	SELECT *, 2 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) = 'Mrs'
+	UNION
+	SELECT *, 3 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) = 'Ms'	
+	UNION
+    SELECT *, 4 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) NOT IN ('Mr','Mrs','Ms')
+		
+	ORDER BY [SortOrder],[Title]
+END
+
+
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchBulkReservation
+	Comment : Changes in SP SearchBulkReservation
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchBulkReservation]    Script Date: 2/26/2018 1:33:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchBulkReservation] 
+		@LastName						=	NULL,
+		@FirstName						=	NULL,
+		@ArrivalFrom					=	NULL,
+		@ArrivalTo						=	NULL,
+		@RateTypeId						=	NULL,		
+		@RoomTypeId						=	NULL,		
+		@RoomNo							=	NULL,
+		@PageNum						=	1,
+		@PageSize						=	10,
+		@SortColumn						=	NULL,
+		@SortDirection					=	NULL,
+		@CreatedBy						=	1
+		
+*/
+
+ALTER PROCEDURE [dbo].[SearchBulkReservation]		
+	@LastName						NVARCHAR(255)		=	NULL,
+	@FirstName						NVARCHAR(255)		=	NULL,	
+	@ArrivalFrom					DATETIME			=	NULL,
+	@ArrivalTo						DATETIME			=	NULL,
+	@RateTypeId						UNIQUEIDENTIFIER	=	NULL,		
+	@RoomTypeId						UNIQUEIDENTIFIER	=	NULL,	
+	@RoomNo							NVARCHAR(255)		=	NULL,	
+	@PageNum						INT					=	1,
+	@PageSize						INT					=	10,
+	@SortColumn						NVARCHAR(255)		=	NULL,
+	@SortDirection					NVARCHAR(20)		=	NULL,
+	@CreatedBy						INT					=	NULL	
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT
+
+	CREATE TABLE #tempBulkReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL		
+		,   [FirstName]					NVARCHAR(255)		NULL
+		,   [LastName]					NVARCHAR(255)		NULL
+		,	[Email]						NVARCHAR(1000)		NULL	
+		,   [PhoneNo]					NVARCHAR(50)		NULL
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomNo]					NVARCHAR(255)		NULL
+		,	[RoomTypeCode]				NVARCHAR(255)		NULL
+		,	[RateTypeCode]				NVARCHAR(255)		NULL			
+		,	[CreatedOn]					DATETIME			NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[TempBulkReservationMaster] R
+							INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+								AND ISNULL(P.IsDeleted,0) = 0 
+								AND ISNULL(P.CreatedBy,0) = ISNULL(@CreatedBy,0)							
+						WHERE	ISNULL(R.IsDeleted,0) = 0
+								AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+								AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')								
+								AND (@RateTypeId IS NULL OR R.[RateCodeId] = @RateTypeId)																
+								AND (@RoomTypeId IS NULL OR R.[RoomTypeId] = @RoomTypeId)	
+								AND (ISNULL(@RoomNo,'') = '' OR R.RoomNo = @RoomNo)
+								AND (@ArrivalFrom IS NULL OR CAST(R.[ArrivalDate] AS DATE) >= CAST(@ArrivalFrom AS DATE))
+								AND (@ArrivalTo IS NULL OR CAST(R.[ArrivalDate] AS DATE) <= CAST(@ArrivalTo AS DATE))																	
+								AND (ISNULL(R.CreatedBy,0) = ISNULL(@CreatedBy,0))
+													
+						)
+
+
+		INSERT INTO #tempBulkReservation 
+		(
+			[RowNum]
+			,[Id]			
+			,[FirstName]		
+			,[LastName]	
+			,[Email]			
+			,[PhoneNo]		
+			,[ArrivalDate]
+			,[NoOfNight]					
+			,[DepartureDate]
+			,[NoOfAdult]		
+			,[NoOfChildren]
+			,[NoOfRoom]		
+			,[RoomNo]
+			,[RoomTypeCode]
+			,[RateTypeCode]
+			,[CreatedOn])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN R.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN R.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'asc'
+							THEN R.[FirstName] END ASC,
+						CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'desc'
+							THEN R.[FirstName] END DESC,
+
+						CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'asc'
+							THEN R.[LastName] END ASC,
+						CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'desc'
+							THEN R.[LastName] END DESC,
+
+						CASE WHEN @SortColumn = 'PhoneNo' and @SortDirection = 'asc'
+							THEN R.[PhoneNo] END ASC,
+						CASE WHEN @SortColumn = 'PhoneNo' and @SortDirection = 'desc'
+							THEN R.[PhoneNo] END DESC,
+
+						CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'asc'
+							THEN R.[ArrivalDate] END ASC,
+						CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'desc'
+							THEN R.[ArrivalDate] END DESC,
+
+						CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'asc'
+							THEN R.[DepartureDate] END ASC,
+						CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'desc'
+							THEN R.[DepartureDate] END DESC,
+
+						CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'asc'
+							THEN ROT.[RoomTypeCode] END ASC,
+						CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'desc'
+							THEN ROT.[RoomTypeCode] END DESC,
+
+						CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+							THEN RAT.[RateTypeCode] END ASC,
+						CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+							THEN RAT.[RateTypeCode] END DESC,
+
+						CASE WHEN @SortColumn = 'RoomNo' and @SortDirection = 'asc'
+							THEN  TRY_PARSE(R.[RoomNo] AS INT) END ASC,
+						CASE WHEN [RoomNo] = 'RoomNo' and @SortDirection = 'desc'
+							THEN TRY_PARSE(R.[RoomNo] AS INT) END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN R.[LastName] END ASC
+
+				) AS RowNum
+				,R.[Id]			
+				,ISNULL(R.[FirstName],'') AS [FirstName]
+				,ISNULL(R.[LastName],'') AS [LastName]	
+				,ISNULL(P.Email,'') AS [Email]						
+				,ISNULL(R.[PhoneNo],'') AS [PhoneNo]				
+				,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+				,R.[NoOfNight]		
+				,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+				,R.[NoOfAdult]		
+				,R.[NoOfChildren]
+				,R.[NoOfRoom]		
+				,ISNULL(R.[RoomNo],'') AS [RoomNo]
+				,ISNULL(ROT.[RoomTypeCode],'') AS [RoomTypeCode]
+				,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]				
+				,R.[CreatedOn]
+			FROM [dbo].[TempBulkReservationMaster] R
+						INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+							AND ISNULL(P.IsDeleted,0) = 0 
+							AND ISNULL(P.CreatedBy,0) = ISNULL(@CreatedBy,0)
+						LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0							
+						LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0														
+						LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+						LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+						LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+				WHERE	ISNULL(R.IsDeleted,0) = 0
+						AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+						AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')								
+						AND (@RateTypeId IS NULL OR R.[RateCodeId] = @RateTypeId)																
+						AND (@RoomTypeId IS NULL OR R.[RoomTypeId] = @RoomTypeId)	
+						AND (ISNULL(@RoomNo,'') = '' OR R.RoomNo = @RoomNo)
+						AND (@ArrivalFrom IS NULL OR CAST(R.[ArrivalDate] AS DATE) >= CAST(@ArrivalFrom AS DATE))
+						AND (@ArrivalTo IS NULL OR CAST(R.[ArrivalDate] AS DATE) <= CAST(@ArrivalTo AS DATE))																	
+						AND (ISNULL(R.CreatedBy,0) = ISNULL(@CreatedBy,0))
+																			
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]			
+			,temp.[FirstName]		
+			,temp.[LastName]
+			,temp.[Email]		
+			,temp.[PhoneNo]		
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]		
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,temp.[RoomNo]
+			,temp.[RoomTypeCode]
+			,temp.[RateTypeCode]			
+			,temp.[CreatedOn] 
+			,@TotalCount AS TotalCount
+	FROM	
+		#tempBulkReservation AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/************* Rename SP : GetTempBulkReservationMassterById *************/
+
+EXEC sp_rename 'GetTempBulkReservationMassterById', 'GetTempBulkReservationMasterById'
+
+
+/************************************************************************************************************************ 
+	SP Name : CheckRoomNoExistInTempBulkReservationMaster
+	Comment : Create SP CheckRoomNoExistInTempBulkReservationMaster
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[CheckRoomNoExistInTempBulkReservationMaster]    Script Date: 2/26/2018 1:46:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckRoomNoExistInTempBulkReservationMaster] 
+		@Id = NULL,
+		@RoomNo = '101'
+*/
+
+CREATE PROCEDURE [dbo].[CheckRoomNoExistInTempBulkReservationMaster]
+	@Id				UNIQUEIDENTIFIER	=	NULL,
+	@RoomNo			NVARCHAR(255)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[TempBulkReservationMaster]  
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND RoomNo = @RoomNo
+		ORDER BY CreatedOn DESC 
+END
+
+
+/*********************** Create new table ProfileRemarks   ***********************/
+
+/****** Object:  Table [dbo].[ProfileRemarks]    Script Date: 2/26/2018 1:58:43 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ProfileRemarks](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ProfileId] [uniqueidentifier] NOT NULL,
+	[Remarks] [nvarchar](max) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_ProfileRemarks] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] 
+GO
+
+/************************************************************************************************************************ 
+	SP Name : AddProfileRemark
+	Comment : Create SP AddProfileRemark
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[AddProfileRemark]    Script Date: 2/26/2018 2:24:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddProfileRemark]	
+	@ProfileId		UNIQUEIDENTIFIER				,
+	@Remarks		NVARCHAR(MAX)					,	
+	@CreatedOn		DATETIME			=	NULL	,					
+	@CreatedBy		INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ProfileRemarks]
+           (
+					[Id]           
+				,	[ProfileId]		   
+				,	[Remarks]
+				,	[CreatedBy]
+				,	[CreatedOn]
+		   )
+     VALUES
+           (
+					@Id			   
+			   ,	@ProfileId
+			   ,	@Remarks
+			   ,	@CreatedBy
+			   ,	@CreatedOn
+           )
+
+		SELECT @Id AS Id    
+END
+
+/************************************************************************************************************************ 
+	SP Name : UpdateProfileRemark
+	Comment : Create SP UpdateProfileRemark
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[UpdateProfileRemark]    Script Date: 2/26/2018 2:28:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateProfileRemark]
+	@Id				UNIQUEIDENTIFIER				,
+	@ProfileId		UNIQUEIDENTIFIER				,
+	@Remarks		NVARCHAR(MAX)					,		
+	@UpdatedOn		DATETIME			=	NULL	,		
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ProfileRemarks]
+		SET		[ProfileId]			=	@ProfileId	   
+		   ,	[Remarks]			=	@Remarks
+		   ,	[UpdatedBy]			=	@UpdatedBy
+		   ,	[UpdatedOn]			=	@UpdatedOn
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+/************************************************************************************************************************ 
+	SP Name : DeleteProfileRemark
+	Comment : Create SP DeleteProfileRemark
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteProfileRemark]    Script Date: 2/26/2018 2:29:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteProfileRemark]
+	@Id			UNIQUEIDENTIFIER	,	
+	@UpdatedBy	INT					,
+	@UserId		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[ProfileRemarks] 
+		SET		[IsDeleted] = 1
+			,	[UpdatedBy] = @UpdatedBy					   
+			,	[UpdatedOn] = GETDATE()
+
+     WHERE		ISNULL(IsDeleted,0) = 0 
+				AND Id			= @Id
+				AND [CreatedBy] = @UserId
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetProfileRemarkById
+	Comment : Create SP GetProfileRemarkById
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetProfileRemarkById]    Script Date: 2/26/2018 2:30:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetProfileRemarkById]
+	@Id			UNIQUEIDENTIFIER = NULL	,
+	@UserId		INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ProfileRemarks]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+				AND [CreatedBy] = @UserId
+		ORDER BY CreatedOn DESC
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetProfileRemarks
+	Comment : Create SP GetProfileRemarks
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetProfileRemarks]    Script Date: 2/26/2018 2:30:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetProfileRemarks]
+		@ProfileId		=	NULL	,
+		@Id				=	NULL	,
+		@UserId			=	1
+	
+*/
+
+CREATE PROCEDURE [dbo].[GetProfileRemarks]
+	@ProfileId		UNIQUEIDENTIFIER	=	NULL	,
+	@Id				UNIQUEIDENTIFIER	=	NULL	,
+	@UserId			INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT PRM.Id,PRM.ProfileId,ISNULL(PRM.Remarks,'') AS Remarks, PRM.CreatedOn,
+		  UD.[Name] AS UserName, PRM.CreatedBy,
+		  (CASE	WHEN (ISNULL(PRM.UpdatedBy,0) <> 0 AND PRM.UpdatedOn IS NOT NULL)
+				THEN
+					CONCAT(
+							CONVERT(VARCHAR(10),PRM.UpdatedOn,103), 
+							' ', 
+							'at', 
+							' ', 
+							CONVERT(VARCHAR, PRM.UpdatedOn, 108),
+							' ',
+							'updated by ',
+							UD.[Name]
+						)
+				WHEN (ISNULL(PRM.CreatedBy,0) <> 0 AND PRM.CreatedOn IS NOT NULL)
+				THEN
+					CONCAT(
+							CONVERT(VARCHAR(10),PRM.CreatedOn,103), 
+							' ', 
+							'at', 
+							' ', 
+							CONVERT(VARCHAR, PRM.CreatedOn, 108),
+							' ',
+							'added by ',
+							UD.[Name]
+						)
+				ELSE ''
+			END) AS TrackLog
+ 
+		FROM [dbo].[ProfileRemarks] PRM
+			LEFT JOIN UserDetail UD ON UD.UserId = PRM.CreatedBy
+				AND ISNULL(UD.IsDeleted,0) = 0
+		WHERE	ISNULL(PRM.IsDeleted,0) = 0 
+				AND PRM.[CreatedBy] = @UserId
+				AND (@Id IS NULL OR PRM.Id = @Id)
+				AND (@ProfileId IS NULL OR PRM.ProfileId = @ProfileId)
+		ORDER BY PRM.CreatedOn DESC
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteAllProfile
+	Comment : Changes in SP DeleteAllProfile
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteAllProfile]    Script Date: 2/26/2018 2:11:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/****
+	EXEC [DeleteAllProfile]
+***/
+
+ALTER PROCEDURE [dbo].[DeleteAllProfile]		
+	@UpdatedBy	INT	,
+	@UserId		INT	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	-- ProfilePreferenceMapping	
+	DELETE FROM [dbo].[ProfilePreferenceMapping]  WHERE [CreatedBy] = @UserId
+		
+	-- Profile Remarks
+	UPDATE [dbo].[ProfileRemarks] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND [CreatedBy] = @UserId
+
+	-- IndividualProfile
+	UPDATE [dbo].[IndividualProfile] 
+		SET	[IsDeleted] = 1
+		,[UpdatedBy] = @UpdatedBy					   
+		,[UpdatedOn] = GETDATE()
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND [CreatedBy] = @UserId
+
+
+	-- Delete All reservation by user id.
+	EXEC [DeleteAllReservation] 
+			@UpdatedBy	=	@UpdatedBy,
+			@UserId		=	@UserId
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteIndividualProfile
+	Comment : Changes in SP DeleteIndividualProfile
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[DeleteIndividualProfile]    Script Date: 2/26/2018 2:09:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[DeleteIndividualProfile]
+	@Id			UNIQUEIDENTIFIER	,	
+	@UpdatedBy	INT					,
+	@UserId		INT					
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @ProfileTypeId  UNIQUEIDENTIFIER = NULL
+
+	SET @ProfileTypeId = (SELECT ProfileTypeId 
+								FROM [IndividualProfile]  
+								WHERE	ISNULL(IsDeleted,0) = 0  
+										AND Id = @Id 
+										AND [CreatedBy] = @UserId)
+
+	--Delete Profile Preference Mapping
+	DELETE FROM [dbo].[ProfilePreferenceMapping] 
+		WHERE ProfileId = @Id
+			AND ProfileTypeId = @ProfileTypeId
+			AND [CreatedBy] = @UserId
+
+
+	--Delete Profile Remarks
+	UPDATE [dbo].[ProfileRemarks]  
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND ProfileId = @Id
+			AND [CreatedBy] = @UserId
+
+	--Delete Individual Profile
+	UPDATE [dbo].[IndividualProfile] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  Id = @Id
+			AND [CreatedBy] = @UserId
+
+	
+
+	--Delete Reservation related data of this profile.
+
+	--Reservation 
+	UPDATE [dbo].[Reservation]
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ProfileId = @Id
+			AND [CreatedBy] = @UserId
+
+	--CheckInCheckOutDetail 
+	UPDATE [dbo].[CheckInCheckOutDetail] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ProfileId = @Id
+			AND [CreatedBy] = @UserId
+
+	--ReservationLog
+	UPDATE [dbo].[ReservationLog]
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND  ProfileId = @Id
+			AND [CreatedBy] = @UserId
+
+
+	SELECT @Id AS Id
+    
+END
+
+
+

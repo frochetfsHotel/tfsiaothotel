@@ -394,6 +394,7 @@ namespace SuccessHotelierHub.Controllers
             if (reservation != null && reservation.Count > 0)
             {
                 model = reservation[0];
+                model.Remarks = string.Empty;
 
                 if (model.ArrivalDate.HasValue)
                 {
@@ -915,8 +916,7 @@ namespace SuccessHotelierHub.Controllers
                     }
 
                     #endregion
-
-
+                    
                     #region Update Reservation Total Balance.
 
                     if (model.IsCheckOut == false)
@@ -925,6 +925,24 @@ namespace SuccessHotelierHub.Controllers
 
                         //Update Total Balance.
                         reservationRepository.UpdateReservationTotalBalance(Guid.Parse(reservationId), totalGuestBalance, LogInManager.LoggedInUserId);
+                    }
+
+                    #endregion
+
+                    #region Add Reservation Remarks 
+
+                    if (!string.IsNullOrWhiteSpace(model.Remarks))
+                    {
+                        ReservationRemarkVM remark = new ReservationRemarkVM();                        
+                        remark.ReservationId = Guid.Parse(reservationId);
+                        remark.Remarks = model.Remarks;
+                        remark.CreatedBy = LogInManager.LoggedInUserId;
+                        if (!remark.CreatedOn.HasValue)
+                        {
+                            remark.CreatedOn = DateTime.Now;
+                        }
+
+                        reservationRepository.AddReservationRemark(remark);                        
                     }
 
                     #endregion
@@ -1335,8 +1353,7 @@ namespace SuccessHotelierHub.Controllers
                     reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
                 }
                 #endregion 
-
-
+                
                 #region Reservation Remarks 
 
                 if (model.RemarksList != null && model.RemarksList.Count > 0)
@@ -1345,6 +1362,10 @@ namespace SuccessHotelierHub.Controllers
                     {
                         remark.ReservationId = model.Id;
                         remark.CreatedBy = LogInManager.LoggedInUserId;
+                        if (!remark.CreatedOn.HasValue)
+                        {
+                            remark.CreatedOn = DateTime.Now;
+                        }
 
                         reservationRepository.AddReservationRemark(remark);
                     }
@@ -1551,16 +1572,17 @@ namespace SuccessHotelierHub.Controllers
                         
             var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, DateTime.Now.ToString("MM/dd/yyyy"), LogInManager.LoggedInUserId);
 
-            var rateTypeList = rateTypeRepository.GetRateType(string.Empty);            
-            var packageList = new SelectList(
-                 packageRepository.GetPackages()
-                 .Select(
-                     m => new SelectListItem()
-                     {
-                         Value = m.Id.ToString(),
-                         Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-                     }
-                 ), "Value", "Text").ToList();
+            var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
+            var packageList = packageRepository.GetPackages();
+            //var packageList = new SelectList(
+            //     packageRepository.GetPackages()
+            //     .Select(
+            //         m => new SelectListItem()
+            //         {
+            //             Value = m.Id.ToString(),
+            //             Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
+            //         }
+            //     ), "Value", "Text").ToList();
 
 
             ViewBag.RateTypeList = rateTypeList;

@@ -718,8 +718,7 @@
     }
 
     function RoomChange() {
-        if (!IsNullOrEmpty($('form#frmBulkReservation #RoomId').val())) {
-            debugger;
+        if (!IsNullOrEmpty($('form#frmBulkReservation #RoomId').val())) {            
             var roomNo = $('form#frmBulkReservation #RoomId option:selected').text();
 
             $('form#frmBulkReservation #RoomNo').val(roomNo);

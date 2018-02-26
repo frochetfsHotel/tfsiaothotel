@@ -55,6 +55,13 @@
     }
 }
 
+<style type="text/css">
+    #tblProfileRemark thead {
+        background-color: #367FA9;
+        color: #fff;
+    }
+</style>
+
 <section class="content-header">
     <h1>
         Individual Profile <small>Edit</small>
@@ -199,33 +206,64 @@
                             <span class="checkmark"></span>
                         </label>
                     </div>
-                    <div class="col-xs-2 form-group m-t-md m-t-md_media">
-                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
-                            Preference
-                        </button>
-                    </div>
-                </div>
-                <div class="row" style="display:none;" id="divSelectedPreference">
-                    <div class="col-md-12 form-group">
-                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-2 control-label m-r-n-xl">Selected Preference : </label>
-                        <div class="col-sm-10" id="ListOfSelectedPreferences">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12 form-group">
-                        @Html.LabelFor(m => m.Remarks)
-                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", placeholder = "Remarks" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2 m-b-xs m-r-n-lg">
+                    <div class="col-md-2 form-group m-t-lg m-r-n-lg">
                         <label for="IsActive" class="container1">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
                             <span class="checkmark"></span>
                         </label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <hr class="m-t-none" />
+                    <div class="col-xs-1 form-group">
+                        <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
+                            Preference
+                        </button>
+                    </div>
+                    <div class="col-md-11 form-group" style="display:none;" id="divSelectedPreference">
+                        <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
+                        <div class="col-sm-9" id="ListOfSelectedPreferences">
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="row">
+                    <div class="col-md-12 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", placeholder = "Remarks" })
+                    </div>
+                </div>*@
+                <div class="row">
+                    <hr class="m-t-none" />
+                    <div class="col-md-12 form-group">
+                        @Html.LabelFor(m => m.Remarks)
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
+                        <input type="hidden" id="hdnProfileRemarkId" name="hdnProfileRemarkId" value="" />
+                    </div>
+                    <div class="col-xs-3 form-group m-t-xl m-t-md_media"  style="display:none;">
+                        <button type="button" class="btn btn-primary btn-sm m-r-xs btnProfileRemarks" id="btnProfileRemarks">
+                            Add Remarks
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm btnCancelProfileRemarks" id="btnCancelProfileRemarks"
+                                onclick="ClearRemarks();">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <div class="row" id="divProfileRemark" style="display:none;">
+                    <div class="col-md-12 table-responsive table_maxRemarks">
+                        <table class="table table-bordered table-hover table-striped cursor-P" id="tblProfileRemark">
+                            <thead>
+                                <tr>
+                                    <th class="width_50">Remarks</th>
+                                    <th class="width_35">Track</th>
+                                    <th class="width_15">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -305,6 +343,83 @@
 
                 //Close Preference Search Modal.
                 $('#preferenceModal').modal('toggle');
+            }
+        });
+
+        //Profile Remarks
+        LoadProfileRemarksGrid();
+
+        $('form#frmIndividualProfile #btnProfileRemarks').click(function (e) {
+            var remarkId = $('form#frmIndividualProfile #hdnProfileRemarkId').val();
+            var profileId = $('form#frmIndividualProfile #Id').val();
+            var remarks = $('form#frmIndividualProfile #Remarks').val();
+
+            if (IsNullOrEmpty(remarks)) {
+                showToaster("Please enter remarks", ToasterType.ERROR);
+                return false;
+            }
+
+            var modelProfileRemark = {};
+            modelProfileRemark.ProfileId = profileId;
+            modelProfileRemark.Remarks = remarks;
+
+            if (!IsNullOrEmpty(remarkId)) {
+                modelProfileRemark.Id = remarkId;
+
+                //Ajax request to update Profile remarks.
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                        ClearRemarks();
+                    },
+                    url: '@Url.Content("~/Profile/UpdateProfileRemark")',
+                    type: 'POST',
+                    data: modelProfileRemark,
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("Remarks updated successfully", ToasterType.SUCCESS);
+
+                            LoadProfileRemarksGrid();
+                        }
+                    }
+                });
+            } else {
+                //Ajax request to add Profile remarks.
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                        ClearRemarks();
+                    },
+                    url: '@Url.Content("~/Profile/AddProfileRemark")',
+                    type: 'POST',
+                    data: modelProfileRemark,
+                    success: function (response) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("Remarks saved successfully", ToasterType.SUCCESS);
+
+                            LoadProfileRemarksGrid();
+                        }
+                    }
+                });
+
             }
         });
 
@@ -568,6 +683,122 @@
         if (!IsNullOrEmpty('@Model.Remarks'))
             $('label[for="Remarks"]').addClass("label-bold");
     }
+
+    //Profile Remarks : START
+    function LoadProfileRemarksGrid() {
+        var profileId = $('form#frmIndividualProfile #Id').val();
+
+        if (!IsNullOrEmpty(profileId)) {
+            //Ajax request to load Profile remarks details.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Profile/GetProfileRemarks")',
+                type: 'POST',
+                data: { profileId: profileId },
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                        $("form#frmIndividualProfile #divProfileRemark").hide();
+                    }
+                    else {
+                        //Show data in table.
+                        var result = response.data;
+
+
+                        $("form#frmIndividualProfile #divProfileRemark").show();
+
+                        $("form#frmIndividualProfile #tblProfileRemark tbody").empty();
+                        var tbody = $("form#frmIndividualProfile #tblProfileRemark tbody");
+
+                        var markup = "";
+
+                        if (result.length > 0) {
+                            //Add the data rows.
+                            for (var i = 0; i < result.length; i++) {
+                                markup += "<tr id='tr_" + result[i].Id + "'>";
+
+                                //Remarks
+                                markup += "<td class='remarks'>" + result[i].Remarks + "</td>";
+
+                                //TrackLog
+                                markup += "<td class='tracklog'>" + result[i].TrackLog + "</td>";
+
+
+                                //Action
+                                markup += "<td>";
+
+                                //Edit
+                                //markup += "<a href=\"javascript:void(0);\" onclick=\"editProfileRemark('" + result[i].Id + "','" + html_entity_decode(result[i].Remarks) + "');\" class=\"text-success font_18 m-r-md\"><i class='fa fa-edit'/></a>";
+
+                                //Delete
+                                markup += "<a href=\"javascript:void(0);\" class=\"text-danger font_18 m-r-md \" onclick=\"deleteProfileRemark('" + result[i].Id + "');\"><i class='fa fa-trash'/></a>";
+
+                                markup += "</td>";
+
+                                markup += "</tr>";
+                            }
+                        } else {
+                            markup += "<tr><td colspan =\'3\' class=\'text-center\'>No data available.</td></tr>";
+                        }
+
+                        tbody.append(markup);
+                    }
+                }
+            });
+        }
+    }
+
+    function editProfileRemark(id, remarks) {
+        $('form#frmIndividualProfile #hdnProfileRemarkId').val(id);
+        $('form#frmIndividualProfile #Remarks').val(remarks);
+        $('form#frmIndividualProfile #btnProfileRemarks').html("Update Remarks");
+
+    }
+
+    function deleteProfileRemark(id) {
+        //Ajax request to delete remark.
+        var trId = "#tr_" + id;
+
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+                ClearRemarks();
+            },
+            url: '@Url.Content("~/Profile/DeleteProfileRemark")',
+            type: 'POST',
+            data: { id: id },
+            success: function (response) {
+                if (response.IsSuccess == true) {
+                    $("form#frmIndividualProfile #tblProfileRemark tbody " + trId).remove();
+                    showToaster("Remark deleted successfully", ToasterType.SUCCESS);
+                }
+                else {
+                    showToaster(response.errorMessage, ToasterType.ERROR);
+                }
+            }
+        });
+    }
+
+    function ClearRemarks() {
+        $('form#frmIndividualProfile #hdnProfileRemarkId').val('');
+        $('form#frmIndividualProfile #Remarks').val('');
+        $('form#frmIndividualProfile #btnProfileRemarks').html("Add Remarks");
+    }
+    //Profile Remarks : END
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation

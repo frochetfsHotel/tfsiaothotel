@@ -5,11 +5,14 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Models.StoredProcedure;
 
 namespace SuccessHotelierHub.Repository
 {
     public class ProfileRepository
     {
+        #region Profile
+
         public string AddIndividualProfile(IndividualProfileVM profile)
         {
             string profileId = string.Empty;
@@ -36,7 +39,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@CarRegistrationNo", Value = profile.CarRegistrationNo },
                     new SqlParameter { ParameterName = "@PassportNo", Value = profile.PassportNo  },
                     new SqlParameter { ParameterName = "@DOB", Value = profile.DOB },
-                    new SqlParameter { ParameterName = "@Remarks", Value = profile.Remarks },
+                    //new SqlParameter { ParameterName = "@Remarks", Value = profile.Remarks },
+                    new SqlParameter { ParameterName = "@Remarks", Value = string.Empty },
                     new SqlParameter { ParameterName = "@IsMailingList", Value = profile.IsMailingList },
                     new SqlParameter { ParameterName = "@IsActive", Value = profile.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = profile.CreatedBy }
@@ -74,7 +78,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@CarRegistrationNo", Value = profile.CarRegistrationNo },
                     new SqlParameter { ParameterName = "@PassportNo", Value = profile.PassportNo  },
                     new SqlParameter { ParameterName = "@DOB", Value = profile.DOB },
-                    new SqlParameter { ParameterName = "@Remarks", Value = profile.Remarks },
+                    //new SqlParameter { ParameterName = "@Remarks", Value = profile.Remarks },
+                    new SqlParameter { ParameterName = "@Remarks", Value = string.Empty },
                     new SqlParameter { ParameterName = "@IsMailingList", Value = profile.IsMailingList },
                     new SqlParameter { ParameterName = "@IsActive", Value = profile.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = profile.UpdatedBy }
@@ -217,6 +222,10 @@ namespace SuccessHotelierHub.Repository
             return profile;
         }
 
+        #endregion
+
+        #region Temp Bulk Profiles
+
         public void LoadDefaultIndividualProfile(int userId)
         {
             SqlParameter[] parameters =
@@ -225,7 +234,96 @@ namespace SuccessHotelierHub.Repository
                 };
 
             DALHelper.Execute("LoadDefaultIndividualProfile", parameters);
-            
         }
+
+        #endregion
+                
+        #region Profile Remarks
+
+        public List<ProfileRemarksResultVM> GetProfileRemarks(Guid profileId, Guid? id, int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@ProfileId", Value = profileId },
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetProfileRemarks", parameters);
+
+            var remarks = new List<ProfileRemarksResultVM>();
+            remarks = DALHelper.CreateListFromTable<ProfileRemarksResultVM>(dt);
+
+            return remarks;
+        }
+
+        public List<ProfileRemarkVM> GetProfileRemarkById(Guid id, int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetProfileRemarkById", parameters);
+
+            var remark = new List<ProfileRemarkVM>();
+            remark = DALHelper.CreateListFromTable<ProfileRemarkVM>(dt);
+
+            return remark;
+        }
+
+        public string AddProfileRemark(ProfileRemarkVM remark)
+        {
+            string remarkId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ProfileId", Value = remark.ProfileId },
+                    new SqlParameter { ParameterName = "@Remarks", Value = remark.Remarks },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = remark.CreatedBy },
+                    new SqlParameter { ParameterName = "@CreatedOn", Value = remark.CreatedOn },
+                };
+
+            remarkId = Convert.ToString(DALHelper.ExecuteScalar("AddProfileRemark", parameters));
+
+            return remarkId;
+        }
+
+        public string UpdateProfileRemark(ProfileRemarkVM remark)
+        {
+            string remarkId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = remark.Id },
+                    new SqlParameter { ParameterName = "@ProfileId", Value = remark.ProfileId },
+                    new SqlParameter { ParameterName = "@Remarks", Value = remark.Remarks },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = remark.UpdatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedOn", Value = remark.UpdatedOn },
+                };
+
+            remarkId = Convert.ToString(DALHelper.ExecuteScalar("UpdateProfileRemark", parameters));
+
+            return remarkId;
+        }
+
+        public string DeleteProfileRemark(Guid id, int updatedBy, int userId)
+        {
+            string remarkId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            remarkId = Convert.ToString(DALHelper.ExecuteScalar("DeleteProfileRemark", parameters));
+
+            return remarkId;
+        }
+
+        #endregion
     }
 }

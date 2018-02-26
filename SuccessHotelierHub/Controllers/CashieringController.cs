@@ -614,7 +614,18 @@ namespace SuccessHotelierHub.Controllers
             model.Name = (profile.FirstName + ' ' + profile.LastName);
 
             #region Fetch Address
-            model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+            var address = "";
+            if (!string.IsNullOrWhiteSpace(profile.Address))
+            {
+                address = profile.Address.Replace(",", Delimeter.BREAKLINE);
+            }
+            else
+            {
+                address = profile.HomeAddress.Replace(",", Delimeter.BREAKLINE);
+            }
+
+            //model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+            model.Address = address;
 
             if (!string.IsNullOrWhiteSpace(profile.CityName))
             {
@@ -808,7 +819,18 @@ namespace SuccessHotelierHub.Controllers
                 model.Name = (profile.FirstName + ' ' + profile.LastName);
 
                 #region Fetch Address
-                model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+                var address = "";
+                if (!string.IsNullOrWhiteSpace(profile.Address))
+                {
+                    address = profile.Address.Replace(",", Delimeter.BREAKLINE);
+                }
+                else
+                {
+                    address = profile.HomeAddress.Replace(",", Delimeter.BREAKLINE);
+                }
+
+                //model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+                model.Address = address;
 
                 if (!string.IsNullOrWhiteSpace(profile.CityName))
                 {

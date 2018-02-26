@@ -329,10 +329,15 @@
                             <option value="">--Select Package--</option>
                             @if (packageList != null && packageList.Count > 0)
                             {
+                                var packageDescription = "";
                                 foreach (var package in packageList)
                                 {
+                                    packageDescription = package.Name;
+                                    packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
+                                    packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
+
                                     <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
-                                        @(package.Name + (!string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : ""))
+                                        @(packageDescription)
                                     </option>
                                 }
                             }
@@ -486,7 +491,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="display:none;">
                     <hr  class="m-t-none"/>
                     <div class="col-xs-1 form-group">
                         <button type="button" class="btn bg-navy btn-sm" onclick="openAddOnsModal();">
@@ -505,13 +510,13 @@
 
                 <div class="row">
                     <hr class="m-t-none"/>
-                    <div class="col-md-9 form-group">
+                    <div class="col-md-12 form-group">
                         @Html.LabelFor(m => m.Remarks)
                         @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
                         <input type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
                         <input type="hidden" id="hdnTotalReservationRemarks" name="hdnTotalReservationRemarks" value="0" />
                     </div>
-                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                    <div class="col-xs-3 form-group m-t-xl m-t-md_media" style="display:none;">
                         <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
                             Add Remarks
                         </button>
@@ -784,7 +789,11 @@
                 //Close Profile Search Modal.
                 $('#profileSearchModal').modal('toggle');
 
+                //Show Profile Preferences.
                 showPreferencesByProfile(profileId);
+
+                //Show Profile Remarks.
+                ShowProfileRemarks();
 
             } else {
                 showToaster("Please select any one profile.", ToasterType.ERROR);
@@ -862,6 +871,9 @@
         if (!IsNullOrEmpty('@Model.ProfileId')) {
             showPreferencesByProfile('@Model.ProfileId');
         }
+
+        //Show Profile Remarks.
+        ShowProfileRemarks();
 
         //Reservation Remarks
         $('form#frmReservation #btnReservationRemarks').click(function (e) {
@@ -1135,6 +1147,18 @@
                     reservationRemarkList.push(modelReservationRemark);
                 }
             });
+
+            var remarks = $("form#frmReservation #Remarks").val();
+            if (!IsNullOrEmpty(remarks)) {
+                var dateObj = new Date();
+                var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
+
+                var modelReservationRemark = {};
+                modelReservationRemark.Remarks = remarks;
+                modelReservationRemark.CreatedOn = createdOn;
+
+                reservationRemarkList.push(modelReservationRemark);
+            }
 
 
             var formData = $('#frmReservation').serializeObject();
@@ -1560,7 +1584,7 @@
 
         //Action
         html += "<td>";
-        html += "<a href='javascript:void(0);' onclick='editReservationRemark(this);' class='text-success font_18 m-r-md'><i class='fa fa-edit'/></a>";
+        //html += "<a href='javascript:void(0);' onclick='editReservationRemark(this);' class='text-success font_18 m-r-md'><i class='fa fa-edit'/></a>";
         html += "<a href='javascript:void(0);' onclick='deleteReservationRemark(this);' class='text-danger font_18 m-r-md'><i class='fa fa-trash'/></a>";
         html += "</td>";
 
@@ -1591,6 +1615,7 @@
             html += remarks;
             html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
             $('form#frmReservation #tblReservationRemark tbody ' + trId + ' #Remarks_' + rowNumber).val(remarks);
+            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.remarks').html(html);
 
             //TrackLog
             var userName = '@LogInManager.UserName';
@@ -1604,10 +1629,7 @@
             html += trackLog;
             html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
             $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.tracklog').html(html);
-
             
-
-            $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.remarks').html(html);
 
             //showToaster("Remark updated successfully", ToasterType.SUCCESS);
 
@@ -1635,6 +1657,103 @@
         $('form#frmReservation #hdnReservationRemarkId').val('');
         $('form#frmReservation #Remarks').val('');
         $('form#frmReservation #btnReservationRemarks').html("Add Remarks");
+    }
+
+    function ShowProfileRemarks() {
+        var profileId = $('form#frmReservation #ProfileId').val();
+
+        if (!IsNullOrEmpty(profileId)) {
+            //Ajax request to load Profile remarks details.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Profile/GetProfileRemarks")',
+                type: 'POST',
+                data: { profileId: profileId },
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                        $("form#frmReservation #divReservationRemark").hide();
+                    }
+                    else {                        
+                        //Show data in table.
+                        var result = response.data;
+
+                        if (result.length > 0) {
+                            $('form#frmReservation #tblReservationRemark tbody').empty();
+
+                            //Add the data rows.
+                            for (var i = 0; i < result.length; i++) {
+                                AddProfileRemarkToReservation(result[i].Remarks);
+
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function AddProfileRemarkToReservation(remark) {        
+        var rowNumber = $('#hdnTotalReservationRemarks').val();
+
+        if (!IsNullOrEmpty(rowNumber)) {
+            rowNumber = parseInt(rowNumber) + 1;
+        } else {
+            rowNumber = 1;
+        }
+
+        var remarks = remark;
+
+        var html = "";
+
+        //Create New Row
+        html += "<tr data-rownumber='" + rowNumber + "' id='tr_" + rowNumber + "'>";
+
+        //Remarks
+        html += "<td class='remarks'>";
+        html += remarks;
+        html += "<input type='hidden' id='Remarks_" + rowNumber + "' name='Remarks_" + rowNumber + "' value='" + remarks + "'/>";
+        html += "</td>";
+
+        //TrackLog
+        var userName = '@LogInManager.UserName';
+        var dateObj = new Date();
+        var createdDate = GetDate(dateObj, DateFormat.DDMMYYYY);
+        var createdTime = GetTime(dateObj);
+        var trackLog = createdDate + " at " + createdTime + " added by " + userName;
+        var createdOn = (GetDate(dateObj, DateFormat.DDMMYYYY) + ' ' + GetTime(dateObj));
+
+        html += "<td class='tracklog'>";
+        html += trackLog;
+        html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
+        html += "</td>";
+
+
+
+        //Action
+        html += "<td>";
+        //html += "<a href='javascript:void(0);' onclick='editReservationRemark(this);' class='text-success font_18 m-r-md'><i class='fa fa-edit'/></a>";
+        html += "<a href='javascript:void(0);' onclick='deleteReservationRemark(this);' class='text-danger font_18 m-r-md'><i class='fa fa-trash'/></a>";
+        html += "</td>";
+
+        html += "</tr>";
+
+
+        $('form#frmReservation #tblReservationRemark tbody').prepend(html);
+
+        $('#hdnTotalReservationRemarks').val(rowNumber);
+
+        ClearRemarks();
+
+        $("form#frmReservation #divReservationRemark").show();
     }
     //Reservation Remarks : END
 
@@ -1996,8 +2115,7 @@
 
 </script>
 
-@section scripts {
-    @Scripts.Render("~/Scripts/AdminLTE/select2/select2.min.js")
+@section scripts {    
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>

@@ -138,8 +138,6 @@
 
 
 @section styles{
-    @Styles.Render("~/Content/css/AdminLTE/select2/select2.css")
-    @Styles.Render("~/Content/css/AdminLTE/select2/select2-bootstrap.css")
     <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
 }
 <style type="text/css">
@@ -454,10 +452,15 @@
                             <option value="">--Select Package--</option>
                             @if (packageList != null && packageList.Count > 0)
                             {
+                                var packageDescription = "";
                                 foreach (var package in packageList)
                                 {
+                                    packageDescription = package.Name;
+                                    packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
+                                    packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
+
                                     <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
-                                        @(package.Name + (!string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : ""))
+                                        @(packageDescription)
                                     </option>
                                 }
                             }
@@ -612,7 +615,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row" style="display:none;">
                     <hr class="m-t-none"/>
                     <div class="col-xs-1 form-group">
                         <button type="button" class="btn bg-navy btn-sm" onclick="openAddOnsModal();">
@@ -631,12 +634,12 @@
 
                 <div class="row">
                     <hr class="m-t-none"/>
-                    <div class="col-md-9 form-group">
+                    <div class="col-md-12 form-group">
                         @Html.LabelFor(m => m.Remarks)
                         @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
                         <input type="hidden" id="hdnReservationRemarkId" name="hdnReservationRemarkId" value="" />
                     </div>
-                    <div class="col-xs-3 form-group m-t-xl m-t-md_media">
+                    <div class="col-xs-3 form-group m-t-xl m-t-md_media" style="display:none;">
                         <button type="button" class="btn btn-primary btn-sm m-r-xs btnReservationRemarks" id="btnReservationRemarks">
                             Add Remarks
                         </button>
@@ -2003,7 +2006,15 @@
                                                                 
 
                                 //Action
-                                markup += "<td><a href=\"javascript:void(0);\" onclick=\"editReservationRemark('" + result[i].Id + "','" + html_entity_decode(result[i].Remarks) + "');\" class=\"text-success font_18 m-r-md\"><i class='fa fa-edit'/></a><a href=\"javascript:void(0);\" class=\"text-danger font_18 m-r-md \" onclick=\"deleteReservationRemark('" + result[i].Id + "');\"><i class='fa fa-trash'/></a></td> ";
+                                markup += "<td>";
+
+                                //Edit
+                                //markup += "<a href=\"javascript:void(0);\" onclick=\"editReservationRemark('" + result[i].Id + "','" + html_entity_decode(result[i].Remarks) + "');\" class=\"text-success font_18 m-r-md\"><i class='fa fa-edit'/></a>";
+
+                                //Delete
+                                markup += "<a href=\"javascript:void(0);\" class=\"text-danger font_18 m-r-md \" onclick=\"deleteReservationRemark('" + result[i].Id + "');\"><i class='fa fa-trash'/></a>";
+
+                                markup += "</td>";
 
                                 markup += "</tr>";
                             }
@@ -2430,8 +2441,7 @@
     };
 </script>
 
-@section scripts {
-    @Scripts.Render("~/Scripts/AdminLTE/select2/select2.min.js") 
+@section scripts {    
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
