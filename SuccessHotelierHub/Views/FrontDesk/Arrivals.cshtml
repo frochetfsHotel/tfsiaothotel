@@ -153,12 +153,18 @@
                     </div>
                 </div>
 
+                <div class="col-xs-12 padding-zero m-t" id="divMultipleAction" style="display:none;">
+                    <div class="text-left">
+                        <button type="button" id="btnPrintMultipleRegistrationCard" class="btn bg-orange btn-sm" onclick="printSelectedRegistrationCard()">Print Registration Cards</button>
+                    </div>
+                </div>
 
                 <div class="col-xs-12 padding-zero m-t" id="divArrivalList" style="display:none;">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblArrival">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
                                     <th>Room</th>
@@ -169,7 +175,7 @@
                                     <th>Rms</th>
                                     <th>Night</th>
                                     <th class="width_10">Status</th>
-                                    <th class="width_20">Action</th>
+                                    <th class="width_35">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -237,13 +243,14 @@
     var currentPage = 1;
     var grdArrival;
     var IsSearchButtonClicked = false;
+    var selectedReservationIds = [];
 
     $(document).ready(function () {
 
         setTimeout(InitializeArrivalGrid, 200);
 
         //Default Arrival Date. (Set today's date).
-        $("#ArrivalDate").datepicker("setDate", new Date());  
+        $("#ArrivalDate").datepicker("setDate", new Date());
 
         //Room
         $('form#frmAdvanceRoomSearch .btnAdvanceSearchRoomOk').click(function (e) {
@@ -314,7 +321,7 @@
         var agentId = $('#AgentId').val();
         var memberTypeId = $('#MemberTypeId').val();
         var memberNo = $('#MemberNo').val();
-        var arrivalDate = $('#ArrivalDate').val();        
+        var arrivalDate = $('#ArrivalDate').val();
         var confirmationNo = $('#ConfirmationNo').val();
         var postalCode = $('#PostalCode').val();
         var roomNumber = $('#RoomNumber').val();
@@ -331,7 +338,7 @@
         d.AgentId = agentId;
         d.MemberTypeId = memberTypeId;
         d.MemberNo = memberNo;
-        d.ArrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);                
+        d.ArrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
         //d.ArrivalDate = arrivalDate;
         d.ConfirmationNo = confirmationNo;
         d.PostalCode = postalCode;
@@ -344,6 +351,13 @@
         if (response.IsSuccess == true) {
 
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            if (response.data.length > 0) {
+                $('#divMultipleAction').show();
+            } else {
+                ClearReservationIdsArray();
+                $('#divMultipleAction').hide();
+            }
 
             if (IsSearchButtonClicked) {
                 goToByScroll("divArrivalList");
@@ -361,7 +375,7 @@
         if (!IsNullOrEmpty(grdArrival)) {
             grdArrival.ajax.url("@Url.Content("~/FrontDesk/SearchArrivals")").load();
         } else {
-            InitializeArrivalGrid();            
+            InitializeArrivalGrid();
         }
         $('#divArrivalList').show();
     }
@@ -384,6 +398,7 @@
                 },
                 complete: function () {
                     hideLoader();
+                    BindCheckBoxReservationChangeEvent();
                 },
                 url: '@Url.Content("~/FrontDesk/SearchArrivals")',
                 data: SearchArrivalParameters,
@@ -398,128 +413,147 @@
             bDestroy: true,
             paging: false,
             searching: false,
-            bLengthChange: false,            
+            bLengthChange: false,
             info: false,
             columnDefs: [
             {
                 targets: 0,
-                data: "LastName",
-                orderable: true,
+                data: "CreatedOn",
+                orderable: false,
                 render: function (data, type, full, meta) {
-                    var html = "";
-                  
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.LastName + '</a> ';
-                  
-                    return html;
+                    var chkBox = "";
+                    var checked = "";
+                    if (selectedReservationIds != null && selectedReservationIds.length > 0) {
+                        if (arrayContains(full.Id, selectedReservationIds) == true) {
+                            checked = "checked";
+                        }
+                    }
+
+                    chkBox += "<label class='container1' for='chkReservation_" + full.Id + "'>";
+                    chkBox += "<input type='checkbox' class='chkReservation' id='chkReservation_" + full.Id + "' name='chkReservation_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
+                    chkBox += "<span class='checkmark'></span> </label>";
+                    return chkBox;
                 }
             },
             {
                 targets: 1,
-                data: "FirstName",
+                data: "LastName",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    var html = "";                   
+                    var html = "";
 
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.FirstName + '</a>';
-                    
+                        + ' class="">' + full.LastName + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 2,
-                data: "RoomNumbers",
-                orderable: false,
+                data: "FirstName",
+                orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                   
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.RoomNumbers + '</a> ';
-                    
-                    return html;                    
+                        + ' class="">' + full.FirstName + '</a>';
+
+                    return html;
                 }
             },
             {
                 targets: 3,
-                data: "RoomTypeCode",
-                orderable: true,
+                data: "RoomNumbers",
+                orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.RoomTypeCode + '</a> ';
-                   
+                        + ' class="">' + full.RoomNumbers + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 4,
-                data: "RateTypeCode",
+                data: "RoomTypeCode",
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                   
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.RateTypeCode + '</a> ';
-                   
+                        + ' class="">' + full.RoomTypeCode + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 5,
-                data: "ArrivalDate",
+                data: "RateTypeCode",
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.ArrivalDate + '</a> ';
-                  
+                        + ' class="">' + full.RateTypeCode + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 6,
-                data: "DepartureDate",
+                data: "ArrivalDate",
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                   
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.DepartureDate + '</a> ';
-                
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 7,
-                data: "NoOfRoom",
-                orderable: false,
+                data: "DepartureDate",
+                orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.NoOfRoom + '</a> ';
-                   
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 8,
-                data: "NoOfNight",
+                data: "NoOfRoom",
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                                      
+
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.NoOfNight + '</a> ';
-                  
+                        + ' class="">' + full.NoOfRoom + '</a> ';
+
                     return html;
                 }
             },
             {
                 targets: 9,
+                data: "NoOfNight",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfNight + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 10,
                 data: "Id",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -537,15 +571,15 @@
                 }
             },
             {
-                targets: 10,
+                targets: 11,
                 data: "Id",
                 orderable: false,
-                className: "text-center",
+                className: "text-left-align",
                 render: function (data, type, full, meta) {
                     var buttons = '';
                     buttons += '<a href="javascript:void(0);" onclick="GotoProfileEditPage(\'' + full.ProfileId + '\')" '
                                 + ' class="btn bg-olive btn-xs m-r-xs">Profile</a> ';
-                    
+
                     if (full.IsCheckIn == true) {
                         buttons += '<a href="javascript:void(0);" onclick="ReverseCheckIn(\'' + full.Id + '\')" '
                                                         + ' class="btn btn-primary btn-xs m-r-xs">Reverse Check In</a> ';
@@ -554,11 +588,16 @@
                                                         + ' class="btn btn-primary btn-xs m-r-xs">Check In</a> ';
                     }
 
+                    var printRegistrationUrl = '@Url.Content("~/FrontDesk/PreviewRegistrationCard")' + '?Id=' + full.Id;
+
+                    buttons += '<a href="' + printRegistrationUrl + '" target="_blank"'
+                                                       + ' class="btn btn-info btn-xs m-r-xs">Print Registration</a> ';
+
                     return buttons;
                 }
             }
             ],
-            order: [[0, "asc"]],
+            order: [[1, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
@@ -624,6 +663,7 @@
         //if (validateArrivalSearchData()) {
             IsSearchButtonClicked = true;
             currentPage = 1;
+            ClearReservationIdsArray();
             ReloadArrivalGrid();
         //}
     }
@@ -640,7 +680,7 @@
         $('#MemberTypeId').val('');
         $('#MemberNo').val('');
 
-        $('#ArrivalDate').val('');        
+        $('#ArrivalDate').val('');
         $('#ConfirmationNo').val('');
         $('#PostalCode').val('');
         $('#RoomNumber').val('');
@@ -662,7 +702,7 @@
         var url = '@Url.Content("~/Reservation/Edit")' + "?id=" +  Id + "&source=SearchArrivals";
         redirectTo(url);
     }
-    
+
     function ReverseCheckIn(id) {
         if (!IsNullOrEmpty(id)) {
             swal({
@@ -703,6 +743,74 @@
                     });
                 }
             });
+        }
+    }
+
+    function BindCheckBoxReservationChangeEvent() {
+        $(".chkReservation").change(function () {
+            if (this.checked) {
+                AddReservationIdIntoArray($(this).val());
+            } else {
+                RemoveReservationIdFromArray($(this).val());
+            }
+        });
+    }
+
+    function AddReservationIdIntoArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedReservationIds.push(id);
+        }
+    }
+
+    function RemoveReservationIdFromArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedReservationIds = RemoveArrayItemByValue(id, selectedReservationIds);
+        }
+    }
+
+    function ClearReservationIdsArray() {
+        selectedReservationIds = [];
+    }
+
+    function printSelectedRegistrationCard() {
+
+        if (selectedReservationIds != null && selectedReservationIds.length > 0) {
+            //Ajax request to print multiple registration card.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                async:false,
+                url: '@Url.Content("~/FrontDesk/SaveSelectedPrintRegistrationCard")',
+                type: 'POST',
+                data: { ids: selectedReservationIds },
+                success: function (response) {
+                    if (response.IsSuccess == true) {
+
+                        ClearReservationIdsArray();
+                        searchArrival();
+
+                        if (response.IsExternalUrl) {
+                            //Redirect to print multiple registration card url.
+                            var url = response.data;                            
+                            openPageInNewWindow(url);
+                        }
+
+                        
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            });
+        } else {
+            showToaster("Please select at least one checkbox to print registration card.", ToasterType.ERROR);
         }
     }
 

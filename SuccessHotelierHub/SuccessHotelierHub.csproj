@@ -271,6 +271,7 @@
     <Compile Include="Models\DiscountApprovedVM.cs" />
     <Compile Include="Models\ErrorLogVM.cs" />
     <Compile Include="Models\FloorVM.cs" />
+    <Compile Include="Models\GuestRegistrationCardVM.cs" />
     <Compile Include="Models\HolidayVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -2136,6 +2137,7 @@
     <Content Include="Views\AddOns\List.cshtml" />
     <Content Include="Views\AddOns\_AddOns.cshtml" />
     <Content Include="Views\Common\EditBulkReservation.cshtml" />
+    <Content Include="Views\FrontDesk\PreviewRegistrationCard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1047,6 +1047,33 @@ namespace SuccessHotelierHub.Utility
             }
         }
 
+
+        public static List<string> SplitString(string str, int chunkSize)
+        {
+            return Enumerable.Range(0, str.Length / chunkSize)
+                .Select(i => str.Substring(i * chunkSize, chunkSize)).ToList();
+        }
+
+        public static string[] SplitStringChunks(this string toSplit, int chunkSize)
+        {
+            int stringLength = toSplit.Length;
+
+            int chunksRequired = (int)Math.Ceiling((decimal)stringLength / (decimal)chunkSize);
+            var stringArray = new string[chunksRequired];
+
+            int lengthRemaining = stringLength;
+
+            for (int i = 0; i < chunksRequired; i++)
+            {
+                int lengthToUse = Math.Min(lengthRemaining, chunkSize);
+                int startIndex = chunkSize * i;
+                stringArray[i] = toSplit.Substring(startIndex, lengthToUse);
+
+                lengthRemaining = lengthRemaining - lengthToUse;
+            }
+
+            return stringArray;
+        }
     }
 
     public static class Delimeter

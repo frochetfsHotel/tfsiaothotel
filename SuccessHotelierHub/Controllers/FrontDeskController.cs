@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
+using System.Text;
 
 namespace SuccessHotelierHub.Controllers
 {
@@ -24,6 +25,8 @@ namespace SuccessHotelierHub.Controllers
         private ReservationChargeRepository reservationChargeRepository = new ReservationChargeRepository();
         private PaymentMethodRepository paymentMethodRepository = new PaymentMethodRepository();
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
+        private TitleRepository titleRepository = new TitleRepository();
+        private CountryRepository countryRepository = new CountryRepository();
 
         #endregion
 
@@ -589,6 +592,365 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        
+        public ActionResult PreviewRegistrationCard(Guid? Id)
+        {
+            if (Id == null)
+            {
+                return HttpNotFound();
+            }
 
+            GuestRegistrationCardVM model = new GuestRegistrationCardVM();
+
+            var reservation = reservationRepository.GetReservationById(Id.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+
+            #region Room Mapping
+
+            //Get Room Mapping
+            var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, LogInManager.LoggedInUserId);
+            var roomIds = string.Empty;
+            var roomNumbers = string.Empty;
+
+            if (selectedRooms != null && selectedRooms.Count > 0)
+            {
+                foreach (var room in selectedRooms)
+                {
+                    roomIds += string.Format("{0},", room.RoomId);
+                    roomNumbers += string.Format("{0}, ", room.RoomNo);
+                }
+
+                if (!string.IsNullOrWhiteSpace(roomNumbers))
+                {
+                    //Remove Last Comma.
+                    roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                }
+            }
+            #endregion
+
+          
+            #region Profile
+
+            var profile = new IndividualProfileVM();
+
+            if (reservation.ProfileId.HasValue)
+                profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+
+            #endregion
+
+            #region Title 
+
+            var title = new TitleVM();
+            if (profile.TitleId.HasValue)
+                title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
+
+            #endregion
+
+            #region Room Type
+
+            var roomType = new RoomTypeVM();
+            if (reservation.RoomTypeId.HasValue)
+            {
+                roomType = roomTypeRepository.GetRoomTypeById(reservation.RoomTypeId.Value).FirstOrDefault();
+            }
+
+            #endregion
+
+            model.Id = reservation.Id;
+            model.ConfirmationNo = reservation.ConfirmationNumber;
+            model.ProfileId = reservation.ProfileId;
+            model.Title = title.Title;
+            model.Email = profile.Email;
+            model.PhoneNo = profile.TelephoneNo;
+            model.Name = (profile.FirstName + ' ' + profile.LastName);
+            model.CarRegistrationNo = profile.CarRegistrationNo;
+            
+            #region Fetch Address
+            var address = "";
+            if (!string.IsNullOrWhiteSpace(profile.Address))
+            {
+                //address = profile.Address;
+                address = profile.Address.Replace(",", Delimeter.SPACE);
+            }
+            else
+            {
+                //address = profile.HomeAddress;
+                address = profile.HomeAddress.Replace(",", Delimeter.SPACE);
+            }
+            
+            model.Address = address;
+
+            if (!string.IsNullOrWhiteSpace(profile.CityName))
+            {
+                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
+                model.City = profile.CityName;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(profile.StateName))
+            {
+                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
+                model.State = profile.StateName;
+            }
+
+            if (profile.CountryId.HasValue)
+            {
+                var country = countryRepository.GetCountryById(profile.CountryId.Value).FirstOrDefault();
+
+                if (country != null)
+                {
+                    model.Country = country.Name;
+                }
+            }
+
+            //Split Address
+
+            if (!string.IsNullOrWhiteSpace(model.Address))
+            {
+                //var splitAddress = ExtensionMethod.SplitString(model.Address, 40);
+
+                var splitAddress  = model.Address.SplitStringChunks(60);
+
+                if (splitAddress != null && splitAddress.Length > 0)
+                {
+                    model.Address1 = splitAddress[0];
+
+                    if (splitAddress.Length > 1) { model.Address2 = splitAddress[1]; }
+                    if (splitAddress.Length > 2) { model.Address3 = splitAddress[2]; }
+                }
+            }
+
+            model.ZipCode = profile.ZipCode;
+            #endregion
+
+            model.RoomNumer = roomNumbers;          
+            model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
+            model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
+            model.NoOfNights = reservation.NoOfNight;
+            model.NoOfAdult = reservation.NoOfAdult;            
+            model.NoOfChildren = reservation.NoOfChildren;
+
+            if (roomType != null)
+            {
+                model.RoomType = roomType.RoomTypeCode;
+            }
+            model.Rate = reservation.Rate;
+            model.ConfirmationNo = reservation.ConfirmationNumber;
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated guest registration card report.");
+            #endregion
+
+            //HTML to PDF
+            string html = Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewRegistrationCard", model);
+        
+            byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+            //return File(pdfBytes, "application/pdf", string.Format("RegistrationCard_{0}.pdf", model.Id));
+            return File(pdfBytes, "application/pdf");
+
+            //return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult SaveSelectedPrintRegistrationCard(List<Guid> ids)
+        {
+            try
+            {
+                if (ids != null)
+                {
+                    Session["ReservationIds"] = ids;
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        IsExternalUrl = true,
+                        data = Url.Action("PrintMultipleRegistrationCard", "FrontDesk")
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Please select at least one checkbox to print registration card."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SaveSelectedPrintRegistrationCard");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        public ActionResult PrintMultipleRegistrationCard()
+        {
+            if (Session["ReservationIds"] == null || string.IsNullOrWhiteSpace(Convert.ToString(Session["ReservationIds"])))
+            {
+                return HttpNotFound();
+            }
+
+            var reservationIds = (List<Guid>)Session["ReservationIds"];
+
+            StringBuilder html = new StringBuilder();
+
+            if (reservationIds != null && reservationIds.Count > 0)
+            {
+                foreach (var reservationId in reservationIds)
+                {
+                    var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                    if (reservation != null)
+                    {
+                        GuestRegistrationCardVM model = new GuestRegistrationCardVM();
+
+                        #region Room Mapping
+
+                        //Get Room Mapping
+                        var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null, LogInManager.LoggedInUserId);
+                        var roomIds = string.Empty;
+                        var roomNumbers = string.Empty;
+
+                        if (selectedRooms != null && selectedRooms.Count > 0)
+                        {
+                            foreach (var room in selectedRooms)
+                            {
+                                roomIds += string.Format("{0},", room.RoomId);
+                                roomNumbers += string.Format("{0}, ", room.RoomNo);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(roomNumbers))
+                            {
+                                //Remove Last Comma.
+                                roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                            }
+                        }
+                        #endregion
+
+
+                        #region Profile
+
+                        var profile = new IndividualProfileVM();
+
+                        if (reservation.ProfileId.HasValue)
+                            profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                        #endregion
+
+                        #region Title 
+
+                        var title = new TitleVM();
+                        if (profile.TitleId.HasValue)
+                            title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
+
+                        #endregion
+
+                        #region Room Type
+
+                        var roomType = new RoomTypeVM();
+                        if (reservation.RoomTypeId.HasValue)
+                        {
+                            roomType = roomTypeRepository.GetRoomTypeById(reservation.RoomTypeId.Value).FirstOrDefault();
+                        }
+
+                        #endregion
+
+                        model.Id = reservation.Id;
+                        model.ConfirmationNo = reservation.ConfirmationNumber;
+                        model.ProfileId = reservation.ProfileId;
+                        model.Title = title.Title;
+                        model.Email = profile.Email;
+                        model.PhoneNo = profile.TelephoneNo;
+                        model.Name = (profile.FirstName + ' ' + profile.LastName);
+                        model.CarRegistrationNo = profile.CarRegistrationNo;
+
+                        #region Fetch Address
+                        var address = "";
+                        if (!string.IsNullOrWhiteSpace(profile.Address))
+                        {
+                            //address = profile.Address;
+                            address = profile.Address.Replace(",", Delimeter.SPACE);
+                        }
+                        else
+                        {
+                            //address = profile.HomeAddress;
+                            address = profile.HomeAddress.Replace(",", Delimeter.SPACE);
+                        }
+
+                        model.Address = address;
+
+                        if (!string.IsNullOrWhiteSpace(profile.CityName))
+                        {
+                            model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
+                            model.City = profile.CityName;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(profile.StateName))
+                        {
+                            model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
+                            model.State = profile.StateName;
+                        }
+
+                        if (profile.CountryId.HasValue)
+                        {
+                            var country = countryRepository.GetCountryById(profile.CountryId.Value).FirstOrDefault();
+
+                            if (country != null)
+                            {
+                                model.Country = country.Name;
+                            }
+                        }
+
+                        //Split Address
+
+                        if (!string.IsNullOrWhiteSpace(model.Address))
+                        {
+                            //var splitAddress = ExtensionMethod.SplitString(model.Address, 40);
+
+                            var splitAddress = model.Address.SplitStringChunks(60);
+
+                            if (splitAddress != null && splitAddress.Length > 0)
+                            {
+                                model.Address1 = splitAddress[0];
+
+                                if (splitAddress.Length > 1) { model.Address2 = splitAddress[1]; }
+                                if (splitAddress.Length > 2) { model.Address3 = splitAddress[2]; }
+                            }
+                        }
+
+                        model.ZipCode = profile.ZipCode;
+                        #endregion
+
+                        model.RoomNumer = roomNumbers;
+                        model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
+                        model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
+                        model.NoOfNights = reservation.NoOfNight;
+                        model.NoOfAdult = reservation.NoOfAdult;
+                        model.NoOfChildren = reservation.NoOfChildren;
+
+                        if (roomType != null)
+                        {
+                            model.RoomType = roomType.RoomTypeCode;
+                        }
+                        model.Rate = reservation.Rate;
+                        model.ConfirmationNo = reservation.ConfirmationNumber;
+                        
+                        //HTML to PDF
+                        html.Append(Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewRegistrationCard", model));
+                    }
+                }
+            }
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated multiple guest registration card report.");
+            #endregion
+
+            //Clear session.
+            //Session["ReservationIds"] = null;
+
+            byte[] pdfBytes = Utility.Utility.GetPDF(Convert.ToString(html));
+
+            //return File(pdfBytes, "application/pdf", string.Format("RegistrationCard_{0}.pdf", model.Id));
+            return File(pdfBytes, "application/pdf");
+        }
     }
 }
