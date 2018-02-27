@@ -758,7 +758,7 @@
 
     function AddReservationIdIntoArray(id) {
         if (!IsNullOrEmpty(id)) {
-            selectedReservationIds.push(id);
+            selectedReservationIds.push(id);            
         }
     }
 
@@ -770,6 +770,7 @@
 
     function ClearReservationIdsArray() {
         selectedReservationIds = [];
+        $(".chkReservation").prop("checked", false);
     }
 
     function printSelectedRegistrationCard() {
@@ -794,7 +795,7 @@
                     if (response.IsSuccess == true) {
 
                         ClearReservationIdsArray();
-                        searchArrival();
+                        //searchArrival();
 
                         if (response.IsExternalUrl) {
                             //Redirect to print multiple registration card url.
