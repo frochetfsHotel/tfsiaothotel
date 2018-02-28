@@ -2614,22 +2614,22 @@
         var packagePostingRhythm = $("form#frmReservation #PackagePostingRhythm").val();
         var packageId = $("form#frmReservation #PackageId").val();
 
-        if (!IsNullOrEmpty(packageBeginDate)) {
-            $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject(packageBeginDate, DateSeprator.SLASH));
-        } else {
-            $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
-        }
+        //if (!IsNullOrEmpty(packageBeginDate)) {
+        //    $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject(packageBeginDate, DateSeprator.SLASH));
+        //} else {
+        //    $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
+        //}
 
-        if (!IsNullOrEmpty(packageEndDate)) {
-            $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject(packageEndDate, DateSeprator.SLASH));
-        } else {
-            $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
-        }
+        //if (!IsNullOrEmpty(packageEndDate)) {
+        //    $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject(packageEndDate, DateSeprator.SLASH));
+        //} else {
+        //    $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
+        //}
 
         if (IsNullOrEmpty(packageQty) || packageQty == "0") { packageQty = 1; }
 
         $("form#frmPackageTransaction #Qty").val(packageQty);
-        $("form#frmPackageTransaction #PostingRhythm").val(packagePostingRhythm);
+        //$("form#frmPackageTransaction #PostingRhythm").val(packagePostingRhythm);
         $("form#frmPackageTransaction #PackageId").val(packageId);
 
         $('#packageModal').modal('toggle');

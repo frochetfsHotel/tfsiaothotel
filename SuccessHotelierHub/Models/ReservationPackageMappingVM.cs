@@ -35,13 +35,13 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Begin Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Required(ErrorMessage = "Please select begin date.")]
+        //[Required(ErrorMessage = "Please select begin date.")]
         public DateTime? BeginDate { get; set; }
 
         [DisplayName("End Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [Required(ErrorMessage = "Please select end date.")]
+        //[Required(ErrorMessage = "Please select end date.")]
         public DateTime? EndDate { get; set; }
 
         public double? TotalAmount { get; set; }
