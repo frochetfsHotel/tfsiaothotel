@@ -947,6 +947,7 @@ namespace SuccessHotelierHub.Controllers
                     //bodyMsg = bodyMsg.Replace("[@UserName]", model.Name);
                     bodyMsg = bodyMsg.Replace("[@UserName]", profile.FirstName);
                     bodyMsg = bodyMsg.Replace("[@ConfirmationNo]", model.ConfirmationNo);
+                    bodyMsg = bodyMsg.Replace("[@CashierName]", LogInManager.UserName);
                 }
 
                 //Send Email.

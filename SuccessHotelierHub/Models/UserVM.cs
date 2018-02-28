@@ -27,14 +27,14 @@ namespace SuccessHotelierHub.Models
         public string Email { get; set; }
 
         [DisplayName("Password")]
-        [DataType(DataType.Password)]
+        //[DataType(DataType.Password)]
         [Required(ErrorMessage = "Please enter password.")]
         public string Password { get; set; }
 
         [DisplayName("Confirm Password")]
-        [DataType(DataType.Password)]
-        [Required(ErrorMessage = "Please enter confirm password.")]
-        [Compare("Password", ErrorMessage = "Confirm password and password must be same. ")]
+        //[DataType(DataType.Password)]
+        //[Required(ErrorMessage = "Please enter confirm password.")]
+        //[Compare("Password", ErrorMessage = "Confirm password and password must be same. ")]
         public string ConfirmPassword { get; set; }
 
         [DisplayName("Record User's Activity")]

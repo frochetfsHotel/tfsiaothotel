@@ -24,7 +24,7 @@
 
 
         .td_padding {
-            padding: 2px 10px;
+            padding: 2px 10px;            
         }
 
         .text_bold {
@@ -37,7 +37,7 @@
 
         table {
             width: 100%;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
             font-weight: 400;
             text-align: left;
@@ -117,7 +117,7 @@
 <body class="gray-bg" style="width: 800px; margin-left: auto; margin-right: auto;">
     <div class="row border-bottom white-bg dashboard-header">
         <div style="border:1px solid #dedede; box-shadow: 0px 0px 5px #dddddd; padding:0px;">
-            <div style="font-size: 14px; color: #333; font-weight: 400; text-align: center; font-family: Calibri;  margin-top: 2px;margin-bottom: 2px;border:thick">
+            <div style="font-size: 13px; color: #333; font-weight: 400; text-align: center; font-family: Calibri;  margin-top: 2px;margin-bottom: 2px;border:thick">
 
                 <!-- Logo -->
                 <table style="border:none">
@@ -128,7 +128,6 @@
                     </tr>
                 </table>
 
-                <br />
 
                 <!--  Heading -->
                 <table style="border:none">
@@ -146,7 +145,7 @@
                     <tr>
                         <td class="td_padding" style="width:60%;text-align:left;border-right: 1px solid;" valign="top">
                             <table>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;">
                                         Name :
                                     </td>
@@ -154,27 +153,27 @@
                                         @Model.Name
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;">
                                         Address :
                                     </td>
                                     <td style="width:70%;" class="border_bottom">
-                                        @Model.Address1
+                                        @Model.Address
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;"></td>
                                     <td style="width:70%;" class="border_bottom">
-                                        @Model.Address2
+                                        @Model.City
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td style="width:25%;"></td>
                                     <td style="width:70%;" class="border_bottom">
-                                        @Model.Address3
+                                        @Model.State
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;">
                                         Postcode :
                                     </td>
@@ -182,7 +181,7 @@
                                         @Model.ZipCode
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;">
                                         Country :
                                     </td>
@@ -190,7 +189,7 @@
                                         @Model.Country
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;">
                                         Email :
                                     </td>
@@ -198,7 +197,7 @@
                                         @Model.Email
                                     </td>
                                 </tr>
-                                <tr height="30">
+                                <tr height="28">
                                     <td class="td_padding" style="width:25%;">
                                         Phone :
                                     </td>
@@ -209,36 +208,49 @@
                             </table>
 
                         </td>
-                        <td style="width:40%;">
+                        <td style="width:40%;" valign="top">
                             <table>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Room Number: @Model.RoomNumer</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Arrival Date: @Model.ArrivalDate</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Departure Date: @Model.DepartureDate</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Number of Nights: @Model.NoOfNights</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Room Type: @Model.RoomType</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Rate Per Night inc VAT: @(Utility.FormatAmountWithTwoDecimal(Model.Rate.Value))</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Adults: @Model.NoOfAdult</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Children: @Model.NoOfChildren</td>
                                 </tr>
-                                <tr height="25">
+                                @if (!string.IsNullOrWhiteSpace(Model.Preferences))
+                                {
+                                    <tr height="20">
+                                        <td class="td_padding">Preferences: @Model.Preferences</td>
+                                    </tr>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.PackageName))
+                                {
+                                    var package = Model.PackageName + (Model.PackageTotalAmount.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(Model.PackageTotalAmount.Value) + " ) " : "");
+                                    <tr height="20">
+                                        <td class="td_padding">Package: @(package)</td>
+                                    </tr>
+                                }
+                                <tr height="20">
                                     <td class="td_padding">Group Code:</td>
                                 </tr>
-                                <tr height="25">
+                                <tr height="20">
                                     <td class="td_padding">Confirmation Number: @Model.ConfirmationNo</td>
                                 </tr>
                             </table>
@@ -253,7 +265,7 @@
                 <table style="border:1px solid #000;width:96%;padding-bottom:10px;">
                     <tr>
                         <td colspan="4" style="padding-top:10px;text-align:center;">
-                            <b style="font-size:18px;">Company Details:</b>
+                            <b style="font-size:15px;">Company Details:</b>
                         </td>
                     </tr>
                     <tr height="25">
@@ -295,7 +307,7 @@
                 <table style="border:1px solid #000;width:96%;padding-bottom:10px;">
                     <tr>
                         <td colspan="4" style="padding-top:10px;text-align:center;">
-                            <b style="font-size:18px;">Overseas Visitors:</b>
+                            <b style="font-size:15px;">Overseas Visitors:</b>
                         </td>
                     </tr>
                     <tr height="25">
@@ -340,7 +352,7 @@
                             <table style="border:1px solid #000;">
                                 <tr height="25">
                                     <td colspan="2" style="padding-top:10px;padding-bottom:10px;text-align:center;">
-                                        <b style="font-size:18px;">Car Parking:</b>
+                                        <b style="font-size:15px;">Car Parking:</b>
                                     </td>
                                 </tr>
                                 <tr height="25">
@@ -376,7 +388,7 @@
                             <table style="border:1px solid #000;">
                                 <tr height="25">
                                     <td colspan="2" style="padding-top:10px;padding-bottom:10px;text-align:center">
-                                        <b style="font-size:18px;">Wake Up Call</b>
+                                        <b style="font-size:15px;">Wake Up Call</b>
                                     </td>
                                 </tr>
                                 <tr height="25">
@@ -422,15 +434,15 @@
                         <td style="padding-left:10px;width: 39%;" valign="top">
                             <!--Additional Notes-->
                             <div style="width:100%;">
-                                <p style="text-align: justify;font-weight: bold;font-size: 16px;margin-bottom: 0;margin-top: 0;">Valuables </p>
+                                <p style="text-align: justify;font-weight: bold;font-size: 15px;margin-bottom: 0;margin-top: 0;">Valuables </p>
                                 <p style="text-align:justify;margin-top:7px;font-weight: normal;">Valuables may be deposited with us for safekeeping. Our liability is limited if they are left in guest bedrooms.</p>
                             </div>
                             <div style="width:100%;">
-                                <p style="text-align: justify;font-weight: bold;font-size: 16px;margin-bottom: 0;margin-top: 0;">Payment </p>
+                                <p style="text-align: justify;font-weight: bold;font-size: 15px;margin-bottom: 0;margin-top: 0;">Payment </p>
                                 <p style="text-align:justify;margin-top:7px;font-weight: normal;">Accounts are payable on presentation. Credit facilities are available only by prior arrangement. We accept all major credit cards and personal cheques drawn on Irish banks upto the value supported by a cheque guarantee card. We reserve the right to charge you credit card the full balance of your account</p>
                             </div>
                             <div style="width:100%;">
-                                <p style="text-align: justify;font-weight: bold;font-size: 16px;margin-bottom: 0;margin-top: 0;">Check Out Time </p>
+                                <p style="text-align: justify;font-weight: bold;font-size: 15px;margin-bottom: 0;margin-top: 0;">Check Out Time </p>
                                 <p style="text-align:justify;margin-top:7px;font-weight: normal;margin-bottom:0">Check out time is 12 noon</p>
                                 <p style="text-align:justify;margin-top:7px;font-weight: normal;">Please advise reception if you wish to stay later.</p>
                             </div>

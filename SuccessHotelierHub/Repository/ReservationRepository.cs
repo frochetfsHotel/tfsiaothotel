@@ -642,6 +642,11 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = model.ReservationId },
                     new SqlParameter { ParameterName = "@PackageId", Value = model.PackageId } ,
+                    new SqlParameter { ParameterName = "@Qty", Value = model.Qty } ,
+                    new SqlParameter { ParameterName = "@PostingRhythm", Value = model.PostingRhythm } ,
+                    new SqlParameter { ParameterName = "@BeginDate", Value = model.BeginDate } ,
+                    new SqlParameter { ParameterName = "@EndDate", Value = model.EndDate } ,
+                    new SqlParameter { ParameterName = "@TotalAmount", Value = model.TotalAmount } ,
                     new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
                 };

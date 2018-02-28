@@ -124,8 +124,11 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Currency")]
         public Guid? CurrencyId { get; set; }
 
-        [DisplayName("Packages")]
+        [DisplayName("Package")]
         public Guid? PackageId { get; set; }
+
+        [DisplayName("Package Name")]
+        public string PackageName { get; set; }
 
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }
@@ -247,6 +250,8 @@ namespace SuccessHotelierHub.Models
         public List<ReservationRemarkVM> RemarksList { get; set; }
 
         public List<PackageVM> PackageList { get; set; }
+
+        public List<ReservationPackageMappingVM> PackageMappingList { get; set; }
 
         public List<AddOnsVM> AddOnsList { get; set; }
     }

@@ -41,6 +41,7 @@ namespace SuccessHotelierHub.Controllers
             if (studentRoleId != null)
             {
                 model.UserRoleId = studentRoleId;
+                model.Password = Utility.Utility.GenerateRandomPassword(8);
             }
 
             return View(model);
@@ -392,12 +393,21 @@ namespace SuccessHotelierHub.Controllers
 
                 model.PageSize = Constants.PAGESIZE;
                 var users = userRepository.SearchUserDetail(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
-
+                
                 int totalRecords = 0;
                 var dbRecords = users.Select(m => m.TotalCount).FirstOrDefault();
 
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
+
+                if (users != null && users.Count > 0)
+                {
+                    foreach (var user in users)
+                    {
+                        if(!string.IsNullOrWhiteSpace(user.Password))
+                            user.Password = Utility.Utility.Decrypt(user.Password, Utility.Utility.EncryptionKey);
+                    }
+                }
 
                 return Json(new
                 {
@@ -497,6 +507,51 @@ namespace SuccessHotelierHub.Controllers
                     IsSuccess = false,
                     errorMessage = e.Message
                 });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult CreateNewPassword(Guid id)
+        {
+            try
+            {
+                var userDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+                if (userDetail != null)
+                {
+                    string userId = "";
+
+                    //Generate new password.
+                    string newPassword = Utility.Utility.GenerateRandomPassword(8);
+
+                    ChangePasswordVM model = new ChangePasswordVM();
+
+                    model.UserId = userDetail.Id;
+                    model.UpdatedBy = LogInManager.LoggedInUserId;
+
+                    model.Password = Utility.Utility.Encrypt(newPassword, Utility.Utility.EncryptionKey);
+
+                    userId = userRepository.ChangePassword(model);
+
+                    return Json(new
+                    {
+                        IsSuccess = true                      
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "New password not created successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "CreateNewPassword");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
 

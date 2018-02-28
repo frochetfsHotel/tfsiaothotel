@@ -1326,6 +1326,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Email")]
         public string Email { get; set; }
 
+        [DisplayName("Password")]
+        public string Password { get; set; }
+
         [DisplayName("User Role")]
         public Guid? UserRoleId { get; set; }
 

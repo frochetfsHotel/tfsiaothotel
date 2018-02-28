@@ -324,7 +324,7 @@
 
                 <div class="row" id="divArrivalTime">
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.PackageId)
+                        @*@Html.LabelFor(m => m.PackageId)
                         <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
                             <option value="">--Select Package--</option>
                             @if (packageList != null && packageList.Count > 0)
@@ -341,9 +341,32 @@
                                     </option>
                                 }
                             }
-                        </select>
+                        </select>*@
+                        <label for="PackageName">Package Name 
+                            <i class="fa fa-remove m-l-sm text-danger cursor-P" onclick="removeSelectedPackage();" title="Remove Package"> </i>
+                        </label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.PackageName, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Package",
+                                @readonly = "readonly"
+                            })
+                            <div class="input-group-addon cursor-P" onclick="openPackageTransactionModal();">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
 
+                        @Html.HiddenFor(m => m.PackageId)
+                        <input type="hidden" id="PackagePrice" name="PackagePrice" />
+                        <input type="hidden" id="PackageQty" name="PackageQty" />
+                        <input type="hidden" id="PackagePostingRhythm" name="PackagePostingRhythm" />
+                        <input type="hidden" id="PackageBeginDate" name="PackageBeginDate" />
+                        <input type="hidden" id="PackageEndDate" name="PackageEndDate" />   
+                        <input type="hidden" id="PackageTotalAmount" name="PackageTotalAmount" />   
+                                             
                     </div>
+
                     <div class="col-md-3 form-group">
                         <div class="bootstrap-timepicker" data-date-format="HH:mm">
                             @Html.LabelFor(m => m.ETAText)
@@ -687,6 +710,28 @@
 </div>
 <!-- AddOns Modal Popup END -->
 
+<!-- Package Modal Popup START -->
+<div class="modal fade" id="packageModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Packages - New</h4>
+            </div>
+            <div class="modal-body modal-body_padding">
+                @Html.Partial("~/Views/Package/_PackageTransaction.cshtml",
+                        new ViewDataDictionary {
+                                    { "Source", "CreateReservation" },
+                                    { "PackageList",  packageList }
+                                })
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Package Modal Popup END -->
+
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -914,9 +959,62 @@
             }
         });
 
+        //Package
+        $('.btnPackageTransactionOK').click(function (e) {
+
+            var packageId = $("form#frmPackageTransaction #PackageId").val();
+
+            if (IsNullOrEmpty(packageId)) {
+                showToaster("Please select package.", ToasterType.ERROR);
+                return false;
+            }
+
+            if ($("#frmPackageTransaction").valid() == false) {
+                showToaster("Please fill all the required field first", ToasterType.ERROR);                
+                return false;
+            }
+          
+            var beginDate = $("form#frmPackageTransaction #BeginDate").val();
+            var endDate = $("form#frmPackageTransaction #EndDate").val();
+
+            if (!IsNullOrEmpty(beginDate) && !IsNullOrEmpty(endDate)) {
+                var objBeginDate = GetDateObject(beginDate, DateSeprator.SLASH);
+                var objEndDate = GetDateObject(endDate, DateSeprator.SLASH);
+
+                if (objBeginDate > objEndDate) {
+                    showToaster("Begin date must be less than end date.", ToasterType.ERROR);
+                    return false;
+                }
+            }
+
+            var selectedPackage = $('form#frmPackageTransaction #PackageId option:selected');
+
+            var packagePrice = parseFloat(selectedPackage.attr("data-package-price"));
+            var packageName = selectedPackage.attr("data-package-name");
+
+            var qty = $("form#frmPackageTransaction #Qty").val();
+            var postingRhythm = $("form#frmPackageTransaction #PostingRhythm").val();
+            
+            if (IsNullOrEmpty(qty)) { qty = 1;}
+
+            $('form#frmReservation #PackageId').val(packageId);
+            $('form#frmReservation #PackagePrice').val(packagePrice);
+            $('form#frmReservation #PackageName').val(packageName);
+            $('form#frmReservation #PackageQty').val(qty);
+            $('form#frmReservation #PackagePostingRhythm').val(postingRhythm);
+            $('form#frmReservation #PackageBeginDate').val(beginDate);
+            $('form#frmReservation #PackageEndDate').val(endDate);
+
+
+            //Close Package Modal.
+            CloseModal("packageModal");
+
+            //Load Transaction Summary.
+            LoadTransactionSummary();
+        });
+
         //Load Transaction Summary.
         LoadTransactionSummary();
-
     });
 
     function arrivalDateChanged(e) {
@@ -1161,11 +1259,39 @@
             }
 
 
+            //Package Mapping
+            var packageId = $("form#frmReservation #PackageId").val();
+            var packageName = $("form#frmReservation #PackageName").val();
+            var packageMappingList = [];
+            
+            if (!IsNullOrEmpty(packageId) && !IsNullOrEmpty(packageName)) {
+                var packagePrice = $("form#frmReservation #PackagePrice").val();
+                var packageQty = $("form#frmReservation #PackageQty").val();
+                var packagePostingRhythm = $("form#frmReservation #PackagePostingRhythm").val();
+                var packageBeginDate = $("form#frmReservation #PackageBeginDate").val();
+                var packageEndDate = $("form#frmReservation #PackageEndDate").val();
+                var packageTotalAmount = $("form#frmReservation #PackageTotalAmount").val();
+
+                var modelPackageMapping = {};
+                modelPackageMapping.PackageId = packageId;
+                modelPackageMapping.PackageName = packageName;
+                modelPackageMapping.PackagePrice = packagePrice;
+                modelPackageMapping.Qty = packageQty;
+                modelPackageMapping.PostingRhythm = packagePostingRhythm;
+                modelPackageMapping.BeginDate = packageBeginDate;
+                modelPackageMapping.EndDate = packageEndDate;
+                modelPackageMapping.TotalAmount = packageTotalAmount;
+
+                packageMappingList.push(modelPackageMapping);
+            }
+            
+
             var formData = $('#frmReservation').serializeObject();
 
             //Add additional property in form data.
             $.extend(formData, { RemarksList: reservationRemarkList });
             $.extend(formData, { AddOnsList: addOnsList });
+            $.extend(formData, { PackageMappingList: packageMappingList });
 
             //Ajax Request to create reservation.
             $.ajax({
@@ -1193,6 +1319,8 @@
 
                             var reservationId = response.data.ReservationId;
 
+                            var redirectUrl = '@Url.Content("~/Reservation/List")';
+
                             swal({
                                 title: 'Confirmation# : <span class="text-blue">' + response.data.ConfirmationNo + '</span>',
                                 type: 'success',
@@ -1210,7 +1338,7 @@
                                         if (!IsNullOrEmpty(roomNumbers)) {
                                             //Ask confirmation about check in.
                                             swal({
-                                                title: 'Are you want to check in guest?',
+                                                title: 'Do you want to check in this guest now?',
                                                 type: 'info',
                                                 showCancelButton: true,
                                                 showCloseButton: true,
@@ -1262,21 +1390,21 @@
                                                                     focusConfirm: false,
                                                                     confirmButtonText: 'OK',
                                                                 }).then((result) => {
-                                                                    redirectTo('@Url.Content("~/Reservation/List")');
+                                                                    redirectTo(redirectUrl);
                                                                 });
 
                                                             }
                                                         }
                                                     });
                                                 } else {
-                                                    redirectTo('@Url.Content("~/Reservation/List")');
+                                                    redirectTo(redirectUrl);
                                                 }
                                             })
                                         } else {
-                                            redirectTo('@Url.Content("~/Reservation/List")');
+                                            redirectTo(redirectUrl);
                                         }
                                     } else {
-                                        redirectTo('@Url.Content("~/Reservation/List")');
+                                        redirectTo(redirectUrl);
                                     }
                                 }
                             });
@@ -1580,7 +1708,7 @@
         html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
         html += "</td>";
 
-       
+
 
         //Action
         html += "<td>";
@@ -1629,7 +1757,7 @@
             html += trackLog;
             html += "<input type='hidden' id='RemarksCreatedOn_" + rowNumber + "' name='RemarksCreatedOn_" + rowNumber + "' value='" + createdOn + "'/>";
             $('form#frmReservation #tblReservationRemark tbody ' + trId + ' td.tracklog').html(html);
-            
+
 
             //showToaster("Remark updated successfully", ToasterType.SUCCESS);
 
@@ -1682,7 +1810,7 @@
                         showToaster(response.errorMessage, ToasterType.ERROR);
                         $("form#frmReservation #divReservationRemark").hide();
                     }
-                    else {                        
+                    else {
                         //Show data in table.
                         var result = response.data;
 
@@ -1701,7 +1829,7 @@
         }
     }
 
-    function AddProfileRemarkToReservation(remark) {        
+    function AddProfileRemarkToReservation(remark) {
         var rowNumber = $('#hdnTotalReservationRemarks').val();
 
         if (!IsNullOrEmpty(rowNumber)) {
@@ -1990,13 +2118,37 @@
         //Package.
         var packageId = $('form#frmReservation #PackageId').val();
         if (!IsNullOrEmpty(packageId)) {
-            var selectedPackage = $('form#frmReservation #PackageId option:selected');
+            
+            var packagePrice = parseFloat($('form#frmReservation #PackagePrice').val());
+            var packageName = $('form#frmReservation #PackageName').val();
+            var packageQty = parseInt($('form#frmReservation #PackageQty').val());
+            var packageBeginDate = $('form#frmReservation #PackageBeginDate').val();
+            var packageEndDate = $('form#frmReservation #PackageEndDate').val();
 
-            var packagePrice = parseFloat(selectedPackage.attr("data-package-price"));
-            var packageName = selectedPackage.attr("data-package-name");
+            var noOfDays = 1;
 
-            var qty = 1;
+            if (!IsNullOrEmpty(packageBeginDate) && !IsNullOrEmpty(packageEndDate)) {
+                var objPackageBeginDate = GetDateObject(packageBeginDate, DateSeprator.SLASH);
+                var objPackageEndDate = GetDateObject(packageEndDate, DateSeprator.SLASH);
+
+                var timeDiff = Math.abs(objPackageEndDate.getTime() - objPackageBeginDate.getTime());
+                var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                if (!IsNullOrEmpty(diffDays)) {
+                    noOfDays = diffDays > 0 ? diffDays : 1;
+                }
+            }
+
+            if (IsNullOrEmpty(packageQty)) { packageQty = 1; }
+
+            if (!IsNullOrEmpty(noOfDays)) { noOfDays = parseInt(noOfDays); }
+            if (!IsNullOrEmpty(packageQty)) { packageQty = parseInt(packageQty); }
+
+            var qty = (packageQty * noOfDays);
+
             var total = (packagePrice * qty);
+
+            $("form#frmReservation #PackageTotalAmount").val(total);
 
             html += "<tr data-rate='" + packagePrice + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
 
@@ -2007,7 +2159,7 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice);
+            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice) + " * " + qty;
             html += "</td>";
 
             //Total
@@ -2100,9 +2252,55 @@
         $("form#frmReservation #tblTransactionSummary tfoot tr td.tdTotalPrice").html("&euro; " + totalPrice);
     }
 
+    //Package : START
     function PackageChange() {
         LoadTransactionSummary();
     }
+
+    function openPackageTransactionModal() {
+
+        var packageBeginDate = $("form#frmReservation #PackageBeginDate").val();
+        var packageEndDate = $("form#frmReservation #PackageEndDate").val();
+        var packageQty = $("form#frmReservation #PackageQty").val();
+        var packagePostingRhythm = $("form#frmReservation #PackagePostingRhythm").val();
+        var packageId = $("form#frmReservation #PackageId").val();
+
+        if (!IsNullOrEmpty(packageBeginDate)) {
+            $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject(packageBeginDate, DateSeprator.SLASH));
+        } else {
+            $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
+        }
+
+        if (!IsNullOrEmpty(packageEndDate)) {
+            $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject(packageEndDate, DateSeprator.SLASH));
+        } else {
+            $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
+        }
+
+        if (IsNullOrEmpty(packageQty) || packageQty == "0") { packageQty = 1; }
+
+        $("form#frmPackageTransaction #Qty").val(packageQty);
+        $("form#frmPackageTransaction #PostingRhythm").val(packagePostingRhythm);
+        $("form#frmPackageTransaction #PackageId").val(packageId);
+        
+        $('#packageModal').modal('toggle');
+    }
+
+    function removeSelectedPackage() {
+        $('form#frmReservation #PackageId').val('');
+        $('form#frmReservation #PackagePrice').val('');
+        $('form#frmReservation #PackageName').val('');
+        $('form#frmReservation #PackageQty').val('');
+        $('form#frmReservation #PackagePostingRhythm').val('');
+        $('form#frmReservation #PackageBeginDate').val('');
+        $('form#frmReservation #PackageEndDate').val('');
+
+        LoadTransactionSummary();
+    }
+
+    //Package : END
+
+
 
     window.onbeforeunload = function () {
         //Check the global variable - if the data needs saving then take user confirmation

@@ -257,6 +257,14 @@ namespace SuccessHotelierHub.Utility
                             }
 
                             //New Reservation : 41 to 50.
+                            foreach (var result in results[2])
+                            {
+                                if (result != null)
+                                {
+                                    //Delete Reservation Room Mapping.
+                                    roomRepository.DeleteReservationRoomMappingByReservation(result.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                                }
+                            }
                         }
                     }
                 }

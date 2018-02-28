@@ -756,7 +756,7 @@ namespace SuccessHotelierHub.Utility
                 var packageDetails = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId);
                 if (packageDetails != null && packageDetails.Count > 0)
                 {
-                    var totalPackagePrice = packageDetails.Where(m => m.PackagePrice.HasValue).Sum(m => m.PackagePrice);
+                    var totalPackagePrice = packageDetails.Where(m => m.TotalAmount.HasValue).Sum(m => m.TotalAmount);
 
                     dblTotalPrice += (totalPackagePrice.HasValue) ? totalPackagePrice.Value : 0;
                 }
@@ -844,11 +844,29 @@ namespace SuccessHotelierHub.Utility
             {
                 text = number.Substring(number.Length - 4, 4);
             }
+            else
+            {
+                text = number;
+            }
 
             return text;
         }
 
         #endregion
+
+        public static string GenerateRandomPassword(int passwordLength)
+        {
+            string allowedChars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789!@$#&?_-";
+            char[] chars = new char[passwordLength];
+            Random rd = new Random();
+
+            for (int i = 0; i < passwordLength; i++)
+            {
+                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+            }
+
+            return new string(chars);
+        }
 
     }
 

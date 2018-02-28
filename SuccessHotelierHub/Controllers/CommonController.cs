@@ -362,6 +362,11 @@ namespace SuccessHotelierHub.Controllers
 
                 ViewBag.WeekEndPrice = dblWeekEndPrice;
 
+                if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
+                {
+                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
+                }
+
                 return View(model);
             }
 

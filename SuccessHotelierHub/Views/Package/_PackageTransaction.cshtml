@@ -1,0 +1,127 @@
+﻿@model SuccessHotelierHub.Models.ReservationPackageMappingVM
+@using SuccessHotelierHub.Models
+@using SuccessHotelierHub.Utility
+@{
+    var sourceRedirectionParam = "";
+
+    sourceRedirectionParam = (string)ViewData["Source"];
+
+    var packageList = (List<PackageVM>)ViewData["PackageList"];
+
+    //var packageSelectList = new SelectList(packageList.Select
+    //    (
+    //            m => new SelectListItem()
+    //            {
+    //                Value = m.Id.ToString(),
+    //                Text = string.Format("{0}{1}{2}", 
+    //                                    m.Name, 
+    //                                    (!string.IsNullOrWhiteSpace(m.Description) ? "-" + m.Description : ""),
+    //                                    (m.Price.HasValue? " (" + Utility.FormatAmountWithTwoDecimal(m.Price.Value) + ")" : ""))
+    //            }
+    //    ), "Value", "Text").ToList();
+
+}
+
+<form id="frmPackageTransaction" name="frmPackageTransaction" enctype="multipart/form-data" method="post">
+
+    <div class="row">
+        <div class="col-md-12 form-group">
+            @Html.LabelFor(m => m.PackageId, new { @class = "required-label" })
+            <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
+                <option value="">--Select Package--</option>
+                @if (packageList != null && packageList.Count > 0)
+                    {
+                        var packageDescription = "";
+                        foreach (var package in packageList)
+                        {
+                            packageDescription = package.Name;
+                            packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
+                            packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
+
+                    <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
+                        @(packageDescription)
+                    </option>
+                        }
+                    }
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 form-group">
+            @Html.LabelFor(m => m.Qty, new { @class = "required-label" })
+            @Html.TextBoxFor(m => m.Qty, new { @class = "form-control", placeholder = "Qty", onkeydown = "onlyDigits(event)", value = "1" })
+            @Html.ValidationMessageFor(m => m.Qty, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 form-group">
+            @Html.LabelFor(m => m.PostingRhythm)
+            @Html.TextBoxFor(m => m.PostingRhythm, new { @class = "form-control", placeholder = "Posting Rhythm" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 form-group">
+            @Html.LabelFor(m => m.BeginDate, new { @class = "required-label" })
+            <div class="input-group date">
+                @Html.TextBoxFor(m => m.BeginDate, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", @placeholder = "dd/MM/yyyy" })
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(m => m.BeginDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 form-group">
+            @Html.LabelFor(m => m.EndDate, new { @class = "required-label" })
+            <div class="input-group date">
+                @Html.TextBoxFor(m => m.EndDate, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", @placeholder = "dd/MM/yyyy" })
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
+        </div>        
+    </div>
+    <div class="row">
+        <div class="col-md-12 form-group text-right m-t-sm m-b-sm  padding-zero">
+            <button type="button" class="btn btn-success m-r-xs btnPackageTransactionOK">OK</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</form>
+
+<div class="clearfix"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+
+    //function validatePackageTransaction() {
+    //    var errorMessage = "";
+    //    var blnValid = true;
+
+    //    var packageId = $("form#frmPackageTransaction #PackageId").val();
+
+    //    if (IsNullOrEmpty(packageId)) {
+    //        showToaster("Please select package.", ToasterType.ERROR);
+    //        return false;
+    //    }
+
+    //    if ($("#frmPackageTransaction").valid() == false) {
+    //        showToaster("Please fill all the required field first", ToasterType.ERROR);
+    //        blnValid = false;
+    //    }
+    //    return blnValid;
+    //}
+
+    //function savePackageTransaction() {
+
+    //    if (validatePackageTransaction()) {
+            
+    //        return false;
+    //    }
+    //}
+
+</script>

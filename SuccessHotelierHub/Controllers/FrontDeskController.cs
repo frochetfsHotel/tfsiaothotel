@@ -27,6 +27,7 @@ namespace SuccessHotelierHub.Controllers
         private RoomFeatureRepository roomFeatureRepository = new RoomFeatureRepository();
         private TitleRepository titleRepository = new TitleRepository();
         private CountryRepository countryRepository = new CountryRepository();
+        private PreferenceRepository preferenceRepository = new PreferenceRepository();
 
         #endregion
 
@@ -655,6 +656,41 @@ namespace SuccessHotelierHub.Controllers
 
             #endregion
 
+            #region Preference Mapping
+
+            //Get Preference Mapping
+            var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(reservation.Id, null, LogInManager.LoggedInUserId);
+
+            var preferences = "";
+            if (selectedPreferences != null && selectedPreferences.Count > 0)
+            {
+                preferences = String.Join(", ", selectedPreferences.Select(m => m.PreferenceDescription));
+
+                if (!string.IsNullOrWhiteSpace(preferences))
+                {
+                    preferences = Utility.Utility.RemoveLastCharcter(preferences.Trim(), ',');
+                }
+            }
+
+            model.Preferences = preferences;
+
+            #endregion
+
+            #region Package Mapping
+
+            //Get Package Mapping
+            var selectedPackage = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
+
+            if (selectedPackage != null)
+            {
+                model.PackageName = selectedPackage.PackageName;
+                model.PackagePrice = selectedPackage.PackagePrice;
+                model.PackageTotalAmount = selectedPackage.TotalAmount;
+            }
+
+            #endregion
+
+
             model.Id = reservation.Id;
             model.ConfirmationNo = reservation.ConfirmationNumber;
             model.ProfileId = reservation.ProfileId;
@@ -681,13 +717,13 @@ namespace SuccessHotelierHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(profile.CityName))
             {
-                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
+                //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
                 model.City = profile.CityName;
             }
             
             if (!string.IsNullOrWhiteSpace(profile.StateName))
             {
-                model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
+                //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
                 model.State = profile.StateName;
             }
 
@@ -703,20 +739,20 @@ namespace SuccessHotelierHub.Controllers
 
             //Split Address
 
-            if (!string.IsNullOrWhiteSpace(model.Address))
-            {
-                //var splitAddress = ExtensionMethod.SplitString(model.Address, 40);
+            //if (!string.IsNullOrWhiteSpace(model.Address))
+            //{
+            //    //var splitAddress = ExtensionMethod.SplitString(model.Address, 40);
 
-                var splitAddress  = model.Address.SplitStringChunks(60);
+            //    var splitAddress  = model.Address.SplitStringChunks(60);
 
-                if (splitAddress != null && splitAddress.Length > 0)
-                {
-                    model.Address1 = splitAddress[0];
+            //    if (splitAddress != null && splitAddress.Length > 0)
+            //    {
+            //        model.Address1 = splitAddress[0];
 
-                    if (splitAddress.Length > 1) { model.Address2 = splitAddress[1]; }
-                    if (splitAddress.Length > 2) { model.Address3 = splitAddress[2]; }
-                }
-            }
+            //        if (splitAddress.Length > 1) { model.Address2 = splitAddress[1]; }
+            //        if (splitAddress.Length > 2) { model.Address3 = splitAddress[2]; }
+            //    }
+            //}
 
             model.ZipCode = profile.ZipCode;
             #endregion
@@ -854,6 +890,40 @@ namespace SuccessHotelierHub.Controllers
 
                         #endregion
 
+                        #region Preference Mapping
+
+                        //Get Preference Mapping
+                        var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                        var preferences = "";
+                        if (selectedPreferences != null && selectedPreferences.Count > 0)
+                        {
+                            preferences = String.Join(", ", selectedPreferences.Select(m => m.PreferenceDescription));
+
+                            if (!string.IsNullOrWhiteSpace(preferences))
+                            {
+                                preferences = Utility.Utility.RemoveLastCharcter(preferences.Trim(), ',');
+                            }
+                        }
+
+                        model.Preferences = preferences;
+
+                        #endregion
+
+                        #region Package Mapping
+
+                        //Get Package Mapping
+                        var selectedPackage = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
+                        
+                        if (selectedPackage != null)
+                        {
+                            model.PackageName = selectedPackage.PackageName;
+                            model.PackagePrice = selectedPackage.PackagePrice;
+                            model.PackageTotalAmount = selectedPackage.TotalAmount;
+                        }
+
+                        #endregion
+
                         model.Id = reservation.Id;
                         model.ConfirmationNo = reservation.ConfirmationNumber;
                         model.ProfileId = reservation.ProfileId;
@@ -880,13 +950,13 @@ namespace SuccessHotelierHub.Controllers
 
                         if (!string.IsNullOrWhiteSpace(profile.CityName))
                         {
-                            model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
+                            //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
                             model.City = profile.CityName;
                         }
 
                         if (!string.IsNullOrWhiteSpace(profile.StateName))
                         {
-                            model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
+                            //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
                             model.State = profile.StateName;
                         }
 
@@ -902,20 +972,20 @@ namespace SuccessHotelierHub.Controllers
 
                         //Split Address
 
-                        if (!string.IsNullOrWhiteSpace(model.Address))
-                        {
-                            //var splitAddress = ExtensionMethod.SplitString(model.Address, 40);
+                        //if (!string.IsNullOrWhiteSpace(model.Address))
+                        //{
+                        //    //var splitAddress = ExtensionMethod.SplitString(model.Address, 40);
 
-                            var splitAddress = model.Address.SplitStringChunks(60);
+                        //    var splitAddress = model.Address.SplitStringChunks(60);
 
-                            if (splitAddress != null && splitAddress.Length > 0)
-                            {
-                                model.Address1 = splitAddress[0];
+                        //    if (splitAddress != null && splitAddress.Length > 0)
+                        //    {
+                        //        model.Address1 = splitAddress[0];
 
-                                if (splitAddress.Length > 1) { model.Address2 = splitAddress[1]; }
-                                if (splitAddress.Length > 2) { model.Address3 = splitAddress[2]; }
-                            }
-                        }
+                        //        if (splitAddress.Length > 1) { model.Address2 = splitAddress[1]; }
+                        //        if (splitAddress.Length > 2) { model.Address3 = splitAddress[2]; }
+                        //    }
+                        //}
 
                         model.ZipCode = profile.ZipCode;
                         #endregion

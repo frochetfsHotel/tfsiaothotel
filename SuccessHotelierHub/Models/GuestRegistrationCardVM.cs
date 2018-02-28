@@ -37,6 +37,11 @@ namespace SuccessHotelierHub.Models
 
         public string ConfirmationNo { get; set; }
         
-        
+        public string PackageName { get; set; }
+        public double? PackagePrice { get; set; }
+        public double? PackageTotalAmount { get; set; }
+
+        public string Preferences { get; set; }
+
     }
 }

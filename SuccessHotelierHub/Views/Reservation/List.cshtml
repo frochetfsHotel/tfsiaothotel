@@ -614,10 +614,10 @@
                     var buttons = "";
 
                     buttons += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                                + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
+                                + ' class="btn btn-success btn-xs font_10">Edit</a> ';
 
                     if (isReservationCancel == false && isCheckIn == false) {
-                        buttons += ' <button type="button" class="btn btn-danger btn-xs"'
+                        buttons += ' <button type="button" class="btn btn-danger btn-xs font_10"'
                                     + ' onclick="cancelReservation(this,event,\'' + full.Id + '\')">Cancel</button>';
                     }
 
@@ -625,9 +625,9 @@
                         var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' + full.Id;
 
                         buttons += '<a href="' + url + '" target="_blank" '
-                                 + ' class="btn btn-warning btn-xs m-r-xs">Folio</a> ';
+                                 + ' class="btn btn-warning btn-xs font_10">Folio</a> ';
 
-                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\',\'' + full.Email + '\')" ' + ' class="btn btn-primary btn-xs m-r-xs">Export</a> ';
+                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\',\'' + full.Email + '\')" ' + ' class="btn btn-primary btn-xs font_10">Export</a> ';
                     }
 
                     return buttons;

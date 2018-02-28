@@ -2138,6 +2138,7 @@
     <Content Include="Views\AddOns\_AddOns.cshtml" />
     <Content Include="Views\Common\EditBulkReservation.cshtml" />
     <Content Include="Views\FrontDesk\PreviewRegistrationCard.cshtml" />
+    <Content Include="Views\Package\_PackageTransaction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

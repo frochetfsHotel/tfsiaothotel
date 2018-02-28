@@ -452,13 +452,15 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Package Mapping
 
-                //Get AddOns Mapping
+                //Get Package Mapping
                 var selectedPackage = reservationRepository.GetReservationPackageMapping(model.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
 
                 if(selectedPackage != null)
                 {
                     model.PackageId = selectedPackage.PackageId;
                 }
+
+                ViewBag.PackageMapping = selectedPackage;
 
                 #endregion
 
@@ -858,13 +860,43 @@ namespace SuccessHotelierHub.Controllers
                     }
                     #endregion
 
-                    #region Save Reservation Package Mapping               
+                    #region Save Reservation Package Mapping     
 
-                    if (model.PackageId.HasValue)
+                    if (model.PackageMappingList != null && model.PackageMappingList.Count > 0)
                     {
+                        #region Delete Package Mapping
+
+                        var packageMappings = reservationRepository.GetReservationPackageMapping(Guid.Parse(reservationId), null, LogInManager.LoggedInUserId);
+
+                        if (packageMappings != null && packageMappings.Count > 0)
+                        {
+                            List<Guid> pacakgeMappingIds = new List<Guid>();
+
+                            foreach (var packageMapping in packageMappings)
+                            {
+                                if (packageMapping.PackageId.HasValue)
+                                {
+                                    if (model.PackageMappingList == null || !model.PackageMappingList.Select(m => m.PackageId).Contains(packageMapping.PackageId.Value))
+                                    {
+                                        pacakgeMappingIds.Add(packageMapping.Id);
+                                    }
+                                }
+                            }
+
+                            //Delete Package Mapping
+                            if (pacakgeMappingIds != null && pacakgeMappingIds.Count > 0)
+                            {
+                                foreach (var id in pacakgeMappingIds)
+                                {
+                                    reservationRepository.DeleteReservationPackageMapping(id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                                }
+                            }
+                        }
+                        #endregion
+
+                        var reservationPackageMapping = model.PackageMappingList[0];
+
                         //Save Reservation Package Mapping.
-                        ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
-                        reservationPackageMapping.PackageId = model.PackageId;
                         reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
                         reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
                         reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
@@ -975,7 +1007,11 @@ namespace SuccessHotelierHub.Controllers
                             {
                                 IsSuccess = true,
                                 IsExternalUrl = true,
-                                data = url
+                                data = new
+                                {
+                                    Url =  url,
+                                    ReservationId = model.Id
+                                }
                             }, JsonRequestBehavior.AllowGet);
                         }
                     }
@@ -1341,16 +1377,30 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Save Reservation Package Mapping               
 
-                if (model.PackageId.HasValue)
-                {
-                    //Save Reservation Package Mapping.
-                    ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
-                    reservationPackageMapping.PackageId = model.PackageId;
-                    reservationPackageMapping.ReservationId = model.Id;
-                    reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                    reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                //if (model.PackageId.HasValue)
+                //{
+                //    //Save Reservation Package Mapping.
+                //    ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
+                //    reservationPackageMapping.PackageId = model.PackageId;
+                //    reservationPackageMapping.ReservationId = model.Id;
+                //    reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                //    reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
 
-                    reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                //    reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                //}
+
+                if (model.PackageMappingList != null && model.PackageMappingList.Count > 0)
+                {
+                    var packageMapping = model.PackageMappingList[0];
+
+                    if (packageMapping != null)
+                    {
+                        packageMapping.ReservationId = model.Id;
+                        packageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                        packageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        reservationRepository.AddUpdateReservationPackageMapping(packageMapping);
+                    }
                 }
                 #endregion 
                 

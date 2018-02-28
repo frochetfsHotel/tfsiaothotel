@@ -67,12 +67,13 @@
                             <thead>
                                 <tr>
                                     <th class="width_5"></th>
-                                    <th class="width_15">Name</th>
+                                    <th class="width_10">Name</th>
                                     <th class="width_25">Email</th>
                                     <th class="width_10">User Role</th>
                                     <th class="width_5">Status</th>
+                                    <th class="width_10">Password</th>
                                     <th class="width_10">Record Activity</th>
-                                    <th class="width_30">Action</th>
+                                    <th class="width_25">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -200,6 +201,11 @@
             },
             {
                 targets: 5,
+                data: "Password",
+                orderable: false
+            },
+            {
+                targets: 6,
                 data: "IsRecordActivity",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -212,17 +218,17 @@
                 }
             },
             {
-                targets: 6,
+                targets: 7,
                 data: "Id",
                 orderable: false,
-                className: "text-center",
+                className: "text-left-align",
                 "visible": @((bool)LogInManager.HasRights("ADMIN") ? 1: 0),
                 render: function (data, type, full, meta) {
                     return '<a href="javascript:void(0);" onclick="GotoUserEdit(\'' + full.Id + '\')" '
-                        + ' class="btn btn-success btn-xs m-r-xs">Edit</a> '
-                        + '<a href="javascript:void(0);" onclick="GotoUserChangePassword(\'' + full.Id + '\')" '
-                        + ' class="btn btn-primary btn-xs m-r-xs">Change Password</a> '
-                        + ' <button type="button" class="btn btn-danger btn-xs"'
+                        + ' class="btn btn-success btn-xs font_11">Edit</a> '
+                        + '<a href="javascript:void(0);" onclick="CreateNewPassword(\'' + full.Id + '\')" '
+                        + ' class="btn btn-primary btn-xs font_11">Generate Password</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs font_11"'
                         + ' onclick="deleteUser(this,event,\'' + full.Id + '\')">Delete</button>';
                 }
             }
@@ -242,6 +248,36 @@
     function GotoUserChangePassword(Id) {
         var url = '@Url.Content("~/User/ChangePassword/")' + Id;
         redirectTo(url);
+    }
+
+    function CreateNewPassword(Id) {
+        //Ajax request to  create new password.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/User/CreateNewPassword")',
+            type: 'POST',
+            data: { id: Id },
+            success: function (response) {
+                if(response != null){
+                    if (response.IsSuccess == true) {
+                        showToaster("New password created successfully.", ToasterType.SUCCESS);
+                        //searchUser();
+                        ReloadUserGrid();
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            }
+        });
     }
 
     function searchUser() {
