@@ -492,6 +492,10 @@ function LoadLeftSideMenu() {
             $('#MenusManageStudents').show();
             $('#menuManageStudents').addClass('active');
         }
+        else if (menu == "ReportsScreen") {
+            $('#MenusReportsScreen').show();
+            $('#menuReportsScreen').addClass('active');
+        }
     }
 }
 

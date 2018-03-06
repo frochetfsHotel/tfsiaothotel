@@ -56,9 +56,9 @@
             }
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
-                <li class="text-center topMenu" id="menuBillingScreen">
-                    <a href="javascript:void(0);">
-                        <i class="fa fa-file-text font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reports </span>
+                <li class="text-center topMenu" id="menuReportsScreen">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('ReportsScreen','@Url.Content("~/Home/Default")');">
+                        <i class="fa fa-file-text font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reports</span>
                     </a>
                 </li>
             }

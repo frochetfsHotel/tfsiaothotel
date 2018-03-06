@@ -1,0 +1,593 @@
+﻿@model SuccessHotelierHub.Models.SearchPendingCheckInReservationParametersVM
+@using SuccessHotelierHub.Models
+
+@{
+    ViewBag.Title = "Registration Card";
+}
+
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "ReservationGrid";
+}
+
+<section class="content-header">
+    <h1>
+        Search Reservation <small>Search</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Registration Card</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Search Reservation</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="frmReservationList" enctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.LastName)
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.FirstName)
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            @Html.LabelFor(m => m.TARecordLocator)
+                            @Html.TextBoxFor(m => m.TARecordLocator, new { @class = "form-control", placeholder = "TA Record Locator" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.CompanyId)
+                            <select class="form-control" id="CompanyId" name="CompanyId">
+                                <option value="">--Select Company--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.ContactId)
+                            <select class="form-control" id="ContactId" name="ContactId">
+                                <option value="">--Select Contact--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Contact 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Contact 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Contact 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.GroupId)
+                            <select class="form-control" id="GroupId" name="GroupId">
+                                <option value="">--Select Group--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Group 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Group 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.AgentId)
+                            <select class="form-control" id="AgentId" name="AgentId">
+                                <option value="">--Select Agent--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F944">Agent 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.BlockCodeId)
+                            <select class="form-control" id="BlockCodeId" name="BlockCodeId">
+                                <option value="">--Select Group Code--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B8F944">Group Code 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-D95261B9F945">Group Code 2</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-G95261B0F937">Group Code 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <label for="" class="col-xs-12 padding-zero">Member Type / No.</label>
+                            <div class="col-md-6 col-sm-6 col-xs-12 padding_left padding-right-media form-group">
+                                <select class="form-control" id="MemberTypeId" name="MemberTypeId">
+                                    <option value="">--Select Member Type--</option>
+                                    <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Member Gold</option>
+                                    <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F932">Member Silver</option>
+                                    <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F933">Member Platinum</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12 padding_right padding-left-media form-group">
+                                @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.ArrivalDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.RoomNumber)
+                            @Html.TextBoxFor(m => m.RoomNumber, new { @class = "form-control", placeholder = "Room #" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.ConfirmationNo)
+                            @Html.TextBoxFor(m => m.ConfirmationNo, new { @class = "form-control", placeholder = "Confirmation#" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.PostalCode)
+                            @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", placeholder = "Postal Code" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        @*<div class="col-md-3">
+                            <label class="container1" for="IsShowCheckedIn">
+                                Checked In
+                                @Html.CheckBoxFor(m => m.IsShowCheckedIn)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>*@
+                        <div class="col-md-12 form-group text-right">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchReservation()">
+                                Search
+                            </button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearReservation()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t" id="divMultipleAction" style="display:none;">
+                    <div class="text-left">
+                        <button type="button" id="btnPrintMultipleRegistrationCard" class="btn bg-orange btn-sm" onclick="printSelectedRegistrationCard()">Print Registration Cards</button>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t" id="divReservationList" style="display:none;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblReservation">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Room</th>
+                                    <th>Room Type</th>
+                                    <th>Rate Type</th>
+                                    <th>Arrival</th>
+                                    <th>Departure</th>
+                                    <th>Rms</th>
+                                    <th>Night</th>                                    
+                                    <th class="width_20">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
+                   {
+                       TokenForEnableDisableButtons = PagerName,
+                       PageChangeMethod = "ReservationGridPageChange"
+                   })
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+
+
+
+<script type="text/javascript">
+
+    var currentPage = 1;
+    var grdReservation;
+    var IsSearchButtonClicked = false;
+    var selectedReservationIds = [];
+
+    $(document).ready(function () {
+
+        setTimeout(InitializeReservationGrid, 200);
+
+        //Default Arrival Date. (Set today's date).
+        $("#ArrivalDate").datepicker("setDate", new Date());
+    });
+
+
+    function SearchReservationParameters(d) {
+        var lastName = $('#LastName').val();
+        var firstName = $('#FirstName').val();
+        var taRecordLocator = $('#TARecordLocator').val();
+        var companyId = $('#CompanyId').val();
+        var contactId = $('#ContactId').val();
+        var groupId = $('#GroupId').val();
+        var blockCodeId = $('#BlockCodeId').val();
+        var agentId = $('#AgentId').val();
+        var memberTypeId = $('#MemberTypeId').val();
+        var memberNo = $('#MemberNo').val();
+        var arrivalDate = $('#ArrivalDate').val();
+        var confirmationNo = $('#ConfirmationNo').val();
+        var postalCode = $('#PostalCode').val();
+        var roomNumber = $('#RoomNumber').val();
+        //var isShowCheckedIn = $('#IsShowCheckedIn').prop('checked');
+
+        d.PageNum = currentPage;
+        d.LastName = lastName;
+        d.FirstName = firstName;
+        d.TARecordLocator = taRecordLocator;
+        d.CompanyId = companyId;
+        d.ContactId = contactId;
+        d.GroupId = groupId;
+        d.BlockCodeId = blockCodeId;
+        d.AgentId = agentId;
+        d.MemberTypeId = memberTypeId;
+        d.MemberNo = memberNo;
+        d.ArrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
+        //d.ArrivalDate = arrivalDate;
+        d.ConfirmationNo = confirmationNo;
+        d.PostalCode = postalCode;
+        d.RoomNumber = roomNumber;
+        //d.IsShowCheckedIn = isShowCheckedIn;
+    }
+
+
+    function ReservationGridDataBound(response) {
+        if (response.IsSuccess == true) {
+
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            if (response.data.length > 0) {
+                $('#divMultipleAction').show();
+            } else {
+                ClearReservationIdsArray();
+                $('#divMultipleAction').hide();
+            }
+
+            if (IsSearchButtonClicked) {
+                goToByScroll("divReservationList");
+            }
+            $('#divReservationList').show();
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadReservationGrid() {
+        if (!IsNullOrEmpty(grdReservation)) {
+            grdReservation.ajax.url("@Url.Content("~/Report/SearchPendingCheckInReservation")").load();
+        } else {
+            InitializeReservationGrid();
+        }
+        $('#divReservationList').show();
+    }
+
+    function ReservationGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadReservationGrid();
+    }
+
+
+    function InitializeReservationGrid() {
+        grdReservation = $('#tblReservation').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                    BindCheckBoxReservationChangeEvent();
+                },
+                url: '@Url.Content("~/Report/SearchPendingCheckInReservation")',
+                data: SearchReservationParameters,
+                dataSrc: ReservationGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "CreatedOn",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var chkBox = "";
+                    var checked = "";
+                    if (selectedReservationIds != null && selectedReservationIds.length > 0) {
+                        if (arrayContains(full.Id, selectedReservationIds) == true) {
+                            checked = "checked";
+                        }
+                    }
+
+                    chkBox += "<label class='container1' for='chkReservation_" + full.Id + "'>";
+                    chkBox += "<input type='checkbox' class='chkReservation' id='chkReservation_" + full.Id + "' name='chkReservation_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
+                    chkBox += "<span class='checkmark'></span> </label>";
+                    return chkBox;
+                }
+            },
+            {
+                targets: 1,
+                data: "LastName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 2,
+                data: "FirstName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.FirstName + '</a>';
+
+                    return html;
+                }
+            },
+            {
+                targets: 3,
+                data: "RoomNumbers",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomNumbers + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 4,
+                data: "RoomTypeCode",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomTypeCode + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 5,
+                data: "RateTypeCode",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RateTypeCode + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 6,
+                data: "ArrivalDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 7,
+                data: "DepartureDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 8,
+                data: "NoOfRoom",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfRoom + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 9,
+                data: "NoOfNight",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfNight + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 10,
+                data: "Id",
+                orderable: false,
+                className: "text-left-align",
+                render: function (data, type, full, meta) {
+                    var buttons = '';
+                    //buttons += '<a href="javascript:void(0);" onclick="GotoProfileEditPage(\'' + full.ProfileId + '\')" '
+                    //            + ' class="btn bg-olive btn-xs m-r-xs">Profile</a> ';
+
+                    var printRegistrationUrl = '@Url.Content("~/Report/PreviewRegistrationCard")' + '?Id=' + full.Id;
+
+                    buttons += '<a href="' + printRegistrationUrl + '" target="_blank"'
+                                                       + ' class="btn btn-info btn-xs m-r-xs">Print Registration</a> ';
+
+                    return buttons;
+                }
+            }
+            ],
+            order: [[1, "asc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function searchReservation() {        
+            IsSearchButtonClicked = true;
+            currentPage = 1;
+            ClearReservationIdsArray();
+            ReloadReservationGrid();
+    }
+
+    function clearReservation() {
+        $('#LastName').val('');
+        $('#FirstName').val('');
+        $('#TARecordLocator').val('');
+        $('#CompanyId').val('');
+        $('#ContactId').val('');
+        $('#GroupId').val('');
+        $('#BlockCodeId').val('');
+        $('#AgentId').val('');
+        $('#MemberTypeId').val('');
+        $('#MemberNo').val('');
+
+        $('#ArrivalDate').val('');
+        $('#ConfirmationNo').val('');
+        $('#PostalCode').val('');
+        $('#RoomNumber').val('');
+
+        searchReservation();
+    }
+
+
+    function GotoReservationEdit(Id) {
+        var url = '@Url.Content("~/Reservation/Edit")' + "?id=" +  Id + "&source=RegistrationCard";
+        redirectTo(url);
+    }
+
+    function BindCheckBoxReservationChangeEvent() {
+        $(".chkReservation").change(function () {
+            if (this.checked) {
+                AddReservationIdIntoArray($(this).val());
+            } else {
+                RemoveReservationIdFromArray($(this).val());
+            }
+        });
+    }
+
+    function AddReservationIdIntoArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedReservationIds.push(id);
+        }
+    }
+
+    function RemoveReservationIdFromArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedReservationIds = RemoveArrayItemByValue(id, selectedReservationIds);
+        }
+    }
+
+    function ClearReservationIdsArray() {
+        selectedReservationIds = [];
+        $(".chkReservation").prop("checked", false);
+    }
+
+    function printSelectedRegistrationCard() {
+
+        if (selectedReservationIds != null && selectedReservationIds.length > 0) {
+            //Ajax request to print multiple registration card.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                async:false,
+                url: '@Url.Content("~/Report/SaveSelectedPrintRegistrationCard")',
+                type: 'POST',
+                data: { ids: selectedReservationIds },
+                success: function (response) {
+                    if (response.IsSuccess == true) {
+
+                        ClearReservationIdsArray();                        
+
+                        if (response.IsExternalUrl) {
+                            //Redirect to print multiple registration card url.
+                            var url = response.data;
+                            openPageInNewWindow(url);
+                        }
+
+
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            });
+        } else {
+            showToaster("Please select at least one checkbox to print registration card.", ToasterType.ERROR);
+        }
+    }
+
+</script>
+
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+    @*<script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>*@
+} 

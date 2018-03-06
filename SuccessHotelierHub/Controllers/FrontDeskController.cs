@@ -772,7 +772,7 @@ namespace SuccessHotelierHub.Controllers
             model.ConfirmationNo = reservation.ConfirmationNumber;
 
             #region Record Activity Log
-            RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated guest registration card report.");
+            RecordActivityLog.RecordActivity(Pages.SEARCH_ARRIVALS, "Generated guest registration card report.");
             #endregion
 
             //HTML to PDF
@@ -1011,7 +1011,7 @@ namespace SuccessHotelierHub.Controllers
             }
 
             #region Record Activity Log
-            RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated multiple guest registration card report.");
+            RecordActivityLog.RecordActivity(Pages.SEARCH_ARRIVALS, "Generated multiple guest registration card report.");
             #endregion
 
             //Clear session.

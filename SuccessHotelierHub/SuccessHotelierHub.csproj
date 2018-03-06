@@ -237,6 +237,7 @@
     <Compile Include="Controllers\PropertyCalendarController.cs" />
     <Compile Include="Controllers\RateController.cs" />
     <Compile Include="Controllers\RateTypeController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\ReservationCancellationReasonController.cs" />
     <Compile Include="Controllers\ReservationChargeController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
@@ -2139,6 +2140,8 @@
     <Content Include="Views\Common\EditBulkReservation.cshtml" />
     <Content Include="Views\FrontDesk\PreviewRegistrationCard.cshtml" />
     <Content Include="Views\Package\_PackageTransaction.cshtml" />
+    <Content Include="Views\Report\RegistrationCard.cshtml" />
+    <Content Include="Views\Report\PreviewRegistrationCard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

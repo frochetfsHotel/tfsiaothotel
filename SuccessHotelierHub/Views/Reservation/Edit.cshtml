@@ -127,6 +127,10 @@
         {
             btnCancelUrl = Url.Action("Arrivals", "FrontDesk");
         }
+        if (sourceParam == "RegistrationCard")
+        {
+            btnCancelUrl = Url.Action("RegistrationCard", "Report");
+        }
     }
     #endregion
 

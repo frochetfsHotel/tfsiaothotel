@@ -17,6 +17,7 @@
                 <a href="@Url.Action("Index","Home")"><i class="fa fa-dashboard"></i> Home </a>
             </li>
         </ul>
+
         <ul class="sidebar-menu tree leftsidemenu" id="MenusReservation" data-widget="tree" style="display:none;">
             <li><a href="@Url.Action("RateQuery","Reservation")"><i class="fa fa-ticket "></i>New Reservation</a></li>
             <li><a href="@Url.Action("List","Reservation")"><i class="fa fa-pencil-square-o " aria-hidden="true"></i>Update Reservation</a></li>
@@ -63,12 +64,15 @@
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusFrontDesk" data-widget="tree" style="display:none;">
-            @*<li><a href="@Url.Action("CheckIn","FrontDesk")"><i class="fa fa-check-square-o" aria-hidden="true"></i>Check In (Design) *</a></li>*@
             <li><a href="@Url.Action("Arrivals","FrontDesk")"><i class="fa fa-group"></i>Arrivals</a></li>
         </ul>
 
         <ul class="sidebar-menu tree leftsidemenu" id="MenusCashiering" data-widget="tree" style="display:none;">
             <li><a href="@Url.Action("SearchGuest","Cashiering")"><i class="fa fa-credit-card"></i>Billing</a></li>
+        </ul>
+
+        <ul class="sidebar-menu tree leftsidemenu" id="MenusReportsScreen" data-widget="tree" style="display:none;">
+            <li><a href="@Url.Action("RegistrationCard","Report")"><i class="fa fa-registered"></i>Registration Card</a></li>
         </ul>
 
         @if (LogInManager.HasRights("ADMIN"))

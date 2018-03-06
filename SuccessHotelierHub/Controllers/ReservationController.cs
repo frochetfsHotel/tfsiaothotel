@@ -1000,6 +1000,10 @@ namespace SuccessHotelierHub.Controllers
                         {
                             url = Url.Action("Arrivals", "FrontDesk");
                         }
+                        else if (source == "RegistrationCard")
+                        {
+                            url = Url.Action("RegistrationCard", "Report");
+                        }
 
                         if (!string.IsNullOrWhiteSpace(url))
                         {
