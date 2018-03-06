@@ -218,7 +218,7 @@
                                                       data-reservationid="@(reservationInfo.ReservationId)" 
                                                       ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
                                                       title="Double click here to view reservation detail.">
-                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
+                                                    @(string.Format("{0} {1}", reservationInfo.LastName, reservationInfo.FirstName))
                                                 </span>
                                             </td>
                                     }
@@ -231,7 +231,7 @@
                                                       data-reservationid="@(reservationInfo.ReservationId)" 
                                                       ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
                                                       title="Double click here to view reservation detail.">
-                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
+                                                    @(string.Format("{0} {1}", reservationInfo.LastName, reservationInfo.FirstName))
                                                 </span>
                                             </td>
                                         }
