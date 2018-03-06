@@ -500,6 +500,7 @@
     function arrivalDateChanged(e) {
         var selectedDate = $(this).val();
         showArrivalWeekDay(this);
+        calculateDepartureDate();
     }
 
     function showArrivalWeekDay(element) {
