@@ -81,7 +81,7 @@
                                     <div class="col-md-3 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                                         <div class="input-group date">
-                                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy" })
+                                            @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/mm/yyyy" })
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </div>
@@ -96,7 +96,7 @@
                                     <div class="col-md-3 col-sm-4 col-xs-12 form-group">
                                         @Html.LabelFor(m => m.DepartureDate)
                                         <div class="input-group date">
-                                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/MM/yyyy", onchange = "calculateNoOfNights();" })
+                                            @Html.TextBoxFor(m => m.DepartureDate, "{0:dd/MM/yyyy}", new { @class = "form-control datecontrol", @placeholder = "dd/mm/yyyy", onchange = "calculateNoOfNights();" })
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </div>
@@ -334,7 +334,7 @@
                         <div class="col-md-3 col-sm-12 col-xs-12 padding-zero form-group">
                             @Html.LabelFor(m => m.ArrivalDate, new { @class = "required-label" })
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/MM/yyyy", @id = "txtArrivalDate", name = "txtArrivalDate" })
+                                @Html.TextBoxFor(m => m.ArrivalDate, "{0:dd/MM/yyyy}", new { @class = "form-control", @placeholder = "dd/mm/yyyy", @id = "txtArrivalDate", name = "txtArrivalDate" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
@@ -356,13 +356,13 @@
 
                     <div class="col-xs-12 padding-zero">
                         <div class="col-md-offset-2 col-md-8 col-sm-offset-1 col-sm-10 col-xs-12 padding-zero">
-                            <label id="lblSelectedPrice">0.00</label>
+                            <label id="lblSelectedPrice"></label>
                         </div>
                     </div>
 
                     <div class="col-xs-12 padding-zero" id="divRateInfo">
                         <div class="col-xs-12 col-sm-12 col-md-10 mt-10 padding-zero m-b-md">
-                            <label class="col-md-2 col-sm-2 col-xs-12">Room Description</label>
+                            <label class="col-md-2 col-sm-2 col-xs-12">Information</label>
                             <div class="col-md-10 col-sm-10 col-xs-12 padding-zero">
                                 <textarea class="form-control" readonly="readonly" rows="5" id="txtRateInfo" name="txtRateInfo"></textarea>
                             </div>

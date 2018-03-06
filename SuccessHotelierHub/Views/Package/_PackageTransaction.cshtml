@@ -63,7 +63,7 @@
         <div class="col-md-12 form-group">
             @Html.LabelFor(m => m.BeginDate, new { @class = "required-label" })
             <div class="input-group date">
-                @Html.TextBoxFor(m => m.BeginDate, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", @placeholder = "dd/MM/yyyy" })
+                @Html.TextBoxFor(m => m.BeginDate, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", @placeholder = "dd/mm/yyyy" })
                 <div class="input-group-addon">
                     <i class="fa fa-calendar"></i>
                 </div>
@@ -75,7 +75,7 @@
         <div class="col-md-12 form-group">
             @Html.LabelFor(m => m.EndDate, new { @class = "required-label" })
             <div class="input-group date">
-                @Html.TextBoxFor(m => m.EndDate, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", @placeholder = "dd/MM/yyyy" })
+                @Html.TextBoxFor(m => m.EndDate, "{0:dd/MM/yyyy}", new { @class = "form-control mydatepicker", @placeholder = "dd/mm/yyyy" })
                 <div class="input-group-addon">
                     <i class="fa fa-calendar"></i>
                 </div>

@@ -57,7 +57,7 @@
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.DepartureDate)
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                @Html.TextBoxFor(m => m.DepartureDate, new { @class = "form-control mydatepicker", placeholder = "dd/mm/yyyy" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
@@ -138,7 +138,7 @@
                                     <th class="width_15">Status</th>
                                     <th>Company</th>
                                     <th>Group</th>
-                                    <th class="width_25">Action</th>
+                                    <th class="width_20">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -413,8 +413,7 @@
                 CloseModal('additionalChargeModal');
             }
         });
-
-
+    
         //Handle Billing Modal Popup Close Event
         $('#billingInfoModal').on('hidden.bs.modal', function () {
             if (IsTransactionGridUpdated) {
@@ -691,17 +690,17 @@
                         //buttons += ' <button type="button" class="btn bg-purple btn-xs m-r-xs">Checked Out</button>';
                         var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' +  full.Id;
                         buttons += '<a href="' + url + '" target="_blank" '
-                                 + ' class="btn btn-warning btn-xs m-r-xs">Folio</a> ';
+                                 + ' class="btn btn-warning btn-xs m-r-xs" title="Folio">Folio</a> ';
 
-                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\',\'' + full.Email + '\')" ' + ' class="btn btn-info btn-xs m-r-xs">Export</a> ';
+                        buttons += '<a  href="javascript:void(0);" onclick="OpenEmailForm(\'' + full.Id + '\',\'' + full.Email + '\')" ' + ' class="btn btn-info btn-xs m-r-xs" title="Export">Export</a> ';
 
                         buttons += '<a href="javascript:void(0);" onclick="ReverseCheckOut(\'' + full.Id + '\')" '
-                                                        + ' class="btn btn-primary btn-xs m-r-xs">Reverse Check Out</a> ';
+                                                        + ' class="btn btn-primary btn-xs m-r-xs" title="Reverse Check-Out">RCO</a> ';
                     }
                     else
                     {
                         buttons += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
-                                 + ' class="btn btn-primary btn-xs m-r-xs">Billing</a> ';
+                                 + ' class="btn btn-primary btn-xs m-r-xs" title="Billing">Billing</a> ';
                     }
 
                     return buttons;

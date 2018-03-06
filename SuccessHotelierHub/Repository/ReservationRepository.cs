@@ -236,7 +236,7 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public List<ReservationVM> GetReservationById(Guid reservationId, int userId)
+        public List<ReservationVM> GetReservationById(Guid reservationId, int? userId)
         {
             SqlParameter[] parameters =
                {

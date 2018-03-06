@@ -106,7 +106,7 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public List<IndividualProfileVM> GetIndividualProfileById(Guid profileId, int userId)
+        public List<IndividualProfileVM> GetIndividualProfileById(Guid profileId, int? userId)
         {
             SqlParameter[] parameters =
                {

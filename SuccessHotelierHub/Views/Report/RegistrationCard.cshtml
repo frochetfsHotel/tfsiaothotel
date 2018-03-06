@@ -116,7 +116,7 @@
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.ArrivalDate)
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/mm/yyyy" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
@@ -164,7 +164,12 @@
                         <table class="table table-bordered table-hover table-striped" id="tblReservation">
                             <thead>
                                 <tr>
-                                    <th></th>
+                                    <th>
+                                        <label class="container1" for="chkAll">
+                                            <input type="checkbox" class="chkAll" id="chkAll" name="chkAll" value="All">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
                                     <th>Room</th>
@@ -210,6 +215,15 @@
 
         //Default Arrival Date. (Set today's date).
         $("#ArrivalDate").datepicker("setDate", new Date());
+
+        //Checkbox all change event.
+        $("#chkAll").change(function () {
+            if (this.checked) {
+                $('.chkReservation').prop("checked", true).trigger("change");
+            } else {
+                $('.chkReservation').prop("checked", false).trigger("change");
+            }
+        });
     });
 
 
@@ -539,6 +553,7 @@
     function ClearReservationIdsArray() {
         selectedReservationIds = [];
         $(".chkReservation").prop("checked", false);
+        $("#chkAll").prop("checked", false);
     }
 
     function printSelectedRegistrationCard() {

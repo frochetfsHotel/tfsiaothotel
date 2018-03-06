@@ -116,7 +116,7 @@
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.ArrivalDate)
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/MM/yyyy" })
+                                @Html.TextBoxFor(m => m.ArrivalDate, new { @class = "form-control mydatepicker", placeholder = "dd/mm/yyyy" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
@@ -164,7 +164,12 @@
                         <table class="table table-bordered table-hover table-striped" id="tblArrival">
                             <thead>
                                 <tr>
-                                    <th></th>
+                                    <th>
+                                        <label class="container1" for="chkAll">
+                                            <input type="checkbox" class="chkAll" id="chkAll" name="chkAll" value="All">
+                                            <span class="checkmark"></span> 
+                                        </label>
+                                    </th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
                                     <th>Room</th>
@@ -175,7 +180,7 @@
                                     <th>Rms</th>
                                     <th>Night</th>
                                     <th class="width_10">Status</th>
-                                    <th class="width_35">Action</th>
+                                    <th class="width_20">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -287,6 +292,15 @@
                     //Close Room Type Search Modal.
                     $('#roomModal').modal('toggle');
                 }
+            }
+        });
+
+        //Checkbox all change event.
+        $("#chkAll").change(function () {
+            if (this.checked) {
+                $('.chkReservation').prop("checked", true).trigger("change");
+            } else {
+                $('.chkReservation').prop("checked", false).trigger("change");
             }
         });
 
@@ -582,16 +596,16 @@
 
                     if (full.IsCheckIn == true) {
                         buttons += '<a href="javascript:void(0);" onclick="ReverseCheckIn(\'' + full.Id + '\')" '
-                                                        + ' class="btn btn-primary btn-xs m-r-xs">Reverse Check In</a> ';
+                                                        + ' class="btn btn-primary btn-xs m-r-xs" title="Reverse Check-In">RCI</a> ';
                     } else {
                         buttons += '<a href="javascript:void(0);" onclick="OpenCheckInPaymentMethodForm(\'' + full.Id + '\')" '
-                                                        + ' class="btn btn-primary btn-xs m-r-xs">Check In</a> ';
+                                                        + ' class="btn btn-primary btn-xs m-r-xs" title="Check-In">Check-In</a> ';
                     }
 
                     var printRegistrationUrl = '@Url.Content("~/FrontDesk/PreviewRegistrationCard")' + '?Id=' + full.Id;
 
                     buttons += '<a href="' + printRegistrationUrl + '" target="_blank"'
-                                                       + ' class="btn btn-info btn-xs m-r-xs">Print Registration</a> ';
+                                                       + ' class="btn btn-info btn-xs m-r-xs" title="Print Registration Card">PRC</a>';
 
                     return buttons;
                 }
@@ -771,6 +785,7 @@
     function ClearReservationIdsArray() {
         selectedReservationIds = [];
         $(".chkReservation").prop("checked", false);
+        $("#chkAll").prop("checked", false);
     }
 
     function printSelectedRegistrationCard() {

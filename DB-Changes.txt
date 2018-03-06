@@ -43327,3 +43327,58 @@ BEGIN
 
 END
 
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationById
+	Comment : Change in SP GetReservationById		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetReservationById]    Script Date: 3/6/2018 12:04:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetReservationById]
+	@Id			UNIQUEIDENTIFIER	=	NULL	,
+	@UserId		INT					=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[Reservation]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+				AND (ISNULL(@UserId,0) = 0 OR [CreatedBy] = @UserId)
+		
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetIndividualProfileById
+	Comment : Change in SP GetIndividualProfileById		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetIndividualProfileById]    Script Date: 3/6/2018 12:17:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetIndividualProfileById]
+	@Id			UNIQUEIDENTIFIER	=	NULL	,
+	@UserId		INT					=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[IndividualProfile]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND Id = @Id
+				AND (ISNULL(@UserId,0) = 0 OR [CreatedBy] = @UserId)
+		
+END
+
+
+
+
