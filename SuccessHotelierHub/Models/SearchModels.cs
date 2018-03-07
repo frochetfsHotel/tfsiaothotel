@@ -57,6 +57,7 @@ namespace SuccessHotelierHub.Models
 
         public string PreferenceGroupName { get; set; }
         public string PreferenceGroupDescription { get; set; }
+        public string PreferenceCode { get; set; }
         public string Preference { get; set; }
         
         public DateTime? CreatedOn { get; set; }

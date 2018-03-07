@@ -48,9 +48,8 @@
             <table class="table table-bordered table-hover table-striped cursor-P m-b-none" id="tblPreference">
                 <thead>
                     <tr>
-                        <th width="5%;"></th>
-                        <th>Preference Group</th>
-                        <th>Description</th>
+                        <th width="5%;"></th>                        
+                        <th>Code</th>
                         <th>Preference</th>
                     </tr>
                 </thead>
@@ -166,8 +165,7 @@
 
                             markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkPreference cursor-P\' id=\'chkPreference_" + result[i].Id + "\' name=\'chkPreference\' value=\'" + result[i].Id + "\'  data-preferencegroupname=\'" + result[i].PreferenceGroupName + "\'  data-preference=\'" + result[i].Preference + "\' onchange=\'selectDeSelectPreference(this);\' " + checked + "/><span class=\'checkmark\'></span></label></td>";
 
-                            markup += "<td onclick=\"onSelectPreference('chkPreference_" + result[i].Id + "');\">" + result[i].PreferenceGroupName + "</td>";
-                            markup += "<td onclick=\"onSelectPreference('chkPreference_" + result[i].Id + "');\">" + result[i].PreferenceGroupDescription + "</td>";
+                            markup += "<td onclick=\"onSelectPreference('chkPreference_" + result[i].Id + "');\">" + result[i].PreferenceCode + "</td>";
                             markup += "<td onclick=\"onSelectPreference('chkPreference_" + result[i].Id + "');\">" + result[i].Preference + "</td>";
 
                             markup += "</tr>";

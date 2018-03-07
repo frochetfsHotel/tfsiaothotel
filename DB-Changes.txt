@@ -43380,5 +43380,57 @@ BEGIN
 END
 
 
+/****************************************************************************************************************************
+
+Name : Nilesh
+Date : 07-MAR-2018
+
+/********************************************************************************************************************************/
 
 
+
+/************************************************************************************************************************ 
+	SP Name : SearchAdvancePreference
+	Comment : Change in SP SearchAdvancePreference		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvancePreference]    Script Date: 3/7/2018 1:03:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvancePreference]
+			@PreferenceGroupId	=	NULL ,
+			@Preference			=	'' 
+*/
+ALTER PROCEDURE [dbo].[SearchAdvancePreference]
+	@PreferenceGroupId		UNIQUEIDENTIFIER	=	NULL,
+	@Preference				NVARCHAR(500)		=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  P.[Description] ASC
+
+				) AS RowNum,
+				P.[Id], 
+				PG.[Name] AS PreferenceGroupName,
+				PG.[Description] AS PreferenceGroupDescription,
+				P.[Description] AS Preference,
+				P.[Code] AS PreferenceCode,
+				P.[CreatedOn], 
+				P.[IsActive]
+			FROM [dbo].[Preferences] P
+					INNER JOIN PreferenceGroup PG  ON P.PreferenceGroupId = PG.Id AND ISNULL(PG.IsDeleted,0) = 0
+				WHERE	ISNULL(P.IsDeleted,0) = 0
+						AND (ISNULL(@Preference,'') = '' OR P.[Description] LIKE '%'+ @Preference +'%')  
+						AND (@PreferenceGroupId IS NULL OR P.[PreferenceGroupId]  = @PreferenceGroupId)
+						
+
+
+END
