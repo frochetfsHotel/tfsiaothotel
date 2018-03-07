@@ -340,7 +340,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult RoomStatus(Guid roomTypeId, string date)
         {
             try
