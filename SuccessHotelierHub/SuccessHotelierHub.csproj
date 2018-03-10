@@ -2142,6 +2142,7 @@
     <Content Include="Views\Package\_PackageTransaction.cshtml" />
     <Content Include="Views\Report\RegistrationCard.cshtml" />
     <Content Include="Views\Report\PreviewRegistrationCard.cshtml" />
+    <Content Include="Views\Report\Breakfast.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

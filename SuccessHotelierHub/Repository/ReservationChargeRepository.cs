@@ -11,7 +11,7 @@ namespace SuccessHotelierHub.Repository
     {
         #region Reservation Charge
 
-        public List<ReservationChargeVM> GetReservationCharges(Guid? reservationId, Guid? additionalChargeId, int userId)
+        public List<ReservationChargeVM> GetReservationCharges(Guid? reservationId, Guid? additionalChargeId, int? userId)
         {
             SqlParameter[] parameters =
                {

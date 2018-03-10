@@ -316,7 +316,7 @@ namespace SuccessHotelierHub.Repository
             return mappingId;
         }
 
-        public List<ReservationRoomMappingVM> GetReservationRoomMapping(Guid? reservationId, Guid? roomId, int userId)
+        public List<ReservationRoomMappingVM> GetReservationRoomMapping(Guid? reservationId, Guid? roomId, int? userId)
         {
             SqlParameter[] parameters =
                 {

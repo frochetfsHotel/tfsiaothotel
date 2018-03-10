@@ -34,7 +34,15 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult CreateIndividualProfile()
         {
             var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
-            var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+            //var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+            var titleList = new SelectList(titleRepository.GetTitle()
+                            .Select(
+                                m => new SelectListItem()
+                                {
+                                    Value = m.Id.ToString(),
+                                    Text = (m.Title + (!string.IsNullOrWhiteSpace(m.Salutation) ? " - " + m.Salutation : ""))
+                                }
+                            ), "Value", "Text").ToList();
             var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
             var nationalityList = new SelectList(nationalityRepository.GetNationality(), "Id", "Name").ToList();
 
@@ -241,7 +249,15 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
-                var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+                //var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+                var titleList = new SelectList(titleRepository.GetTitle()
+                            .Select(
+                                m => new SelectListItem()
+                                {
+                                    Value = m.Id.ToString(),
+                                    Text = (m.Title + (!string.IsNullOrWhiteSpace(m.Salutation) ? " - " + m.Salutation : ""))
+                                }
+                            ), "Value", "Text").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
                 var nationalityList = new SelectList(nationalityRepository.GetNationality(), "Id", "Name").ToList();
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();

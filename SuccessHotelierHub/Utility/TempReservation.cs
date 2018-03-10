@@ -35,13 +35,12 @@ namespace SuccessHotelierHub.Utility
                 reservationRepository.LoadTempBulkReservation(LogInManager.LoggedInUserId);
             }
 
-
-            var reservations = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
+            var reservations = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId, true);
 
             if (reservations == null || reservations.Count == 0)
             {
                 //Delete existing reservation by user.
-                reservationRepository.DeleteReservationByUserId(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                reservationRepository.DeleteReservationByUserId(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId, true);
                 
                 ReservationController reservationController = new ReservationController();
                 FrontDeskController frontDeskController = new FrontDeskController();
@@ -111,12 +110,13 @@ namespace SuccessHotelierHub.Utility
                         reservation.RoomIds = Convert.ToString(tempReservation.RoomId);
                         reservation.CreatedBy = LogInManager.LoggedInUserId;                        
                         reservation.IsActive = true;
+                        reservation.IsDummyReservation = true;
 
                         //Create Reservation.
                         reservationController.CreateReservation(reservation);
                     }
 
-                    var reservationList = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
+                    var reservationList = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId, true);
 
                     if (reservationList != null && reservationList.Count > 0)
                     {
@@ -125,8 +125,21 @@ namespace SuccessHotelierHub.Utility
                         if (results != null && results.Count >= 3)
                         {
                             //Checked In : Top 1 to 20 
+                            int count = 0;
                             foreach (var result in results[0])
                             {
+                                if (count < 10)
+                                {
+                                    //Manage Due-Out reservation. Update arrival and departure date.
+                                    result.DepartureDate = result.ArrivalDate;
+                                    result.ArrivalDate = result.ArrivalDate.Value.AddDays(-(result.NoOfNight));
+                                    result.IsActive = true;
+                                    result.IsDummyReservation = true;
+                                    result.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                    reservationRepository.UpdateReservation(result);
+                                }
+
                                 #region Room Mapping
                                 var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
                                 var roomIds = string.Empty;
@@ -170,6 +183,8 @@ namespace SuccessHotelierHub.Utility
                                 modelCheckInPaymentMethod.RoomTypeId = result.RoomTypeId;
 
                                 frontDeskController.CheckIn(modelCheckInPaymentMethod);
+
+                                count++;
                             }
 
                             //Checked Out : 21 to 40

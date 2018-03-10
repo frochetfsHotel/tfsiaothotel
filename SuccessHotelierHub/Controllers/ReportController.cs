@@ -18,6 +18,7 @@ namespace SuccessHotelierHub.Controllers
 
         private ProfileRepository profileRepository = new ProfileRepository();
         private RoomTypeRepository roomTypeRepository = new RoomTypeRepository();
+        private RateTypeRepository rateTypeRepository = new RateTypeRepository();
         private CheckInCheckOutRepository checkInCheckOutRepository = new CheckInCheckOutRepository();
         private RoomRepository roomRepository = new RoomRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
@@ -37,6 +38,8 @@ namespace SuccessHotelierHub.Controllers
         {
             return View();
         }
+
+        #region Registration Card
 
         public ActionResult RegistrationCard()
         {
@@ -523,5 +526,81 @@ namespace SuccessHotelierHub.Controllers
             //return File(pdfBytes, "application/pdf", string.Format("RegistrationCard_{0}.pdf", model.Id));
             return File(pdfBytes, "application/pdf");
         }
+
+        #endregion Registration Card
+
+        #region Breakfast Report
+
+        public ActionResult Breakfast()
+        {
+            var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
+            var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty)
+                                       .Select(
+                                           m => new SelectListItem()
+                                           {
+                                               Value = m.Id.ToString(),
+                                               Text = m.RateTypeCode
+                                           }
+                                       ), "Value", "Text").ToList();
+
+
+            ViewBag.RoomTypeList = roomTypeList;
+            ViewBag.RateTypeList = rateTypeList;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult SearchBreakfastReport(SearchBreakFastReportParametersVM model)
+        {
+            try
+            {
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+                model.UserId = LogInManager.LoggedInUserId;                
+
+                var reservations = reservationRepository.SearchBreakfastReport(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+
+                int totalRecords = 0;
+                var dbRecords = reservations.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.BREAKFAST_REPORT, "Searched break fast report.");
+                #endregion
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = reservations
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SearchBreakfastReport");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        #endregion Breakfast Report
     }
 }

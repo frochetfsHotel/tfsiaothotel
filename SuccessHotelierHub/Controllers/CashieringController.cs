@@ -561,7 +561,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Room Mapping
 
                 //Get Room Mapping
-                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, LogInManager.LoggedInUserId);
+                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, null);
                 var roomIds = string.Empty;
                 var roomNumbers = string.Empty;
 
@@ -583,7 +583,7 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Reservation Charges
 
-                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
 
                 #endregion
 
@@ -772,7 +772,7 @@ namespace SuccessHotelierHub.Controllers
                     #region Room Mapping
 
                     //Get Room Mapping
-                    var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, LogInManager.LoggedInUserId);
+                    var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, null);
                     var roomIds = string.Empty;
                     var roomNumbers = string.Empty;
 
@@ -794,7 +794,7 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Reservation Charges
 
-                    var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
+                    var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
 
                     #endregion
 

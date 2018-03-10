@@ -1,0 +1,444 @@
+﻿@model SuccessHotelierHub.Models.SearchBreakFastReportParametersVM
+@using SuccessHotelierHub.Utility
+@{
+    ViewBag.Title = "Breakfast Report";
+}
+
+
+@section styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/css/AdminLTE/dataTables.bootstrap.min.css" type="text/css" />
+}
+
+@{
+    var PagerName = "BreakfastReportGrid";
+}
+
+
+<section class="content-header">
+    <h1>
+        Breakfast Report <small>Search</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Breakfast Report</li>
+        <li class="active">Search</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Breakfast Report Search</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="frmBreakfastReport" id="frmBreakfastReport" name="frmBreakfastReport"
+              enctype="multipart/form-data" method="post">
+            <div class="box-body box-body-list">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.LastName)
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.FirstName)
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            @Html.LabelFor(m => m.ConfirmationNo)
+                            @Html.TextBoxFor(m => m.ConfirmationNo, new { @class = "form-control", placeholder = "Confirmation #" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.RoomNumber)
+                            @Html.TextBoxFor(m => m.RoomNumber, new { @class = "form-control", placeholder = "Room #" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.ArrivalDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.ArrivalDate, new
+                                   {
+                                       @class = "form-control mydatepicker",
+                                       placeholder = "dd/mm/yyyy"
+                                   })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.DepartureDate)
+                            <div class="input-group date">
+                                @Html.TextBoxFor(m => m.DepartureDate, new
+                                   {
+                                       @class = "form-control mydatepicker",
+                                       placeholder = "dd/mm/yyyy"
+                                   })
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.RoomTypeId)
+                            @Html.DropDownListFor(m => m.RoomTypeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
+                                "--Select Room Type--",
+                                new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.RateTypeId)
+                            @Html.DropDownListFor(m => m.RateTypeId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
+                                "--Select Rate Type--",
+                                new { @class = "form-control" })
+                        </div>                  
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group text-right">
+                            <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchBreakfastReport()">
+                                Search
+                            </button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearBreakfastReport()">Clear</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 padding-zero m-t" id="divBreakfastReportList" style="display:none;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="tblBreakfastReport">
+                            <thead>
+                                <tr>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Phone #</th>
+                                    <th>Arrival</th>
+                                    <th>Night</th>
+                                    <th>Departure</th>
+                                    <th>Adult</th>
+                                    <th>Children</th>
+                                    <th>Room</th>
+                                    <th>Room Type</th>
+                                    <th>Rate Type</th>
+                                    <th class="width_15">Remarks</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="text-left">
+                        @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM()
+                           {
+                               TokenForEnableDisableButtons = PagerName,
+                               PageChangeMethod = "BreakfastReportGridPageChange"
+                           })
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+
+
+
+<script type="text/javascript">
+
+    var currentPage = 1;
+    var grdBreakfastReport;
+    var IsSearchButtonClicked = false;
+
+    $(document).ready(function () {
+        setTimeout(InitializeBreakfastReportGrid, 200);
+    });
+
+
+    function SearchBreakfastReportParameters(d) {
+        var lastName = $('#LastName').val();
+        var firstName = $('#FirstName').val();
+        var confirmationNo = $('#ConfirmationNo').val();
+        var arrivalDate = $('#ArrivalDate').val();
+        var departureDate = $('#DepartureDate').val();
+        var roomNumber = $('#RoomNumber').val();
+        var roomTypeId = $('#RoomTypeId').val();
+        var rateTypeId = $('#RateTypeId').val();
+
+
+        d.PageNum = currentPage;
+        d.LastName = lastName;
+        d.FirstName = firstName;
+        d.ConfirmationNo = confirmationNo;
+        d.ArrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
+        d.DepartureDate = ConvertDDMMYYYY_To_MMDDYYYY(departureDate, DateSeprator.SLASH);
+        d.RoomNumber = roomNumber;
+        d.RoomTypeId = roomTypeId;
+        d.RateTypeId = rateTypeId;
+    }
+
+
+    function BreakfastReportGridDataBound(response) {
+        if (response.IsSuccess == true) {
+
+            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+
+            if (IsSearchButtonClicked) {
+                goToByScroll("divBreakfastReportList");
+            }
+            $('#divBreakfastReportList').show();
+            return response.data;
+        }
+        else {
+            showToaster(response.ErrorMsg, ToasterType.ERROR);
+        }
+    }
+
+
+    function ReloadBreakfastReportGrid() {
+        if (!IsNullOrEmpty(grdBreakfastReport)) {
+            grdBreakfastReport.ajax.url("@Url.Content("~/Report/SearchBreakfastReport")").load();
+        } else {
+            InitializeBreakfastReportGrid();
+        }
+        $('#divBreakfastReportList').show();
+    }
+
+    function BreakfastReportGridPageChange(cPage) {
+        currentPage = cPage;
+        ReloadBreakfastReportGrid();
+    }
+
+    function InitializeBreakfastReportGrid() {
+        grdBreakfastReport = $('#tblBreakfastReport').DataTable({
+            serverSide: true,
+            ajax: {
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Report/SearchBreakfastReport")',
+                data: SearchBreakfastReportParameters,
+                dataSrc: BreakfastReportGridDataBound,
+                type: "POST"
+            },
+            scrollCollapse: true,
+            serverSide: true,
+            processing: true,
+            processing: "<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'>",
+            ordering: true,
+            bDestroy: true,
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            info: false,
+            columnDefs: [
+            {
+                targets: 0,
+                data: "LastName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.LastName + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 1,
+                data: "FirstName",
+                orderable: true,
+                render: function (data, type, full, meta) {                    
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.FirstName + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 2,
+                data: "PhoneNo",
+                orderable: true,
+                render: function (data, type, full, meta) {                    
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.PhoneNo + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 3,
+                data: "ArrivalDate",
+                orderable: true,
+                render: function (data, type, full, meta) {                    
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 4,
+                data: "NoOfNight",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfNight + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 5,
+                data: "DepartureDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 6,
+                data: "NoOfAdult",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfAdult + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 7,
+                data: "NoOfChildren",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfChildren + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 8,
+                data: "RoomNumbers",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomNumbers + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 9,
+                data: "RoomTypeCode",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RoomTypeCode + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 10,
+                data: "RateTypeCode",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.RateTypeCode + '</a> ';
+
+                    return html;
+                }
+            },
+
+            {
+                targets: 11,
+                data: "Remarks",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.Remarks + '</a> ';
+
+                    return html;
+                }
+            },
+
+            ],
+            order: [[0, "asc"]],
+            fnCreatedRow: function (nRow, aData, iDataIndex) {
+                $(nRow).attr('ID', aData.ID)
+            }
+        })
+    }
+
+    function searchBreakfastReport() {
+        IsSearchButtonClicked = true;
+        currentPage = 1;
+        ReloadBreakfastReportGrid();
+    }
+
+    function clearBreakfastReport() {
+        $('#LastName').val('');
+        $('#FirstName').val('');
+        $('#ConfirmationNo').val('');
+
+        $('#ArrivalDate').val('');
+        $('#DepartureDate').val('');
+        $('#RoomNumber').val('');
+        $('#RoomTypeId').val('');
+        $('#RateTypeId').val('');
+
+        searchBreakfastReport();
+    }
+
+
+    function GotoReservationEdit(Id) {
+        var url = '@Url.Content("~/Reservation/Edit")' + "?id=" + Id + "&source=BreakfastReport";
+        redirectTo(url);
+    }
+
+</script>
+
+
+
+@section scripts {
+    <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+}
+

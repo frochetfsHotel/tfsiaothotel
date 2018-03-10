@@ -1000,6 +1000,7 @@ namespace SuccessHotelierHub.Utility
         public const string CALENDAR = "Calendar";
         public const string SEARCH_ARRIVALS = "Search Arrivals";
         public const string SEARCH_REGISTRATION_CARD = "Search Pending Check In Reservation to Generate Registration Card";
+        public const string BREAKFAST_REPORT = "Breakfast Report";
         public const string CHECKIN = "Check In";
         public const string SEARCH_GUESTS = "Search Guests";
         public const string BILLING_TRANSACTION = "Billing Transaction";

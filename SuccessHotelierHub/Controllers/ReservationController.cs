@@ -53,7 +53,16 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult Create()
         {
             var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
-            var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+            //var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+            var titleList = new SelectList(titleRepository.GetTitle()
+                .Select(
+                    m => new SelectListItem()
+                    {
+                        Value = m.Id.ToString(),
+                        Text = (m.Title + (!string.IsNullOrWhiteSpace(m.Salutation) ? " - " + m.Salutation : ""))
+                    }
+                ), "Value", "Text").ToList();
+
             var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
             var rateTypeList = new SelectList(
@@ -510,7 +519,15 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
-                var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+                //var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+                var titleList = new SelectList(titleRepository.GetTitle()
+                            .Select(
+                                m => new SelectListItem()
+                                {
+                                    Value = m.Id.ToString(),
+                                    Text = (m.Title + (!string.IsNullOrWhiteSpace(m.Salutation) ? " - " + m.Salutation : ""))
+                                }
+                            ), "Value", "Text").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
                 var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();                
                 var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty)
@@ -1003,6 +1020,10 @@ namespace SuccessHotelierHub.Controllers
                         else if (source == "RegistrationCard")
                         {
                             url = Url.Action("RegistrationCard", "Report");
+                        }
+                        else if (source == "BreakfastReport")
+                        {
+                            url = Url.Action("Breakfast", "Report");
                         }
 
                         if (!string.IsNullOrWhiteSpace(url))
