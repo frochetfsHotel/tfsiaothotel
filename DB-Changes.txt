@@ -44169,3 +44169,438 @@ BEGIN
 
 	ORDER BY SortOrder
 END
+
+
+/**********************************************************************************************************************
+
+Name : Nilesh
+Date : 17-MAR-2018
+
+/**********************************************************************************************************************/
+
+/************************************************************************************************************************ 
+	SP Name : SearchBreakfastReport
+	Comment : Change in SP SearchBreakfastReport		
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[SearchBreakfastReport]    Script Date: 3/17/2018 11:03:38 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchBreakfastReport] 		
+		@Date				=	NULL	,			
+		@PageNum			=	1		,
+		@PageSize			=	10		,
+		@SortColumn			=	NULL	,
+		@SortDirection		=	NULL	,
+		@UserId				=	2
+		
+*/
+ALTER PROCEDURE [dbo].[SearchBreakfastReport]		
+	@Date				DATETIME			=	NULL	,		
+	@PageNum			INT					=	1		,
+	@PageSize			INT					=	10		,
+	@SortColumn			NVARCHAR(255)		=	NULL	,
+	@SortDirection		NVARCHAR(20)		=	NULL	,
+	@UserId				INT					=	NULL	
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL		
+		,	[ProfileId]					UNIQUEIDENTIFIER	NOT NULL		
+		,   [GuestName]					NVARCHAR(MAX)		NULL				
+		,	[CompanyId]					UNIQUEIDENTIFIER	NULL		
+		,   [CompanyName]				NVARCHAR(MAX)		NULL
+		,	[VipId]						UNIQUEIDENTIFIER	NULL		
+		,   [VipName]					NVARCHAR(MAX)		NULL
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomNumbers]				NVARCHAR(500)		NULL	
+		,	[RateTypeCode]				NVARCHAR(255)		NULL	
+		,	[Remarks]					NVARCHAR(MAX)		NULL
+		,	[IsReservationCancel]		BIT					NULL
+		,	[IsCheckIn]					BIT					NULL
+		,	[IsCheckOut]				BIT					NULL		
+		,	[IsBreakFastPackageAdded]	BIT					NULL
+		,	[CreatedOn]					DATETIME			NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT R.Id) 
+						FROM [dbo].[Reservation] R
+							 INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+								AND ISNULL(P.IsDeleted,0) = 0 
+								AND ISNULL(P.CreatedBy,0) = ISNULL(@UserId,0)
+							 LEFT JOIN [dbo].[Vip] V ON V.Id = R.VipId
+								AND ISNULL(V.IsDeleted,0) = 0 
+						WHERE	ISNULL(R.IsDeleted,0) = 0								
+								AND (@Date IS NULL OR (CAST(@Date AS DATE) BETWEEN CAST(R.[ArrivalDate] AS DATE) AND CAST(R.[DepartureDate] AS DATE)))
+								AND (ISNULL(R.CreatedBy,0) = ISNULL(@UserId,0))
+								AND ISNULL(R.IsCheckIn,0) = 1
+								AND ISNULL(R.IsCheckOut,0) = 0 
+						)
+
+
+		INSERT INTO #tempReservation 
+		(
+			[RowNum]
+			,[Id]		
+			,[ProfileId]	
+			,[GuestName]
+			,[CompanyId]
+			,[CompanyName]
+			,[VipId]
+			,[VipName]		
+			,[ArrivalDate]
+			,[NoOfNight]					
+			,[DepartureDate]
+			,[NoOfAdult]		
+			,[NoOfChildren]
+			,[NoOfRoom]		
+			,[RoomNumbers]
+			,[RateTypeCode]
+			,[Remarks]
+			,[IsReservationCancel]
+			,[IsCheckIn]
+			,[IsCheckOut]
+			,[IsBreakFastPackageAdded]
+			,[CreatedOn]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN R.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN R.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'GuestName' and @SortDirection = 'asc'
+						THEN LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) END ASC,
+					CASE WHEN @SortColumn = 'GuestName' and @SortDirection = 'desc'
+						THEN LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) END DESC,
+
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'asc'
+						THEN R.[ArrivalDate] END ASC,
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'desc'
+						THEN R.[ArrivalDate] END DESC,
+
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'asc'
+						THEN R.[DepartureDate] END ASC,
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'desc'
+						THEN R.[DepartureDate] END DESC,
+
+					CASE WHEN @SortColumn = 'VipName' and @SortDirection = 'asc'
+						THEN V.[Description] END ASC,
+					CASE WHEN @SortColumn = 'VipName' and @SortDirection = 'desc'
+						THEN V.[Description] END DESC,
+
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+						THEN RAT.[RateTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+						THEN RAT.[RateTypeCode] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],''))))  END ASC
+
+			) AS RowNum
+			,R.[Id]		
+			,R.ProfileId	
+			,LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) AS [GuestName]
+			,R.[CompanyId]
+			,'' AS CompanyName
+			,R.[VipId]
+			,ISNULL(V.[Description],'') AS [VipName]
+			,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+			,R.[NoOfNight]		
+			,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+			,R.[NoOfAdult]		
+			,R.[NoOfChildren]
+			,R.[NoOfRoom]		
+			,'' AS [RoomNumbers]
+			,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]	
+			,'' AS [Remarks]
+			,ISNULL(R.[IsReservationCancel],0) AS [IsReservationCancel]			
+			,ISNULL(R.[IsCheckIn],0) AS [IsCheckIn]
+			,ISNULL(R.[IsCheckOut],0) AS [IsCheckOut]
+			,(CASE WHEN (SELECT COUNT(*) 
+							FROM ReservationPackageMapping RPM INNER JOIN Package P ON
+							P.Id = RPM.PackageId AND ISNULL(P.IsDeleted,0) = 0
+							WHERE ISNULL(RPM.IsDeleted,0) = 0 AND RPM.ReservationId = R.Id
+							AND P.[Name] LIKE '%Breakfast%') > 0 
+					THEN 1 ELSE 0 END) AS [IsBreakFastPackageAdded]
+			,R.[CreatedOn]
+		FROM [dbo].[Reservation] R
+				INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+					AND ISNULL(P.IsDeleted,0) = 0 
+					AND ISNULL(P.CreatedBy,0) = ISNULL(@UserId,0)
+				LEFT JOIN [dbo].[Vip] V ON V.Id = R.VipId
+					AND ISNULL(V.IsDeleted,0) = 0 
+				LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+					AND ISNULL(RAT.IsDeleted,0) = 0 
+		WHERE	ISNULL(R.IsDeleted,0) = 0								
+				AND (@Date IS NULL OR (CAST(@Date AS DATE) BETWEEN CAST(R.[ArrivalDate] AS DATE) AND CAST(R.[DepartureDate] AS DATE)))
+				AND (ISNULL(R.CreatedBy,0) = ISNULL(@UserId,0))
+				AND ISNULL(R.IsCheckIn,0) = 1 
+				AND ISNULL(R.IsCheckOut,0) = 0 
+																			
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+	--UPDATE Remarks by comma separated.
+	UPDATE temp
+		SET Remarks = (STUFF(( SELECT ', '+ CAST(RR.Remarks AS varchar(MAX))					
+				FROM ReservationRemarks RR												
+				WHERE	ISNULL(RR.IsDeleted,0) = 0
+						AND RR.ReservationId = temp.Id
+						AND RR.CreatedBy  = @UserId
+						AND ISNULL(RR.Remarks,'') <> ''
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id
+						AND RRM.CreatedBy  = @UserId
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]		
+			,temp.[ProfileId]	
+			,temp.[GuestName]		
+			,temp.[CompanyId]				
+			,temp.[CompanyName]
+			,temp.[VipId]			
+			,temp.[VipName]
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]			
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,ISNULL(temp.[RoomNumbers],'') AS [RoomNumbers]			
+			,temp.[RateTypeCode]
+			,ISNULL(temp.[Remarks],'') AS [Remarks]
+			,temp.[IsReservationCancel]
+			,temp.[IsCheckIn]
+			,temp.[IsCheckOut]
+			,temp.[IsBreakFastPackageAdded]
+			,temp.[CreatedOn]
+			,@TotalCount AS TotalCount
+	FROM	
+		#tempReservation AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetBreakfastReport
+	Comment : Create SP GetBreakfastReport		
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[GetBreakfastReport]    Script Date: 3/17/2018 11:03:38 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetBreakfastReport] 		
+		@Date				=	NULL	,					
+		@UserId				=	2
+		
+*/
+CREATE PROCEDURE [dbo].[GetBreakfastReport]		
+	@Date				DATETIME			=	NULL	,			
+	@UserId				INT					=	NULL	
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL		
+		,	[ProfileId]					UNIQUEIDENTIFIER	NOT NULL		
+		,   [GuestName]					NVARCHAR(MAX)		NULL				
+		,	[CompanyId]					UNIQUEIDENTIFIER	NULL		
+		,   [CompanyName]				NVARCHAR(MAX)		NULL
+		,	[VipId]						UNIQUEIDENTIFIER	NULL		
+		,   [VipName]					NVARCHAR(MAX)		NULL
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomNumbers]				NVARCHAR(500)		NULL	
+		,	[RateTypeCode]				NVARCHAR(255)		NULL	
+		,	[Remarks]					NVARCHAR(MAX)		NULL
+		,	[IsReservationCancel]		BIT					NULL
+		,	[IsCheckIn]					BIT					NULL
+		,	[IsCheckOut]				BIT					NULL		
+		,	[IsBreakFastPackageAdded]	BIT					NULL
+		,	[CreatedOn]					DATETIME			NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+
+		INSERT INTO #tempReservation 
+		(
+			[RowNum]
+			,[Id]		
+			,[ProfileId]	
+			,[GuestName]
+			,[CompanyId]
+			,[CompanyName]
+			,[VipId]
+			,[VipName]		
+			,[ArrivalDate]
+			,[NoOfNight]					
+			,[DepartureDate]
+			,[NoOfAdult]		
+			,[NoOfChildren]
+			,[NoOfRoom]		
+			,[RoomNumbers]
+			,[RateTypeCode]
+			,[Remarks]
+			,[IsReservationCancel]
+			,[IsCheckIn]
+			,[IsCheckOut]
+			,[IsBreakFastPackageAdded]
+			,[CreatedOn]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],''))))  ASC
+
+			) AS RowNum
+			,R.[Id]		
+			,R.ProfileId	
+			,LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) AS [GuestName]
+			,R.[CompanyId]
+			,'' AS CompanyName
+			,R.[VipId]
+			,ISNULL(V.[Description],'') AS [VipName]
+			,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+			,R.[NoOfNight]		
+			,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+			,R.[NoOfAdult]		
+			,R.[NoOfChildren]
+			,R.[NoOfRoom]		
+			,'' AS [RoomNumbers]
+			,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]	
+			,'' AS [Remarks]
+			,ISNULL(R.[IsReservationCancel],0) AS [IsReservationCancel]			
+			,ISNULL(R.[IsCheckIn],0) AS [IsCheckIn]
+			,ISNULL(R.[IsCheckOut],0) AS [IsCheckOut]
+			,(CASE WHEN (SELECT COUNT(*) 
+							FROM ReservationPackageMapping RPM INNER JOIN Package P ON
+							P.Id = RPM.PackageId AND ISNULL(P.IsDeleted,0) = 0
+							WHERE ISNULL(RPM.IsDeleted,0) = 0 AND RPM.ReservationId = R.Id
+							AND P.[Name] LIKE '%Breakfast%') > 0 
+					THEN 1 ELSE 0 END) AS [IsBreakFastPackageAdded]
+			,R.[CreatedOn]
+		FROM [dbo].[Reservation] R
+				INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+					AND ISNULL(P.IsDeleted,0) = 0 
+					AND ISNULL(P.CreatedBy,0) = ISNULL(@UserId,0)
+				LEFT JOIN [dbo].[Vip] V ON V.Id = R.VipId
+					AND ISNULL(V.IsDeleted,0) = 0 
+				LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+					AND ISNULL(RAT.IsDeleted,0) = 0 
+		WHERE	ISNULL(R.IsDeleted,0) = 0								
+				AND (@Date IS NULL OR (CAST(@Date AS DATE) BETWEEN CAST(R.[ArrivalDate] AS DATE) AND CAST(R.[DepartureDate] AS DATE)))
+				AND (ISNULL(R.CreatedBy,0) = ISNULL(@UserId,0))
+				AND ISNULL(R.IsCheckIn,0) = 1 
+				AND ISNULL(R.IsCheckOut,0) = 0 
+																			
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+	--UPDATE Remarks by comma separated.
+	UPDATE temp
+		SET Remarks = (STUFF(( SELECT ', '+ CAST(RR.Remarks AS varchar(MAX))					
+				FROM ReservationRemarks RR												
+				WHERE	ISNULL(RR.IsDeleted,0) = 0
+						AND RR.ReservationId = temp.Id
+						AND RR.CreatedBy  = @UserId
+						AND ISNULL(RR.Remarks,'') <> ''
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id
+						AND RRM.CreatedBy  = @UserId
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+
+	SELECT 
+			temp.[Id]		
+			,temp.[ProfileId]	
+			,temp.[GuestName]		
+			,temp.[CompanyId]				
+			,temp.[CompanyName]
+			,temp.[VipId]			
+			,temp.[VipName]
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]			
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,ISNULL(temp.[RoomNumbers],'') AS [RoomNumbers]			
+			,temp.[RateTypeCode]
+			,ISNULL(temp.[Remarks],'') AS [Remarks]
+			,temp.[IsReservationCancel]
+			,temp.[IsCheckIn]
+			,temp.[IsCheckOut]
+			,temp.[IsBreakFastPackageAdded]
+			,temp.[CreatedOn]			
+	FROM	
+		#tempReservation AS temp
+	ORDER BY temp.RoomNumbers
+
+END
+
+
+
+
+
+

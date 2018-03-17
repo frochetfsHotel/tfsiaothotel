@@ -1,7 +1,7 @@
 ﻿@model SuccessHotelierHub.Models.SearchBreakFastReportParametersVM
 @using SuccessHotelierHub.Utility
 @{
-    ViewBag.Title = "Breakfast Report";
+    ViewBag.Title = "Breakfast List";
 }
 
 
@@ -17,62 +17,35 @@
 
 <section class="content-header">
     <h1>
-        Breakfast Report <small>Search</small>
+        Breakfast <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">Breakfast Report</li>
-        <li class="active">Search</li>
+        <li class="">Breakfast</li>
+        <li class="active">List</li>
     </ol>
 </section>
 
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Breakfast Report Search</h3>
+            <h3 class="box-title">Breakfast List</h3>
+            <div class="pull-right">
+                <a href="javascript:void(0);" class="btn btn-info btn-sm" 
+                   onclick="PreviewBreakFastReport();">Print Breakfast Report</a>
+            </div>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
         <form class="frmBreakfastReport" id="frmBreakfastReport" name="frmBreakfastReport"
               enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
-                <div class="pt_10 pl_10 pr_10 searchBox_Border">
+                <div class="pt_10 pl_10 pr_10 searchBox_Border">                    
                     <div class="row">
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.LastName)
-                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
-                        </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.FirstName)
-                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
-                        </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12">
-                            @Html.LabelFor(m => m.ConfirmationNo)
-                            @Html.TextBoxFor(m => m.ConfirmationNo, new { @class = "form-control", placeholder = "Confirmation #" })
-                        </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.RoomNumber)
-                            @Html.TextBoxFor(m => m.RoomNumber, new { @class = "form-control", placeholder = "Room #" })
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.ArrivalDate)
+                        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                            @Html.LabelFor(m => m.Date)
                             <div class="input-group date">
-                                @Html.TextBoxFor(m => m.ArrivalDate, new
-                                   {
-                                       @class = "form-control mydatepicker",
-                                       placeholder = "dd/mm/yyyy"
-                                   })
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.DepartureDate)
-                            <div class="input-group date">
-                                @Html.TextBoxFor(m => m.DepartureDate, new
+                                @Html.TextBoxFor(m => m.Date, new
                                    {
                                        @class = "form-control mydatepicker",
                                        placeholder = "dd/mm/yyyy"
@@ -82,29 +55,13 @@
                                 </div>
                             </div>
                         </div> 
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.RoomTypeId)
-                            @Html.DropDownListFor(m => m.RoomTypeId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RoomTypeList, "Value", "Text"),
-                                "--Select Room Type--",
-                                new { @class = "form-control" })
-                        </div>
-                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
-                            @Html.LabelFor(m => m.RateTypeId)
-                            @Html.DropDownListFor(m => m.RateTypeId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeList, "Value", "Text"),
-                                "--Select Rate Type--",
-                                new { @class = "form-control" })
-                        </div>                  
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 form-group text-right">
+                        <div class="col-md-8 col-sm-8 col-xs-12 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchBreakfastReport()">
                                 Search
                             </button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearBreakfastReport()">Clear</button>
                         </div>
-                        <div class="clearfix"></div>
+                        <div class="clearfix"></div>               
                     </div>
                 </div>
 
@@ -113,18 +70,18 @@
                         <table class="table table-bordered table-hover table-striped" id="tblBreakfastReport">
                             <thead>
                                 <tr>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Phone #</th>
-                                    <th>Arrival</th>
-                                    <th>Night</th>
-                                    <th>Departure</th>
-                                    <th>Adult</th>
-                                    <th>Children</th>
                                     <th>Room</th>
-                                    <th>Room Type</th>
-                                    <th>Rate Type</th>
-                                    <th class="width_15">Remarks</th>
+                                    <th>Guest</th>
+                                    <th>Company</th>
+                                    <th>Rms</th>
+                                    <th>ADT</th>
+                                    <th>CHD</th>
+                                    <th>Status</th>
+                                    <th>ARR</th>
+                                    <th>DEP</th>
+                                    <th>VIP</th>
+                                    <th>Rate</th>    
+                                    <th>Breakfast Added</th>                                
                                 </tr>
                             </thead>
                         </table>
@@ -154,30 +111,20 @@
     var IsSearchButtonClicked = false;
 
     $(document).ready(function () {
+
+        //Default Date.
+        $('#Date').datepicker("setDate", new Date());
+
         setTimeout(InitializeBreakfastReportGrid, 200);
     });
 
 
     function SearchBreakfastReportParameters(d) {
-        var lastName = $('#LastName').val();
-        var firstName = $('#FirstName').val();
-        var confirmationNo = $('#ConfirmationNo').val();
-        var arrivalDate = $('#ArrivalDate').val();
-        var departureDate = $('#DepartureDate').val();
-        var roomNumber = $('#RoomNumber').val();
-        var roomTypeId = $('#RoomTypeId').val();
-        var rateTypeId = $('#RateTypeId').val();
-
+        var date = $('#Date').val();
 
         d.PageNum = currentPage;
-        d.LastName = lastName;
-        d.FirstName = firstName;
-        d.ConfirmationNo = confirmationNo;
-        d.ArrivalDate = ConvertDDMMYYYY_To_MMDDYYYY(arrivalDate, DateSeprator.SLASH);
-        d.DepartureDate = ConvertDDMMYYYY_To_MMDDYYYY(departureDate, DateSeprator.SLASH);
-        d.RoomNumber = roomNumber;
-        d.RoomTypeId = roomTypeId;
-        d.RateTypeId = rateTypeId;
+        //d.Date = ConvertDDMMYYYY_To_MMDDYYYY(date, DateSeprator.SLASH);
+        d.Date = date;
     }
 
 
@@ -243,110 +190,6 @@
             columnDefs: [
             {
                 targets: 0,
-                data: "LastName",
-                orderable: true,
-                render: function (data, type, full, meta) {
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.LastName + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 1,
-                data: "FirstName",
-                orderable: true,
-                render: function (data, type, full, meta) {                    
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.FirstName + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 2,
-                data: "PhoneNo",
-                orderable: true,
-                render: function (data, type, full, meta) {                    
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.PhoneNo + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 3,
-                data: "ArrivalDate",
-                orderable: true,
-                render: function (data, type, full, meta) {                    
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.ArrivalDate + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 4,
-                data: "NoOfNight",
-                orderable: false,
-                render: function (data, type, full, meta) {
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.NoOfNight + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 5,
-                data: "DepartureDate",
-                orderable: true,
-                render: function (data, type, full, meta) {
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.DepartureDate + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 6,
-                data: "NoOfAdult",
-                orderable: false,
-                render: function (data, type, full, meta) {
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.NoOfAdult + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 7,
-                data: "NoOfChildren",
-                orderable: false,
-                render: function (data, type, full, meta) {
-                    var html = "";
-
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.NoOfChildren + '</a> ';
-
-                    return html;
-                }
-            },
-            {
-                targets: 8,
                 data: "RoomNumbers",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -359,14 +202,120 @@
                 }
             },
             {
-                targets: 9,
-                data: "RoomTypeCode",
+                targets: 1,
+                data: "GuestName",
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
 
                     html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.RoomTypeCode + '</a> ';
+                        + ' class="">' + full.GuestName + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 2,
+                data: "CompanyName",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.CompanyName + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 3,
+                data: "NoOfRoom",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfRoom + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 4,
+                data: "NoOfAdult",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfAdult + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 5,
+                data: "NoOfChildren",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.NoOfChildren + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 6,
+                data: "IsCheckIn",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    var status = "IN";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                            + ' class="">' + status + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 7,
+                data: "ArrivalDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.ArrivalDate + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 8,
+                data: "DepartureDate",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.DepartureDate + '</a> ';
+
+                    return html;
+                }
+            },
+            {
+                targets: 9,
+                data: "VipName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.VipName + '</a> ';
 
                     return html;
                 }
@@ -384,23 +333,23 @@
                     return html;
                 }
             },
-
             {
                 targets: 11,
-                data: "Remarks",
+                data: "IsBreakFastPackageAdded",
                 orderable: false,
                 render: function (data, type, full, meta) {
+                    var isBreakFastPackageAdded = full.IsBreakFastPackageAdded;
                     var html = "";
 
-                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
-                        + ' class="">' + full.Remarks + '</a> ';
+                    if (isBreakFastPackageAdded) {
+                        html += '<i class="fa fa-check text-success" />';
+                    }
 
                     return html;
                 }
             },
-
             ],
-            order: [[0, "asc"]],
+            order: [[1, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
@@ -414,15 +363,7 @@
     }
 
     function clearBreakfastReport() {
-        $('#LastName').val('');
-        $('#FirstName').val('');
-        $('#ConfirmationNo').val('');
-
-        $('#ArrivalDate').val('');
-        $('#DepartureDate').val('');
-        $('#RoomNumber').val('');
-        $('#RoomTypeId').val('');
-        $('#RateTypeId').val('');
+        $('#Date').val('');
 
         searchBreakfastReport();
     }
@@ -431,6 +372,20 @@
     function GotoReservationEdit(Id) {
         var url = '@Url.Content("~/Reservation/Edit")' + "?id=" + Id + "&source=BreakfastReport";
         redirectTo(url);
+    }
+
+    function PreviewBreakFastReport() {
+
+        var date = $("#Date").val();
+        var showDate = date;
+
+        if (!IsNullOrEmpty(date)) {
+            date = ConvertDDMMYYYY_To_MMDDYYYY(date, "/");
+        }
+
+        var url = '@Url.Content("~/Report/PreviewBreakfastReport")' + "?date=" + date + "&showDate=" + showDate;
+
+        openPageInNewWindow(url);
     }
 
 </script>

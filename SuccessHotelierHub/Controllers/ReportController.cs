@@ -601,6 +601,31 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        public ActionResult PreviewBreakfastReport(string date, string showDate)
+        {
+
+            BreakFastReport model = new BreakFastReport();
+            model.Date = showDate;
+
+            var results = reservationRepository.GetBreakfastReport(date, LogInManager.LoggedInUserId);
+            model.Results = results;
+
+            #region Record Activity Log
+            RecordActivityLog.RecordActivity(Pages.SEARCH_REGISTRATION_CARD, "Generated break fast pdf report.");
+            #endregion
+
+            //HTML to PDF
+            string html = Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewBreakfastReport", model);
+
+            byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+            //return File(pdfBytes, "application/pdf", "BreakFastReport.pdf");
+
+            return File(pdfBytes, "application/pdf");
+
+            //return View(model);
+        }
+
         #endregion Breakfast Report
     }
 }

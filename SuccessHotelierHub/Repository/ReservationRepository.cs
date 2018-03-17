@@ -1096,14 +1096,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@LastName", Value = model.LastName },
-                    new SqlParameter { ParameterName = "@FirstName", Value = model.FirstName },
-                    new SqlParameter { ParameterName = "@ConfirmationNo", Value = model.ConfirmationNo },
-                    new SqlParameter { ParameterName = "@ArrivalDate", Value = model.ArrivalDate },
-                    new SqlParameter { ParameterName = "@DepartureDate", Value = model.DepartureDate },
-                    new SqlParameter { ParameterName = "@RoomNumber", Value = model.RoomNumber },
-                    new SqlParameter { ParameterName = "@RoomTypeId", Value = model.RoomTypeId },
-                    new SqlParameter { ParameterName = "@RateTypeId", Value = model.RateTypeId },
+                    new SqlParameter { ParameterName = "@Date", Value = model.Date },                   
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -1112,6 +1105,22 @@ namespace SuccessHotelierHub.Repository
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchBreakfastReport", parameters);
+
+            var reservations = new List<SearchBreakFastReportResultVM>();
+            reservations = DALHelper.CreateListFromTable<SearchBreakFastReportResultVM>(dt);
+
+            return reservations;
+        }
+
+        public List<SearchBreakFastReportResultVM> GetBreakfastReport(string date, int? userId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Date", Value = !string.IsNullOrWhiteSpace(date) ? date : (object)DBNull.Value},
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetBreakfastReport", parameters);
 
             var reservations = new List<SearchBreakFastReportResultVM>();
             reservations = DALHelper.CreateListFromTable<SearchBreakFastReportResultVM>(dt);

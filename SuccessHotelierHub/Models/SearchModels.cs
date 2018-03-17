@@ -2300,29 +2300,8 @@ namespace SuccessHotelierHub.Models
             order = new List<ColumnOrderInfo>();
         }
 
-        [DisplayName("Last Name")]
-        public string LastName { get; set; }
-
-        [DisplayName("First Name")]
-        public string FirstName { get; set; }
-
-        [DisplayName("Confirmation#")]
-        public string ConfirmationNo { get; set; }
-
-        [DisplayName("Arrival Date")]
-        public string ArrivalDate { get; set; }
-
-        [DisplayName("Departure Date")]
-        public string DepartureDate { get; set; }
-
-        [DisplayName("Room #")]
-        public string RoomNumber { get; set; }
-
-        [DisplayName("Room Type")]
-        public Guid? RoomTypeId { get; set; }
-
-        [DisplayName("Rate Type")]
-        public Guid? RateTypeId { get; set; }
+        [DisplayName("Date")]
+        public DateTime? Date { get; set; }
 
         public int UserId { get; set; }        
 
@@ -2337,29 +2316,39 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+
         public Guid? ProfileId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string GuestName { get; set; }
 
-        [DisplayName("Phone #")]
-        public string PhoneNo { get; set; }
+        public Guid? CompanyId { get; set; }
+        public string CompanyName { get; set; }
 
-        public string ArrivalDate { get; set; }
-        public int NoOfNight { get; set; }
-        public string DepartureDate { get; set; }
-        public int NoOfAdult { get; set; }
-        public int NoOfChildren { get; set; }
+        public Guid? VipId { get; set; }
+        public string VipName { get; set; }
+
         public int NoOfRoom { get; set; }
         public string RoomNumbers { get; set; }
-        public string RoomTypeCode { get; set; }
+
+        public int NoOfAdult { get; set; }
+        public int NoOfChildren { get; set; }
+        public int NoOfNight { get; set; }
+
+        public string ArrivalDate { get; set; }        
+        public string DepartureDate { get; set; }
+        
         public string RateTypeCode { get; set; }
         public string Remarks { get; set; }
+
         public bool IsReservationCancel { get; set; }
         public bool IsCheckIn { get; set; }
         public bool IsCheckOut { get; set; }
+        public bool IsBreakFastPackageAdded { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
+
+
 
     #endregion
 

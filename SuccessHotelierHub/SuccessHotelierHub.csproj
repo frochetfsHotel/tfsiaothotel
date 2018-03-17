@@ -260,6 +260,7 @@
     <Compile Include="Models\AddOnsVM.cs" />
     <Compile Include="Models\BillingInfoVM.cs" />
     <Compile Include="Models\BillingTransactionReportVM.cs" />
+    <Compile Include="Models\BreakFastReport.cs" />
     <Compile Include="Models\BulkReservationVM.cs" />
     <Compile Include="Models\CalendarNotesVM.cs" />
     <Compile Include="Models\ChangePasswordVM.cs" />
@@ -2143,6 +2144,7 @@
     <Content Include="Views\Report\RegistrationCard.cshtml" />
     <Content Include="Views\Report\PreviewRegistrationCard.cshtml" />
     <Content Include="Views\Report\Breakfast.cshtml" />
+    <Content Include="Views\Report\PreviewBreakfastReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
