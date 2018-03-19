@@ -103,9 +103,9 @@
 
         #tblResults tr th, #tblResults tr td {
             border: 1px solid #000;            
-            padding-left: 5px;
+            padding-left: 3px;
             padding-top: 3px;
-            padding-bottom: 3px;
+            padding-bottom: 3px;            
         }
     </style>
     <title></title>
@@ -148,6 +148,7 @@
                                 <th class="text_bold">DEP</th>
                                 <th class="text_bold">VIP</th>
                                 <th class="text_bold">Rate</th>
+                                <th class="text_bold" style="width:5%">Breakfast Added</th>
                             </tr>
                         </thead>
 
@@ -168,6 +169,7 @@
                                         <td>@result.DepartureDate</td>
                                         <td>@result.VipName</td>
                                         <td>@result.RateTypeCode</td>
+                                        <td class="text-center">@(result.IsBreakFastPackageAdded ? Html.Raw("Yes") : Html.Raw(""))</td>
                                     </tr>
                                 }
                             </tbody>
@@ -177,7 +179,7 @@
                                     <td>@Model.Results.Sum(m => m.NoOfRoom)</td>
                                     <td>@Model.Results.Sum(m => m.NoOfAdult)</td>
                                     <td>@Model.Results.Sum(m => m.NoOfChildren)</td>
-                                    <td colspan="5"></td>
+                                    <td colspan="6"></td>
                                 </tr>
                             </tfoot>
                         }
