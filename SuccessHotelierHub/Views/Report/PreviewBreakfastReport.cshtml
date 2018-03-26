@@ -179,7 +179,8 @@
                                     <td>@Model.Results.Sum(m => m.NoOfRoom)</td>
                                     <td>@Model.Results.Sum(m => m.NoOfAdult)</td>
                                     <td>@Model.Results.Sum(m => m.NoOfChildren)</td>
-                                    <td colspan="6"></td>
+                                    <td colspan="5"></td>
+                                    <td class="text-center">@Model.Results.Sum(m => m.IsBreakFastPackageAdded == true ? 1 : 0)</td>
                                 </tr>
                             </tfoot>
                         }

@@ -1127,3 +1127,8 @@ Html, body{
 .text-right-align {
     text-align:right !important;
 }
+
+
+div.input-group-addon {
+  cursor: pointer !important
+}

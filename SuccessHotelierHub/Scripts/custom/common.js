@@ -7,10 +7,15 @@ $(function () {
 
     $('.mydatepicker').datepicker({
         autoclose: true,
-        format: 'dd/mm/yyyy'
+        format: 'dd/mm/yyyy',
+        allowInputToggle: true
     })
     .change(changeColorOfDatePickerLabel)
     .on('changeDate', changeColorOfDatePickerLabel);
+
+    $('div.date .input-group-addon').on('click', function () {        
+        $(this).prev('input[type="text"]').datepicker().focus();
+    });
 
 });
 
