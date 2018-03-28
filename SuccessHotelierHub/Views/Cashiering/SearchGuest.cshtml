@@ -180,7 +180,7 @@
                     <!-- HIDDEN FIELD-->
                     <div class="row">
                         <div class="col-md-3">
-                            <label for="Balance">Balance</label>
+                            <label for="Balance">Balance (@Html.Raw(LogInManager.CurrencySymbol))</label>
                             <input type="text" id="Balance" name="Balance" class="form-control" readonly="readonly" 
                                    value=""/>
                         </div>
@@ -216,7 +216,7 @@
                             <input type="text" id="Group" name="Group"  class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
-                            <label for="RoomRent">Rate</label>
+                            <label for="RoomRent">Rate (@Html.Raw(LogInManager.CurrencySymbol))</label>
                             <input type="text" id="RoomRent" name="RoomRent"  class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
@@ -413,7 +413,7 @@
                 CloseModal('additionalChargeModal');
             }
         });
-    
+
         //Handle Billing Modal Popup Close Event
         $('#billingInfoModal').on('hidden.bs.modal', function () {
             if (IsTransactionGridUpdated) {
@@ -613,12 +613,12 @@
                     var html = "";
                     if (full.IsCheckOut == true)
                     {
-                        html += '' + FormatNumberWithTwoDecimal(full.Balance) + '';
+                        html += '@(Html.Raw(LogInManager.CurrencySymbol))' + ' ' + FormatNumberWithTwoDecimal(full.Balance) + ' ';
                     }
                     else
                     {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
-                        + ' class="">' + FormatNumberWithTwoDecimal(full.Balance) + '</a> ';
+                        + ' class="">' + '@(Html.Raw(LogInManager.CurrencySymbol))' + ' ' + FormatNumberWithTwoDecimal(full.Balance) + '</a> ';
                     }
                     return html;
                 }
@@ -761,7 +761,7 @@
                         $("form#frmBillingInfo #hdnPaymentMethodName").val(result.PaymentMethodName);
 
 
-                        $("form#frmBillingInfo .spnTotalBalance").html(FormatNumberWithTwoDecimal(result.Balance));
+                        $("form#frmBillingInfo .spnTotalBalance").html('@Html.Raw(LogInManager.CurrencySymbol)' + ' ' + FormatNumberWithTwoDecimal(result.Balance));
                         $(".spnGuestName").html(result.Name);
                         $(".spnRoomNumbers").html("Room " + result.RoomNumbers);
 
@@ -800,7 +800,7 @@
             //balance += parseFloat($(this).attr("data-amount"));
             balance += parseFloat($(this).attr("data-amount")) * parseInt($(this).attr("data-qty"));
         });
-        $("form#frmBillingInfo .spnTotalBalance").html(FormatNumberWithTwoDecimal(balance));
+        $("form#frmBillingInfo .spnTotalBalance").html('@Html.Raw(LogInManager.CurrencySymbol)' + ' ' + FormatNumberWithTwoDecimal(balance));
         $("form#frmBillingInfo #Balance").val(FormatNumberWithTwoDecimal(balance));
     }
 
@@ -824,13 +824,13 @@
                 } else {
                     html += "<td></td>";
                 }
-                
+
 
                 html += "<td>" + ParseJsonDate(data[i].TransactionDate) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
                 html += "<td>" + qty + "</td>";
-                html += "<td class='tdAmount' data-amount='" + amount + "' data-qty='" + qty + "'>" + FormatNumberWithTwoDecimal(amount) + "</td>";
+                html += "<td class='tdAmount' data-amount='" + amount + "' data-qty='" + qty + "'>" + "@(Html.Raw(LogInManager.CurrencySymbol))" + " " + FormatNumberWithTwoDecimal(amount) + "</td>";
                 //html += "<td>" + (IsNullOrEmpty(data[i].Supplement) ? "" : data[i].Supplement) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Reference) ? "" : data[i].Reference) + "</td>";
                 html += "</tr>";

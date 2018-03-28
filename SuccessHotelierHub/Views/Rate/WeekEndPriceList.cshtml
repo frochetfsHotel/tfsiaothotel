@@ -28,7 +28,7 @@
                                             new { @class = "form-control form-group" })
                         </div>
                         <div class="col-md-3 form-group">
-                            <label for="RateTypeId" class="">Rate Type</label>
+                            <label for="RateTypeId" class="">Rate Type (&euro;)</label>
                             @Html.DropDownListFor(m => m.RateTypeId,
                                             new SelectList((IEnumerable<SelectListItem>)ratetypeList, "Value", "Text"),
                                             "Select Rate Type",
@@ -60,7 +60,7 @@
                                     <th>Room Type Code</th>
                                     <th>Rate Type Code</th>
                                     <th width="40%">Description</th>
-                                    <th>Amount</th>
+                                    <th>Amount (&euro;)</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>

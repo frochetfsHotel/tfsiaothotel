@@ -17,6 +17,7 @@ namespace SuccessHotelierHub.Controllers
         private UserRepository userRepository = new UserRepository();
         private UserPageRepository userPageRepository = new UserPageRepository();
         private PageRepository pageRepository = new PageRepository();
+        private UserGroupRepository userGroupRepository = new UserGroupRepository();
 
         #endregion
 
@@ -33,10 +34,20 @@ namespace SuccessHotelierHub.Controllers
 
             var userRoleList = new SelectList(userRoles, "Id", "Name").ToList();
 
+            var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
+                                .Select(
+                                    m => new SelectListItem()
+                                    {
+                                        Value = m.Id.ToString(),
+                                        Text = (m.Name + " - " + m.CurrencyCode)
+                                    }
+                                ), "Value", "Text").ToList();
+
             var studentRoleId =  userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
             
             ViewBag.UserRoleList = userRoleList;
-                        
+            ViewBag.UserGroupList = userGroupList;
+
             UserVM model = new UserVM();
             if (studentRoleId != null)
             {
@@ -171,8 +182,17 @@ namespace SuccessHotelierHub.Controllers
                 model = user[0];
                                 
                 var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
+                var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
+                                .Select(
+                                    m => new SelectListItem()
+                                    {
+                                        Value = m.Id.ToString(),
+                                        Text = (m.Name + " - " + m.CurrencyCode)
+                                    }
+                                ), "Value", "Text").ToList();
 
                 ViewBag.UserRoleList = userRoleList;
+                ViewBag.UserGroupList = userGroupList;
 
                 //Check Delete Access For Profile Page
                 var profilePageAccessRights = userPageRepository.GetUserPageAccessRights(id, "INDIVIDUALPROFILE").FirstOrDefault();
@@ -366,7 +386,17 @@ namespace SuccessHotelierHub.Controllers
         {
             var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
 
+            var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
+                                .Select(
+                                    m => new SelectListItem()
+                                    {
+                                        Value = m.Id.ToString(),
+                                        Text = (m.Name + " - " + m.CurrencyCode)
+                                    }
+                                ), "Value", "Text").ToList();
+
             ViewBag.UserRoleList = userRoleList;
+            ViewBag.UserGroupList = userGroupList;
 
             return View();
         }

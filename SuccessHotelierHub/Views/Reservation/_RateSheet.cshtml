@@ -39,7 +39,7 @@
     {
         nextRowHtml += "<tr>";
         nextRowHtml += (string.Format("<td>{0}</td>", rateType.RateTypeCode));
-        nextRowHtml += "<td>EUR</td>";
+        nextRowHtml += (string.Format("<td>{0}</td>", LogInManager.CurrencyCode));
         nextRowHtml += "<td></td>";
 
         foreach (var roomType in rateSheetRoomTypeList)
@@ -55,10 +55,12 @@
                 }
 
                 nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\" data-availablerooms=\"{9}\">{0}</td>",
-                    (rateSheetDetail.Amount > 0 ?  Utility.FormatAmountWithTwoDecimal(rateSheetDetail.Amount) : ""), rateType.Id, roomType.Id,
+                    (rateSheetDetail.Amount > 0 ?  Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(rateSheetDetail.Amount, LogInManager.CurrencyCode)) : ""), 
+                    rateType.Id, 
+                    roomType.Id,
                     rateSheetDetail.Description,
                     rateSheetDetail.Id,
-                     (rateSheetDetail.Amount > 0 ? Utility.FormatAmountWithTwoDecimal(rateSheetDetail.Amount) : ""),
+                     (rateSheetDetail.Amount > 0 ? Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(rateSheetDetail.Amount, LogInManager.CurrencyCode)) : ""),
                     rateType.RateTypeCode,
                     roomType.RoomTypeCode,
                     colorClass,

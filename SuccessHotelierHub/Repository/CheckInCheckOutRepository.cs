@@ -107,7 +107,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
                     new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
-                    new SqlParameter { ParameterName = "@IsAdminUser", Value = model.IsAdminUser }
+                    new SqlParameter { ParameterName = "@IsAdminUser", Value = model.IsAdminUser }                    
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchGuest", parameters);

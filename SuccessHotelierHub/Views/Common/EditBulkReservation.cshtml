@@ -157,7 +157,7 @@
                     </div>
 
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Rate)
+                        <label for="Rate">Rate (&euro;)</label>
                         @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model.Rate.HasValue ? Model.Rate.Value : 0), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "LoadTransactionSummary();" })
                     </div>                    
                     <div class="col-md-3 form-group">
@@ -775,7 +775,7 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Reservation/GetPriceDetails")',
+                url: '@Url.Content("~/Common/GetPriceDetails")',
                 type: 'POST',
                 data: { roomTypeId: roomTypeId, rateTypeId: rateTypeId },
                 success: function (response) {
@@ -837,10 +837,6 @@
         discountPercentage = parseFloat(discountPercentage);
 
         weekDayPrice = rate;
-
-        ////Calculate children charges. (Default euro 5.)
-        //if (noOfChildren > 0)
-        //    childrenCharges = (noOfChildren * 5);
 
         var html = "";
 
@@ -908,7 +904,7 @@
         //Children Charges.
         if (!IsNullOrEmpty(noOfChildren) && noOfChildren > 0) {
 
-            childrenCharges = 5 // Default euro 5.
+            childrenCharges = @((double)Constants.CHILDREN_CHARGE); // Default euro 5.
 
             var qty = parseInt(noOfChildren);
             var total = (childrenCharges * qty);

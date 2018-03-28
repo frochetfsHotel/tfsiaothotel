@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub
 {
@@ -27,10 +29,24 @@ namespace SuccessHotelierHub
             newCulture.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
             newCulture.DateTimeFormat.DateSeparator = "/";
             Thread.CurrentThread.CurrentCulture = newCulture;
+
+            //Get All Currency Info
+            if (System.Web.HttpContext.Current.Application["CurrencyInfo"] == null)
+            {
+                CurrencyRepository currencyRepository = new CurrencyRepository();
+                var currencyInfo = currencyRepository.GetCurrencyInfo();
+                System.Web.HttpContext.Current.Application["CurrencyInfo"] = currencyInfo;
+            }
+
         }
 
         protected void Application_EndRequest(Object sender, EventArgs e)
         {
+            if (System.Web.HttpContext.Current.Application["CurrencyInfo"] != null)
+            {
+                System.Web.HttpContext.Current.Application["CurrencyInfo"] = null;
+            }
+
             if (Context.Items["SessionExpired"] is bool)
             {
                 Response.Redirect("~/Account/Login");
@@ -53,7 +69,7 @@ namespace SuccessHotelierHub
             if (exc != null && exc.TargetSite.DeclaringType.FullName == "LogInManager.LoggedInUser") //When Session expired then redirect to Login Screen
             {
                 Response.Redirect("~/Account/Login");
-            }           
+            }
             // Clear the error from the server
             Server.ClearError();
 

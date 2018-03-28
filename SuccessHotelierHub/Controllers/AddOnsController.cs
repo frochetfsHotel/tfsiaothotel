@@ -228,6 +228,13 @@ namespace SuccessHotelierHub.Controllers
             {
                 var addOns = addOnsRepository.SearchAdvanceAddOns(model);
 
+                //Update price based on user's currency.
+                addOns.Select(m => 
+                    {
+                        m.Price = CurrencyManager.ParseAmountToUserCurrency(m.Price, LogInManager.CurrencyCode);
+                        return m;
+                    }).ToList();
+
                 return Json(new
                 {
                     IsSuccess = true,

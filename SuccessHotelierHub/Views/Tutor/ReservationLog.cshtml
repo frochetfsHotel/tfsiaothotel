@@ -74,18 +74,18 @@
                         <table class="table table-bordered table-hover table-striped" id="tblReservationLog">
                             <thead>
                                 <tr>
-                                    <th>Created On</th>
-                                    <th>Confirmation #</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Arrival</th>
-                                    <th>Nights</th>
-                                    <th>Departure</th>
-                                    <th>Room #</th>
-                                    <th>Room Type</th>
-                                    <th>Rate Type</th>
-                                    <th>Rate</th>
-                                    <th>Guest Balance</th>
+                                    <th class="width_10">Created On</th>
+                                    <th class="width_10">Confirmation #</th>
+                                    <th class="width_5">Last Name</th>
+                                    <th class="width_5">First Name</th>
+                                    <th class="width_5">Arrival</th>
+                                    <th class="width_5">Nights</th>
+                                    <th class="width_5">Departure</th>
+                                    <th class="width_5">Room #</th>
+                                    <th class="width_5">Room Type</th>
+                                    <th class="width_5">Rate Type</th>
+                                    <th class="width_10">Rate</th>
+                                    <th class="width_10">Guest Balance</th>
                                 </tr>
                             </thead>
                         </table>
@@ -265,12 +265,22 @@
             {
                 targets: 10,
                 data: "Rate",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";                  
+                    html += full.CurrencySymbol + ' ' + FormatNumberWithTwoDecimal(full.Rate) + ' ';
+                    return html;
+                }
             },
             {
                 targets: 11,
                 data: "GuestBalance",
-                orderable: true
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var html = "";
+                    html += full.CurrencySymbol + ' ' + FormatNumberWithTwoDecimal(full.GuestBalance) + ' ';
+                    return html;
+                }
             }
             ],
             //order: [[0, "desc"]],

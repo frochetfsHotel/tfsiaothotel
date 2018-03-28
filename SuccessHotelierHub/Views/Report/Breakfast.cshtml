@@ -81,7 +81,7 @@
                                     <th>DEP</th>
                                     <th>VIP</th>
                                     <th>Rate</th>    
-                                    <th>Breakfast Added</th>                                
+                                    <th>Breakfast</th>                                
                                 </tr>
                             </thead>
                         </table>
@@ -335,15 +335,18 @@
             },
             {
                 targets: 11,
-                data: "IsBreakFastPackageAdded",
+                data: "BreakfastCount",
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var isBreakFastPackageAdded = full.IsBreakFastPackageAdded;
                     var html = "";
 
-                    if (isBreakFastPackageAdded) {
-                        html += '<i class="fa fa-check text-success" />';
-                    }
+                    //if (isBreakFastPackageAdded) {
+                    //    html += '<i class="fa fa-check text-success" />';
+                    //}
+
+                    html += '<a href="javascript:void(0);" onclick="GotoReservationEdit(\'' + full.Id + '\')" '
+                        + ' class="">' + full.BreakfastCount + '</a> ';
 
                     return html;
                 }

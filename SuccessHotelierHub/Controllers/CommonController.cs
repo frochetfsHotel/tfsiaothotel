@@ -199,7 +199,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult SearchBulkReservation(SearchBulkReservationParametersVM model)
         {
@@ -248,6 +248,7 @@ namespace SuccessHotelierHub.Controllers
         }
 
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult EditBulkReservation(Guid id)
         {
             TempBulkReservationMasterVM model = new TempBulkReservationMasterVM();
@@ -347,7 +348,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.PaymentMethodList = paymentMethodList;
                 ViewBag.RoomFeaturesList = roomFeaturesList;
                 ViewBag.RtcList = rtcList;
-                ViewBag.RoomList = roomList;
+                ViewBag.RoomList = roomList;                
 
                 double? dblWeekEndPrice = model.Rate;
                 if (model.RoomTypeId.HasValue && model.RateCodeId.HasValue)
@@ -373,6 +374,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("BulkReservation");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditBulkReservation(TempBulkReservationMasterVM model)
@@ -411,7 +413,7 @@ namespace SuccessHotelierHub.Controllers
 
                 double totalBalance = 0, totalPrice = 0;
 
-                totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
+                totalPrice = Utility.Utility.CalculateRoomRentCharges_V2(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
 
                 totalBalance = totalPrice;
 
@@ -433,6 +435,43 @@ namespace SuccessHotelierHub.Controllers
             catch (Exception e)
             {
                 Utility.Utility.LogError(e, "EditBulkReservation");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult GetPriceDetails(Guid roomTypeId, Guid rateTypeId)
+        {
+            try
+            {
+                var weekDayPrice = rateRepository.GetWeekDayPrice(roomTypeId, rateTypeId).FirstOrDefault();
+
+                var weekEndPrice = rateRepository.GetWeekEndPrice(roomTypeId, rateTypeId).FirstOrDefault();
+
+                if (weekDayPrice != null || weekEndPrice != null)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            WeekDayPrice = (weekDayPrice != null ? weekDayPrice.Amount : 0),
+                            WeekEndPrice = (weekEndPrice != null ? weekEndPrice.Amount : 0)
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Price details not found."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetPriceDetails");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

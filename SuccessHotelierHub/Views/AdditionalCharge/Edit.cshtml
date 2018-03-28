@@ -43,7 +43,7 @@
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Price)
+                        <label for="Price">Price (&euro;)</label>
                         @Html.TextBoxFor(m => m.Price, Utility.FormatAmountWithTwoDecimal(Model.Price.HasValue ? Model.Price.Value : 0), new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
                     </div>

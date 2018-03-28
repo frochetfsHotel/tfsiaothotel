@@ -29,6 +29,9 @@ namespace SuccessHotelierHub.Controllers
         private CityRepository cityRepository = new CityRepository();
         private StateRepository stateRepository = new StateRepository();
         private CountryRepository countryRepository = new CountryRepository();
+        private UserRepository userRepository = new UserRepository();
+        private UserGroupRepository userGroupRepository = new UserGroupRepository();
+        private CurrencyRepository currencyRepository = new CurrencyRepository();
 
         #endregion
 
@@ -172,7 +175,7 @@ namespace SuccessHotelierHub.Controllers
                 model.ProfileId = reservation.ProfileId;
                 model.Name = (reservation.LastName + " " + reservation.FirstName).Trim();
 
-                model.Balance = reservation.GuestBalance;
+                model.Balance = CurrencyManager.ParseAmountToUserCurrency(reservation.GuestBalance, LogInManager.CurrencyCode);
                 model.ArrivalDate = reservation.ArrivalDate;
                 model.DepartureDate = reservation.DepartureDate;
 
@@ -186,8 +189,8 @@ namespace SuccessHotelierHub.Controllers
 
                 model.RateCodeId = reservation.RateCodeId;
                 model.RateCode = rateType.RateTypeCode;
-                model.Rate = reservation.Rate;
-                model.RoomRent = reservation.TotalPrice;                
+                model.Rate = CurrencyManager.ParseAmountToUserCurrency(reservation.Rate, LogInManager.CurrencyCode);
+                model.RoomRent = CurrencyManager.ParseAmountToUserCurrency(reservation.TotalPrice, LogInManager.CurrencyCode);                
 
                 model.RoomTypeId = reservation.RoomTypeId;
                 model.RoomTypeCode = roomType.RoomTypeCode;
@@ -325,7 +328,7 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomNumbers = roomNumbers;
                 model.RoomIds = roomIds;
                 model.RoomTypeId = reservation.RoomTypeId;
-                model.Amount = reservation.GuestBalance;
+                model.Amount = CurrencyManager.ParseAmountToUserCurrency(reservation.GuestBalance, LogInManager.CurrencyCode);
 
                 ViewData["Source"] = source;
                 ViewData["PaymentMethodList"] = paymentMethodList;
@@ -372,6 +375,8 @@ namespace SuccessHotelierHub.Controllers
                         var checkOutCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
 
                         double totalAmount = model.Amount.HasValue ? model.Amount.Value : 0;
+
+                        totalAmount = CurrencyManager.ConvertAmountToBaseCurrency(totalAmount, LogInManager.CurrencyCode);
 
                         ReservationChargeVM reservationCharge = new ReservationChargeVM();
                         reservationCharge.ReservationId = reservation.Id;
@@ -544,7 +549,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult Preview(Guid? Id)
         {
             if (Id == null)
@@ -583,7 +588,8 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Reservation Charges
 
-                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
+                //var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
                 #endregion
 
@@ -717,6 +723,8 @@ namespace SuccessHotelierHub.Controllers
                 model.TotalBalance = Math.Round(totalBalance, 2);
                 model.BalanceDue = Math.Round(balanceDue, 2);
 
+                model.CurrencySymbol = LogInManager.CurrencySymbol;
+
                 if (totalBalance > 0)
                 {
                     double netAmount = 0;
@@ -728,6 +736,217 @@ namespace SuccessHotelierHub.Controllers
 
                 #region Record Activity Log
                 RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated folio report.");
+                #endregion
+
+                //HTML to PDF
+                string html = Utility.Utility.RenderPartialViewToString((Controller)this, "Preview", model);
+                byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+                //return File(pdfBytes, "application/pdf", string.Format("bill_{0}.pdf", model.Id));
+                return File(pdfBytes, "application/pdf");
+            }
+            else
+            {
+                return HttpNotFound();
+            }
+            //return View(model);
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        public ActionResult PreviewFolio(Guid? Id)
+        {
+            if (Id == null)
+            {
+                return HttpNotFound();
+            }
+
+            BillingTransactionReportVM model = new BillingTransactionReportVM();
+
+            var reservation = reservationRepository.GetReservationById(Id.Value, null).FirstOrDefault();
+
+            if (reservation != null)
+            {
+                #region Room Mapping
+
+                //Get Room Mapping
+                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, null);
+                var roomIds = string.Empty;
+                var roomNumbers = string.Empty;
+
+                if (selectedRooms != null && selectedRooms.Count > 0)
+                {
+                    foreach (var room in selectedRooms)
+                    {
+                        roomIds += string.Format("{0},", room.RoomId);
+                        roomNumbers += string.Format("{0}, ", room.RoomNo);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(roomNumbers))
+                    {
+                        //Remove Last Comma.
+                        roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                    }
+                }
+                #endregion
+
+                #region Reservation Charges
+                
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, reservation.CreatedBy);
+
+                #endregion
+
+                #region Profile
+
+                var profile = new IndividualProfileVM();
+
+                if (reservation.ProfileId.HasValue)
+                    profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, null).FirstOrDefault();
+
+                #endregion
+
+                #region Title 
+
+                var title = new TitleVM();
+                if (profile != null && profile.TitleId.HasValue)
+                    title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
+
+                #endregion
+
+                double total = 0;
+                double roomRent = 0;
+                double totalBalance = 0;
+                double balanceDue = 0;
+
+                model.Id = reservation.Id;
+                model.ConfirmationNo = reservation.ConfirmationNumber;
+                model.ProfileId = reservation.ProfileId;
+                model.Title = title.Title;
+                model.Name = (profile.FirstName + ' ' + profile.LastName);
+
+                #region Fetch Address
+                var address = "";
+                if (!string.IsNullOrWhiteSpace(profile.Address))
+                {
+                    address = profile.Address.Replace(",", Delimeter.BREAKLINE);
+                }
+                else
+                {
+                    address = profile.HomeAddress.Replace(",", Delimeter.BREAKLINE);
+                }
+
+                //model.Address = !string.IsNullOrWhiteSpace(profile.Address) ? profile.Address : profile.HomeAddress;
+                model.Address = address;
+
+                if (!string.IsNullOrWhiteSpace(profile.CityName))
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.CityName) : profile.CityName;
+                    //model.City = profile.CityName;
+                }
+                
+
+                if (!string.IsNullOrWhiteSpace(profile.StateName))
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.StateName) : profile.StateName;
+                    // model.State = profile.StateName;
+                }
+
+                if (profile.CountryId.HasValue)
+                {
+                    var country = countryRepository.GetCountryById(profile.CountryId.Value).FirstOrDefault();
+
+                    if (country != null)
+                    {
+                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + country.Name) : country.Name;
+                        //model.Country = country.Name;
+                    }
+                }
+                #endregion
+
+
+                model.RoomNumer = roomNumbers;
+                model.FolioNumber = Convert.ToString(reservation.FolioNumber);
+                model.CashierNumber = LogInManager.CashierNumber;
+                model.PageNumber = "1";
+                model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
+                model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
+                model.GSTRegistrationNumber = "";
+
+                model.VATTax = 9; //Default 9%.
+
+                model.Transactions = transactions;
+
+                //Get Amount.
+
+                var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault(); //Check out
+                var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault(); //Room Rent
+
+                double checkOutPaidPayment = 0;
+                foreach (var item in transactions)
+                {
+                    int qty = 1;
+
+                    if (item.Qty.HasValue)
+                        qty = item.Qty.Value;
+
+                    if (checkoutAdditionalCharge != null && checkoutAdditionalCharge.Id == item.AdditionalChargeId.Value)  //Check out
+                    {
+                        checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
+                    }
+                    else
+                    {
+                        totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+
+                    //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
+
+                    //Room Rent
+                    if (roomRentAdditionalCharge != null && roomRentAdditionalCharge.Id == item.AdditionalChargeId.Value)
+                        roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
+
+                }
+
+
+                //Balance Due
+                balanceDue = totalBalance - Math.Abs(checkOutPaidPayment);
+
+                model.FandB = 0;
+                model.Other = 0;
+                model.Total = total;
+                model.Room = roomRent;
+                model.TotalBalance = Math.Round(totalBalance, 2);
+                model.BalanceDue = Math.Round(balanceDue, 2);
+
+                if(reservation.CreatedBy.HasValue)
+                {
+                    var user = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
+                    if (user != null)
+                    {
+                        if(user.UserGroupId.HasValue)
+                        {
+                            var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
+                            if(userGroup != null)
+                            {
+                                var currency = currencyRepository.GetCurrencyInfoById(userGroup.CurrencyId).FirstOrDefault();
+                                if(currency != null)
+                                {
+                                    model.CurrencySymbol = currency.CurrencySymbol;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (totalBalance > 0)
+                {
+                    double netAmount = 0;
+                    netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
+
+                    model.VATAmount = Math.Round((totalBalance - netAmount), 2);
+                    model.NetAmount = netAmount;
+                }
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated folio report by tutor.");
                 #endregion
 
                 //HTML to PDF
@@ -794,7 +1013,8 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Reservation Charges
 
-                    var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
+                    //var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
+                    var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, reservation.CreatedBy);
 
                     #endregion
 
@@ -927,6 +1147,26 @@ namespace SuccessHotelierHub.Controllers
                     model.Room = roomRent;
                     model.TotalBalance = Math.Round(totalBalance, 2);
                     model.BalanceDue = Math.Round(balanceDue, 2);
+
+                    if (reservation.CreatedBy.HasValue)
+                    {
+                        var user = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
+                        if (user != null)
+                        {
+                            if (user.UserGroupId.HasValue)
+                            {
+                                var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
+                                if (userGroup != null)
+                                {
+                                    var currency = currencyRepository.GetCurrencyInfoById(userGroup.CurrencyId).FirstOrDefault();
+                                    if (currency != null)
+                                    {
+                                        model.CurrencySymbol = currency.CurrencySymbol;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     if (totalBalance > 0)
                     {

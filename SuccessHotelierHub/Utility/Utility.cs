@@ -637,19 +637,52 @@ namespace SuccessHotelierHub.Utility
             if (blnIsDisocuntInPercentage)
             {
                 if (discountPercentage.HasValue && discountPercentage.Value > 0)
-                    totalDiscount = (rate * discountPercentage.Value) / 100;
+                    totalDiscount = ((rate * discountPercentage.Value) / 100) * noOfNights;
             }
             else
             {
                 if (discountAmount.HasValue)
-                    totalDiscount = discountAmount.Value;
+                    totalDiscount = discountAmount.Value * noOfNights;
             }
 
             rate = (rate - totalDiscount);
 
             //Default 5 Euro for the one children.
             if (noOfChildren.HasValue)
-                childrenCharges = (noOfChildren.Value * 5);
+            {
+                //childrenCharges = (noOfChildren.Value *(double)Constants.CHILDREN_CHARGE);
+                childrenCharges = (noOfChildren.Value * CurrencyManager.ParseAmountToUserCurrency((double)Constants.CHILDREN_CHARGE, LogInManager.CurrencyCode));
+            }
+
+            dblTotalBalance = (noOfNights * rate) + childrenCharges;
+
+            return Math.Round(dblTotalBalance, 2);
+        }
+
+        public static double CalculateRoomRentCharges_V2(int noOfNights, double rate, int? noOfChildren, double? discountAmount, double? discountPercentage, bool blnIsDisocuntInPercentage = false)
+        {
+            double dblTotalBalance = 0;
+            double totalDiscount = 0;
+            double childrenCharges = 0;
+
+            if (blnIsDisocuntInPercentage)
+            {
+                if (discountPercentage.HasValue && discountPercentage.Value > 0)
+                    totalDiscount = ((rate * discountPercentage.Value) / 100) * noOfNights;
+            }
+            else
+            {
+                if (discountAmount.HasValue)
+                    totalDiscount = discountAmount.Value * noOfNights;
+            }
+
+            rate = (rate - totalDiscount);
+
+            //Default 5 Euro for the one children.
+            if (noOfChildren.HasValue)
+            {
+                childrenCharges = (noOfChildren.Value * (double)Constants.CHILDREN_CHARGE);
+            }
 
             dblTotalBalance = (noOfNights * rate) + childrenCharges;
 
@@ -738,7 +771,7 @@ namespace SuccessHotelierHub.Utility
 
                 //Default 5 Euro for the one children.
                 if (noOfChildren.HasValue)
-                    childrenCharges = (noOfChildren.Value * 5);
+                    childrenCharges = (noOfChildren.Value * (double)Constants.CHILDREN_CHARGE);
 
                 //dblTotalPrice = (noOfNights * rate) + childrenCharges;
                 dblTotalPrice += childrenCharges;
@@ -787,6 +820,8 @@ namespace SuccessHotelierHub.Utility
                                     .Sum(m => (m.Amount.Value * (m.Qty.HasValue ? m.Qty.Value : 1)));
 
                         dblTotalBalance += totalReservationCharges;
+
+                        dblTotalBalance = CurrencyManager.ConvertAmountToBaseCurrency(dblTotalBalance, LogInManager.CurrencyCode);
                     }
                 }
                 else
@@ -972,6 +1007,9 @@ namespace SuccessHotelierHub.Utility
     public static class Constants
     {
         public const int PAGESIZE = 10;
+        public const int CHILDREN_CHARGE = 5; //Default 5 EURO 
+        public const int DEFAULT_CONFIRMATION_NO = 100001;
+        public const int DEFAULT_FOLIO_NUMBER = 101;
     }
 
     public static class AdditionalChargeCode

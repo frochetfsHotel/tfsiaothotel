@@ -16,8 +16,8 @@ namespace SuccessHotelierHub.Controllers
     {
         #region Declaration
 
-        private const Int64 DefaultConfirmationNo = 100001;
-        private const Int64 DefaultFolioNumber = 101;
+        //private const Int64 DefaultConfirmationNo = 100001;
+        //private const Int64 DefaultFolioNumber = 101;
 
         private ProfileRepository profileRepository = new ProfileRepository();
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
@@ -131,7 +131,7 @@ namespace SuccessHotelierHub.Controllers
                        ), "Value", "Text").ToList();
 
             var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
-
+            var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();
@@ -184,7 +184,7 @@ namespace SuccessHotelierHub.Controllers
                     }
                 }
 
-                ViewBag.WeekEndPrice = dblWeekEndPrice;
+                ViewBag.WeekEndPrice = CurrencyManager.ParseAmountToUserCurrency(dblWeekEndPrice, LogInManager.CurrencyCode);
 
             }
 
@@ -247,7 +247,9 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.RoomFeaturesList = roomFeaturesList;            
             ViewBag.DiscountApprovedList = discountApprovedList;                        
             ViewBag.RtcList = rtcList;
+            ViewBag.CurrencyList = currencyList;
 
+            model.CurrencyId = LogInManager.CurrencyId;
 
             #region Record Activity Log
             RecordActivityLog.RecordActivity(Pages.RESERVATION, "Goes to create new reservation page.");
@@ -404,6 +406,11 @@ namespace SuccessHotelierHub.Controllers
             {
                 model = reservation[0];
                 model.Remarks = string.Empty;
+
+                if (!model.CurrencyId.HasValue)
+                {
+                    model.CurrencyId = LogInManager.CurrencyId;
+                }
 
                 if (model.ArrivalDate.HasValue)
                 {
@@ -594,6 +601,7 @@ namespace SuccessHotelierHub.Controllers
                        ), "Value", "Text").ToList();
 
                 var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
+                var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
 
                 ViewBag.TitleList = titleList;
@@ -610,6 +618,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.RoomFeaturesList = roomFeaturesList;                
                 ViewBag.DiscountApprovedList = discountApprovedList;                                
                 ViewBag.RtcList = rtcList;
+                ViewBag.CurrencyList = currencyList;
 
                 double? dblWeekEndPrice = model.Rate;
                 if (model.RoomTypeId.HasValue && model.RateCodeId.HasValue)
@@ -622,7 +631,36 @@ namespace SuccessHotelierHub.Controllers
                     }
                 }
 
-                ViewBag.WeekEndPrice = dblWeekEndPrice;
+                ViewBag.WeekEndPrice = CurrencyManager.ParseAmountToUserCurrency(dblWeekEndPrice, LogInManager.CurrencyCode);
+
+                #region Update Price Value to User's Currency Conversion
+
+                if (model.Rate.HasValue)
+                {
+                    model.Rate = CurrencyManager.ParseAmountToUserCurrency(model.Rate.Value, LogInManager.CurrencyCode);
+                }
+
+                if (model.ApprovalAmount.HasValue)
+                {
+                    model.ApprovalAmount = CurrencyManager.ParseAmountToUserCurrency(model.ApprovalAmount.Value, LogInManager.CurrencyCode);
+                }
+
+                if (model.DiscountAmount.HasValue)
+                {
+                    model.DiscountAmount = CurrencyManager.ParseAmountToUserCurrency(model.DiscountAmount.Value, LogInManager.CurrencyCode, 0);
+                }
+
+                if (model.GuestBalance.HasValue)
+                {
+                    model.GuestBalance = CurrencyManager.ParseAmountToUserCurrency(model.GuestBalance.Value, LogInManager.CurrencyCode);
+                }
+
+                if (model.TotalPrice.HasValue)
+                {
+                    model.TotalPrice = CurrencyManager.ParseAmountToUserCurrency(model.TotalPrice.Value, LogInManager.CurrencyCode);
+                }
+
+                #endregion
 
                 return View(model);
             }
@@ -661,12 +699,35 @@ namespace SuccessHotelierHub.Controllers
                 //model.GuestBalance = totalBalance;                
                 model.TotalPrice = totalPrice;
 
+                #region Update Price Value to Euro Conversion
+
+                if (model.Rate.HasValue)
+                {
+                    model.Rate = CurrencyManager.ConvertAmountToBaseCurrency(model.Rate.Value, LogInManager.CurrencyCode);
+                }
+
+                if (model.ApprovalAmount.HasValue)
+                {
+                    model.ApprovalAmount = CurrencyManager.ConvertAmountToBaseCurrency(model.ApprovalAmount.Value, LogInManager.CurrencyCode);
+                }
+
+                if (model.DiscountAmount.HasValue)
+                {
+                    model.DiscountAmount = CurrencyManager.ConvertAmountToBaseCurrency(model.DiscountAmount.Value, LogInManager.CurrencyCode);
+                }
+
+                if (model.TotalPrice.HasValue)
+                {
+                    model.TotalPrice = CurrencyManager.ConvertAmountToBaseCurrency(model.TotalPrice.Value, LogInManager.CurrencyCode);
+                }
+
+                #endregion
+
                 //Credit Card No.
                 model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
 
                 reservationId = reservationRepository.UpdateReservation(model);
-
-
+                
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
                     var source = string.Empty;
@@ -913,12 +974,24 @@ namespace SuccessHotelierHub.Controllers
 
                         var reservationPackageMapping = model.PackageMappingList[0];
 
-                        //Save Reservation Package Mapping.
-                        reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
-                        reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                        reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                        if (reservationPackageMapping != null)
+                        {
+                            var packageDetail = packageRepository.GetPackageById(reservationPackageMapping.PackageId.Value).FirstOrDefault();
 
-                        reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                            if (packageDetail != null)
+                            {
+                                reservationPackageMapping.PackagePrice = packageDetail.Price;
+                            }
+
+                            reservationPackageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(reservationPackageMapping.TotalAmount, LogInManager.CurrencyCode);
+
+                            //Save Reservation Package Mapping.
+                            reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                            reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                        }
                     }
                     else
                     {
@@ -1240,19 +1313,19 @@ namespace SuccessHotelierHub.Controllers
                 string lastConfirmationNo = lastReservation.ConfirmationNumber;
                 if (!string.IsNullOrWhiteSpace(lastConfirmationNo))
                 {
-                    confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : DefaultConfirmationNo;
+                    confirmationSuffix = !string.IsNullOrWhiteSpace(lastConfirmationNo) ? (Convert.ToInt64(lastConfirmationNo) + 1) : Constants.DEFAULT_CONFIRMATION_NO;
 
                     confirmationNo = confirmationSuffix.ToString();
                 }
                 else
                 {
-                    confirmationNo = DefaultConfirmationNo.ToString();
+                    confirmationNo = Constants.DEFAULT_CONFIRMATION_NO.ToString();
                 }
             }
             else
             {
                 //Default confirmation no.
-                confirmationNo = DefaultConfirmationNo.ToString();
+                confirmationNo = Constants.DEFAULT_CONFIRMATION_NO.ToString();
             }
 
             model.ConfirmationNumber = confirmationNo;
@@ -1273,20 +1346,19 @@ namespace SuccessHotelierHub.Controllers
                 }
                 else
                 {
-                    folioNo = DefaultFolioNumber;
+                    folioNo = Constants.DEFAULT_FOLIO_NUMBER;
                 }
             }
             else
             {
-                //Default confirmation no.
-                folioNo = DefaultFolioNumber;
+                //Default folio no.
+                folioNo = Constants.DEFAULT_FOLIO_NUMBER;
             }
 
             model.FolioNumber = folioNo;
 
             #endregion
-
-
+            
             double totalBalance = 0, totalPrice = 0;
 
             totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
@@ -1295,6 +1367,35 @@ namespace SuccessHotelierHub.Controllers
 
             model.GuestBalance = totalBalance;
             model.TotalPrice = totalPrice;
+
+            #region Update Price Value to Euro Conversion
+
+            if (model.Rate.HasValue)
+            {
+                model.Rate = CurrencyManager.ConvertAmountToBaseCurrency(model.Rate.Value, LogInManager.CurrencyCode);
+            }
+
+            if (model.ApprovalAmount.HasValue)
+            {
+                model.ApprovalAmount = CurrencyManager.ConvertAmountToBaseCurrency(model.ApprovalAmount.Value, LogInManager.CurrencyCode);
+            }
+
+            if (model.DiscountAmount.HasValue)
+            {
+                model.DiscountAmount = CurrencyManager.ConvertAmountToBaseCurrency(model.DiscountAmount.Value, LogInManager.CurrencyCode);
+            }
+
+            if (model.GuestBalance.HasValue)
+            {
+                model.GuestBalance = CurrencyManager.ConvertAmountToBaseCurrency(model.GuestBalance.Value, LogInManager.CurrencyCode);
+            }
+
+            if (model.TotalPrice.HasValue)
+            {
+                model.TotalPrice = CurrencyManager.ConvertAmountToBaseCurrency(model.TotalPrice.Value, LogInManager.CurrencyCode);
+            }
+
+            #endregion
 
             //Credit Card No.
             model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
@@ -1328,12 +1429,7 @@ namespace SuccessHotelierHub.Controllers
 
                             roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
 
-                            if (!string.IsNullOrWhiteSpace(model.RoomNumbers) && model.RoomNumbers.Contains("102"))
-                            {
-                                //Something error.
-                            }
-
-
+                          
                             #region Remove Existing reservation if room status are dirty.
 
                             var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate, LogInManager.LoggedInUserId).FirstOrDefault();
@@ -1417,9 +1513,17 @@ namespace SuccessHotelierHub.Controllers
                 if (model.PackageMappingList != null && model.PackageMappingList.Count > 0)
                 {
                     var packageMapping = model.PackageMappingList[0];
-
+                                        
                     if (packageMapping != null)
                     {
+                        var packageDetail = packageRepository.GetPackageById(packageMapping.PackageId.Value).FirstOrDefault();
+                        if(packageDetail != null)
+                        {
+                            packageMapping.PackagePrice = packageDetail.Price;
+                        }
+
+                        packageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
+                        
                         packageMapping.ReservationId = model.Id;
                         packageMapping.CreatedBy = LogInManager.LoggedInUserId;
                         packageMapping.UpdatedBy = LogInManager.LoggedInUserId;
@@ -1614,8 +1718,8 @@ namespace SuccessHotelierHub.Controllers
                         IsSuccess = true,
                         data = new
                         {
-                            WeekDayPrice = (weekDayPrice != null ? weekDayPrice.Amount : 0),
-                            WeekEndPrice = (weekEndPrice != null ? weekEndPrice.Amount : 0)
+                            WeekDayPrice = (weekDayPrice != null ? CurrencyManager.ParseAmountToUserCurrency(weekDayPrice.Amount, LogInManager.CurrencyCode) : 0),
+                            WeekEndPrice = (weekEndPrice != null ? CurrencyManager.ParseAmountToUserCurrency(weekEndPrice.Amount, LogInManager.CurrencyCode) : 0)
                         }
                     }, JsonRequestBehavior.AllowGet);
                 }

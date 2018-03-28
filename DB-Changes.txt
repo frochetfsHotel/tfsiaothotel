@@ -45085,9 +45085,6 @@ END
 	Comment : Change in SP SearchGuest		
 ***********************************************************************************************************************/ 
 
-
-USE [SuccessHotelierHub_Dev]
-GO
 /****** Object:  StoredProcedure [dbo].[SearchGuest]    Script Date: 3/26/2018 11:19:00 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -45419,5 +45416,2628 @@ BEGIN
 	-- PAGING COMPLETED
 
 END
+
+
+/**************************************************************************************************************************/
+
+Name : Nilesh
+Date : 27-MAR-2018
+
+/**************************************************************************************************************************/
+
+/************* Create  table Currency *******************/
+ 
+/****** Object:  Table [dbo].[Currency]    Script Date: 3/26/2018 5:40:26 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Currency](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[Code] [nvarchar](255) NULL,
+	[Name] [nvarchar](500) NULL,	
+	[Description] [nvarchar](MAX) NULL,
+	[ConversionRate] [numeric](18,2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,	
+ CONSTRAINT [PK_Currency] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****************** Default currency data *****************/
+
+INSERT INTO [dbo].[Currency] (Id,[Code],[Name],[Description],[ConversionRate],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'EUR','Euro','Euro Currency',1,1,GETDATE(),1)
+
+INSERT INTO [dbo].[Currency] (Id,[Code],[Name],[Description],[ConversionRate],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'USD','US Dollar','US Dollar Currency',1.24,1,GETDATE(),1)
+
+INSERT INTO [dbo].[Currency] (Id,[Code],[Name],[Description],[ConversionRate],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'INR','Indian Rupee','Indina Currency',80.43,1,GETDATE(),1)
+
+
+/************* Create table UserGroup *******************/
+
+/****** Object:  Table [dbo].[UserGroup]    Script Date: 3/26/2018 5:40:26 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserGroup](
+	[Id] [uniqueidentifier] NOT NULL,		
+	[Name] [nvarchar](500) NULL,	
+	[Description] [nvarchar](MAX) NULL,
+	[CurrencyId] [uniqueidentifier] NULL,	
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,	
+ CONSTRAINT [PK_UserGroup] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****************** Default User Group data *****************/
+
+
+INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'Indian Student','Indian Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'INR'),1,GETDATE(),1)
+
+INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'Ireland Student','Ireland Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'EUR'),1,GETDATE(),1)
+
+INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'USA Student','USA Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'USD'),1,GETDATE(),1)
+
+/***************** Add UserGroupId in UserDetail table ************/
+
+ALTER TABLE UserDetail ADD UserGroupId UNIQUEIDENTIFIER NULL
+GO
+ 
+/**** Add Foreign Key of UserGroupId in UserDetail Table****/
+
+ALTER TABLE [dbo].[UserDetail] WITH NOCHECK
+	ADD CONSTRAINT [FK_UserDetail_UserGroup] FOREIGN KEY ([UserGroupId]) REFERENCES [dbo].[UserGroup] ([Id]);
+
+	
+
+/************************************************************************************************************************ 
+	SP Name : GetCurrencyInfo
+	Comment : Create SP GetCurrencyInfo		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetCurrencyInfo]    Script Date: 3/26/2018 6:35:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[GetCurrencyInfo]		
+AS
+BEGIN	
+	
+	SELECT * FROM [dbo].[Currency]
+		WHERE ISNULL(IsDeleted ,0) = 0
+		
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetCurrencyInfoById
+	Comment : Create SP GetCurrencyInfoById		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetCurrencyInfoById]    Script Date: 3/26/2018 6:35:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [dbo].[GetCurrencyInfoById]
+			@Id = '2D05E3F6-CA62-4899-B834-415266B5F203'
+		
+*/
+
+CREATE PROCEDURE [dbo].[GetCurrencyInfoById]	
+	@Id UNIQUEIDENTIFIER	=	NULL
+AS
+BEGIN
+	
+	SELECT * FROM [dbo].[Currency]
+		WHERE	ISNULL(IsDeleted ,0) = 0
+				AND Id = @Id
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetCurrencyInfoByCode
+	Comment : Create SP GetCurrencyInfoByCode		
+***********************************************************************************************************************/ 
+	
+/****** Object:  StoredProcedure [dbo].[GetCurrencyInfoByCode]    Script Date: 3/26/2018 6:35:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [dbo].[GetCurrencyInfoByCode]
+			@Code = 'EUR'
+		
+*/
+
+CREATE PROCEDURE [dbo].[GetCurrencyInfoByCode]	
+	@Code NVARCHAR(255)	=	NULL
+AS
+BEGIN
+	
+	SELECT * FROM [dbo].[Currency]
+		WHERE	ISNULL(IsDeleted ,0) = 0
+				AND [Code] = @Code
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetUserGroups
+	Comment : Create SP GetUserGroups		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetUserGroups]    Script Date: 3/26/2018 6:35:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [dbo].[GetUserGroups]		
+*/
+
+CREATE PROCEDURE [dbo].[GetUserGroups]		
+AS
+BEGIN
+	
+	SELECT * FROM [dbo].[UserGroup]
+		WHERE	ISNULL(IsDeleted ,0) = 0
+						
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetUserGroupById
+	Comment : Create SP GetUserGroupById		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetUserGroupById]    Script Date: 3/26/2018 6:35:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [dbo].[GetUserGroupById]
+			@Id = '1085C73E-BA8A-4D1F-8421-A729614FB76E'		
+*/
+
+CREATE PROCEDURE [dbo].[GetUserGroupById]	
+	@Id UNIQUEIDENTIFIER	=	NULL
+AS
+BEGIN
+	
+	SELECT * FROM [dbo].[UserGroup]
+		WHERE	ISNULL(IsDeleted ,0) = 0
+				AND Id = @Id
+END
+
+
+/************** Add new CurrencySymbol column in Currency table ***********/
+
+ALTER TABLE Currency ADD CurrencySymbol NVARCHAR(500) NULL
+GO
+
+UPDATE Currency SET CurrencySymbol = '&#x20B9;' WHERE Code = 'INR';
+UPDATE Currency SET CurrencySymbol = '&#036;' WHERE Code = 'USD';
+UPDATE Currency SET CurrencySymbol = '&#128;' WHERE Code = 'EUR';
+
+/************************************************************************************************************************ 
+	SP Name : fnParseAmountByCurrency
+	Comment : Create Function fnParseAmountByCurrency
+***********************************************************************************************************************/ 
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	SELECT [dbo].[fnParseAmountByCurrency](100, 80.43)
+*/
+CREATE FUNCTION [dbo].[fnParseAmountByCurrency]
+(
+	@Amount			NUMERIC(18,2)	,
+	@ConversionRate	NUMERIC(18,2)	
+)
+RETURNS NUMERIC(18,2)
+AS
+BEGIN
+	
+	DECLARE @parseAmount NUMERIC(18,2)	=	0
+
+	IF @Amount IS NOT NULL
+	BEGIN
+		SET @parseAmount = ROUND((@Amount * @ConversionRate), 2)
+	END
+
+	RETURN @parseAmount	
+
+END
+GO
+
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchGuest
+	Comment : Change in SP SearchGuest		
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[SearchGuest]    Script Date: 3/27/2018 4:13:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchGuest] 
+		@LastName						=	NULL,
+		@FirstName						=	NULL,			
+		@RoomNo							=	'',
+		@CompanyId						=	NULL,				
+		@GroupId						=	NULL,		
+		@BlockCodeId					=	NULL,							
+		@ConfirmationNo					=	'',		
+		@DepartureDate					=	NULL,
+		@IsShowCheckedOut				=	0,
+		@IsShowCheckedIn				=	1,
+		@IsShowDueOut					=	0,
+		@PageNum						=	1,
+		@PageSize						=	10,
+		@SortColumn						=	NULL,
+		@SortDirection					=	NULL,
+		@CreatedBy						=	1	,
+		@IsAdminUser					=	1			
+*/
+
+ALTER PROCEDURE [dbo].[SearchGuest]		
+	@LastName						NVARCHAR(255)		=	NULL,
+	@FirstName						NVARCHAR(255)		=	NULL,	
+	@RoomNo							NVARCHAR(255)		=	NULL,	
+	@CompanyId						UNIQUEIDENTIFIER	=	NULL,			
+	@GroupId						UNIQUEIDENTIFIER	=	NULL,		
+	@BlockCodeId					UNIQUEIDENTIFIER	=	NULL,				
+	@ConfirmationNo					NVARCHAR(255)		=	NULL,	
+	@DepartureDate					DATETIME			=	NULL,
+	@IsShowCheckedOut				BIT					=	NULL,
+	@IsShowCheckedIn				BIT					=	NULL,
+	@IsShowDueOut					BIT					=	NULL,
+	@PageNum						INT					=	1,
+	@PageSize						INT					=	10,
+	@SortColumn						NVARCHAR(255)		=	NULL,
+	@SortDirection					NVARCHAR(20)		=	NULL,
+	@CreatedBy						INT					=	NULL,
+	@IsAdminUser					BIT					=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @CreatedBy
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+
+
+	-- GET CURRENCY CONVERSION RATE : END
+
+	--- POPULATE RESERVATION STATUS TEMP TABLE : START
+	CREATE TABLE #tempStatus
+	(
+		[Id]	UNIQUEIDENTIFIER	NOT NULL	,
+		[Name]	NVARCHAR(500)		NULL		,
+		[Code]	NVARCHAR(255)		NULL
+	);
+
+	IF ISNULL(@IsShowCheckedIn,0) = 1
+	BEGIN
+		INSERT INTO #tempStatus ([Id], [Name], [Code])
+		SELECT Id,	[Name], [Code] FROM [dbo].[ReservationStatus] 
+			WHERE	ISNULL(IsDeleted,0) = 0
+					AND [Code] = 'CHECKEDIN'
+				
+		SET @IsShowDueOut = 1	
+						
+	END
+
+	IF ISNULL(@IsShowCheckedOut,0) = 1
+	BEGIN
+		INSERT INTO #tempStatus ([Id], [Name], [Code])
+		SELECT Id, [Name], [Code] FROM [dbo].[ReservationStatus] 
+			WHERE	ISNULL(IsDeleted,0) = 0
+					AND [Code] = 'CHECKEDOUT'
+	END
+
+	IF ISNULL(@IsShowDueOut,0) = 1
+	BEGIN
+		INSERT INTO #tempStatus ([Id], [Name], [Code])
+		SELECT Id, [Name], [Code] FROM [dbo].[ReservationStatus] 
+			WHERE	ISNULL(IsDeleted,0) = 0
+					AND [Code] = 'DUEOUT'
+	END
+
+	--- POPULATE RESERVATION STATUS TEMP TABLE : END
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL		
+		,	[RoomNumbers]				NVARCHAR(1000)		NULL
+		,   [FirstName]					NVARCHAR(255)		NULL
+		,   [LastName]					NVARCHAR(255)		NULL	
+		,	[Email]						NVARCHAR(1000)		NULL	
+		,   [ArrivalDate]				NVARCHAR(25)		NULL				
+		,   [DepartureDate]				NVARCHAR(25)		NULL
+		,	[Balance]					DECIMAL(18,2)		NULL
+		,	[CompanyId]					UNIQUEIDENTIFIER	NULL
+		,	[Company]					NVARCHAR(500)		NULL
+		,	[GroupId]					UNIQUEIDENTIFIER	NULL
+		,	[Group]						NVARCHAR(500)		NULL
+		,	[ReservationStatusId]		UNIQUEIDENTIFIER	NULL
+		,	[ReservationStatusName]		NVARCHAR(500)		NULL
+		,	[IsReservationCancel]		BIT					NULL
+		,	[IsCheckIn]					BIT					NULL
+		,	[IsCheckOut]				BIT					NULL
+		,	[CreatedOn]					DATETIME			NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Reservation] R
+							INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+								AND ISNULL(P.IsDeleted,0) = 0 
+								AND P.[CreatedBy] = @CreatedBy
+							LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0							
+							LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0
+							LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+								AND ISNULL(CO.IsDeleted,0) = 0
+							LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+								AND ISNULL(ROT.IsDeleted,0) = 0
+							LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+								AND ISNULL(RAT.IsDeleted,0) = 0
+							LEFT JOIN [dbo].[ReservationStatus] RS ON RS.Id = R.ReservationStatusId
+								AND ISNULL(RS.IsDeleted,0) = 0
+						WHERE	ISNULL(R.IsDeleted,0) = 0
+								AND ISNULL(R.IsReservationCancel,0) = 0
+								AND ISNULL(R.IsCheckIn,0) = 1
+								AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+								AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')																
+								AND (@CompanyId IS NULL OR R.[CompanyId] = @CompanyId)								
+								AND (@GroupId IS NULL OR R.[GroupId] = @GroupId)
+								AND (@BlockCodeId IS NULL OR R.[BlockCodeId] = @BlockCodeId)																
+								AND (ISNULL(@ConfirmationNo,'') = '' OR R.[ConfirmationNumber] LIKE '%'+ @ConfirmationNo +'%')
+								AND (@DepartureDate IS NULL OR CAST(R.DepartureDate AS DATE) = CAST(ISNULL(@DepartureDate,GETDATE()) AS DATE))
+								--AND (@IsShowCheckedOut IS NULL OR ISNULL(R.IsCheckOut,0) = @IsShowCheckedOut)
+								--AND (ISNULL(@IsAdminUser,0) = 1 OR (@CreatedBy IS NULL OR ISNULL(R.CreatedBy,0) = ISNULL(@CreatedBy,0)))
+								AND R.[CreatedBy] = @CreatedBy
+								AND 
+								(
+									 (SELECT COUNT(*) FROM #tempStatus) = 0
+										OR 
+									 (
+										(CASE	WHEN 
+												(ISNULL(R.IsCheckOut,0) = 0
+												AND CAST(R.DepartureDate AS DATE) = CAST(ISNULL(@DepartureDate,GETDATE()) AS DATE))
+											THEN (SELECT TOP 1 Id FROM ReservationStatus WHERE ISNULL(IsDeleted,0) = 0 AND Code = 'DUEOUT')
+											ELSE  R.ReservationStatusId  
+											END
+										)
+									) IN (SELECT Id FROM #tempStatus)
+								)
+						)
+
+
+		INSERT INTO #tempReservation 
+		(
+			[RowNum]
+			,[Id]			
+			,[FirstName]				
+			,[LastName]		
+			,[Email]		
+			,[ArrivalDate]			
+			,[DepartureDate]			
+			,[Balance]				
+			,[CompanyId]				
+			,[Company]				
+			,[GroupId]				
+			,[Group]					
+			,[ReservationStatusId]
+			,[ReservationStatusName]	
+			,[IsReservationCancel]
+			,[IsCheckIn]
+			,[IsCheckOut]		
+			,[CreatedOn])
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN R.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN R.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'asc'
+							THEN R.[FirstName] END ASC,
+						CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'desc'
+							THEN R.[FirstName] END DESC,
+
+						CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'asc'
+							THEN R.[LastName] END ASC,
+						CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'desc'
+							THEN R.[LastName] END DESC,
+
+						CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'asc'
+							THEN R.[ArrivalDate] END ASC,
+						CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'desc'
+							THEN R.[ArrivalDate] END DESC,
+
+						CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'asc'
+							THEN R.[DepartureDate] END ASC,
+						CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'desc'
+							THEN R.[DepartureDate] END DESC,
+
+						CASE WHEN @SortColumn = 'Balance' and @SortDirection = 'asc'
+							THEN R.[Rate] END ASC,
+						CASE WHEN @SortColumn = 'Balance' and @SortDirection = 'desc'
+							THEN R.[Rate] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN R.[LastName] END ASC
+
+				) AS RowNum
+				,R.[Id]			
+				,ISNULL(R.[FirstName],'') AS [FirstName]
+				,ISNULL(R.[LastName],'') AS [LastName]		
+				,ISNULL(P.Email,'') AS [Email]										
+				,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate				
+				,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+				,ISNULL([dbo].[fnParseAmountByCurrency] (R.[GuestBalance], @CurrencyConversionRate),0) AS Balance
+				,R.CompanyId						
+				,'' AS Company
+				,R.GroupId						
+				,'' AS [Group]
+				,(CASE	WHEN (ISNULL(R.IsCheckOut,0) = 0
+								AND CAST(R.DepartureDate AS DATE) = CAST(ISNULL(@DepartureDate,GETDATE()) AS DATE))
+						THEN (SELECT TOP 1 Id FROM ReservationStatus WHERE ISNULL(IsDeleted,0) = 0 
+								AND Code = 'DUEOUT')
+						ELSE  R.ReservationStatusId 
+					END) AS ReservationStatusId
+				,ISNULL((CASE	WHEN (ISNULL(R.IsCheckOut,0) = 0
+								AND CAST(R.DepartureDate AS DATE) = CAST(ISNULL(@DepartureDate,GETDATE()) AS DATE))
+						THEN (SELECT TOP 1 [Name] FROM ReservationStatus WHERE ISNULL(IsDeleted,0) = 0 
+								AND Code = 'DUEOUT')
+						ELSE  RS.[Name]
+					END),'') AS ReservationStatusName
+				,ISNULL(R.[IsReservationCancel],0) AS IsReservationCancel
+				,ISNULL(R.[IsCheckIn],0) AS IsCheckIn
+				,ISNULL(R.[IsCheckOut],0) AS IsCheckOut
+				,R.[CreatedOn]
+			FROM [dbo].[Reservation] R
+					INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+						AND ISNULL(P.IsDeleted,0) = 0 
+						AND P.[CreatedBy] = @CreatedBy
+					LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0							
+					LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0														
+					LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+						AND ISNULL(CO.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+						AND ISNULL(ROT.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+						AND ISNULL(RAT.IsDeleted,0) = 0
+					LEFT JOIN [dbo].[ReservationStatus] RS ON RS.Id = R.ReservationStatusId
+						AND ISNULL(RS.IsDeleted,0) = 0
+			WHERE	ISNULL(R.IsDeleted,0) = 0
+					AND ISNULL(R.IsReservationCancel,0) = 0
+					AND ISNULL(R.IsCheckIn,0) = 1
+					AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+					AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')																
+					AND (@CompanyId IS NULL OR R.[CompanyId] = @CompanyId)								
+					AND (@GroupId IS NULL OR R.[GroupId] = @GroupId)
+					AND (@BlockCodeId IS NULL OR R.[BlockCodeId] = @BlockCodeId)																
+					AND (ISNULL(@ConfirmationNo,'') = '' OR R.[ConfirmationNumber] LIKE '%'+ @ConfirmationNo +'%')
+					AND (@DepartureDate IS NULL OR CAST(R.DepartureDate AS DATE) = CAST(ISNULL(@DepartureDate,GETDATE()) AS DATE))
+					--AND (@IsShowCheckedOut IS NULL OR ISNULL(R.IsCheckOut,0) = @IsShowCheckedOut)
+					--AND (ISNULL(@IsAdminUser,0) = 1 OR (@CreatedBy IS NULL OR ISNULL(R.CreatedBy,0) = ISNULL(@CreatedBy,0)))
+					AND R.[CreatedBy] = @CreatedBy
+					AND 
+					(
+							(SELECT COUNT(*) FROM #tempStatus) = 0
+							OR 
+							(
+							(CASE	WHEN 
+									(ISNULL(R.IsCheckOut,0) = 0
+									AND CAST(R.DepartureDate AS DATE) = CAST(ISNULL(@DepartureDate,GETDATE()) AS DATE))
+								THEN (SELECT TOP 1 Id FROM ReservationStatus WHERE ISNULL(IsDeleted,0) = 0 AND Code = 'DUEOUT')
+								ELSE  R.ReservationStatusId  
+								END
+							)
+						) IN (SELECT Id FROM #tempStatus)
+					)
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id
+						AND RRM.CreatedBy  = @CreatedBy
+						--AND (ISNULL(@RoomNo,'') = '' OR  R.RoomNo LIKE '%' + @RoomNo +'%')
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 			
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]			
+			,ISNULL(temp.[RoomNumbers],'') AS RoomNumbers
+			,temp.[FirstName]		
+			,temp.[LastName]		
+			,temp.[Email]			
+			,temp.[ArrivalDate]			
+			,temp.[DepartureDate]				
+			,temp.[Balance]
+			,temp.[CompanyId]
+			,temp.[Company]
+			,temp.[GroupId]
+			,temp.[Group]
+			,temp.[ReservationStatusId]
+			,temp.[ReservationStatusName]
+			,temp.[IsReservationCancel]
+			,temp.[IsCheckIn]
+			,temp.[IsCheckOut]
+			,temp.[CreatedOn] 
+			,@TotalCount AS TotalCount
+	FROM	
+		#tempReservation AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+		AND (ISNULL(@RoomNo,'') = '' OR  temp.[RoomNumbers] LIKE '%' + @RoomNo +'%')
+	-- PAGING COMPLETED
+
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationCharges
+	Comment : Change in SP GetReservationCharges		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 3/27/2018 4:37:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'3836abff-095a-43f8-98ea-b5c5db75bcc9'	,
+		@AdditionalChargeId		=	NULL									,
+		@UserId					=	1
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@UserId					INT					=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET CURRENCY CONVERSION RATE : END
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeSource = 'AC' -- Additional  Charge				
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeSource = 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND RC.AdditionalChargeSource <> 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+	UNION
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RE.CreditCardNo, 4)) END )AS Code,
+		RC.Description,4 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0					
+					AND (ISNULL(@UserId,0) = 0 OR RE.[CreatedBy] = @UserId)
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+
+	ORDER BY SortOrder
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchAdvanceAdditionalCharge
+	Comment : Change in SP SearchAdvanceAdditionalCharge		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceAdditionalCharge]    Script Date: 3/27/2018 5:07:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceAdditionalCharge]
+			@Code	= ''			
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceAdditionalCharge]
+	@Code		NVARCHAR(50)	=	NULL	,
+	@UserId		INT						
+	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET CURRENCY CONVERSION RATE : END
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  AC.[Code] ASC
+
+				) AS RowNum,
+				AC.[Id], 
+				AC.[Code],
+				AC.[Description],
+				ISNULL([dbo].[fnParseAmountByCurrency] (AC.[Price], @CurrencyConversionRate),0) AS [Price],				
+				AC.[CreatedOn], 
+				AC.[IsActive]
+			FROM [dbo].[AdditionalCharges] AC					
+				WHERE	ISNULL(IsActive,0)  = 1 AND ISNULL(AC.IsDeleted,0) = 0
+						AND (
+								ISNULL(@Code,'') = '' OR 
+								(AC.[Code] LIKE '%'+ @Code +'%' 
+									OR AC.[Description] LIKE '%'+ @Code +'%')
+							)
+
+						--Avoid Room Rent, Package and CheckOut
+						AND ISNULL(AC.[Code],'') NOT IN ('1000','9004', '9005')
+END
+
+
+/****************** Update currency **************/
+
+UPDATE Reservation SET CurrencyId = 'F593C9E6-75F2-426F-934B-C3D119DE24A2' WHERE CurrencyId = (SELECT Id FROM Currency WHERE Code='EUR')
+
+/************************************************************************************************************************ 
+	SP Name : LoadTempBulkReservationMaster
+	Comment : Change in SP LoadTempBulkReservationMaster		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[LoadTempBulkReservationMaster]    Script Date: 3/28/2018 10:39:21 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/**
+	EXEC [LoadTempBulkReservationMaster] @UserId = 1
+***/
+
+ALTER PROCEDURE [dbo].[LoadTempBulkReservationMaster]
+	@UserId INT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	
+	-- TOP Reservation Flag
+	DECLARE @TopCount INT  = 50
+
+
+	/************************ STEP 1 : Populate Temp Profile & Room Table ************************/
+
+	-- Create temp profile table.
+	CREATE TABLE #tmpProfile
+	(
+			[RowNum]			INT					NOT NULL
+		,	[ProfileId]			UNIQUEIDENTIFIER	NOT NULL				
+		,   [LastName]			NVARCHAR(500)		NULL	
+		,	[FirstName]			NVARCHAR(500)		NULL	
+		,	[TitleId]			UNIQUEIDENTIFIER	NULL	
+		,	[CountryId]			INT					NULL
+		,	[PhoneNo]			NVARCHAR(255)		NULL
+		,	[RoomTypeId]		UNIQUEIDENTIFIER	NULL
+		,	[RoomId]			UNIQUEIDENTIFIER	NULL
+		,   [RoomNo]			NVARCHAR(255)		NULL
+	)
+
+
+	-- Create temp room table.
+	CREATE TABLE #tmpRoom
+	(
+			[RowNum]			INT					NOT NULL		
+		,	[RoomId]			UNIQUEIDENTIFIER	NOT NULL
+		,	[RoomTypeId]		UNIQUEIDENTIFIER	NOT NULL	
+		,   [RoomNo]			NVARCHAR(255)		NULL
+	)
+
+	-- Insert data in temp profile table.
+	INSERT INTO #tmpProfile
+		(
+			 [RowNum]
+			,[ProfileId]
+			,[LastName]
+			,[FirstName]	
+			,[TitleId]	
+			,[CountryId]
+			,[PhoneNo]
+		)
+	SELECT TOP (@TopCount)
+		ROW_NUMBER() OVER (ORDER BY PR.LastName ASC) AS [RowNum],
+		PR.Id AS [ProfileId],
+		PR.[LastName] AS [LastName],
+		PR.[FirstName] AS [FirstName],
+		PR.[TitleId],
+		PR.[CountryId],
+		PR.[TelephoneNo]
+	FROM	[IndividualProfile] PR 
+	WHERE	ISNULL(PR.IsDeleted,0) = 0 AND ISNULL(PR.IsActive,0) = 1
+			AND ISNULL(PR.IsDummyProfile,0) = 1
+			AND PR.[CreatedBy] = @UserId 
+	ORDER BY [LastName]
+
+	-- Insert data in temp room table.
+	INSERT INTO #tmpRoom
+		(
+			 [RowNum]
+			,[RoomId]
+			,[RoomTypeId]
+			,[RoomNo]		
+		)
+	SELECT 
+		ROW_NUMBER() OVER (ORDER BY A.RoomNo ASC) AS [RowNum],
+		A.Id AS [RoomId],
+		A.[RoomTypeId],
+		A.[RoomNo]
+	FROM 
+	(
+		SELECT DISTINCT TOP (@TopCount)
+			 R.Id,
+			 R.RoomTypeId,
+			 R.RoomNo	 
+		FROM [dbo].[RoomTypeRateTypeMapping] RTRTM
+			INNER JOIN [dbo].[RoomType] ROT ON RTRTM.RoomTypeId = ROT.Id
+				AND ISNULL(ROT.IsDeleted,0) = 0 
+			INNER JOIN [dbo].[Room] R ON R.RoomTypeId = ROT.Id 
+				AND ISNULL(R.IsDeleted,0) = 0 
+			INNER JOIN [dbo].[RateType] RAT ON RTRTM.RateTypeId = RAT.Id
+				AND ISNULL(RAT.IsDeleted,0) = 0 
+		WHERE ISNULL(RTRTM.IsDeleted,0) = 0	
+		ORDER BY R.RoomNo ASC
+	) AS A
+
+	-- Update Room Details in temp profile table.
+	UPDATE TP
+		SET	TP.RoomId		=	TR.RoomId,
+			TP.RoomTypeId	=	TR.RoomTypeId,
+			TP.RoomNo		=	TR.RoomNo
+	FROM #tmpProfile TP INNER JOIN #tmpRoom TR ON TP.RowNum = TR.RowNum
+
+	/************************ STEP 2 : Populate Temp Bulk Reservation Master Table ************************/
+
+	-- Delete all the date from TempBulkReservationMaster by user id.
+	DELETE FROM TempBulkReservationMaster WHERE ISNULL(CreatedBy,0) = @UserId
+
+
+	DECLARE		@RowNum					INT					
+	DECLARE		@ProfileId				UNIQUEIDENTIFIER	=	NULL
+	DECLARE		@LastName				NVARCHAR(500)		=	NULL
+	DECLARE		@FirstName				NVARCHAR(500)		=	NULL
+	DECLARE		@TitleId				UNIQUEIDENTIFIER	=	NULL
+	DECLARE		@CountryId				INT					=	NULL
+	DECLARE		@PhoneNo				NVARCHAR(255)		=	NULL
+	DECLARE		@RoomTypeId				UNIQUEIDENTIFIER	=	NULL
+	DECLARE		@RoomId					UNIQUEIDENTIFIER	=	NULL
+	DECLARE		@RoomNo					NVARCHAR(255)		=	NULL
+
+	DECLARE		@ArrivalDate			DATETIME			=	GETDATE()
+	DECLARE		@DepartureDate			DATETIME			=	DATEADD(DAY, 1, GETDATE())
+	DECLARE		@ETA					TIME(7)				=	CAST('10:00 AM' AS TIME(7))
+	DECLARE		@WeekDayName			NVARCHAR(50)		=	DATENAME(WEEKDAY,@ArrivalDate) 
+	DECLARE		@NoOfNight				INT					=	1
+	DECLARE		@NoOfAdult				INT					=	1
+	DECLARE		@NoOfChildren			INT					=	2
+	DECLARE		@NoOfInfant				INT					=	1
+	DECLARE		@NoOfRoom				INT					=	1
+	DECLARE		@IsWeekEndPrice			BIT					=	0
+	DECLARE		@RateTypeId				UNIQUEIDENTIFIER	=	NULL
+	DECLARE		@RateTypeCode			NVARCHAR(500)		=	NULL
+	DECLARE		@Rate					NUMERIC(18,2)		
+	DECLARE		@CurrencyId				UNIQUEIDENTIFIER	=	NULL
+
+	DECLARE		@MarketId				UNIQUEIDENTIFIER 
+	DECLARE		@ReservationSourceId	UNIQUEIDENTIFIER 
+	DECLARE		@ReservationTypeId		UNIQUEIDENTIFIER 
+	DECLARE		@PaymentMethodId		UNIQUEIDENTIFIER 
+	DECLARE		@CreditCardNo			NVARCHAR(255)		=	'4242'
+	DECLARE		@CardExpiryDate			NVARCHAR(255)		=	'07/28'
+	DECLARE		@CVVNo					NVARCHAR(255)		=	'745'
+
+
+
+	-- GET TOP 1 Market.
+	SET @MarketId = (SELECT TOP 1 Id FROM [Market] 
+							WHERE	ISNULL(IsDeleted,0) = 0 
+									AND ISNULL(IsActive,0) = 1
+							ORDER BY [Name])
+
+	-- GET TOP 1 Reservation Type.
+	SET @ReservationTypeId = (SELECT TOP 1 Id FROM [ReservationType] 
+									WHERE	ISNULL(IsDeleted,0) = 0 
+											AND ISNULL(IsActive,0) = 1
+											AND [Name] = 'Guarantee Type'
+									ORDER BY [Name])
+
+	-- GET TOP 1 Reservation Source.
+	SET @ReservationSourceId = (SELECT TOP 1 Id FROM [ReservationSource] 
+									WHERE	ISNULL(IsDeleted,0) = 0 
+											AND ISNULL(IsActive,0) = 1
+									ORDER BY [Name])
+
+	-- GET Payment Method 'Visa'
+	SET @PaymentMethodId = (SELECT TOP 1 Id FROM [PaymentMethod] 
+									WHERE	ISNULL(IsDeleted,0) = 0 
+											AND ISNULL(IsActive,0) = 1
+											AND [Name] = 'Visa'
+									ORDER BY [Name])
+
+	-- SET Default currency Id
+	SET @CurrencyId = (SELECT TOP 1 Id FROM [dbo].[Currency] 
+								WHERE	ISNULL(IsDeleted,0) = 0
+										AND ISNULL(IsActive,0) = 1 
+										AND [Code] = 'EUR')
+
+	-- Check Week End.
+	IF ISNULL(@WeekDayName,'') <> ''
+	BEGIN
+		IF (@WeekDayName = 'Friday' OR @WeekDayName = 'Saturday')
+		BEGIN
+			SET @IsWeekEndPrice = 1
+		END
+	END
+
+	-- Loop through profile temp table and create temp bulk reservation.
+	DECLARE cur_profile CURSOR STATIC FOR
+		SELECT  RowNum, ProfileId, LastName, FirstName, TitleId, CountryId, PhoneNo, 
+				RoomTypeId, RoomId, RoomNo 
+			FROM #tmpProfile 
+			ORDER BY RowNum ASC
+
+	OPEN cur_profile
+	IF @@CURSOR_ROWS > 0
+	BEGIN
+		FETCH NEXT FROM cur_profile 
+			INTO	@RowNum, @ProfileId, @LastName, @FirstName, @TitleId, @CountryId, @PhoneNo,
+					@RoomTypeId, @RoomId, @RoomNo 
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+		
+			--PRINT 'Row Num : ' + CAST(@RowNum AS VARCHAR(10))
+
+			-- Get Top 1 Rate Type and Rate Details.
+			SELECT	TOP 1 @RateTypeId = RTRTM.RateTypeId, @RateTypeCode = RAT.RateTypeCode, @Rate = RTRTM.Amount
+			FROM	[dbo].[RoomTypeRateTypeMapping] RTRTM
+					INNER JOIN [dbo].[RoomType] ROT ON RTRTM.RoomTypeId = ROT.Id
+						AND ISNULL(ROT.IsDeleted,0) = 0 
+					INNER JOIN [dbo].[Room] R ON R.RoomTypeId = ROT.Id 
+						AND ISNULL(R.IsDeleted,0) = 0 
+					INNER JOIN [dbo].[RateType] RAT ON RTRTM.RateTypeId = RAT.Id
+						AND ISNULL(RAT.IsDeleted,0) = 0 						
+			WHERE	ISNULL(RTRTM.IsDeleted,0) = 0	
+					AND RTRTM.RoomTypeId = @RoomTypeId		
+					AND ISNULL(RTRTM.IsWeekEndPrice,0) = ISNULL(@IsWeekEndPrice,0)
+					
+			
+			IF (@RateTypeCode  = 'BAR' OR @RateTypeCode  = 'BARBB' OR @RateTypeCode  = 'BARDBB')
+			BEGIN				
+				SET @MarketId = (SELECT TOP 1 Id FROM [Market] 
+										WHERE	ISNULL(IsDeleted,0) = 0 
+												AND ISNULL(IsActive,0) = 1
+												AND [Description] = 'Leisure'
+											ORDER BY [Name])
+
+				SET @ReservationSourceId = (SELECT TOP 1 Id FROM [ReservationSource] 
+												WHERE	ISNULL(IsDeleted,0) = 0 
+														AND ISNULL(IsActive,0) = 1
+														AND [Description] = 'Leisure'
+												ORDER BY [Name])
+			END
+
+			IF (@RateTypeCode  = 'CORPBB' OR @RateTypeCode  = 'CORPDBB' OR @RateTypeCode  = 'CORPRO')
+			BEGIN
+				SET @MarketId = (SELECT TOP 1 Id FROM [Market] 
+										WHERE	ISNULL(IsDeleted,0) = 0 
+												AND ISNULL(IsActive,0) = 1
+												AND [Description] = 'Corporate'
+											ORDER BY [Name])
+
+
+				-- GET TOP 1 Reservation Source.
+				SET @ReservationSourceId = (SELECT TOP 1 Id FROM [ReservationSource] 
+												WHERE	ISNULL(IsDeleted,0) = 0 
+														AND ISNULL(IsActive,0) = 1
+												ORDER BY [Name])
+
+			END
+
+
+			-- Add data in TempBulkReservationMaster Table.
+			INSERT INTO TempBulkReservationMaster
+				(
+					 [Id]
+					,[TitleId]
+					,[LastName]
+					,[FirstName]
+					,[ProfileId]
+					,[CountryId]
+					,[PhoneNo]
+					,[ArrivalDate]
+					,[NoOfNight]
+					,[DepartureDate]
+					,[NoOfAdult]	
+					,[NoOfChildren]
+					,[NoOfInfant]			
+					,[NoOfRoom]
+					,[RoomId]
+					,[RoomNo]
+					,[RoomTypeId]
+					,[RateCodeId]
+					,[Rate]
+					,[CurrencyId]
+					,[ETA]
+					,[ReservationTypeId]
+					,[MarketId]
+					,[ReservationSourceId]
+					,[PaymentMethodId]
+					,[CreditCardNo]
+					,[CardExpiryDate]
+					,[CVVNo]
+					,[CreatedBy]
+					,[CreatedOn]
+					,[IsActive]
+				)
+				VALUES
+				(
+					 NEWID()
+					,@TitleId
+					,@LastName
+					,@FirstName
+					,@ProfileId
+					,@CountryId
+					,@PhoneNo
+					,@ArrivalDate
+					,@NoOfNight
+					,@DepartureDate
+					,@NoOfAdult
+					,@NoOfChildren
+					,@NoOfInfant
+					,@NoOfRoom
+					,@RoomId
+					,@RoomNo
+					,@RoomTypeId
+					,@RateTypeId
+					,@Rate
+					,@CurrencyId
+					,@ETA
+					,@ReservationTypeId
+					,@MarketId
+					,@ReservationSourceId
+					,@PaymentMethodId
+					,@CreditCardNo
+					,@CardExpiryDate
+					,@CVVNo
+					,@UserId
+					,GETDATE()
+					,1
+				)
+
+			FETCH NEXT FROM cur_profile 
+			INTO	@RowNum, @ProfileId, @LastName, @FirstName, @TitleId, @CountryId, @PhoneNo,
+					@RoomTypeId, @RoomId, @RoomNo 
+		END
+	END
+	CLOSE cur_profile
+	DEALLOCATE cur_profile
+
+
+
+	--DROP Table #tmpProfile
+	IF(OBJECT_ID('tempdb..#tmpProfile') IS NOT NULL)
+	BEGIN
+		DROP TABLE #tmpProfile
+	END
+
+
+	--DROP Table #tmpRoom
+	IF(OBJECT_ID('tempdb..#tmpRoom') IS NOT NULL)
+	BEGIN
+		DROP TABLE #tmpRoom
+	END
+
+   
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetUserGroupsWithCurrencyInfo
+	Comment : Create SP GetUserGroupsWithCurrencyInfo		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetUserGroupsWithCurrencyInfo]    Script Date: 3/26/2018 6:35:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [dbo].[GetUserGroupsWithCurrencyInfo]		
+*/
+
+CREATE PROCEDURE [dbo].[GetUserGroupsWithCurrencyInfo]		
+AS
+BEGIN
+	
+	SELECT UG.* ,C.Code AS CurrencyCode, C.[Name] AS CurrencyName, C.ConversionRate
+		FROM	[dbo].[UserGroup] UG
+				INNER JOIN [dbo].[Currency] C ON UG.CurrencyId = C.Id
+					AND ISNULL(C.IsDeleted,0) = 0 
+		WHERE	ISNULL(UG.IsDeleted ,0) = 0 AND ISNULL(UG.IsActive,0) = 1
+						
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : AddUserDetail
+	Comment : Change in SP AddUserDetail		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[AddUserDetail]    Script Date: 3/28/2018 2:01:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddUserDetail]		
+	@UserGroupId		UNIQUEIDENTIFIER	=	NULL	,
+	@Name				NVARCHAR(500)					,		
+	@Email				NVARCHAR(500)					,		
+	@Password			NVARCHAR(2000)					,
+	@IsRecordActivity	BIT					=	NULL	,
+	@UserId				INT					=	NULL	,
+	@CashierNumber		NVARCHAR(255)		=	NULL	,
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UserDetail]
+           ([Id]      
+		   ,[UserGroupId]     		   
+           ,[Name]		
+		   ,[Email]
+		   ,[Password]   
+		   ,[UserId]	
+		   ,[IsRecordActivity]	   
+		   ,[CashierNumber]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id	
+			   ,@UserGroupId				      
+			   ,@Name		
+			   ,@Email
+			   ,@Password
+			   ,@UserId	   
+			   ,@IsRecordActivity
+			   ,@CashierNumber
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateUserDetail
+	Comment : Change in SP UpdateUserDetail		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[UpdateUserDetail]    Script Date: 3/28/2018 2:02:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateUserDetail]
+	@UserGroupId		UNIQUEIDENTIFIER	=	NULL	,
+	@Id					UNIQUEIDENTIFIER				,	
+	@Name				NVARCHAR(500)					,		
+	@Email				NVARCHAR(500)					,
+	@IsRecordActivity	BIT					=	NULL	,	
+	@CashierNumber		NVARCHAR(255)		=	NULL	,		
+	@IsActive			BIT					=	NULL	,	
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserDetail] 
+		SET	[Name]				=	@Name		
+		   ,[UserGroupId]		=	@UserGroupId   
+		   ,[Email]				=	@Email
+		   ,[IsRecordActivity]	=	@IsRecordActivity
+		   ,[CashierNumber]		=	@CashierNumber
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[IsActive]			=	@IsActive
+		   ,[UpdatedOn]			=	 GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetUserDetailById
+	Comment : Change in SP GetUserDetailById		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetUserDetailById]    Script Date: 3/28/2018 2:03:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetUserDetailById]
+	@Id UNIQUEIDENTIFIER = NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT UD.Id,UD.UserId,UD.Name,UD.Email,UD.Password,UD.CreatedBy,UD.CreatedOn,UD.UpdatedBy, UD.UpdatedOn, UD.IsActive, UD.IsRecordActivity,
+		ISNULL(UD.CashierNumber,'') AS CashierNumber, URM.UserRoleId,UD.UserGroupId
+		FROM [dbo].[UserDetail] UD 
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+				AND ISNULL(URM.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 
+				AND Ud.[Id] = @Id		
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchUserDetail
+	Comment : Change in SP SearchUserDetail		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchUserDetail]    Script Date: 3/28/2018 2:18:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchUserDetail] NULL, NULL, '', '', 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchUserDetail]					
+	@UserGroupId	UNIQUEIDENTIFIER	=	NULL	,	
+	@UserRoleId		UNIQUEIDENTIFIER	=	NULL	,		
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@Email			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempUserDetail
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(500)		NULL	
+		,   [Email]					NVARCHAR(500)		NULL	
+		,	[Password]				NVARCHAR(2000)		NULL	
+		,	[UserRoleId]			UNIQUEIDENTIFIER	NULL		
+		,   [UserRoleName]			NVARCHAR(500)		NULL	
+		,   [UserRoleCode]			NVARCHAR(255)		NULL
+		,	[UserGroupId]			UNIQUEIDENTIFIER	NULL		
+		,   [UserGroupName]			NVARCHAR(500)		NULL
+		,	[CurrencyCode]			NVARCHAR(255)		NULL			
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL
+		,   [IsRecordActivity]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+						FROM [dbo].[UserDetail] UD 
+								INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+									AND ISNULL(URM.IsDeleted,0) = 0
+								INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+									AND ISNULL(UR.IsDeleted,0) = 0
+								LEFT JOIN [UserGroup] UG ON UD.UserGroupId = UG.Id
+									AND ISNULL(UG.IsDeleted,0) = 0
+								LEFT JOIN [Currency] CR ON UG.CurrencyId = CR.Id
+									AND ISNULL(CR.IsDeleted,0) = 0
+						WHERE	ISNULL(UD.IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 
+								AND (@UserRoleId  IS NULL OR URM.[UserRoleId] = @UserRoleId)	
+								AND (@UserGroupId IS NULL OR UG.Id = @UserGroupId)							
+						)
+
+
+		INSERT INTO #tempUserDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 
+			[Password],
+			[UserRoleId],
+			[UserRoleName], 
+			[UserRoleCode],
+			[UserGroupId],
+			[UserGroupName],
+			[CurrencyCode],
+			[CreatedOn], 
+			[IsActive],
+			[IsRecordActivity]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UD.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UD.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN @SortColumn = 'UserRoleName' and @SortDirection = 'asc'
+							THEN UR.[Name] END ASC,
+						CASE WHEN @SortColumn = 'UserRoleName' and @SortDirection = 'desc'
+							THEN UR.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'UserGroupName' and @SortDirection = 'asc'
+							THEN UG.[Name] END ASC,
+						CASE WHEN @SortColumn = 'UserGroupName' and @SortDirection = 'desc'
+							THEN UG.[Name] END DESC,
+
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],
+				UD.[Password],
+				UR.Id AS [UserRoleId],
+				UR.[Name] AS [UserRoleName],
+				UR.[Code] AS [UserRoleCode],	
+				UG.Id AS [UserGroupId],
+				ISNULL(UG.[Name],'') AS [UserGroupName],
+				ISNULL(CR.[Code],'') AS [CurrencyCode],											
+				UD.[CreatedOn],
+				ISNULL(UD.[IsActive],0) AS [IsActive],
+				ISNULL(UD.[IsRecordActivity],0) AS  [IsRecordActivity]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+				LEFT JOIN [UserGroup] UG ON UD.UserGroupId = UG.Id
+					AND ISNULL(UG.IsDeleted,0) = 0
+				LEFT JOIN [Currency] CR ON UG.CurrencyId = CR.Id
+					AND ISNULL(CR.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0								
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 
+				AND (@UserRoleId  IS NULL OR URM.[UserRoleId] = @UserRoleId)	
+				AND (@UserGroupId IS NULL OR UG.Id = @UserGroupId)
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],
+			temp.[Password],
+			temp.[UserRoleId],			
+			temp.[UserRoleName],			
+			temp.[UserRoleCode],
+			temp.[UserGroupId],
+			temp.[UserGroupName],
+			temp.[CurrencyCode],
+			temp.[CreatedOn],
+			temp.IsActive, 
+			temp.IsRecordActivity,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempUserDetail AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/*************** Update UserGroupId in UserDetail table ******************/
+
+UPDATE UserDetail SET UserGroupId = (SELECT TOP 1 Id FROM UserGroup WHERE ISNULL(IsDeleted,0) = 0 AND [Name] = 'Ireland Student')
+WHERE ISNULL(IsDeleted,0) = 0
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchBreakfastReport
+	Comment : Change in SP SearchBreakfastReport		
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchBreakfastReport]    Script Date: 3/28/2018 3:07:24 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchBreakfastReport] 		
+		@Date				=	NULL	,			
+		@PageNum			=	1		,
+		@PageSize			=	10		,
+		@SortColumn			=	NULL	,
+		@SortDirection		=	NULL	,
+		@UserId				=	2
+		
+*/
+ALTER PROCEDURE [dbo].[SearchBreakfastReport]		
+	@Date				DATETIME			=	NULL	,		
+	@PageNum			INT					=	1		,
+	@PageSize			INT					=	10		,
+	@SortColumn			NVARCHAR(255)		=	NULL	,
+	@SortDirection		NVARCHAR(20)		=	NULL	,
+	@UserId				INT					=	NULL	
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT
+
+	--- POPULATE Breakfast Rate Type Temp table: START
+	CREATE TABLE #tempBreakfastRateType
+	(
+		[Id]	UNIQUEIDENTIFIER	NOT NULL	,
+		[Name]	NVARCHAR(500)		NULL		,		
+	);
+
+	INSERT INTO #tempBreakfastRateType ([Id], [Name])
+		SELECT Id, LTRIM(RTRIM(RT.[RateTypeCode])) AS RateTypeCode
+			FROM [dbo].[RateType] RT
+			WHERE	ISNULL(RT.IsDeleted,0) = 0
+					AND LTRIM(RTRIM(RT.[RateTypeCode])) IN ('BARBB','BARDBB','CORPBB','CORPDBB')
+
+	--- POPULATE Breakfast Rate Type Temp table: END
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL		
+		,	[ProfileId]					UNIQUEIDENTIFIER	NOT NULL		
+		,   [GuestName]					NVARCHAR(MAX)		NULL				
+		,	[CompanyId]					UNIQUEIDENTIFIER	NULL		
+		,   [CompanyName]				NVARCHAR(MAX)		NULL
+		,	[VipId]						UNIQUEIDENTIFIER	NULL		
+		,   [VipName]					NVARCHAR(MAX)		NULL
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomNumbers]				NVARCHAR(500)		NULL	
+		,	[RateTypeCode]				NVARCHAR(255)		NULL	
+		,	[Remarks]					NVARCHAR(MAX)		NULL
+		,	[IsReservationCancel]		BIT					NULL
+		,	[IsCheckIn]					BIT					NULL
+		,	[IsCheckOut]				BIT					NULL		
+		,	[IsBreakFastPackageAdded]	BIT					NULL
+		,	[BreakfastCount]			INT					NULL
+		,	[CreatedOn]					DATETIME			NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT R.Id) 
+						FROM [dbo].[Reservation] R
+							 INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+								AND ISNULL(P.IsDeleted,0) = 0 
+								AND ISNULL(P.CreatedBy,0) = ISNULL(@UserId,0)
+							 LEFT JOIN [dbo].[Vip] V ON V.Id = R.VipId
+								AND ISNULL(V.IsDeleted,0) = 0 
+						WHERE	ISNULL(R.IsDeleted,0) = 0								
+								AND (@Date IS NULL OR (CAST(@Date AS DATE) BETWEEN CAST(R.[ArrivalDate] AS DATE) AND CAST(R.[DepartureDate] AS DATE)))
+								AND (ISNULL(R.CreatedBy,0) = ISNULL(@UserId,0))
+								AND ISNULL(R.IsCheckIn,0) = 1
+								AND ISNULL(R.IsCheckOut,0) = 0 
+								AND EXISTS (
+										SELECT DISTINCT RPM.Id
+											FROM ReservationPackageMapping RPM INNER JOIN Package P ON
+											P.Id = RPM.PackageId AND ISNULL(P.IsDeleted,0) = 0
+											WHERE ISNULL(RPM.IsDeleted,0) = 0 AND RPM.ReservationId = R.Id
+											AND P.[Name] LIKE '%Breakfast%'
+										UNION 
+										SELECT DISTINCT RC.Id
+											FROM ReservationCharges RC INNER JOIN AdditionalCharges AC ON
+											AC.Id = RC.AdditionalChargeId AND ISNULL(AC.IsDeleted,0) = 0
+											WHERE ISNULL(RC.IsDeleted,0) = 0 AND RC.ReservationId = R.Id
+											AND AC.[Description] LIKE '%Breakfast%'
+										UNION
+										SELECT NEWID() AS Id
+											FROM #tempBreakfastRateType TBRT 
+											WHERE TBRT.Id  = R.RateCodeId
+									)
+						)
+
+
+		INSERT INTO #tempReservation 
+		(
+			[RowNum]
+			,[Id]		
+			,[ProfileId]	
+			,[GuestName]
+			,[CompanyId]
+			,[CompanyName]
+			,[VipId]
+			,[VipName]		
+			,[ArrivalDate]
+			,[NoOfNight]					
+			,[DepartureDate]
+			,[NoOfAdult]		
+			,[NoOfChildren]
+			,[NoOfRoom]		
+			,[RoomNumbers]
+			,[RateTypeCode]
+			,[Remarks]
+			,[IsReservationCancel]
+			,[IsCheckIn]
+			,[IsCheckOut]
+			,[IsBreakFastPackageAdded]
+			,[BreakfastCount]
+			,[CreatedOn]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN R.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN R.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'GuestName' and @SortDirection = 'asc'
+						THEN LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) END ASC,
+					CASE WHEN @SortColumn = 'GuestName' and @SortDirection = 'desc'
+						THEN LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) END DESC,
+
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'asc'
+						THEN R.[ArrivalDate] END ASC,
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'desc'
+						THEN R.[ArrivalDate] END DESC,
+
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'asc'
+						THEN R.[DepartureDate] END ASC,
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'desc'
+						THEN R.[DepartureDate] END DESC,
+
+					CASE WHEN @SortColumn = 'VipName' and @SortDirection = 'asc'
+						THEN V.[Description] END ASC,
+					CASE WHEN @SortColumn = 'VipName' and @SortDirection = 'desc'
+						THEN V.[Description] END DESC,
+
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+						THEN RAT.[RateTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+						THEN RAT.[RateTypeCode] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],''))))  END ASC
+
+			) AS RowNum
+			,R.[Id]		
+			,R.ProfileId	
+			,LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) AS [GuestName]
+			,R.[CompanyId]
+			,'' AS CompanyName
+			,R.[VipId]
+			,ISNULL(V.[Description],'') AS [VipName]
+			,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+			,R.[NoOfNight]		
+			,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+			,R.[NoOfAdult]		
+			,R.[NoOfChildren]
+			,R.[NoOfRoom]		
+			,'' AS [RoomNumbers]
+			,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]	
+			,'' AS [Remarks]
+			,ISNULL(R.[IsReservationCancel],0) AS [IsReservationCancel]			
+			,ISNULL(R.[IsCheckIn],0) AS [IsCheckIn]
+			,ISNULL(R.[IsCheckOut],0) AS [IsCheckOut]
+			,1 AS [IsBreakFastPackageAdded]
+			,(ISNULL(R.[NoOfAdult],0) + ISNULL(R.[NoOfChildren],0)) AS [BreakfastCount]
+			,R.[CreatedOn]
+		FROM [dbo].[Reservation] R
+				INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+					AND ISNULL(P.IsDeleted,0) = 0 
+					AND ISNULL(P.CreatedBy,0) = ISNULL(@UserId,0)
+				LEFT JOIN [dbo].[Vip] V ON V.Id = R.VipId
+					AND ISNULL(V.IsDeleted,0) = 0 
+				LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+					AND ISNULL(RAT.IsDeleted,0) = 0 
+		WHERE	ISNULL(R.IsDeleted,0) = 0								
+				AND (@Date IS NULL OR (CAST(@Date AS DATE) BETWEEN CAST(R.[ArrivalDate] AS DATE) AND CAST(R.[DepartureDate] AS DATE)))
+				AND (ISNULL(R.CreatedBy,0) = ISNULL(@UserId,0))
+				AND ISNULL(R.IsCheckIn,0) = 1 
+				AND ISNULL(R.IsCheckOut,0) = 0	
+				AND EXISTS (
+								SELECT DISTINCT RPM.Id
+									FROM ReservationPackageMapping RPM INNER JOIN Package P ON
+									P.Id = RPM.PackageId AND ISNULL(P.IsDeleted,0) = 0
+									WHERE ISNULL(RPM.IsDeleted,0) = 0 AND RPM.ReservationId = R.Id
+									AND P.[Name] LIKE '%Breakfast%'
+								UNION 
+								SELECT DISTINCT RC.Id
+									FROM ReservationCharges RC INNER JOIN AdditionalCharges AC ON
+									AC.Id = RC.AdditionalChargeId AND ISNULL(AC.IsDeleted,0) = 0
+									WHERE ISNULL(RC.IsDeleted,0) = 0 AND RC.ReservationId = R.Id
+									AND AC.[Description] LIKE '%Breakfast%'
+								UNION
+								SELECT NEWID() AS Id
+									FROM #tempBreakfastRateType TBRT 
+									WHERE TBRT.Id  = R.RateCodeId
+							)						
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+	--UPDATE Remarks by comma separated.
+	UPDATE temp
+		SET Remarks = (STUFF(( SELECT ', '+ CAST(RR.Remarks AS varchar(MAX))					
+				FROM ReservationRemarks RR												
+				WHERE	ISNULL(RR.IsDeleted,0) = 0
+						AND RR.ReservationId = temp.Id
+						AND RR.CreatedBy  = @UserId
+						AND ISNULL(RR.Remarks,'') <> ''
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id
+						AND RRM.CreatedBy  = @UserId
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]		
+			,temp.[ProfileId]	
+			,temp.[GuestName]		
+			,temp.[CompanyId]				
+			,temp.[CompanyName]
+			,temp.[VipId]			
+			,temp.[VipName]
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]			
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,ISNULL(temp.[RoomNumbers],'') AS [RoomNumbers]			
+			,temp.[RateTypeCode]
+			,ISNULL(temp.[Remarks],'') AS [Remarks]
+			,temp.[IsReservationCancel]
+			,temp.[IsCheckIn]
+			,temp.[IsCheckOut]
+			,temp.[IsBreakFastPackageAdded]
+			,temp.[BreakfastCount]
+			,temp.[CreatedOn]
+			,@TotalCount AS TotalCount
+	FROM	
+		#tempReservation AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetBreakfastReport
+	Comment : Change in SP GetBreakfastReport		
+***********************************************************************************************************************/
+ 
+/****** Object:  StoredProcedure [dbo].[GetBreakfastReport]    Script Date: 3/28/2018 3:15:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetBreakfastReport] 		
+		@Date				=	NULL	,					
+		@UserId				=	2
+		
+*/
+ALTER PROCEDURE [dbo].[GetBreakfastReport]		
+	@Date				DATETIME			=	NULL	,			
+	@UserId				INT					=	NULL	
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--POPULATE Breakfast Rate Type Temp table: START
+	CREATE TABLE #tempBreakfastRateType
+	(
+		[Id]	UNIQUEIDENTIFIER	NOT NULL	,
+		[Name]	NVARCHAR(500)		NULL		,		
+	);
+
+	INSERT INTO #tempBreakfastRateType ([Id], [Name])
+		SELECT Id, LTRIM(RTRIM(RT.[RateTypeCode])) AS RateTypeCode
+			FROM [dbo].[RateType] RT
+			WHERE	ISNULL(RT.IsDeleted,0) = 0
+					AND LTRIM(RTRIM(RT.[RateTypeCode])) IN ('BARBB','BARDBB','CORPBB','CORPDBB')
+	--POPULATE Breakfast Rate Type Temp table: END
+
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL		
+		,	[ProfileId]					UNIQUEIDENTIFIER	NOT NULL		
+		,   [GuestName]					NVARCHAR(MAX)		NULL				
+		,	[CompanyId]					UNIQUEIDENTIFIER	NULL		
+		,   [CompanyName]				NVARCHAR(MAX)		NULL
+		,	[VipId]						UNIQUEIDENTIFIER	NULL		
+		,   [VipName]					NVARCHAR(MAX)		NULL
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomNumbers]				NVARCHAR(500)		NULL	
+		,	[RateTypeCode]				NVARCHAR(255)		NULL	
+		,	[Remarks]					NVARCHAR(MAX)		NULL
+		,	[IsReservationCancel]		BIT					NULL
+		,	[IsCheckIn]					BIT					NULL
+		,	[IsCheckOut]				BIT					NULL		
+		,	[IsBreakFastPackageAdded]	BIT					NULL
+		,	[BreakfastCount]			INT					NULL
+		,	[CreatedOn]					DATETIME			NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+
+		INSERT INTO #tempReservation 
+		(
+			[RowNum]
+			,[Id]		
+			,[ProfileId]	
+			,[GuestName]
+			,[CompanyId]
+			,[CompanyName]
+			,[VipId]
+			,[VipName]		
+			,[ArrivalDate]
+			,[NoOfNight]					
+			,[DepartureDate]
+			,[NoOfAdult]		
+			,[NoOfChildren]
+			,[NoOfRoom]		
+			,[RoomNumbers]
+			,[RateTypeCode]
+			,[Remarks]
+			,[IsReservationCancel]
+			,[IsCheckIn]
+			,[IsCheckOut]
+			,[IsBreakFastPackageAdded]
+			,[BreakfastCount]
+			,[CreatedOn]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],''))))  ASC
+
+			) AS RowNum
+			,R.[Id]		
+			,R.ProfileId	
+			,LTRIM(RTRIM(CONCAT(ISNULL(R.[FirstName],''), ' ', ISNULL(R.[LastName],'')))) AS [GuestName]
+			,R.[CompanyId]
+			,'' AS CompanyName
+			,R.[VipId]
+			,ISNULL(V.[Description],'') AS [VipName]
+			,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+			,R.[NoOfNight]		
+			,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+			,R.[NoOfAdult]		
+			,R.[NoOfChildren]
+			,R.[NoOfRoom]		
+			,'' AS [RoomNumbers]
+			,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]	
+			,'' AS [Remarks]
+			,ISNULL(R.[IsReservationCancel],0) AS [IsReservationCancel]			
+			,ISNULL(R.[IsCheckIn],0) AS [IsCheckIn]
+			,ISNULL(R.[IsCheckOut],0) AS [IsCheckOut]
+			,1 AS [IsBreakFastPackageAdded]
+			,(ISNULL(R.[NoOfAdult],0) + ISNULL(R.[NoOfChildren],0)) AS [BreakfastCount]
+			,R.[CreatedOn]
+		FROM [dbo].[Reservation] R
+				INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+					AND ISNULL(P.IsDeleted,0) = 0 
+					AND ISNULL(P.CreatedBy,0) = ISNULL(@UserId,0)
+				LEFT JOIN [dbo].[Vip] V ON V.Id = R.VipId
+					AND ISNULL(V.IsDeleted,0) = 0 
+				LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+					AND ISNULL(RAT.IsDeleted,0) = 0 
+		WHERE	ISNULL(R.IsDeleted,0) = 0								
+				AND (@Date IS NULL OR (CAST(@Date AS DATE) BETWEEN CAST(R.[ArrivalDate] AS DATE) AND CAST(R.[DepartureDate] AS DATE)))
+				AND (ISNULL(R.CreatedBy,0) = ISNULL(@UserId,0))
+				AND ISNULL(R.IsCheckIn,0) = 1 
+				AND ISNULL(R.IsCheckOut,0) = 0 
+				AND  EXISTS (
+							SELECT DISTINCT RPM.Id
+								FROM ReservationPackageMapping RPM INNER JOIN Package P ON
+								P.Id = RPM.PackageId AND ISNULL(P.IsDeleted,0) = 0
+								WHERE ISNULL(RPM.IsDeleted,0) = 0 AND RPM.ReservationId = R.Id
+								AND P.[Name] LIKE '%Breakfast%'
+							UNION 
+							SELECT DISTINCT RC.Id
+								FROM ReservationCharges RC INNER JOIN AdditionalCharges AC ON
+								AC.Id = RC.AdditionalChargeId AND ISNULL(AC.IsDeleted,0) = 0
+								WHERE ISNULL(RC.IsDeleted,0) = 0 AND RC.ReservationId = R.Id
+								AND AC.[Description] LIKE '%Breakfast%'
+							UNION
+							SELECT NEWID() AS Id
+								FROM #tempBreakfastRateType TBRT 
+								WHERE TBRT.Id  = R.RateCodeId
+						) 
+																			
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+	--UPDATE Remarks by comma separated.
+	UPDATE temp
+		SET Remarks = (STUFF(( SELECT ', '+ CAST(RR.Remarks AS varchar(MAX))					
+				FROM ReservationRemarks RR												
+				WHERE	ISNULL(RR.IsDeleted,0) = 0
+						AND RR.ReservationId = temp.Id
+						AND RR.CreatedBy  = @UserId
+						AND ISNULL(RR.Remarks,'') <> ''
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id
+						AND RRM.CreatedBy  = @UserId
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+
+	SELECT 
+			temp.[Id]		
+			,temp.[ProfileId]	
+			,temp.[GuestName]		
+			,temp.[CompanyId]				
+			,temp.[CompanyName]
+			,temp.[VipId]			
+			,temp.[VipName]
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]			
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,ISNULL(temp.[RoomNumbers],'') AS [RoomNumbers]			
+			,temp.[RateTypeCode]
+			,ISNULL(temp.[Remarks],'') AS [Remarks]
+			,temp.[IsReservationCancel]
+			,temp.[IsCheckIn]
+			,temp.[IsCheckOut]
+			,temp.[IsBreakFastPackageAdded]
+			,temp.[BreakfastCount]
+			,temp.[CreatedOn]			
+	FROM	
+		#tempReservation AS temp
+	ORDER BY temp.RoomNumbers
+
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetUserDetailByUserId
+	Comment : Create SP GetUserDetailByUserId		
+***********************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetUserDetailByUserId]    Script Date: 3/28/2018 3:38:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetUserDetailByUserId]
+		@UserId = 8
+*/
+CREATE PROCEDURE [dbo].[GetUserDetailByUserId]
+	@UserId INT	= NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT UD.Id,UD.UserId,UD.Name,UD.Email,UD.Password,UD.CreatedBy,UD.CreatedOn,UD.UpdatedBy, UD.UpdatedOn, UD.IsActive, UD.IsRecordActivity,
+		ISNULL(UD.CashierNumber,'') AS CashierNumber, URM.UserRoleId,UD.UserGroupId
+		FROM [dbo].[UserDetail] UD 
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+				AND ISNULL(URM.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 
+				AND Ud.[UserId] = @UserId		
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchReservationByUserId
+	Comment : Create SP SearchReservationByUserId		
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchReservationByUserId]    Script Date: 3/28/2018 6:06:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchReservationByUserId] 
+		@UserId							=	2		,
+		@LastName						=	NULL	,
+		@FirstName						=	NULL	,	
+		@StartDate						=	NULL	,				
+		@EndDate						=	NULL	,				
+		@PageNum						=	1		,
+		@PageSize						=	10		,
+		@SortColumn						=	NULL	,
+		@SortDirection					=	NULL
+		
+*/
+
+ALTER PROCEDURE [dbo].[SearchReservationByUserId]		
+	@UserId				INT								,
+	@LastName			NVARCHAR(255)		=	NULL	,
+	@FirstName			NVARCHAR(255)		=	NULL	,	
+	@StartDate			DATETIME			=	NULL	,	
+	@EndDate			DATETIME			=	NULL	,
+	@PageNum			INT					=	1		,
+	@PageSize			INT					=	10		,
+	@SortColumn			NVARCHAR(255)		=	NULL	,
+	@SortDirection		NVARCHAR(20)		=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+	DECLARE @CurrencySymbol AS NVARCHAR(255) = NULL
+
+	-- GET USER's CURRENCY INFO : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+
+
+	SET @CurrencySymbol = (SELECT TOP 1 ISNULL(C.CurrencySymbol,'') AS CurrencySymbol
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET USER's CURRENCY INFO : END
+
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL	
+		,	[ProfileId]					UNIQUEIDENTIFIER	NULL	
+		,   [FirstName]					NVARCHAR(255)		NULL
+		,   [LastName]					NVARCHAR(255)		NULL		
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomTypeId]				UNIQUEIDENTIFIER	NULL
+		,	[RoomTypeCode]				NVARCHAR(255)		NULL
+		,	[RoomNumbers]				NVARCHAR(1000)		NULL
+		,	[RateTypeId]				UNIQUEIDENTIFIER	NULL
+		,	[RateTypeCode]				NVARCHAR(255)		NULL	
+		,	[Rate]						NUMERIC(18,2)		NULL
+		,	[GuestBalance]				NUMERIC(18,2)		NULL		
+		,	[CreatedOn]					DATETIME			NULL	
+		,	[ConfirmationNumber]		NVARCHAR(255)		NULL
+		,	[CurrencySymbol]			NVARCHAR(255)		NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Reservation] R
+							INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+								AND ISNULL(P.IsDeleted,0) = 0 
+								AND ISNULL(P.CreatedBy,0) = @UserId
+							LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0	
+							LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0
+							LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+							LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+							LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+						WHERE	ISNULL(R.IsDeleted,0) = 0
+								AND ISNULL(R.CreatedBy,0) = @UserId
+								AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+								AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')
+								AND ((@StartDate IS NULL AND @EndDate IS NULL) 
+									OR 
+									CAST(R.CreatedOn AS DATE) BETWEEN CAST(@StartDate AS DATE) AND  CAST(@EndDate AS DATE))
+						)
+
+
+		INSERT INTO #tempReservation 
+		(
+				[RowNum]
+			,	[Id]		
+			,	[ProfileId]	
+			,	[FirstName]		
+			,	[LastName]					
+			,	[ArrivalDate]
+			,	[NoOfNight]					
+			,	[DepartureDate]
+			,	[NoOfAdult]		
+			,	[NoOfChildren]
+			,	[NoOfRoom]		
+			,	[RoomTypeId]
+			,	[RoomTypeCode]
+			,	[RoomNumbers]
+			,	[RateTypeId]
+			,	[RateTypeCode]
+			,	[Rate]			
+			,	[GuestBalance]
+			,	[CreatedOn]
+			,	[ConfirmationNumber]
+			,	[CurrencySymbol]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN R.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN R.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'asc'
+						THEN R.[FirstName] END ASC,
+					CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'desc'
+						THEN R.[FirstName] END DESC,
+
+					CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'asc'
+						THEN R.[LastName] END ASC,
+					CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'desc'
+						THEN R.[LastName] END DESC,
+
+					CASE WHEN @SortColumn = 'ConfirmationNumber' and @SortDirection = 'asc'
+						THEN R.[ConfirmationNumber] END ASC,
+					CASE WHEN @SortColumn = 'ConfirmationNumber' and @SortDirection = 'desc'
+						THEN R.[ConfirmationNumber] END DESC,
+
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'asc'
+						THEN R.[ArrivalDate] END ASC,
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'desc'
+						THEN R.[ArrivalDate] END DESC,
+
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'asc'
+						THEN R.[DepartureDate] END ASC,
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'desc'
+						THEN R.[DepartureDate] END DESC,
+
+					CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'asc'
+						THEN ROT.[RoomTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'desc'
+						THEN ROT.[RoomTypeCode] END DESC,
+
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+						THEN RAT.[RateTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+						THEN RAT.[RateTypeCode] END DESC,
+
+					CASE WHEN @SortColumn = 'Rate' and @SortDirection = 'asc'
+						THEN R.[Rate] END ASC,
+					CASE WHEN @SortColumn = 'Rate' and @SortDirection = 'desc'
+						THEN R.[Rate] END DESC,
+
+					CASE WHEN @SortColumn = 'GuestBalance' and @SortDirection = 'asc'
+						THEN R.[GuestBalance] END ASC,
+					CASE WHEN @SortColumn = 'GuestBalance' and @SortDirection = 'desc'
+						THEN R.[GuestBalance] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN R.[CreatedOn] END DESC
+
+			) AS RowNum
+			,R.[Id]			
+			,R.[ProfileId]
+			,ISNULL(R.[FirstName],'') AS [FirstName]
+			,ISNULL(R.[LastName],'') AS [LastName]								
+			,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+			,R.[NoOfNight]		
+			,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+			,R.[NoOfAdult]		
+			,R.[NoOfChildren]
+			,R.[NoOfRoom]		
+			,ROT.[Id] AS [RoomTypeId]
+			,ISNULL(ROT.[RoomTypeCode],'') AS [RoomTypeCode]
+			,'' AS [RoomNumbers]
+			,RAT.[Id] AS [RateTypeId]
+			,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]
+			,ISNULL([dbo].[fnParseAmountByCurrency] 
+			(
+				R.[Rate], @CurrencyConversionRate
+			),0) AS [Rate]
+			,ISNULL([dbo].[fnParseAmountByCurrency] 
+			(
+				R.[GuestBalance], @CurrencyConversionRate
+			),0) AS [GuestBalance]						
+			,R.[CreatedOn]
+			,ISNULL(R.[ConfirmationNumber],'') AS [ConfirmationNumber]
+			,@CurrencySymbol AS [CurrencySymbol]
+		FROM [dbo].[Reservation] R
+						INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+							AND ISNULL(P.IsDeleted,0) = 0 
+							AND ISNULL(P.CreatedBy,0) = @UserId
+						LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0							
+						LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0	
+						LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+						LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+						LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+					WHERE	ISNULL(R.IsDeleted,0) = 0
+							AND  ISNULL(R.CreatedBy,0) = @UserId
+							AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+							AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')
+							AND ((@StartDate IS NULL AND @EndDate IS NULL) 
+									OR 
+								CAST(R.CreatedOn AS DATE) BETWEEN CAST(@StartDate AS DATE) AND  CAST(@EndDate AS DATE))
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id
+						AND RRM.CreatedBy = @UserId						
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]			
+			,temp.[ProfileId]	
+			,temp.[FirstName]		
+			,temp.[LastName]		
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]		
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,temp.[RoomTypeId]
+			,temp.[RoomTypeCode]
+			,temp.[RoomNumbers]
+			,temp.[RateTypeId]
+			,temp.[RateTypeCode]
+			,temp.[Rate]			
+			,temp.[GuestBalance]
+			,temp.[CreatedOn]
+			,temp.[ConfirmationNumber]
+			,temp.[CurrencySymbol]
+			,@TotalCount AS TotalCount
+	FROM	
+		#tempReservation AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchCheckedOutReservationByUserId
+	Comment : Create SP SearchCheckedOutReservationByUserId		
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchCheckedOutReservationByUserId]    Script Date: 3/28/2018 6:25:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchCheckedOutReservationByUserId] 
+		@UserId							=	1		,
+		@LastName						=	NULL	,
+		@FirstName						=	NULL	,	
+		@StartDate						=	NULL	,				
+		@EndDate						=	NULL	,		
+		@PageNum						=	1		,
+		@PageSize						=	10		,
+		@SortColumn						=	NULL	,
+		@SortDirection					=	NULL
+		
+*/
+
+ALTER PROCEDURE [dbo].[SearchCheckedOutReservationByUserId]		
+	@UserId				INT								,
+	@LastName			NVARCHAR(255)		=	NULL	,
+	@FirstName			NVARCHAR(255)		=	NULL	,	
+	@StartDate			DATETIME			=	NULL	,	
+	@EndDate			DATETIME			=	NULL	,
+	@PageNum			INT					=	1		,
+	@PageSize			INT					=	10		,
+	@SortColumn			NVARCHAR(255)		=	NULL	,
+	@SortDirection		NVARCHAR(20)		=	NULL	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+	DECLARE @CurrencySymbol AS NVARCHAR(255) = NULL
+
+	-- GET USER's CURRENCY INFO : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+
+
+	SET @CurrencySymbol = (SELECT TOP 1 ISNULL(C.CurrencySymbol,'') AS CurrencySymbol
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET USER's CURRENCY INFO : END
+
+
+	CREATE TABLE #tempReservation
+	(
+			[RowNum]					INT					NOT NULL
+		,	[Id]						UNIQUEIDENTIFIER	NOT NULL	
+		,	[ProfileId]					UNIQUEIDENTIFIER	NULL	
+		,   [FirstName]					NVARCHAR(255)		NULL
+		,   [LastName]					NVARCHAR(255)		NULL	
+		,	[Email]						NVARCHAR(1000)		NULL	
+		,   [ArrivalDate]				NVARCHAR(25)		NULL		
+		,   [NoOfNight]					INT					NULL
+		,   [DepartureDate]				NVARCHAR(25)		NULL		
+		,   [NoOfAdult]					INT					NULL
+		,	[NoOfChildren]				INT					NULL
+		,	[NoOfRoom]					INT					NULL
+		,	[RoomTypeId]				UNIQUEIDENTIFIER	NULL
+		,	[RoomTypeCode]				NVARCHAR(255)		NULL
+		,	[RoomNumbers]				NVARCHAR(1000)		NULL
+		,	[RateTypeId]				UNIQUEIDENTIFIER	NULL
+		,	[RateTypeCode]				NVARCHAR(255)		NULL	
+		,	[Rate]						NUMERIC(18,2)		NULL
+		,	[GuestBalance]				NUMERIC(18,2)		NULL		
+		,	[CreatedOn]					DATETIME			NULL
+		,	[ConfirmationNumber]		NVARCHAR(255)		NULL
+		,	[CurrencySymbol]			NVARCHAR(255)		NULL	
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Reservation] R
+							INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+								AND ISNULL(P.IsDeleted,0) = 0 
+								AND ISNULL(P.CreatedBy,0) = @UserId
+							LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0							
+							LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0
+							LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+							LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+							LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+						WHERE	ISNULL(R.IsDeleted,0) = 0
+								AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 1 
+								AND ISNULL(R.CreatedBy,0) = @UserId
+								AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+								AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')
+								AND ((@StartDate IS NULL AND @EndDate IS NULL) 
+									OR 
+									CAST(R.CreatedOn AS DATE) BETWEEN CAST(@StartDate AS DATE) AND  CAST(@EndDate AS DATE))
+						)
+
+
+		INSERT INTO #tempReservation 
+		(
+				[RowNum]
+			,	[Id]		
+			,	[ProfileId]	
+			,	[FirstName]		
+			,	[LastName]			
+			,	[Email]		
+			,	[ArrivalDate]
+			,	[NoOfNight]					
+			,	[DepartureDate]
+			,	[NoOfAdult]		
+			,	[NoOfChildren]
+			,	[NoOfRoom]		
+			,	[RoomTypeId]
+			,	[RoomTypeCode]
+			,	[RoomNumbers]
+			,	[RateTypeId]
+			,	[RateTypeCode]
+			,	[Rate]			
+			,	[GuestBalance]
+			,	[CreatedOn]
+			,	[ConfirmationNumber]
+			,	[CurrencySymbol]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN R.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN R.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'asc'
+						THEN R.[FirstName] END ASC,
+					CASE WHEN @SortColumn = 'FirstName' and @SortDirection = 'desc'
+						THEN R.[FirstName] END DESC,
+
+					CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'asc'
+						THEN R.[LastName] END ASC,
+					CASE WHEN @SortColumn = 'LastName' and @SortDirection = 'desc'
+						THEN R.[LastName] END DESC,
+
+					CASE WHEN @SortColumn = 'ConfirmationNumber' and @SortDirection = 'asc'
+						THEN R.[ConfirmationNumber] END ASC,
+					CASE WHEN @SortColumn = 'ConfirmationNumber' and @SortDirection = 'desc'
+						THEN R.[ConfirmationNumber] END DESC,
+
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'asc'
+						THEN R.[ArrivalDate] END ASC,
+					CASE WHEN @SortColumn = 'ArrivalDate' and @SortDirection = 'desc'
+						THEN R.[ArrivalDate] END DESC,
+
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'asc'
+						THEN R.[DepartureDate] END ASC,
+					CASE WHEN @SortColumn = 'DepartureDate' and @SortDirection = 'desc'
+						THEN R.[DepartureDate] END DESC,
+
+					CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'asc'
+						THEN ROT.[RoomTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RoomTypeCode' and @SortDirection = 'desc'
+						THEN ROT.[RoomTypeCode] END DESC,
+
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+						THEN RAT.[RateTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+						THEN RAT.[RateTypeCode] END DESC,
+
+					CASE WHEN @SortColumn = 'Rate' and @SortDirection = 'asc'
+						THEN R.[Rate] END ASC,
+					CASE WHEN @SortColumn = 'Rate' and @SortDirection = 'desc'
+						THEN R.[Rate] END DESC,
+
+					CASE WHEN @SortColumn = 'GuestBalance' and @SortDirection = 'asc'
+						THEN R.[GuestBalance] END ASC,
+					CASE WHEN @SortColumn = 'GuestBalance' and @SortDirection = 'desc'
+						THEN R.[GuestBalance] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN R.[CreatedOn] END DESC
+
+			) AS RowNum
+			,R.[Id]			
+			,R.[ProfileId]
+			,ISNULL(R.[FirstName],'') AS [FirstName]
+			,ISNULL(R.[LastName],'') AS [LastName]	
+			,ISNULL(P.[Email],'') AS [Email]							
+			,CONVERT(varchar(20),R.[ArrivalDate],103) AS ArrivalDate
+			,R.[NoOfNight]		
+			,CONVERT(varchar(20),R.[DepartureDate],103) AS DepartureDate				
+			,R.[NoOfAdult]		
+			,R.[NoOfChildren]
+			,R.[NoOfRoom]		
+			,ROT.[Id] AS [RoomTypeId]
+			,ISNULL(ROT.[RoomTypeCode],'') AS [RoomTypeCode]
+			,'' AS [RoomNumbers]
+			,RAT.[Id] AS [RateTypeId]
+			,ISNULL(RAT.[RateTypeCode],'') AS [RateTypeCode]
+			,ISNULL([dbo].[fnParseAmountByCurrency] 
+			(
+				R.[Rate], @CurrencyConversionRate
+			),0) AS [Rate]
+			,ISNULL([dbo].[fnParseAmountByCurrency] 
+			(
+				R.[GuestBalance], @CurrencyConversionRate
+			),0) AS [GuestBalance]		
+			,R.[CreatedOn]
+			,ISNULL(R.[ConfirmationNumber],'') AS [ConfirmationNumber]
+			,@CurrencySymbol AS [CurrencySymbol]
+		FROM [dbo].[Reservation] R
+						INNER JOIN [dbo].[IndividualProfile] P ON R.ProfileId = P.Id 
+							AND ISNULL(P.IsDeleted,0) = 0 
+							AND ISNULL(P.CreatedBy,0) = @UserId
+						LEFT JOIN [dbo].[Title] T ON R.TitleId = T.Id AND ISNULL(T.IsDeleted,0) = 0							
+						LEFT JOIN [dbo].[Vip] V ON R.VipId = V.Id AND ISNULL(V.IsDeleted,0) = 0														
+						LEFT JOIN [dbo].[Country] CO ON R.CountryId = CO.Id 
+						LEFT JOIN [dbo].[RoomType] ROT ON ROT.Id = R.RoomTypeId
+						LEFT JOIN [dbo].[RateType] RAT ON RAT.Id = R.RateCodeId
+					WHERE	ISNULL(R.IsDeleted,0) = 0
+							AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 1 
+							AND  ISNULL(R.CreatedBy,0) = @UserId
+							AND (ISNULL(@FirstName,'') = '' OR R.[FirstName] LIKE '%'+ @FirstName +'%')  
+							AND (ISNULL(@LastName,'') = '' OR R.[LastName] LIKE '%'+ @LastName +'%')
+							AND ((@StartDate IS NULL AND @EndDate IS NULL) 
+									OR 
+									CAST(R.CreatedOn AS DATE) BETWEEN CAST(@StartDate AS DATE) AND  CAST(@EndDate AS DATE))
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	--UPDATE Room Numbers by comma seprated.
+	UPDATE temp
+		SET RoomNumbers = (STUFF(( SELECT ','+ CAST(R.RoomNo AS varchar(MAX))					
+				FROM ReservationRoomMapping RRM
+						INNER JOIN Room R ON R.Id = RRM.RoomId
+						AND ISNULL(R.IsDeleted,0) = 0
+				WHERE	ISNULL(RRM.IsDeleted,0) = 0
+						AND RRM.ReservationId = temp.Id			
+						AND RRM.[CreatedBy] = @UserId			
+			FOR XMl PATH('')),1,1,''))
+		FROM #tempReservation temp 	
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id]			
+			,temp.[ProfileId]	
+			,temp.[FirstName]		
+			,temp.[LastName]		
+			,temp.[Email]
+			,temp.[ArrivalDate]
+			,temp.[NoOfNight]		
+			,temp.[DepartureDate]
+			,temp.[NoOfAdult]		
+			,temp.[NoOfChildren]
+			,temp.[NoOfRoom]		
+			,temp.[RoomTypeId]
+			,temp.[RoomTypeCode]
+			,temp.[RoomNumbers]
+			,temp.[RateTypeId]
+			,temp.[RateTypeCode]
+			,temp.[Rate]			
+			,temp.[GuestBalance]
+			,temp.[CreatedOn]
+			,temp.[ConfirmationNumber]
+			,temp.[CurrencySymbol]
+			,@TotalCount AS TotalCount
+	FROM	
+		#tempReservation AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
 
 

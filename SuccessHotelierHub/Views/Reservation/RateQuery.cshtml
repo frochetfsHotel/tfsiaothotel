@@ -469,7 +469,7 @@
 
         //Default Arrival Date. (Set today's date).
         $("#ArrivalDate").datepicker("setDate", new Date());
-        $("#txtArrivalDate").datepicker("setDate", new Date());
+        //$("#txtArrivalDate").datepicker("setDate", new Date());
 
         //Calculate Default Departure Date.
         calculateDepartureDate();
@@ -709,6 +709,7 @@
                 type: 'POST',
                 data: $('#frmRateQuery').serialize(),
                 success: function (response) {
+                    
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }

@@ -38,7 +38,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4 form-group">
-                        @Html.LabelFor(m => m.Price)
+                        <label for="Price">Price (&euro;)</label>
                         @Html.TextBoxFor(m => m.Price,  new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)", value= "0.00" })           
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })             
                     </div>

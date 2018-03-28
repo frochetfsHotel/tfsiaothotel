@@ -74,8 +74,8 @@
                         <table class="table table-bordered table-hover table-striped" id="tblFolioLog">
                             <thead>
                                 <tr>
-                                    <th class="width_10">Created On</th>
-                                    <th class="width_10">Confirmation #</th>
+                                    <th class="width_5">Created On</th>
+                                    <th class="width_5">Confirmation #</th>
                                     <th class="width_10">Last Name</th>
                                     <th class="width_10">First Name</th>
                                     <th class="width_8">Arrival</th>
@@ -84,8 +84,8 @@
                                     <th class="width_5">Room#</th>
                                     <th class="width_5">Room Type</th>
                                     <th class="width_5">Rate Type</th>
-                                    <th class="width_5">Rate</th>
-                                    <th class="width_5">Guest Bal.</th>
+                                    <th class="width_10">Rate</th>
+                                    <th class="width_10">Guest Bal.</th>
                                     <th class="width_15">Action</th>
                                 </tr>
                             </thead>
@@ -284,12 +284,22 @@
              {
                  targets: 10,
                  data: "Rate",
-                 orderable: true
+                 orderable: true,
+                 render: function (data, type, full, meta) {
+                     var html = "";
+                     html += full.CurrencySymbol + ' ' + FormatNumberWithTwoDecimal(full.Rate) + ' ';
+                     return html;
+                 }
              },
              {
                  targets: 11,
                  data: "GuestBalance",
-                 orderable: true
+                 orderable: true,
+                 render: function (data, type, full, meta) {
+                     var html = "";
+                     html += full.CurrencySymbol + ' ' + FormatNumberWithTwoDecimal(full.GuestBalance) + ' ';
+                     return html;
+                 }
              },
              {
                  targets: 12,
@@ -299,7 +309,7 @@
                  render: function (data, type, full, meta) {                     
                     var buttons = "";
 
-                    var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' + full.Id;
+                    var url = '@Url.Content("~/Cashiering/PreviewFolio")' + '?Id=' + full.Id;
 
                     buttons += '<a href="' + url + '" target="_blank" '
                             + ' class="btn btn-warning btn-xs m-r-xs">Folio</a> ';

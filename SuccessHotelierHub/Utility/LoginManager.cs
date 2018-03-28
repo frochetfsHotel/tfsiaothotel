@@ -18,6 +18,8 @@ namespace SuccessHotelierHub
             UserRepository userRepository = new UserRepository();
             UserRoleRepository userRoleRepository = new UserRoleRepository();
             UserPageRepository userPageRepository = new UserPageRepository();
+            UserGroupRepository userGroupRepository = new UserGroupRepository();
+            
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
@@ -34,6 +36,24 @@ namespace SuccessHotelierHub
             var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
 
             var userPageAccessRights = userPageRepository.GetUserPageAccessRights(user.Id, string.Empty);
+
+            if(user.UserGroupId.HasValue)
+            {
+                var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
+                if(userGroup != null)
+                {
+                    LogInManager.UserGroup = userGroup;
+                    LogInManager.CurrencyId = userGroup.CurrencyId;
+
+                    var currencyInfo = CurrencyManager.GetCurrencyInfoById(userGroup.CurrencyId);
+                    if(currencyInfo != null)
+                    {
+                        LogInManager.CurrencyCode = currencyInfo.Code;
+                        LogInManager.CurrencyConversionRate = currencyInfo.ConversionRate;
+                        LogInManager.CurrencySymbol = currencyInfo.CurrencySymbol;
+                    }
+                }
+            }
 
             LogInManager.UserName = user.Name;
             LogInManager.CashierNumber = user.CashierNumber;
@@ -239,6 +259,101 @@ namespace SuccessHotelierHub
             }
 
             return userRoleName;
+        }
+
+        public static UserGroupVM UserGroup
+        {
+            get
+            {
+                if (HttpContext.Current.Session["UserGroup"] != null)
+                {
+                    return (UserGroupVM)HttpContext.Current.Session["UserGroup"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["UserGroup"] = value;
+            }
+        }
+
+        public static Guid? CurrencyId
+        {
+            get
+            {
+                if (HttpContext.Current.Session["CurrencyId"] != null)
+                {
+                    return (Guid?)HttpContext.Current.Session["CurrencyId"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["CurrencyId"] = value;
+            }
+        }
+
+        public static string CurrencyCode
+        {
+            get
+            {
+                if (HttpContext.Current.Session["CurrencyCode"] != null)
+                {
+                    return (string)HttpContext.Current.Session["CurrencyCode"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["CurrencyCode"] = value;
+            }
+        }
+
+        public static string CurrencySymbol
+        {
+            get
+            {
+                if (HttpContext.Current.Session["CurrencySymbol"] != null)
+                {
+                    return (string)HttpContext.Current.Session["CurrencySymbol"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["CurrencySymbol"] = value;
+            }
+        }
+
+        public static double? CurrencyConversionRate
+        {
+            get
+            {
+                if (HttpContext.Current.Session["CurrencyConversionRate"] != null)
+                {
+                    return (double?)HttpContext.Current.Session["CurrencyConversionRate"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["CurrencyConversionRate"] = value;
+            }
         }
 
     }

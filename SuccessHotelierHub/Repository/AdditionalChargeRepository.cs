@@ -142,11 +142,12 @@ namespace SuccessHotelierHub.Repository
             return charges;
         }
 
-        public List<SearchAdvanceAdditionalChargeResultVM> SearchAdvanceAdditionalCharge(SearchAdvanceAdditionalChargeParametersVM model)
+        public List<SearchAdvanceAdditionalChargeResultVM> SearchAdvanceAdditionalCharge(SearchAdvanceAdditionalChargeParametersVM model, int userId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Code", Value = model.Code }
+                    new SqlParameter { ParameterName = "@Code", Value = model.Code },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdvanceAdditionalCharge", parameters);

@@ -269,6 +269,7 @@
     <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
     <Compile Include="Models\CityVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
+    <Compile Include="Models\CurrencyVM.cs" />
     <Compile Include="Models\CurrentUserRoleVM.cs" />
     <Compile Include="Models\DiscountApprovedVM.cs" />
     <Compile Include="Models\ErrorLogVM.cs" />
@@ -326,11 +327,14 @@
     <Compile Include="Models\StoredProcedure\StudentDetailsForTutorMappingResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TotalRoomAvailableByCalendarResultVM.cs" />
     <Compile Include="Models\StoredProcedure\TutorStudentMappingByTutorResultVM.cs" />
+    <Compile Include="Models\StoredProcedure\UserGroupsWithCurrencyInfoResultVM.cs" />
     <Compile Include="Models\StoredProcedure\UserPageAccessRightsResultVM.cs" />
     <Compile Include="Models\TempBulkReservationMasterVM.cs" />
     <Compile Include="Models\TempBulkReservationVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
+    <Compile Include="Models\UserGroupRepository.cs" />
+    <Compile Include="Models\UserGroupVM.cs" />
     <Compile Include="Models\UserPagesVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
     <Compile Include="Models\UserRoleVM.cs" />
@@ -344,6 +348,7 @@
     <Compile Include="Repository\CheckInCheckOutRepository.cs" />
     <Compile Include="Repository\CityRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
+    <Compile Include="Repository\CurrencyRepository.cs" />
     <Compile Include="Repository\DiscountApprovedRepository.cs" />
     <Compile Include="Repository\ErrorLogRepository.cs" />
     <Compile Include="Repository\FloorRepository.cs" />
@@ -379,6 +384,7 @@
     <Compile Include="Repository\UsersActivityLogRepository.cs" />
     <Compile Include="Repository\VipRepository.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utility\CurrencyManager.cs" />
     <Compile Include="Utility\DALHelper.cs" />
     <Compile Include="Utility\Email.cs" />
     <Compile Include="Utility\HMTLHelperExtensions.cs" />

@@ -44,7 +44,7 @@
                             @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                         </div>
                         <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.Price)
+                            <label for="Price">Price (&euro;)</label>
                             @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)" })
                         </div>
                         <div class="col-md-2 form-group mt_25 text-right">
@@ -70,7 +70,7 @@
                                     <th></th>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Price</th>                                    
+                                    <th>Price (&euro;)</th>                                    
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>

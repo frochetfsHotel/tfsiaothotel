@@ -148,7 +148,7 @@
                                 <th class="text_bold">DEP</th>
                                 <th class="text_bold">VIP</th>
                                 <th class="text_bold">Rate</th>
-                                <th class="text_bold" style="width:5%">Breakfast Added</th>
+                                <th class="text_bold" style="width:5%">Breakfast</th>
                             </tr>
                         </thead>
 
@@ -169,7 +169,7 @@
                                         <td>@result.DepartureDate</td>
                                         <td>@result.VipName</td>
                                         <td>@result.RateTypeCode</td>
-                                        <td class="text-center">@(result.IsBreakFastPackageAdded ? Html.Raw("Yes") : Html.Raw(""))</td>
+                                        <td class="text-center">@result.BreakfastCount</td>
                                     </tr>
                                 }
                             </tbody>
@@ -180,7 +180,7 @@
                                     <td>@Model.Results.Sum(m => m.NoOfAdult)</td>
                                     <td>@Model.Results.Sum(m => m.NoOfChildren)</td>
                                     <td colspan="5"></td>
-                                    <td class="text-center">@Model.Results.Sum(m => m.IsBreakFastPackageAdded == true ? 1 : 0)</td>
+                                    <td class="text-center">@Model.Results.Sum(m => m.BreakfastCount)</td>
                                 </tr>
                             </tfoot>
                         }

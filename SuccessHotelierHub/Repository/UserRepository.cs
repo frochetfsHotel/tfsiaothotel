@@ -78,18 +78,34 @@ namespace SuccessHotelierHub.Repository
             return user;
         }
 
+        public List<UserVM> GetUserDetailByUserId(int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserDetailByUserId", parameters);
+
+            var user = new List<UserVM>();
+            user = DALHelper.CreateListFromTable<UserVM>(dt);
+
+            return user;
+        }
+
         public string AddUserDetail(UserVM user)
         {
             string userId = string.Empty;
 
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserGroupId", Value = user.UserGroupId },
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
                     new SqlParameter { ParameterName = "@Password", Value = user.Password },
                     new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
                     new SqlParameter { ParameterName = "@UserId", Value = user.UserId },
-                    new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },
+                    new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },                    
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = user.CreatedBy }
                 };
@@ -105,6 +121,7 @@ namespace SuccessHotelierHub.Repository
 
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserGroupId", Value = user.UserGroupId },
                     new SqlParameter { ParameterName = "@Id", Value = user.Id },
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
@@ -138,6 +155,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserGroupId", Value = model.UserGroupId },
                     new SqlParameter { ParameterName = "@UserRoleId", Value = model.UserRoleId },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Email", Value = model.Email },
@@ -394,6 +412,6 @@ namespace SuccessHotelierHub.Repository
 
         #endregion
 
-        
+       
     }
 }

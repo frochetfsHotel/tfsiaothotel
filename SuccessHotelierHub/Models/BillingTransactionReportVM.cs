@@ -39,6 +39,8 @@ namespace SuccessHotelierHub.Models
 
         public string GSTRegistrationNumber { get; set; }
 
+        public string CurrencySymbol { get; set; }
+
         public List<ReservationChargeVM> Transactions { get; set; }
 
 

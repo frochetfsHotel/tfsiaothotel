@@ -22,6 +22,8 @@
 
     var packageList = (List<PackageVM>)ViewBag.PackageList;
 
+    var childrenCharge = CurrencyManager.ParseAmountToUserCurrency((double)Constants.CHILDREN_CHARGE, LogInManager.CurrencyCode);
+
 }
 
 @section styles {
@@ -299,7 +301,8 @@
                     </div>
 
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Rate)
+                        <label for="Rate" class="label-bold">Rate (@Html.Raw(LogInManager.CurrencySymbol))</label>
+                        @*@Html.LabelFor(m => m.Rate)*@
                         @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model != null && Model.Rate.HasValue ? Model.Rate.Value : 1), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "LoadTransactionSummary();" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">
@@ -310,13 +313,17 @@
                         </label>
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CurrencyId)
-                        <select class="form-control" id="CurrencyId" name="CurrencyId">
+                        @Html.LabelFor(m => m.CurrencyId)                        
+                        @Html.DropDownListFor(m => m.CurrencyId,
+                                     new SelectList((IEnumerable<SelectListItem>)ViewBag.CurrencyList, "Value", "Text"),
+                                    "--Select Currency--",
+                                    new { @class = "form-control", @disabled = "disabled" })
+                        @*<select class="form-control" id="CurrencyId" name="CurrencyId">
                             <option value="">--Select Currency--</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">USD</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945" selected>EUR</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F905">INR</option>
-                        </select>
+                        </select>*@
                     </div>
 
 
@@ -477,7 +484,8 @@
                         @Html.TextBoxFor(m => m.GuestBalance, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", @readonly = "readonly" })
                     </div>
                     <div class="col-md-2 form-group">
-                        @Html.LabelFor(m => m.DiscountAmount)
+                        @*@Html.LabelFor(m => m.DiscountAmount)*@
+                        <label for="DiscountAmount">@(Html.Raw("Discount Amount (" + LogInManager.CurrencySymbol + ")"))</label>
                         @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountPercentage();", onblur = "LoadTransactionSummary();" })
                     </div>
                     <div class="col-md-2 form-group">
@@ -970,10 +978,10 @@
             }
 
             if ($("#frmPackageTransaction").valid() == false) {
-                showToaster("Please fill all the required field first", ToasterType.ERROR);                
+                showToaster("Please fill all the required field first", ToasterType.ERROR);
                 return false;
             }
-          
+
             var beginDate = $("form#frmPackageTransaction #BeginDate").val();
             var endDate = $("form#frmPackageTransaction #EndDate").val();
 
@@ -994,7 +1002,7 @@
 
             var qty = $("form#frmPackageTransaction #Qty").val();
             var postingRhythm = $("form#frmPackageTransaction #PostingRhythm").val();
-            
+
             if (IsNullOrEmpty(qty)) { qty = 1;}
 
             $('form#frmReservation #PackageId').val(packageId);
@@ -1264,7 +1272,7 @@
             var packageId = $("form#frmReservation #PackageId").val();
             var packageName = $("form#frmReservation #PackageName").val();
             var packageMappingList = [];
-            
+
             if (!IsNullOrEmpty(packageId) && !IsNullOrEmpty(packageName)) {
                 var packagePrice = $("form#frmReservation #PackagePrice").val();
                 var packageQty = $("form#frmReservation #PackageQty").val();
@@ -1285,7 +1293,10 @@
 
                 packageMappingList.push(modelPackageMapping);
             }
-            
+
+
+            //Enable all select box before form submit.            
+            $('form#frmReservation #CurrencyId').attr("disabled", false);            
 
             var formData = $('#frmReservation').serializeObject();
 
@@ -1491,8 +1502,10 @@
         rate = (rate - totalDiscount);
 
         //Calculate children charges. (Default euro 5.)
-        if (noOfChildren > 0)
-            childrenCharges = (noOfChildren * 5);
+        if (noOfChildren > 0){
+            var vChildrenCharge = @childrenCharge;
+            childrenCharges = (noOfChildren * vChildrenCharge);
+        }
 
 
         totalPrice = (parseInt(noOfNights) * parseFloat(rate)) + parseFloat(childrenCharges);
@@ -1502,10 +1515,10 @@
         $('#spnNoOfNight').attr("data-nights", parseInt(noOfNights));
 
         //Set Rate
-        $('#spnRate').html("(&euro; " + parseFloat(rate) + ")");
+        $('#spnRate').html("(@(Html.Raw(LogInManager.CurrencySymbol)) " + parseFloat(rate) + ")");
         $('#spnRate').attr("data-rate", parseFloat(rate));
 
-        $('#totalPrice').html("&euro; " + totalPrice);
+        $('#totalPrice').html("@(Html.Raw(LogInManager.CurrencySymbol)) " + totalPrice);
     }
 
     function openRoomTypeSearchModal() {
@@ -1971,7 +1984,7 @@
 
                                 $('form#frmReservation #hdnWeekEndPrice').val(FormatNumberWithTwoDecimal(weekEndPrice));
 
-                                //$('form#frmReservation #Rate').val(FormatNumberWithTwoDecimal(weekDayPrice)).trigger("blur");
+                                $('form#frmReservation #Rate').val(FormatNumberWithTwoDecimal(weekDayPrice)).trigger("blur");
 
                                 //Load Transaction Summary
                                 //LoadTransactionSummary();
@@ -2021,9 +2034,6 @@
 
         weekDayPrice = rate;
 
-        ////Calculate children charges. (Default euro 5.)
-        //if (noOfChildren > 0)
-        //    childrenCharges = parseFloat((noOfChildren * 5));
 
         var html = "";
 
@@ -2074,12 +2084,12 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(rate);
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(rate);
             html += "</td>";
 
             //Total
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(total);
             html += "</td>";
 
             html += "</tr>";
@@ -2091,7 +2101,7 @@
         //Children Charges.
         if (!IsNullOrEmpty(noOfChildren) && noOfChildren > 0) {
 
-            childrenCharges = 5 // Default euro 5.
+            childrenCharges = @childrenCharge; // Default euro 5.
 
             var qty = parseInt(noOfChildren);
             var total = (childrenCharges * qty);
@@ -2105,12 +2115,12 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(childrenCharges) + " * " + qty;
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(childrenCharges) + " * " + qty;
             html += "</td>";
 
             //Total
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(total);
             html += "</td>";
 
             html += "</tr>";
@@ -2119,7 +2129,7 @@
         //Package.
         var packageId = $('form#frmReservation #PackageId').val();
         if (!IsNullOrEmpty(packageId)) {
-            
+
             var packagePrice = parseFloat($('form#frmReservation #PackagePrice').val());
             var packageName = $('form#frmReservation #PackageName').val();
             var packageQty = parseInt($('form#frmReservation #PackageQty').val());
@@ -2160,12 +2170,12 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(packagePrice) + " * " + qty;
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(packagePrice) + " * " + qty;
             html += "</td>";
 
             //Total
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(total);
             html += "</td>";
 
             html += "</tr>";
@@ -2189,12 +2199,12 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(addOnsPrice);
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(addOnsPrice);
             html += "</td>";
 
             //Total
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(total);
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(total);
             html += "</td>";
 
             html += "</tr>";
@@ -2217,12 +2227,12 @@
 
             //Rate
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount)) + "";
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount)) + "";
             html += "</td>";
 
             //Total
             html += "<td>";
-            html += "&euro; " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount));
+            html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(ConvertToNegative(totalDiscount));
             html += "</td>";
 
             html += "</tr>";
@@ -2247,10 +2257,10 @@
         totalPrice = FormatNumberWithTwoDecimal(totalPrice);
 
         //Set total price
-        $('span#totalPrice').html("&euro; " + totalPrice);
+        $('span#totalPrice').html("@(Html.Raw(LogInManager.CurrencySymbol))  " + totalPrice);
 
         $("form#frmReservation #tblTransactionSummary tfoot tr").attr("data-total-price", totalPrice);
-        $("form#frmReservation #tblTransactionSummary tfoot tr td.tdTotalPrice").html("&euro; " + totalPrice);
+        $("form#frmReservation #tblTransactionSummary tfoot tr td.tdTotalPrice").html("@(Html.Raw(LogInManager.CurrencySymbol)) " + totalPrice);
     }
 
     //Package : START
@@ -2285,7 +2295,7 @@
         $("form#frmPackageTransaction #Qty").val(packageQty);
         //$("form#frmPackageTransaction #PostingRhythm").val(packagePostingRhythm);
         $("form#frmPackageTransaction #PackageId").val(packageId);
-        
+
         $('#packageModal').modal('toggle');
     }
 

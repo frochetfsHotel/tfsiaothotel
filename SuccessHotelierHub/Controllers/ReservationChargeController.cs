@@ -132,6 +132,16 @@ namespace SuccessHotelierHub.Controllers
 
                         model.CreatedBy = LogInManager.LoggedInUserId;
                         model.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
+
+                        double? transactionAmount = 0;
+                        double? oldAmount = 0;
+                        if(model.Amount.HasValue)
+                        {
+                            oldAmount = model.Amount;
+                            transactionAmount = CurrencyManager.ConvertAmountToBaseCurrency(model.Amount, LogInManager.CurrencyCode);
+                            model.Amount = transactionAmount;
+                        }
+                                                
                         chargeId = reservationChargeRepository.AddReservationCharges(model);
 
                         if (!string.IsNullOrWhiteSpace(chargeId))
@@ -142,13 +152,15 @@ namespace SuccessHotelierHub.Controllers
                             if (model.Qty.HasValue)
                                 qty = model.Qty.Value;
 
-                            totalAmount = totalAmount + (model.Amount.HasValue ? (model.Amount.Value * qty) : 0);
+                            totalAmount = totalAmount + (transactionAmount.HasValue ? (transactionAmount.Value * qty) : 0);
 
                             model.Id = Guid.Parse(chargeId);
 
                             transactions.Add(model);
 
                             blnIsChargesInserted = true;
+
+                            model.Amount = oldAmount;
                         }
                     }
                     

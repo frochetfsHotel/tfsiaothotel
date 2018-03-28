@@ -3,6 +3,8 @@
 @{
     Layout = null;
     ViewBag.Title = "Guest Registration Card";
+
+    var currencySymbol = LogInManager.CurrencySymbol;
 }
 
 <!DOCTYPE html>
@@ -226,7 +228,7 @@
                                     <td class="td_padding">Room Type: @Model.RoomType</td>
                                 </tr>
                                 <tr height="20">
-                                    <td class="td_padding">Rate Per Night inc VAT: @(Utility.FormatAmountWithTwoDecimal(Model.Rate.Value))</td>
+                                    <td class="td_padding">Rate Per Night inc VAT: @(Html.Raw(string.Format("{0} {1}", currencySymbol, Utility.FormatAmountWithTwoDecimal(Model.Rate.Value))))</td>
                                 </tr>
                                 <tr height="20">
                                     <td class="td_padding">Adults: @Model.NoOfAdult</td>
@@ -242,9 +244,9 @@
                                 }
                                 @if (!string.IsNullOrWhiteSpace(Model.PackageName))
                                 {
-                                    var package = Model.PackageName + (Model.PackageTotalAmount.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(Model.PackageTotalAmount.Value) + " ) " : "");
+                                    var package = Model.PackageName + (Model.PackageTotalAmount.HasValue ? string.Format(" ({0} {1})", currencySymbol, Utility.FormatAmountWithTwoDecimal(Model.PackageTotalAmount.Value)) : "");
                                     <tr height="20">
-                                        <td class="td_padding">Package: @(package)</td>
+                                        <td class="td_padding">Package: @(Html.Raw(package))</td>
                                     </tr>
                                 }
                                 <tr height="20">

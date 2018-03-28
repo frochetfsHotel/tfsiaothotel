@@ -39,12 +39,18 @@
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
                         <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.UserGroupId)
+                            @Html.DropDownListFor(m => m.UserGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- User Group --",
+                                htmlAttributes: new { @class = "form-control" })                            
+                        </div>
+                        <div class="col-md-2 form-group">
                             @Html.LabelFor(m => m.UserRoleId)
                             @Html.DropDownListFor(m => m.UserRoleId,
-                                (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- Select User Role --",
+                                (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- User Role --",
                                 htmlAttributes: new { @class = "form-control" })
                         </div>
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-2 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
@@ -52,7 +58,7 @@
                             @Html.LabelFor(m => m.Email)
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         </div>
-                        <div class="col-md-3 form-group mt_25">
+                        <div class="col-md-2 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchUser()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearUser()">Clear</button>
                         </div>
@@ -66,13 +72,14 @@
                         <table class="table table-bordered table-hover table-striped" id="tblUser">
                             <thead>
                                 <tr>
-                                    <th class="width_5"></th>
+                                    <th></th>
+                                    <th class="width_10">User Group</th>
                                     <th class="width_10">Name</th>
                                     <th class="width_25">Email</th>
                                     <th class="width_10">User Role</th>
                                     <th class="width_5">Status</th>
                                     <th class="width_10">Password</th>
-                                    <th class="width_10">Record Activity</th>
+                                    <th class="width_5">Record Activity</th>
                                     <th class="width_25">Action</th>
                                 </tr>
                             </thead>
@@ -108,11 +115,13 @@
         var name = $('#Name').val();
         var email = $('#Email').val();
         var userRoleId = $('#UserRoleId').val();
+        var userGroupId = $('#UserGroupId').val();
 
         d.PageNum = currentPage;
         d.Name = name;
         d.Email = email;
         d.UserRoleId = userRoleId;
+        d.UserGroupId = userGroupId;
     }
 
     function UserGridDataBound(response) {
@@ -173,21 +182,40 @@
             },
             {
                 targets: 1,
+                data: "UserGroupName",
+                orderable: true,
+                render: function (data, type, full, meta) {
+                    var userGroupName   = full.UserGroupName;
+                    var currencyCode    = full.CurrencyCode;                    
+                    var userGroup       = "";
+
+                    if(!IsNullOrEmpty(userGroupName)) {
+                        userGroup = userGroupName;
+
+                        if(!IsNullOrEmpty(currencyCode)) {
+                            userGroup = userGroup + " - " + currencyCode;
+                        }
+                    }
+                    return userGroup;
+                }
+            },
+            {
+                targets: 2,
                 data: "Name",
                 orderable: true
             },
             {
-                targets: 2,
+                targets: 3,
                 data: "Email",
                 orderable: true
             },
             {
-                targets: 3,
+                targets: 4,
                 data: "UserRoleName",
                 orderable: true
             },
             {
-                targets: 4,
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -200,12 +228,12 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "Password",
                 orderable: false
             },
             {
-                targets: 6,
+                targets: 7,
                 data: "IsRecordActivity",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -218,7 +246,7 @@
                 }
             },
             {
-                targets: 7,
+                targets: 8,
                 data: "Id",
                 orderable: false,
                 className: "text-left-align",
@@ -233,7 +261,7 @@
                 }
             }
             ],
-            order: [[1, "asc"]],
+            order: [[2, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
@@ -289,7 +317,7 @@
         $('#UserRoleId').val('');
         $('#Name').val('');
         $('#Email').val('');
-
+        $('#UserGroupId').val('');
 
         searchUser();
     }

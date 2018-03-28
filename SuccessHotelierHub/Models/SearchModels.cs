@@ -1303,6 +1303,9 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
+        [DisplayName("User Group")]        
+        public Guid? UserGroupId { get; set; }
+
         [DisplayName("User Role")]
         public Guid? UserRoleId { get; set; }
 
@@ -1335,6 +1338,12 @@ namespace SuccessHotelierHub.Models
 
         public string UserRoleName { get; set; }
         public string UserRoleCode { get; set; }
+
+        [DisplayName("User Group")]
+        public Guid? UserGroupId { get; set; }
+
+        public string UserGroupName { get; set; }
+        public string CurrencyCode { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
@@ -1800,6 +1809,8 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Guest Balance")]
         public double? GuestBalance { get; set; }
 
+        public string CurrencySymbol { get; set; }
+
         public DateTime? CreatedOn { get; set; }        
         public int TotalCount { get; set; }
     }
@@ -1903,6 +1914,8 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Guest Balance")]
         public double? GuestBalance { get; set; }
+
+        public string CurrencySymbol { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
@@ -2343,6 +2356,8 @@ namespace SuccessHotelierHub.Models
         public bool IsCheckIn { get; set; }
         public bool IsCheckOut { get; set; }
         public bool IsBreakFastPackageAdded { get; set; }
+
+        public int BreakfastCount { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }

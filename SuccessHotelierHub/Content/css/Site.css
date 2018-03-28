@@ -1132,3 +1132,8 @@ Html, body{
 div.input-group-addon {
   cursor: pointer !important
 }
+
+/*******SWAL 2 */
+.swal2-popup .swal2-title{
+    font-size: 28px !important;
+}

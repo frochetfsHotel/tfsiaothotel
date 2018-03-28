@@ -25,19 +25,26 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.UserGroupId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.UserGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- Select User Group --",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.UserGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.UserRoleId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.UserRoleId,
                                 (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- Select User Role --",
                                 htmlAttributes: new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.UserRoleId, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Name, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Email, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })

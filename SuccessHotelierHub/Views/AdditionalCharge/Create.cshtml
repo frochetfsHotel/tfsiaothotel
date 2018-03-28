@@ -37,8 +37,8 @@
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Price)
+                    <div class="col-md-3 form-group">                        
+                        <label for="Price">Price (&euro;)</label>
                         @Html.TextBoxFor(m => m.Price, Utility.FormatAmountWithTwoDecimal(Model != null && Model.Price.HasValue ? Model.Price.Value : 1), new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
                     </div>

@@ -283,7 +283,7 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var charges = additionalChargeRepository.SearchAdvanceAdditionalCharge(model);
+                var charges = additionalChargeRepository.SearchAdvanceAdditionalCharge(model, LogInManager.LoggedInUserId);
 
                 return Json(new
                 {

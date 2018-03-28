@@ -36,9 +36,10 @@
                         {
                             packageDescription = package.Name;
                             packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
-                            packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
+                            packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(package.Price.Value, LogInManager.CurrencyCode)) + ")" : "";
 
-                    <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
+                    <option value="@package.Id" data-package-name="@package.Name"
+                            data-package-price="@(package.Price.HasValue ? CurrencyManager.ParseAmountToUserCurrency(package.Price.Value, LogInManager.CurrencyCode) : 0)">
                         @(packageDescription)
                     </option>
                         }

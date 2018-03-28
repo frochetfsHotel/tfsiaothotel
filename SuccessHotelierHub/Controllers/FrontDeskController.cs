@@ -289,8 +289,6 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Save Room Rent Charges 
 
-                    //double totalPrice = (double)(reservation.Rate * reservation.NoOfNight);
-                    //double totalPrice = Utility.Utility.CalculateRoomRentCharges(reservation.NoOfNight, (reservation.Rate.HasValue ? reservation.Rate.Value : 0), reservation.NoOfChildren, reservation.DiscountAmount, reservation.DiscountPercentage, (reservation.DiscountPercentage.HasValue ? true : false));
                     double totalPrice = Utility.Utility.CalculateReservationTotalPrice(reservation.Id);
 
                     var roomRentCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault();
@@ -311,7 +309,6 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
                     
-
                     #region Save Reservation Room Mapping & Update Room Occupied Flag
 
                     var roomIds = model.RoomIds;
@@ -684,8 +681,8 @@ namespace SuccessHotelierHub.Controllers
             if (selectedPackage != null)
             {
                 model.PackageName = selectedPackage.PackageName;
-                model.PackagePrice = selectedPackage.PackagePrice;
-                model.PackageTotalAmount = selectedPackage.TotalAmount;
+                model.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.PackagePrice, LogInManager.CurrencyCode);
+                model.PackageTotalAmount = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.TotalAmount, LogInManager.CurrencyCode);
             }
 
             #endregion
@@ -768,7 +765,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 model.RoomType = roomType.RoomTypeCode;
             }
-            model.Rate = reservation.Rate;
+            model.Rate = CurrencyManager.ParseAmountToUserCurrency(reservation.Rate, LogInManager.CurrencyCode);
             model.ConfirmationNo = reservation.ConfirmationNumber;
 
             #region Record Activity Log
@@ -918,8 +915,8 @@ namespace SuccessHotelierHub.Controllers
                         if (selectedPackage != null)
                         {
                             model.PackageName = selectedPackage.PackageName;
-                            model.PackagePrice = selectedPackage.PackagePrice;
-                            model.PackageTotalAmount = selectedPackage.TotalAmount;
+                            model.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.PackagePrice, LogInManager.CurrencyCode);
+                            model.PackageTotalAmount = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.TotalAmount, LogInManager.CurrencyCode);
                         }
 
                         #endregion
@@ -1001,7 +998,7 @@ namespace SuccessHotelierHub.Controllers
                         {
                             model.RoomType = roomType.RoomTypeCode;
                         }
-                        model.Rate = reservation.Rate;
+                        model.Rate = CurrencyManager.ParseAmountToUserCurrency(reservation.Rate, LogInManager.CurrencyCode);
                         model.ConfirmationNo = reservation.ConfirmationNumber;
                         
                         //HTML to PDF
