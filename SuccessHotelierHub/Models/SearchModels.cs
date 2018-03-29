@@ -2367,6 +2367,103 @@ namespace SuccessHotelierHub.Models
 
     #endregion
 
+    #region Search User Group
+
+    public class SearchUserGroupParametersVM
+    {
+        public SearchUserGroupParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }        
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Currency")]
+        public Guid? CurrencyId { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchUserGroupResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+        
+        [DisplayName("Currency Id")]
+        public Guid? CurrencyId { get; set; }
+
+        [DisplayName("Currency Code")]
+        public string CurrencyCode { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search Currency
+
+    public class SearchCurrencyParametersVM
+    {
+        public SearchCurrencyParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }        
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchCurrencyResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Code")]
+        public string Code { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
+
+        [DisplayName("Conversion Rate")]
+        public double? ConversionRate { get; set; }
+
+        [DisplayName("Currency Symbol")]
+        public string CurrencySymbol { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {

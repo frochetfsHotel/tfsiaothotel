@@ -1,0 +1,127 @@
+﻿@model SuccessHotelierHub.Models.CurrencyVM
+@{
+    ViewBag.Title = "Edit Currency";
+}
+
+<section class="content-header">
+    <h1>
+        Currency <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Currency</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Currency Details</h3>
+        </div>
+        @using (Html.BeginForm("Edit", "Currency", FormMethod.Post, new { id = "frmCurrency", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.CurrencySymbol)
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Code, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
+                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Description)
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="required-label" for="ConversionRate">Conversion Rate (&euro;)</label>
+                        <div class="input-group">
+                            <input class="form-control" id="txtOne" name="txtOne" onkeydown="onlyDigits(event)" 
+                                   type="text" value="1" readonly="readonly">
+                            <span class="input-group-addon">=</span>
+                            @Html.TextBoxFor(m => m.ConversionRate, new { @class = "form-control", placeholder = "Conversion Rate" }) 
+                        </div>                        
+                        @Html.ValidationMessageFor(m => m.ConversionRate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group m-t-lg">
+                        <label class="">Symbol : <span class="m-l-sm label-bold">@(Html.Raw(Model.CurrencySymbol))</span></label>                        
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateCurrency();">Update</button>
+                <a href="@Url.Action("List", "Currency")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateCurrency() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+        if ($("#frmCurrency").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function updateCurrency() {
+
+        if (validateCurrency()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/Currency/Edit")',
+                type: 'POST',
+                data: $('#frmCurrency').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Currency details updated successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/Currency/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

@@ -24,7 +24,8 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Conversion Rate")]
         [DisplayFormat(DataFormatString = "{0:C0}")]
-        [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = "Please enter conversion rate.")]
+        [Required(ErrorMessage = "Please enter conversion rate.")]
+        [RegularExpression(@"\d+(\.\d{1,2})?", ErrorMessage = "Please enter valid conversion rate.")]
         public double? ConversionRate { get; set; }
 
         [DisplayName("Currency Symbol")]

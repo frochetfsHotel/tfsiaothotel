@@ -45492,17 +45492,7 @@ CREATE TABLE [dbo].[UserGroup](
 ) ON [PRIMARY]
 GO
 
-/****************** Default User Group data *****************/
 
-
-INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
-VALUES (NEWID(),'Indian Student','Indian Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'INR'),1,GETDATE(),1)
-
-INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
-VALUES (NEWID(),'Ireland Student','Ireland Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'EUR'),1,GETDATE(),1)
-
-INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
-VALUES (NEWID(),'USA Student','USA Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'USD'),1,GETDATE(),1)
 
 /***************** Add UserGroupId in UserDetail table ************/
 
@@ -48040,4 +48030,644 @@ BEGIN
 END
 
 
+/*************************************************************************************************************************/
 
+Name : Nilesh
+Date : 29-MAR-2018
+
+/*************************************************************************************************************************/
+
+/************************************************************************************************************************ 
+	SP Name : AddUserGroup
+	Comment : Create SP AddUserGroup		
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddUserGroup]    Script Date: 3/29/2018 9:13:04 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUserGroup]			
+	@Name				NVARCHAR(500)					,		
+	@Description		NVARCHAR(MAX)		=	NULL	,			
+	@CurrencyId			UNIQUEIDENTIFIER	=	NULL	,		
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UserGroup]
+           (
+				 [Id]      		   
+				,[Name]				      
+				,[Description]		   
+				,[CurrencyId]
+				,[CreatedBy]
+				,[CreatedOn]
+				,[IsActive]
+		   )
+     VALUES
+           (
+				 @Id				   
+				,@Name		
+				,@Description
+				,@CurrencyId
+				,@CreatedBy
+				,GETDATE()			   
+				,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateUserGroup
+	Comment : Create SP UpdateUserGroup		
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateUserGroup]    Script Date: 3/29/2018 9:16:58 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateUserGroup]	
+	@Id					UNIQUEIDENTIFIER				,	
+	@Name				NVARCHAR(500)					,		
+	@Description		NVARCHAR(MAX)		=	NULL	,			
+	@CurrencyId			UNIQUEIDENTIFIER	=	NULL	,	
+	@IsActive			BIT					=	NULL	,	
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserGroup] 
+		SET	[Name]				=	@Name		
+		   ,[Description]		=	@Description
+		   ,[CurrencyId]		=	@CurrencyId
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[IsActive]			=	@IsActive
+		   ,[UpdatedOn]			=	 GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteUserGroup
+	Comment : Create SP DeleteUserGroup
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteUserGroup]    Script Date: 3/29/2018 9:19:00 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteUserGroup]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserGroup] 
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchUserGroup
+	Comment : Create SP SearchUserGroup
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchUserGroup]    Script Date: 3/29/2018 9:20:16 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchUserGroup]  '', NULL, 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchUserGroup]					
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@CurrencyId		UNIQUEIDENTIFIER	=	NULL	,		
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempUserGroup
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(500)		NULL
+		,   [Description]			NVARCHAR(MAX)		NULL	
+		,	[CurrencyId]			UNIQUEIDENTIFIER	NULL
+		,   [CurrencyCode]			NVARCHAR(255)		NULL
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL		
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UG.Id) 
+						FROM [UserGroup] UG 									
+								INNER JOIN [Currency] CR ON UG.CurrencyId = CR.Id
+									AND ISNULL(CR.IsDeleted,0) = 0
+						WHERE	ISNULL(UG.IsDeleted,0) = 0
+								AND (ISNULL(@Name,'') = '' OR UG.[Name] LIKE '%'+ @Name +'%')
+								AND (@CurrencyId IS NULL OR UG.CurrencyId = @CurrencyId)
+						)
+
+
+		INSERT INTO #tempUserGroup 
+		(
+			[RowNum]		,
+			[Id]			,
+			[Name]			,
+			[Description]	,
+			[CurrencyId]	,
+			[CurrencyCode]	,
+			[CreatedOn]		,
+			[IsActive]			
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN UG.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN UG.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+						THEN UG.[Name] END ASC,
+					CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+						THEN UG.[Name] END DESC,
+
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+						THEN UG.[Description] END ASC,
+					CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+						THEN UG.[Description] END DESC,
+
+					CASE WHEN @SortColumn = 'CurrencyCode' and @SortDirection = 'asc'
+						THEN CR.[Code] END ASC,
+					CASE WHEN @SortColumn = 'CurrencyCode' and @SortDirection = 'desc'
+						THEN CR.[Code] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN UG.[Name] END ASC
+
+			) AS RowNum,
+			UG.[Id],		
+			UG.[Name],
+			ISNULL(UG.[Description],'') AS [Description],
+			UG.[CurrencyId],				
+			ISNULL(CR.[Code],'') AS [CurrencyCode],											
+			UG.[CreatedOn],
+			ISNULL(UG.[IsActive],0) AS [IsActive]				
+		FROM [UserGroup] UG 									
+				INNER JOIN [Currency] CR ON UG.CurrencyId = CR.Id
+					AND ISNULL(CR.IsDeleted,0) = 0
+		WHERE	ISNULL(UG.IsDeleted,0) = 0
+				AND (ISNULL(@Name,'') = '' OR UG.[Name] LIKE '%'+ @Name +'%')
+				AND (@CurrencyId IS NULL OR UG.CurrencyId = @CurrencyId)
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum]				,
+			temp.[Id]					,
+			temp.[Name]					,
+			temp.[Description]			,
+			temp.[CurrencyId]			,
+			temp.[CurrencyCode]			,
+			temp.[CreatedOn]			,
+			temp.IsActive				,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempUserGroup AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/************************************************************************************************************************ 
+	SP Name : CheckUserGroupNameExist
+	Comment : Create SP CheckUserGroupNameExist
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckUserGroupNameExist]    Script Date: 3/29/2018 9:51:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckUserGroupNameExist] 
+		@Id		=	NULL,
+		@Name	=	''
+*/
+
+CREATE PROCEDURE [dbo].[CheckUserGroupNameExist]
+	@Id			UNIQUEIDENTIFIER	=	NULL,
+	@Name		NVARCHAR(500)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[UserGroup]
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND [Name] = @Name
+		ORDER BY [Name]
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : AddCurrency
+	Comment : Create SP AddCurrency
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddCurrency]    Script Date: 3/29/2018 11:16:02 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddCurrency]			
+	@Code				NVARCHAR(255)					,		
+	@Name				NVARCHAR(500)					,		
+	@Description		NVARCHAR(MAX)		=	NULL	,	
+	@ConversionRate		NUMERIC(18,2)		=	NULL	,	
+	@CurrencySymbol		NVARCHAR(500)		=	NULL	,	
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Currency]
+           (
+				 [Id]     
+				,[Code] 		   
+				,[Name]				      
+				,[Description]		   
+				,[ConversionRate]
+				,[CurrencySymbol]
+				,[CreatedBy]
+				,[CreatedOn]
+				,[IsActive]
+		   )
+     VALUES
+           (
+				 @Id	
+				,@Code			   
+				,@Name		
+				,@Description
+				,@ConversionRate
+				,@CurrencySymbol
+				,@CreatedBy
+				,GETDATE()			   
+				,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateCurrency
+	Comment : Create SP UpdateCurrency
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateCurrency]    Script Date: 3/29/2018 11:21:38 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateCurrency]	
+	@Id					UNIQUEIDENTIFIER				,	
+	@Code				NVARCHAR(255)					,		
+	@Name				NVARCHAR(500)					,		
+	@Description		NVARCHAR(MAX)		=	NULL	,	
+	@ConversionRate		NUMERIC(18,2)		=	NULL	,	
+	@CurrencySymbol		NVARCHAR(500)		=	NULL	,	
+	@IsActive			BIT					=	NULL	,	
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Currency] 
+		SET	[Name]				=	@Name		
+		   ,[Code]				=	@Code
+		   ,[Description]		=	@Description
+		   ,[ConversionRate]	=	@ConversionRate
+		   ,[CurrencySymbol]	=	@CurrencySymbol		   
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[IsActive]			=	@IsActive
+		   ,[UpdatedOn]			=	 GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : DeleteCurrency
+	Comment : Create SP DeleteCurrency
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteCurrency]    Script Date: 3/29/2018 11:23:52 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteCurrency]
+	@Id			UNIQUEIDENTIFIER,	
+	@UpdatedBy	INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Currency]
+		SET	[IsDeleted] = 1
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : CheckCurrencyCodeExist
+	Comment : Create SP CheckCurrencyCodeExist
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckCurrencyCodeExist]    Script Date: 3/29/2018 11:24:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckCurrencyCodeExist] 
+		@Id		=	NULL,
+		@Code	=	''
+*/
+
+CREATE PROCEDURE [dbo].[CheckCurrencyCodeExist]
+	@Id			UNIQUEIDENTIFIER	=	NULL,
+	@Code		NVARCHAR(500)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[Currency]
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND [Code] = @Code
+		ORDER BY [Code]
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : CheckCurrencyNameExist
+	Comment : Create SP CheckCurrencyNameExist
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckCurrencyNameExist]    Script Date: 3/29/2018 11:24:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckCurrencyNameExist] 
+		@Id		=	NULL,
+		@Name	=	''
+*/
+
+CREATE PROCEDURE [dbo].[CheckCurrencyNameExist]
+	@Id			UNIQUEIDENTIFIER	=	NULL,
+	@Name		NVARCHAR(500)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT * FROM [dbo].[Currency]
+		WHERE	ISNULL(IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR Id != @Id)
+				AND [Name] = @Name
+		ORDER BY [Name]
+END
+
+/************************************************************************************************************************ 
+	SP Name : SearchCurrency
+	Comment : Create SP SearchCurrency
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchCurrency]    Script Date: 3/29/2018 11:44:32 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchCurrency]  '', '', 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchCurrency]					
+	@Code			NVARCHAR(255)		=	NULL	,	
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempCurrency
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Code]					NVARCHAR(255)		NULL
+		,   [Name]					NVARCHAR(500)		NULL
+		,   [Description]			NVARCHAR(MAX)		NULL	
+		,	[ConversionRate]		NUMERIC(18,2)		NULL
+		,   [CurrencySymbol]		NVARCHAR(255)		NULL
+		,	[CreatedOn]				DATETIME			NULL
+		,   [IsActive]				BIT					NULL		
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(CR.Id) 
+							FROM	[Currency] CR
+							WHERE	ISNULL(CR.IsDeleted,0) = 0
+									AND (ISNULL(@Code,'') = '' OR CR.[Code] LIKE '%'+ @Code +'%')
+									AND (ISNULL(@Name,'') = '' OR CR.[Name] LIKE '%'+ @Name +'%')
+						)
+
+
+		INSERT INTO #tempCurrency 
+		(
+			[RowNum]			,
+			[Id]				,
+			[Code]				,
+			[Name]				,
+			[Description]		,
+			[ConversionRate]	,
+			[CurrencySymbol]	,
+			[CreatedOn]			,
+			[IsActive]			
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN CR.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN CR.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+						THEN CR.[Code] END ASC,
+					CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+						THEN CR.[Code] END DESC,
+
+					CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+						THEN CR.[Name] END ASC,
+					CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+						THEN CR.[Name] END DESC,
+
+					CASE WHEN @SortColumn = 'ConversionRate' and @SortDirection = 'asc'
+						THEN CR.[ConversionRate] END ASC,
+					CASE WHEN @SortColumn = 'ConversionRate' and @SortDirection = 'desc'						
+						THEN CR.[ConversionRate] END DESC,
+					
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN CR.[Code] END ASC
+
+			) AS RowNum,
+			CR.[Id],		
+			ISNULL(CR.[Code], '') AS [Code],
+			ISNULL(CR.[Name], '') AS [Name],			
+			ISNULL(CR.[Description],'') AS [Description],
+			CR.[ConversionRate],		
+			ISNULL(CR.[CurrencySymbol],'') AS [CurrencySymbol],														
+			CR.[CreatedOn],
+			ISNULL(CR.[IsActive],0) AS [IsActive]				
+		FROM	[Currency] CR
+		WHERE	ISNULL(CR.IsDeleted,0) = 0
+				AND (ISNULL(@Code,'') = '' OR CR.[Code] LIKE '%'+ @Code +'%')
+				AND (ISNULL(@Name,'') = '' OR CR.[Name] LIKE '%'+ @Name +'%')
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum]				,
+			temp.[Id]					,
+			temp.[Code]					,
+			temp.[Name]					,
+			temp.[Description]			,
+			temp.[ConversionRate]		,
+			temp.[CurrencySymbol]		,
+			temp.[CreatedOn]			,
+			temp.IsActive				,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempCurrency AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetCurrencyInfo
+	Comment : Changes in SP GetCurrencyInfo
+***********************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetCurrencyInfo]    Script Date: 3/29/2018 12:38:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetCurrencyInfo]		
+AS
+BEGIN	
+	
+	SELECT * FROM [dbo].[Currency]
+		WHERE	ISNULL(IsDeleted ,0) = 0
+				AND ISNULL(IsActive,0) = 1
+		ORDER BY [Code], [Name]
+END
+
+
+/****************** Default User Group data *****************/
+
+
+INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'Indian User','Indian Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'INR'),(SELECT TOP 1 UserId FROM [dbo].[UserDetail] WHERE ISNULL(IsDeleted,0) = 0 AND Email = 'admin@hotelierhub.com'),GETDATE(),1)
+
+INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'Ireland User','Ireland Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'EUR'),(SELECT TOP 1 UserId FROM [dbo].[UserDetail] WHERE ISNULL(IsDeleted,0) = 0 AND Email = 'admin@hotelierhub.com'),GETDATE(),1)
+
+INSERT INTO [dbo].[UserGroup] ([Id],[Name],[Description],[CurrencyId],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'USA User','USA Users',(SELECT ID FROM [dbo].[Currency] WHERE ISNULL(IsDeleted,0) = 0 AND [Code] = 'USD'),(SELECT TOP 1 UserId FROM [dbo].[UserDetail] WHERE ISNULL(IsDeleted,0) = 0 AND Email = 'admin@hotelierhub.com'),GETDATE(),1)

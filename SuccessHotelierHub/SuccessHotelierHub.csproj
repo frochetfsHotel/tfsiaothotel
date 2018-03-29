@@ -219,6 +219,7 @@
     <Compile Include="Controllers\CityController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\CountryController.cs" />
+    <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\DiscountApprovedController.cs" />
     <Compile Include="Controllers\ErrorLogController.cs" />
     <Compile Include="Controllers\FloorController.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Controllers\TitleController.cs" />
     <Compile Include="Controllers\TutorController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\UserGroupController.cs" />
     <Compile Include="Controllers\UserRoleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -333,7 +335,6 @@
     <Compile Include="Models\TempBulkReservationVM.cs" />
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
-    <Compile Include="Models\UserGroupRepository.cs" />
     <Compile Include="Models\UserGroupVM.cs" />
     <Compile Include="Models\UserPagesVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
@@ -378,6 +379,7 @@
     <Compile Include="Repository\RTCRepository.cs" />
     <Compile Include="Repository\StateRepository.cs" />
     <Compile Include="Repository\TitleRepository.cs" />
+    <Compile Include="Repository\UserGroupRepository.cs" />
     <Compile Include="Repository\UserPageRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Repository\UserRoleRepository.cs" />
@@ -2151,6 +2153,12 @@
     <Content Include="Views\Report\PreviewRegistrationCard.cshtml" />
     <Content Include="Views\Report\Breakfast.cshtml" />
     <Content Include="Views\Report\PreviewBreakfastReport.cshtml" />
+    <Content Include="Views\UserGroup\Create.cshtml" />
+    <Content Include="Views\UserGroup\Edit.cshtml" />
+    <Content Include="Views\UserGroup\List.cshtml" />
+    <Content Include="Views\Currency\Create.cshtml" />
+    <Content Include="Views\Currency\Edit.cshtml" />
+    <Content Include="Views\Currency\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

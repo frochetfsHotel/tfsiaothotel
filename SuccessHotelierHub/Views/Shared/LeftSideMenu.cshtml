@@ -406,6 +406,18 @@
 
                     </ul>
                 </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-gg-circle" aria-hidden="true"></i> Manage Currency
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "Currency")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "Currency")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
 
                 <li class="treeview">
                     <a href="#">
@@ -415,6 +427,18 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-users" aria-hidden="true"></i> User Group
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "UserGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "UserGroup")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-cogs" aria-hidden="true"></i> User Role
