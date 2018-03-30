@@ -116,6 +116,7 @@ namespace SuccessHotelierHub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ValidateInput(false)]
         public ActionResult Edit(CurrencyVM model)
         {
             try

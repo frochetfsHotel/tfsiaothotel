@@ -28,275 +28,305 @@ namespace SuccessHotelierHub.Utility
 
         public static void CreateDummyReservation()
         {
-            //Get Profiles by user id.
-            var profiles = profileRepository.GetIndividualProfileByUserId(LogInManager.LoggedInUserId);
-
-            if (profiles == null || profiles.Count == 0)
+            try
             {
-                //Load Default Profile by user id.
-                profileRepository.LoadDefaultIndividualProfile(LogInManager.LoggedInUserId);
-            }
+                //Get Profiles by user id.
+                var profiles = profileRepository.GetIndividualProfileByUserId(LogInManager.LoggedInUserId);
 
-            //Get temp bulk reservation by user id.
-            var tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
-
-            if (tempReservations == null || tempReservations.Count == 0)
-            {
-                //Load Default temp bulk reservation by user id.
-                reservationRepository.LoadTempBulkReservation(LogInManager.LoggedInUserId);
-            }
-
-            var reservations = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId, true);
-
-            if (reservations == null || reservations.Count == 0)
-            {
-                //Delete existing reservation by user.
-                reservationRepository.DeleteReservationByUserId(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId, true);
-                
-                //ReservationController reservationController = new ReservationController();
-                //FrontDeskController frontDeskController = new FrontDeskController();
-                //CashieringController cashieringController = new CashieringController();
-
-                tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
-
-                if (tempReservations != null && tempReservations.Count > 0)
+                if (profiles == null || profiles.Count == 0)
                 {
-                    foreach (var tempReservation in tempReservations)
+                    //Load Default Profile by user id.
+                    profileRepository.LoadDefaultIndividualProfile(LogInManager.LoggedInUserId);
+                }
+
+                //Get temp bulk reservation by user id.
+                var tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
+
+                if (tempReservations == null || tempReservations.Count == 0)
+                {
+                    //Load Default temp bulk reservation by user id.
+                    reservationRepository.LoadTempBulkReservation(LogInManager.LoggedInUserId);
+                }
+
+                var reservations = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId, true);
+
+                if (reservations == null || reservations.Count == 0)
+                {
+                    //Delete existing reservation by user.
+                    reservationRepository.DeleteReservationByUserId(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId, true);
+
+                    //ReservationController reservationController = new ReservationController();
+                    //FrontDeskController frontDeskController = new FrontDeskController();
+                    //CashieringController cashieringController = new CashieringController();
+
+                    tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
+
+                    if (tempReservations != null && tempReservations.Count > 0)
                     {
-                        ReservationVM reservation = new ReservationVM();
-                                                
-                        reservation.TitleId = tempReservation.TitleId;
-                        reservation.LastName = tempReservation.LastName;
-                        reservation.FirstName = tempReservation.FirstName;
-                        reservation.ProfileId = tempReservation.ProfileId;
-                        reservation.MemberTypeId = tempReservation.MemberTypeId;
-                        reservation.CountryId = tempReservation.CountryId;
-                        reservation.LanguageId = tempReservation.LanguageId;
-                        reservation.VipId = tempReservation.VipId;
-                        reservation.PhoneNo = tempReservation.PhoneNo;
-                        reservation.MemberNo = tempReservation.MemberNo;
-                        reservation.MemberLvt = tempReservation.MemberLvt;
-                        reservation.AgentId = tempReservation.AgentId;
-                        reservation.CompanyId = tempReservation.CompanyId;
-                        reservation.GroupId = tempReservation.GroupId;
-                        reservation.SourceId = tempReservation.SourceId;
-                        reservation.ContactId = tempReservation.ContactId;
-                        reservation.ArrivalDate = DateTime.Now;
-                        reservation.NoOfNight = tempReservation.NoOfNight;
-                        reservation.DepartureDate = DateTime.Now.AddDays(tempReservation.NoOfNight);
-                        reservation.NoOfAdult = tempReservation.NoOfAdult;
-                        reservation.NoOfChildren = tempReservation.NoOfChildren;
-                        reservation.NoOfInfant = tempReservation.NoOfInfant;
-                        reservation.NoOfRoom = tempReservation.NoOfRoom;
-                        reservation.RoomTypeId = tempReservation.RoomTypeId;
-                        reservation.RtcId = tempReservation.RtcId;
-                        reservation.ExtnId = tempReservation.ExtnId;
-                        reservation.RateCodeId = tempReservation.RateCodeId;
-                        reservation.IsFixedRate = tempReservation.IsFixedRate;
-                        reservation.Rate = tempReservation.Rate;
-                        //reservation.CurrencyId = tempReservation.CurrencyId;
-                        reservation.CurrencyId = LogInManager.CurrencyId;
-                        reservation.BlockCodeId = tempReservation.BlockCodeId;
-                        reservation.ETA = tempReservation.ETA;
-                        reservation.ReservationTypeId = tempReservation.ReservationTypeId;
-                        reservation.MarketId = tempReservation.MarketId;
-                        reservation.ReservationSourceId = tempReservation.ReservationSourceId;
-                        reservation.OriginId = tempReservation.OriginId;
-                        reservation.PaymentMethodId = tempReservation.PaymentMethodId;
-                        reservation.CreditCardNo = tempReservation.CreditCardNo;
-                        reservation.CardExpiryDate = tempReservation.CardExpiryDate;
-                        reservation.CVVNo = tempReservation.CVVNo;
-                        reservation.ApprovalCode = tempReservation.ApprovalCode;
-                        reservation.ApprovalAmount = tempReservation.ApprovalAmount;
-                        reservation.SuitWith = tempReservation.SuitWith;
-                        reservation.IsEmailConfirmation = tempReservation.IsEmailConfirmation;
-                        reservation.GuestBalance = tempReservation.GuestBalance;
-                        reservation.DiscountAmount = tempReservation.DiscountAmount;
-                        reservation.DiscountPercentage = tempReservation.DiscountPercentage;
-                        reservation.DiscountApprovedBy = tempReservation.DiscountApprovedBy;
-                        reservation.DiscountReason = tempReservation.DiscountReason;
-                        reservation.TARecordLocator = tempReservation.TARecordLocator;
-                        reservation.ItemInventoryId = tempReservation.ItemInventoryId;                                                
-                        reservation.TotalPrice = tempReservation.TotalPrice;                        
-                        reservation.RoomNumbers = tempReservation.RoomNo;
-                        reservation.RoomIds = Convert.ToString(tempReservation.RoomId);
-                        reservation.CreatedBy = LogInManager.LoggedInUserId;                        
-                        reservation.IsActive = true;
-                        reservation.IsDummyReservation = true;
-
-                        //Create Reservation.
-                        //reservationController.CreateReservation(reservation);
-                        CreateReservation(reservation);
-                    }
-
-                    var reservationList = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId, true);
-
-                    if (reservationList != null && reservationList.Count > 0)
-                    {
-                        var results = ExtensionMethod.Split(reservationList, 20); //split reservations.
-
-                        if (results != null && results.Count >= 3)
+                        foreach (var tempReservation in tempReservations)
                         {
-                            //Checked In : Top 1 to 20 
-                            int count = 0;
-                            foreach (var result in results[0])
+                            ReservationVM reservation = new ReservationVM();
+
+                            reservation.TitleId = tempReservation.TitleId;
+                            reservation.LastName = tempReservation.LastName;
+                            reservation.FirstName = tempReservation.FirstName;
+                            reservation.ProfileId = tempReservation.ProfileId;
+                            reservation.MemberTypeId = tempReservation.MemberTypeId;
+                            reservation.CountryId = tempReservation.CountryId;
+                            reservation.LanguageId = tempReservation.LanguageId;
+                            reservation.VipId = tempReservation.VipId;
+                            reservation.PhoneNo = tempReservation.PhoneNo;
+                            reservation.MemberNo = tempReservation.MemberNo;
+                            reservation.MemberLvt = tempReservation.MemberLvt;
+                            reservation.AgentId = tempReservation.AgentId;
+                            reservation.CompanyId = tempReservation.CompanyId;
+                            reservation.GroupId = tempReservation.GroupId;
+                            reservation.SourceId = tempReservation.SourceId;
+                            reservation.ContactId = tempReservation.ContactId;
+                            reservation.ArrivalDate = DateTime.Now;
+                            reservation.NoOfNight = tempReservation.NoOfNight;
+                            reservation.DepartureDate = DateTime.Now.AddDays(tempReservation.NoOfNight);
+
+                            reservation.NoOfAdult = tempReservation.NoOfAdult;
+                            reservation.NoOfChildren = tempReservation.NoOfChildren;
+                            reservation.NoOfInfant = tempReservation.NoOfInfant;
+                            reservation.NoOfRoom = tempReservation.NoOfRoom;
+                            reservation.RoomTypeId = tempReservation.RoomTypeId;
+                            reservation.RtcId = tempReservation.RtcId;
+                            reservation.ExtnId = tempReservation.ExtnId;
+                            reservation.RateCodeId = tempReservation.RateCodeId;
+                            reservation.IsFixedRate = tempReservation.IsFixedRate;
+                            reservation.Rate = tempReservation.Rate;
+                            //reservation.CurrencyId = tempReservation.CurrencyId;
+                            reservation.CurrencyId = LogInManager.CurrencyId;
+                            reservation.BlockCodeId = tempReservation.BlockCodeId;
+                            reservation.ETA = tempReservation.ETA;
+                            reservation.ReservationTypeId = tempReservation.ReservationTypeId;
+                            reservation.MarketId = tempReservation.MarketId;
+                            reservation.ReservationSourceId = tempReservation.ReservationSourceId;
+                            reservation.OriginId = tempReservation.OriginId;
+                            reservation.PaymentMethodId = tempReservation.PaymentMethodId;
+                            reservation.CreditCardNo = tempReservation.CreditCardNo;
+                            reservation.CardExpiryDate = tempReservation.CardExpiryDate;
+                            reservation.CVVNo = tempReservation.CVVNo;
+                            reservation.ApprovalCode = tempReservation.ApprovalCode;
+                            reservation.ApprovalAmount = tempReservation.ApprovalAmount;
+                            reservation.SuitWith = tempReservation.SuitWith;
+                            reservation.IsEmailConfirmation = tempReservation.IsEmailConfirmation;
+                            reservation.GuestBalance = tempReservation.GuestBalance;
+                            reservation.DiscountAmount = tempReservation.DiscountAmount;
+                            reservation.DiscountPercentage = tempReservation.DiscountPercentage;
+                            reservation.DiscountApprovedBy = tempReservation.DiscountApprovedBy;
+                            reservation.DiscountReason = tempReservation.DiscountReason;
+                            reservation.TARecordLocator = tempReservation.TARecordLocator;
+                            reservation.ItemInventoryId = tempReservation.ItemInventoryId;
+                            reservation.TotalPrice = tempReservation.TotalPrice;
+                            reservation.RoomNumbers = tempReservation.RoomNo;
+                            reservation.RoomIds = Convert.ToString(tempReservation.RoomId);
+                            reservation.CreatedBy = LogInManager.LoggedInUserId;
+                            reservation.IsActive = true;
+                            reservation.IsDummyReservation = true;
+
+                            if (tempReservation.RoomTypeId.HasValue && tempReservation.RateCodeId.HasValue)
                             {
-                                if (count < 10)
-                                {
-                                    //Manage Due-Out reservation. Update arrival and departure date.
-                                    result.DepartureDate = result.ArrivalDate;
-                                    result.ArrivalDate = result.ArrivalDate.Value.AddDays(-(result.NoOfNight));
-                                    result.IsActive = true;
-                                    result.IsDummyReservation = true;
-                                    result.UpdatedBy = LogInManager.LoggedInUserId;
+                                //Get Week Day & Week End Price
+                                var weekDayPrice = rateRepository.GetWeekDayPrice(tempReservation.RoomTypeId.Value, tempReservation.RateCodeId.Value).FirstOrDefault();
 
-                                    reservationRepository.UpdateReservation(result);
+                                var weekEndPrice = rateRepository.GetWeekEndPrice(tempReservation.RoomTypeId.Value, tempReservation.RateCodeId.Value).FirstOrDefault();
+
+                                if(weekDayPrice != null)
+                                {
+                                    reservation.Rate = weekDayPrice.Amount;
                                 }
 
-                                #region Room Mapping
-                                var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
-                                var roomIds = string.Empty;
-                                var roomNumbers = string.Empty;
-
-                                if (selectedRooms != null && selectedRooms.Count > 0)
+                                if (weekEndPrice != null)
                                 {
-                                    foreach (var room in selectedRooms)
+                                    //Check Week End 
+                                    if (reservation.ArrivalDate.Value.DayOfWeek == DayOfWeek.Friday || reservation.ArrivalDate.Value.DayOfWeek == DayOfWeek.Saturday)
                                     {
-                                        roomIds += string.Format("{0},", room.RoomId);
-                                        roomNumbers += string.Format("{0}, ", room.RoomNo);
-                                    }
-
-                                    if (!string.IsNullOrWhiteSpace(roomIds))
-                                    {
-                                        //Remove Last Comma.
-                                        roomIds = Utility.RemoveLastCharcter(roomIds, ',');
-                                    }
-
-                                    if (!string.IsNullOrWhiteSpace(roomNumbers))
-                                    {
-                                        //Remove Last Comma.
-                                        roomNumbers = Utility.RemoveLastCharcter(roomNumbers, ',');
+                                        reservation.Rate = weekEndPrice.Amount;
                                     }
                                 }
-                                #endregion
-
-                                CheckInPaymentMethodVM modelCheckInPaymentMethod = new CheckInPaymentMethodVM();
-                                modelCheckInPaymentMethod.ReservationId = result.Id;
-                                modelCheckInPaymentMethod.ProfileId = result.ProfileId;
-                                modelCheckInPaymentMethod.NoOfRoom = result.NoOfRoom.Value;
-                                modelCheckInPaymentMethod.Name = (result.LastName + " " + result.FirstName);
-                                modelCheckInPaymentMethod.CheckInDate = result.ArrivalDate;
-                                modelCheckInPaymentMethod.CheckInTime = result.ETA;
-                                modelCheckInPaymentMethod.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
-                                modelCheckInPaymentMethod.PaymentMethodId = result.PaymentMethodId;
-                                modelCheckInPaymentMethod.CreditCardNo = result.CreditCardNo;
-                                modelCheckInPaymentMethod.CardExpiryDate = result.CardExpiryDate;                                
-                                modelCheckInPaymentMethod.RoomNumbers = roomNumbers;
-                                modelCheckInPaymentMethod.RoomIds = roomIds;
-                                modelCheckInPaymentMethod.RoomTypeId = result.RoomTypeId;
-
-                                CheckIn(modelCheckInPaymentMethod);
-
-                                count++;
                             }
 
-                            //Checked Out : 21 to 40
-                            foreach (var result in results[1])
+                            //Create Reservation.
+                            //reservationController.CreateReservation(reservation);
+                            CreateReservation(reservation);
+                        }
+
+                        var reservationList = reservationRepository.GetUsersReservationByDate(DateTime.Now, LogInManager.LoggedInUserId, true);
+
+                        if (reservationList != null && reservationList.Count > 0)
+                        {
+                            var results = ExtensionMethod.Split(reservationList, 20); //split reservations.
+
+                            if (results != null && results.Count >= 3)
                             {
-                                #region Room Mapping
-                                var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
-                                var roomIds = string.Empty;
-                                var roomNumbers = string.Empty;
-
-                                if (selectedRooms != null && selectedRooms.Count > 0)
+                                //Checked In : Top 1 to 20 
+                                int count = 0;
+                                foreach (var result in results[0])
                                 {
-                                    foreach (var room in selectedRooms)
+                                    if (count < 10)
                                     {
-                                        roomIds += string.Format("{0},", room.RoomId);
-                                        roomNumbers += string.Format("{0}, ", room.RoomNo);
+                                        //Manage Due-Out reservation. Update arrival and departure date.
+                                        result.DepartureDate = result.ArrivalDate;
+                                        result.ArrivalDate = result.ArrivalDate.Value.AddDays(-(result.NoOfNight));
+                                        result.IsActive = true;
+                                        result.IsDummyReservation = true;
+                                        result.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                        reservationRepository.UpdateReservation(result);
                                     }
 
-                                    if (!string.IsNullOrWhiteSpace(roomIds))
+                                    #region Room Mapping
+                                    var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
+                                    var roomIds = string.Empty;
+                                    var roomNumbers = string.Empty;
+
+                                    if (selectedRooms != null && selectedRooms.Count > 0)
                                     {
-                                        //Remove Last Comma.
-                                        roomIds = Utility.RemoveLastCharcter(roomIds, ',');
+                                        foreach (var room in selectedRooms)
+                                        {
+                                            roomIds += string.Format("{0},", room.RoomId);
+                                            roomNumbers += string.Format("{0}, ", room.RoomNo);
+                                        }
+
+                                        if (!string.IsNullOrWhiteSpace(roomIds))
+                                        {
+                                            //Remove Last Comma.
+                                            roomIds = Utility.RemoveLastCharcter(roomIds, ',');
+                                        }
+
+                                        if (!string.IsNullOrWhiteSpace(roomNumbers))
+                                        {
+                                            //Remove Last Comma.
+                                            roomNumbers = Utility.RemoveLastCharcter(roomNumbers, ',');
+                                        }
+                                    }
+                                    #endregion
+
+                                    CheckInPaymentMethodVM modelCheckInPaymentMethod = new CheckInPaymentMethodVM();
+                                    modelCheckInPaymentMethod.ReservationId = result.Id;
+                                    modelCheckInPaymentMethod.ProfileId = result.ProfileId;
+                                    modelCheckInPaymentMethod.NoOfRoom = result.NoOfRoom.Value;
+                                    modelCheckInPaymentMethod.Name = (result.LastName + " " + result.FirstName);
+                                    modelCheckInPaymentMethod.CheckInDate = result.ArrivalDate;
+                                    modelCheckInPaymentMethod.CheckInTime = result.ETA;
+                                    modelCheckInPaymentMethod.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
+                                    modelCheckInPaymentMethod.PaymentMethodId = result.PaymentMethodId;
+                                    modelCheckInPaymentMethod.CreditCardNo = result.CreditCardNo;
+                                    modelCheckInPaymentMethod.CardExpiryDate = result.CardExpiryDate;
+                                    modelCheckInPaymentMethod.RoomNumbers = roomNumbers;
+                                    modelCheckInPaymentMethod.RoomIds = roomIds;
+                                    modelCheckInPaymentMethod.RoomTypeId = result.RoomTypeId;
+
+                                    CheckIn(modelCheckInPaymentMethod);
+
+                                    count++;
+                                }
+
+                                //Checked Out : 21 to 40
+                                foreach (var result in results[1])
+                                {
+                                    #region Room Mapping
+                                    var selectedRooms = roomRepository.GetReservationRoomMapping(result.Id, null, LogInManager.LoggedInUserId);
+                                    var roomIds = string.Empty;
+                                    var roomNumbers = string.Empty;
+
+                                    if (selectedRooms != null && selectedRooms.Count > 0)
+                                    {
+                                        foreach (var room in selectedRooms)
+                                        {
+                                            roomIds += string.Format("{0},", room.RoomId);
+                                            roomNumbers += string.Format("{0}, ", room.RoomNo);
+                                        }
+
+                                        if (!string.IsNullOrWhiteSpace(roomIds))
+                                        {
+                                            //Remove Last Comma.
+                                            roomIds = Utility.RemoveLastCharcter(roomIds, ',');
+                                        }
+
+                                        if (!string.IsNullOrWhiteSpace(roomNumbers))
+                                        {
+                                            //Remove Last Comma.
+                                            roomNumbers = Utility.RemoveLastCharcter(roomNumbers, ',');
+                                        }
+                                    }
+                                    #endregion
+
+                                    #region Payment Method
+
+                                    var paymentMethod = new PaymentMethodVM();
+                                    if (result.PaymentMethodId.HasValue)
+                                    {
+                                        paymentMethod = paymentMethodRepository.GetPaymentMethodById(result.PaymentMethodId.Value).FirstOrDefault();
                                     }
 
-                                    if (!string.IsNullOrWhiteSpace(roomNumbers))
+                                    #endregion
+
+                                    CheckInPaymentMethodVM modelCheckInPaymentMethod = new CheckInPaymentMethodVM();
+                                    modelCheckInPaymentMethod.ReservationId = result.Id;
+                                    modelCheckInPaymentMethod.ProfileId = result.ProfileId;
+                                    modelCheckInPaymentMethod.NoOfRoom = result.NoOfRoom.Value;
+                                    modelCheckInPaymentMethod.Name = (result.LastName + " " + result.FirstName);
+                                    modelCheckInPaymentMethod.CheckInDate = result.ArrivalDate;
+                                    modelCheckInPaymentMethod.CheckInTime = result.ETA;
+                                    modelCheckInPaymentMethod.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
+                                    modelCheckInPaymentMethod.PaymentMethodId = result.PaymentMethodId;
+                                    modelCheckInPaymentMethod.CreditCardNo = result.CreditCardNo;
+                                    modelCheckInPaymentMethod.CardExpiryDate = result.CardExpiryDate;
+                                    modelCheckInPaymentMethod.RoomNumbers = roomNumbers;
+                                    modelCheckInPaymentMethod.RoomIds = roomIds;
+                                    modelCheckInPaymentMethod.RoomTypeId = result.RoomTypeId;
+
+                                    //Check in
+                                    CheckIn(modelCheckInPaymentMethod);
+
+                                    CheckOutPaymentMethodVM modelCheckOutPaymentMethod = new CheckOutPaymentMethodVM();
+                                    modelCheckOutPaymentMethod.ReservationId = result.Id;
+                                    modelCheckOutPaymentMethod.ProfileId = result.ProfileId;
+                                    modelCheckOutPaymentMethod.NoOfRoom = result.NoOfRoom.Value;
+                                    modelCheckOutPaymentMethod.CheckOutTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
+                                    modelCheckOutPaymentMethod.CheckOutDate = result.DepartureDate;
+                                    modelCheckOutPaymentMethod.Amount = result.GuestBalance;
+
+                                    modelCheckOutPaymentMethod.RoomIds = roomIds;
+                                    modelCheckOutPaymentMethod.RoomNumbers = roomNumbers;
+                                    modelCheckOutPaymentMethod.RoomTypeId = result.RoomTypeId;
+
+                                    modelCheckOutPaymentMethod.PaymentMethodId = result.PaymentMethodId.Value;
+                                    if (paymentMethod != null && !string.IsNullOrWhiteSpace(paymentMethod.Name))
                                     {
-                                        //Remove Last Comma.
-                                        roomNumbers = Utility.RemoveLastCharcter(roomNumbers, ',');
+                                        modelCheckOutPaymentMethod.PaymentMethod = (paymentMethod.Code + " - " + paymentMethod.Name);
                                     }
-                                }
-                                #endregion
 
-                                #region Payment Method
+                                    modelCheckOutPaymentMethod.CreditCardNo = result.CreditCardNo;
+                                    modelCheckOutPaymentMethod.CardExpiryDate = result.CardExpiryDate;
+                                    modelCheckOutPaymentMethod.Reference = string.Empty;
 
-                                var paymentMethod = new PaymentMethodVM();
-                                if (result.PaymentMethodId.HasValue)
-                                {
-                                    paymentMethod = paymentMethodRepository.GetPaymentMethodById(result.PaymentMethodId.Value).FirstOrDefault();
+                                    //Check out
+                                    CheckOut(modelCheckOutPaymentMethod);
                                 }
 
-                                #endregion
-
-                                CheckInPaymentMethodVM modelCheckInPaymentMethod = new CheckInPaymentMethodVM();
-                                modelCheckInPaymentMethod.ReservationId = result.Id;
-                                modelCheckInPaymentMethod.ProfileId = result.ProfileId;
-                                modelCheckInPaymentMethod.NoOfRoom = result.NoOfRoom.Value;
-                                modelCheckInPaymentMethod.Name = (result.LastName + " " + result.FirstName);
-                                modelCheckInPaymentMethod.CheckInDate = result.ArrivalDate;
-                                modelCheckInPaymentMethod.CheckInTime = result.ETA;
-                                modelCheckInPaymentMethod.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
-                                modelCheckInPaymentMethod.PaymentMethodId = result.PaymentMethodId;
-                                modelCheckInPaymentMethod.CreditCardNo = result.CreditCardNo;
-                                modelCheckInPaymentMethod.CardExpiryDate = result.CardExpiryDate;
-                                modelCheckInPaymentMethod.RoomNumbers = roomNumbers;
-                                modelCheckInPaymentMethod.RoomIds = roomIds;
-                                modelCheckInPaymentMethod.RoomTypeId = result.RoomTypeId;
-
-                                //Check in
-                                CheckIn(modelCheckInPaymentMethod);
-
-                                CheckOutPaymentMethodVM modelCheckOutPaymentMethod = new CheckOutPaymentMethodVM();
-                                modelCheckOutPaymentMethod.ReservationId = result.Id;
-                                modelCheckOutPaymentMethod.ProfileId = result.ProfileId;
-                                modelCheckOutPaymentMethod.NoOfRoom = result.NoOfRoom.Value;
-                                modelCheckOutPaymentMethod.CheckOutTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
-                                modelCheckOutPaymentMethod.CheckOutDate = result.DepartureDate;
-                                modelCheckOutPaymentMethod.Amount = result.GuestBalance;
-
-                                modelCheckOutPaymentMethod.RoomIds = roomIds;
-                                modelCheckOutPaymentMethod.RoomNumbers = roomNumbers;
-                                modelCheckOutPaymentMethod.RoomTypeId = result.RoomTypeId;
-
-                                modelCheckOutPaymentMethod.PaymentMethodId = result.PaymentMethodId.Value;
-                                if (paymentMethod != null && !string.IsNullOrWhiteSpace(paymentMethod.Name))
+                                //New Reservation : 41 to 50.
+                                foreach (var result in results[2])
                                 {
-                                    modelCheckOutPaymentMethod.PaymentMethod = (paymentMethod.Code + " - " + paymentMethod.Name);
-                                }
-
-                                modelCheckOutPaymentMethod.CreditCardNo = result.CreditCardNo;
-                                modelCheckOutPaymentMethod.CardExpiryDate = result.CardExpiryDate;
-                                modelCheckOutPaymentMethod.Reference = string.Empty;
-
-                                //Check out
-                                CheckOut(modelCheckOutPaymentMethod);
-                            }
-
-                            //New Reservation : 41 to 50.
-                            foreach (var result in results[2])
-                            {
-                                if (result != null)
-                                {
-                                    //Delete Reservation Room Mapping.
-                                    roomRepository.DeleteReservationRoomMappingByReservation(result.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                                    if (result != null)
+                                    {
+                                        //Delete Reservation Room Mapping.
+                                        roomRepository.DeleteReservationRoomMappingByReservation(result.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 
@@ -576,7 +606,7 @@ namespace SuccessHotelierHub.Utility
             //Default 5 Euro for the one children.
             if (noOfChildren.HasValue)
             {
-                childrenCharges = (noOfChildren.Value *(double)Constants.CHILDREN_CHARGE);                
+                childrenCharges = (noOfChildren.Value * (double)Constants.CHILDREN_CHARGE);
             }
 
             dblTotalBalance = (noOfNights * rate) + childrenCharges;
@@ -694,9 +724,9 @@ namespace SuccessHotelierHub.Utility
         public static double CalculateTotalBalance(Guid reservationId)
         {
             double dblTotalBalance = 0;
-            
+
             var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
-            
+
             if (reservation != null)
             {
                 if (reservation.IsCheckIn == true)
@@ -739,7 +769,7 @@ namespace SuccessHotelierHub.Utility
 
                 if (reservation != null)
                 {
-                    reservation.PaymentMethodId = model.PaymentMethodId;                    
+                    reservation.PaymentMethodId = model.PaymentMethodId;
                     if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
                     {
                         reservation.CreditCardNo = Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
@@ -750,7 +780,7 @@ namespace SuccessHotelierHub.Utility
                     {
                         reservation.RoomTypeId = model.RoomTypeId.Value;
                     }
-                    
+
                     DateTime dtDepartureDate;
                     dtDepartureDate = model.CheckInDate.Value.AddDays(reservation.NoOfNight);
                     reservation.DepartureDate = dtDepartureDate;
@@ -857,7 +887,7 @@ namespace SuccessHotelierHub.Utility
 
                             roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
 
-                    
+
 
                             #region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
 
@@ -945,11 +975,11 @@ namespace SuccessHotelierHub.Utility
                     #endregion
 
                 }
-              
+
             }
             catch (Exception e)
             {
-                Utility.LogError(e, "CheckIn");             
+                Utility.LogError(e, "CheckIn");
             }
         }
 
@@ -1111,15 +1141,15 @@ namespace SuccessHotelierHub.Utility
                         #region Record Activity Log
                         RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
                         #endregion
-                        
+
                     }
-                    
+
                 }
-              
+
             }
             catch (Exception e)
             {
-                Utility.LogError(e, "CheckOut");                
+                Utility.LogError(e, "CheckOut");
             }
         }
     }
