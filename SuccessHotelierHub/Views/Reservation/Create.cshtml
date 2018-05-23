@@ -23,7 +23,7 @@
     var packageList = (List<PackageVM>)ViewBag.PackageList;
 
     var childrenCharge = CurrencyManager.ParseAmountToUserCurrency((double)Constants.CHILDREN_CHARGE, LogInManager.CurrencyCode);
-
+    
 }
 
 @section styles {
@@ -1072,8 +1072,7 @@
         }
 
         selectPreferenceGroup("ROOOM FEATURES");
-        $("form#frmAdvancePreferenceSearch #btnSearch").click();
-
+        $("form#frmAdvancePreferenceSearch #btnSearch").click();        
         $('#preferenceModal').modal('toggle');
     }
 
@@ -1295,8 +1294,8 @@
             }
 
 
-            //Enable all select box before form submit.            
-            $('form#frmReservation #CurrencyId').attr("disabled", false);            
+            //Enable all select box before form submit.
+            $('form#frmReservation #CurrencyId').attr("disabled", false);
 
             var formData = $('#frmReservation').serializeObject();
 

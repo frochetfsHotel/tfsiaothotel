@@ -1810,6 +1810,8 @@ namespace SuccessHotelierHub.Models
         public double? GuestBalance { get; set; }
 
         public string CurrencySymbol { get; set; }
+        
+        public bool IsEmailConfirmation { get; set; }
 
         public DateTime? CreatedOn { get; set; }        
         public int TotalCount { get; set; }

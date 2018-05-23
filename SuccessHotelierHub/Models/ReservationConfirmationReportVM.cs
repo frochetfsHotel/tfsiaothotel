@@ -82,6 +82,9 @@ namespace SuccessHotelierHub.Models
 
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
-        
+
+        public string CurrencySymbol { get; set; }
+
+
     }
 }

@@ -33,8 +33,30 @@ namespace SuccessHotelierHub.Repository
 
 
             var preferenceGroup = new List<PreferenceGroupVM>();
+
             preferenceGroup = DALHelper.CreateListFromTable<PreferenceGroupVM>(dt);
 
+            return preferenceGroup;
+        }
+
+        public PreferenceGroupVM GetPreferenceGroupByName(string preferenceGroupName)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@Name", Value = preferenceGroupName }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetPreferenceGroupByName", parameters);
+
+
+            var preferenceGroupList = new List<PreferenceGroupVM>();
+            preferenceGroupList = DALHelper.CreateListFromTable<PreferenceGroupVM>(dt);
+
+            var preferenceGroup = new PreferenceGroupVM();
+            if (preferenceGroupList != null && preferenceGroupList.Count > 0)
+            {
+                preferenceGroup = preferenceGroupList[0];
+            }
             return preferenceGroup;
         }
 
@@ -43,7 +65,7 @@ namespace SuccessHotelierHub.Repository
             string preferenceGroupId = string.Empty;
 
             SqlParameter[] parameters =
-                {   
+                {
                     new SqlParameter { ParameterName = "@Name", Value = preferenceGroup.Name },
                     new SqlParameter { ParameterName = "@Description", Value = preferenceGroup.Description },
                     new SqlParameter { ParameterName = "@IsActive", Value = preferenceGroup.IsActive },

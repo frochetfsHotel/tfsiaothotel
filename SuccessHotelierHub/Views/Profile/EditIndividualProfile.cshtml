@@ -33,7 +33,6 @@
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
 
-
     var selectedPreferences = (List<ProfilePreferenceMappingVM>)ViewBag.SelectedPreferences;
     var preferenceItems = string.Empty;
     var selectedPreferencesHtml = string.Empty;
@@ -440,8 +439,7 @@
         }
 
         selectPreferenceGroup("ROOOM FEATURES");
-        $("form#frmAdvancePreferenceSearch #btnSearch").click();
-
+        $("form#frmAdvancePreferenceSearch #btnSearch").click();        
         $('#preferenceModal').modal('toggle');
     }
 

@@ -1,11 +1,22 @@
 ﻿@model SuccessHotelierHub.Models.SearchAdvancePreferenceParametersVM
+@using SuccessHotelierHub.Repository
 @using SuccessHotelierHub.Models
 @{
+    PreferenceGroupRepository preferenceGroupRepository = new PreferenceGroupRepository();
+
     var sourceRedirectionParam = "";
 
     sourceRedirectionParam = (string)ViewData["Source"];
 
     var preferenceGroupList = (List<SelectListItem>)ViewData["PreferenceGroup"];
+
+    //Get Room Features Preference Group
+    var roomFeaturesPreferenceGroup = preferenceGroupRepository.GetPreferenceGroupByName("Room Features");
+    var roomFeaturesPreferenceGroupGuid = "";
+    if(roomFeaturesPreferenceGroup != null)
+    {
+        roomFeaturesPreferenceGroupGuid = Convert.ToString(roomFeaturesPreferenceGroup.Id);
+    }
 }
 
 <form id="frmAdvancePreferenceSearch" name="frmAdvancePreferenceSearch" enctype="multipart/form-data" method="post">
@@ -75,6 +86,8 @@
                 searchPreference();
             }
         });
+
+        $('form#frmAdvancePreferenceSearch #PreferenceGroupId').val('@roomFeaturesPreferenceGroupGuid').trigger('change');
     });
 
     function selectDeSelectPreference(element) {
@@ -128,7 +141,7 @@
             beforeSend: function (xhr) {
                 showLoader();
             },
-            error: function (jqXHR, textStatus, errorThrown) {                
+            error: function (jqXHR, textStatus, errorThrown) {
                 ShowErrorMessage(jqXHR.status, errorThrown);
             },
             complete: function () {
@@ -185,6 +198,8 @@
         $('form#frmAdvancePreferenceSearch #Preference').val('');
 
         $("form#frmAdvancePreferenceSearch #tblPreference tbody").empty();
+
+        $('form#frmAdvancePreferenceSearch #PreferenceGroupId').val('@roomFeaturesPreferenceGroupGuid').trigger('change');
     }
 
 
@@ -207,7 +222,7 @@
 
     function getCheckedPreferenceIds() {
         var preferenceIds = "";
-        $("form#frmAdvancePreferenceSearch #selectedPreferences span i").each(function () {            
+        $("form#frmAdvancePreferenceSearch #selectedPreferences span i").each(function () {
             preferenceIds += $(this).data("preferenceid") + ",";
         });
 
@@ -217,7 +232,7 @@
 
     function selectPreferenceGroup(name) {
         var dd = document.getElementById('PreferenceGroupId');
-        for (var i = 0; i < dd.options.length; i++) {            
+        for (var i = 0; i < dd.options.length; i++) {
             if (dd.options[i].text === name) {
                 dd.selectedIndex = i;
                 break;

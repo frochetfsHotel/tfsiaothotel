@@ -321,7 +321,8 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Preferences</h4>
             </div>
-            <div class="modal-body modal-body_padding">                
+            <div class="modal-body modal-body_padding">  
+                              
                 @Html.Partial("~/Views/Preference/_Preferences.cshtml",
                         new ViewDataDictionary {
                                     { "Source", "CreateProfile" },
@@ -402,6 +403,7 @@
     });
 
     function openPreferenceModal() {
+        
         clearPreferenceSearch();
 
         var selectedPreferenceCount = 0;
@@ -417,8 +419,7 @@
         }
 
         selectPreferenceGroup("ROOOM FEATURES");
-        $("form#frmAdvancePreferenceSearch #btnSearch").click();
-
+        $("form#frmAdvancePreferenceSearch #btnSearch").click();        
         $('#preferenceModal').modal('toggle');
     }
 

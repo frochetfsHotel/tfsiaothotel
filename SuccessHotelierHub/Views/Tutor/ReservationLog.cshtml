@@ -75,17 +75,18 @@
                             <thead>
                                 <tr>
                                     <th class="width_10">Created On</th>
-                                    <th class="width_10">Confirmation #</th>
+                                    @*<th class="width_3">Confirm#</th>*@
                                     <th class="width_5">Last Name</th>
                                     <th class="width_5">First Name</th>
                                     <th class="width_5">Arrival</th>
-                                    <th class="width_5">Nights</th>
+                                    <th class="width_2">Nights</th>
                                     <th class="width_5">Departure</th>
                                     <th class="width_5">Room #</th>
                                     <th class="width_5">Room Type</th>
                                     <th class="width_5">Rate Type</th>
                                     <th class="width_10">Rate</th>
                                     <th class="width_10">Guest Balance</th>
+                                    <th class="width_5"></th>
                                 </tr>
                             </thead>
                         </table>
@@ -207,23 +208,23 @@
                     return ParseJsonDate(createdOn);
                 }
             },
+            //{
+            //    targets: 1,
+            //    data: "ConfirmationNumber",
+            //    orderable: true
+            //},
             {
                 targets: 1,
-                data: "ConfirmationNumber",
-                orderable: true
-            },
-            {
-                targets: 2,
                 data: "LastName",
                 orderable: true
             },
             {
-                targets: 3,
+                targets: 2,
                 data: "FirstName",
                 orderable: true
             },
             {
-                targets: 4,
+                targets: 3,
                 data: "ArrivalDate",
                 orderable: true,
                 render: function (data, type, full, meta) {
@@ -233,12 +234,12 @@
 
             },
             {
-                targets: 5,
+                targets: 4,
                 data: "NoOfNight",
                 orderable: false
             },
             {
-                targets: 6,
+                targets: 5,
                 data: "DepartureDate",
                 orderable: true,
                 render: function (data, type, full, meta) {
@@ -247,38 +248,52 @@
                 }
             },
             {
-                targets: 7,
+                targets: 6,
                 data: "RoomNumbers",
                 orderable: false
             },
             {
-                targets: 8,
+                targets: 7,
                 data: "RoomTypeCode",
                 orderable: true
             }
             ,
             {
-                targets: 9,
+                targets: 8,
                 data: "RateTypeCode",
                 orderable: true
             },
             {
-                targets: 10,
+                targets: 9,
                 data: "Rate",
                 orderable: true,
                 render: function (data, type, full, meta) {
-                    var html = "";                  
+                    var html = "";
                     html += full.CurrencySymbol + ' ' + FormatNumberWithTwoDecimal(full.Rate) + ' ';
                     return html;
                 }
             },
             {
-                targets: 11,
+                targets: 10,
                 data: "GuestBalance",
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
                     html += full.CurrencySymbol + ' ' + FormatNumberWithTwoDecimal(full.GuestBalance) + ' ';
+                    return html;
+                }
+            },
+            {
+                targets: 11,
+                data: "Id",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var html = "";
+                                        
+                    var url = '@Url.Content("~/Reservation/ReservationConfirmationReport")' + '?Id=' + full.Id;
+                        html += '<a href="' + url + '" target="_blank" '
+                           + ' class="btn btn-warning btn-xs m-r-xs">Print</a> ';                                            
+
                     return html;
                 }
             }
@@ -326,6 +341,7 @@
 
         searchReservationLog();
     }
+
 </script>
 
 

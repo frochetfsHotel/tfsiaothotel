@@ -75,7 +75,7 @@
                             <thead>
                                 <tr>
                                     <th class="width_5">Created On</th>
-                                    <th class="width_5">Confirmation #</th>
+                                    @*<th class="width_5">Confirm#</th>*@
                                     <th class="width_10">Last Name</th>
                                     <th class="width_10">First Name</th>
                                     <th class="width_8">Arrival</th>
@@ -226,23 +226,23 @@
                      return ParseJsonDate(createdOn);
                  }
              },
+             //{
+             //    targets: 1,
+             //    data: "ConfirmationNumber",
+             //    orderable: true
+             //},
              {
                  targets: 1,
-                 data: "ConfirmationNumber",
-                 orderable: true
-             },
-             {
-                 targets: 2,
                  data: "LastName",
                  orderable: true
              },
              {
-                 targets: 3,
+                 targets: 2,
                  data: "FirstName",
                  orderable: true
              },
              {
-                 targets: 4,
+                 targets: 3,
                  data: "ArrivalDate",
                  orderable: true,
                  render: function (data, type, full, meta) {
@@ -252,12 +252,12 @@
 
              },
              {
-                 targets: 5,
+                 targets: 4,
                  data: "NoOfNight",
                  orderable: false
              },
              {
-                 targets: 6,
+                 targets: 5,
                  data: "DepartureDate",
                  orderable: true,
                  render: function (data, type, full, meta) {
@@ -266,23 +266,23 @@
                  }
              },
              {
-                 targets: 7,
+                 targets: 6,
                  data: "RoomNumbers",
                  orderable: false
              },
              {
-                 targets: 8,
+                 targets: 7,
                  data: "RoomTypeCode",
                  orderable: true
              }
              ,
              {
-                 targets: 9,
+                 targets: 8,
                  data: "RateTypeCode",
                  orderable: true
              },
              {
-                 targets: 10,
+                 targets: 9,
                  data: "Rate",
                  orderable: true,
                  render: function (data, type, full, meta) {
@@ -292,7 +292,7 @@
                  }
              },
              {
-                 targets: 11,
+                 targets: 10,
                  data: "GuestBalance",
                  orderable: true,
                  render: function (data, type, full, meta) {
@@ -302,7 +302,7 @@
                  }
              },
              {
-                 targets: 12,
+                 targets: 11,
                  data: "Id",
                  orderable: false,
                  className: "text-center",

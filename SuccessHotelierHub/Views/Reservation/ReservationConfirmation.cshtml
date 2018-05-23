@@ -1,5 +1,9 @@
 ﻿@model SuccessHotelierHub.Models.ReservationConfirmationReportVM
 
+@{ 
+    var currencySymbol = Model.CurrencySymbol;
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -104,7 +108,7 @@
             </tr>
             <tr>
                 <td class="text-bold">Room Rate Per Night :</td>
-                <td><span class="text-bold">Night 1</span>- @Model.RatePerNight @LogInManager.CurrencySymbol Including Full Irish Breakfast</td>
+                <td><span class="text-bold">Night 1</span>- @Model.RatePerNight @(Html.Raw(currencySymbol)) Including Full Irish Breakfast</td>
             </tr>
             <tr>
                 <td class="text-bold">Method Of Payment :</td>

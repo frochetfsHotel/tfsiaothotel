@@ -5,7 +5,7 @@
     ViewBag.Title = "Edit Reservation";
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
-
+        
     var arrivalDayOfWeek = string.Empty;
     var departureDayOfWeek = string.Empty;
 
@@ -162,6 +162,8 @@
 
     var packageList = (List<PackageVM>)ViewBag.PackageList;
     var childrenCharge = CurrencyManager.ParseAmountToUserCurrency((double)Constants.CHILDREN_CHARGE, LogInManager.CurrencyCode);
+
+
 }
 
 
@@ -1372,7 +1374,7 @@
 
         selectPreferenceGroup("ROOOM FEATURES");
         $("form#frmAdvancePreferenceSearch #btnSearch").click();
-
+        
         $('#preferenceModal').modal('toggle');
     }
 

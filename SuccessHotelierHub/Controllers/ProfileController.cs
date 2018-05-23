@@ -47,9 +47,9 @@ namespace SuccessHotelierHub.Controllers
             var nationalityList = new SelectList(nationalityRepository.GetNationality(), "Id", "Name").ToList();
 
             var profileTypeId = profileTypeRepository.GetProfileType(ProfileTypeName.INDIVIDUAL).FirstOrDefault().Id;
-                        
+                            
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
-
+                        
             IndividualProfileVM model = new IndividualProfileVM();
             model.ProfileTypeId = profileTypeId;
             model.IsActive = true;
@@ -58,8 +58,7 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.VipList = vipList;
             ViewBag.CountryList = countryList;
             ViewBag.NationalityList = nationalityList;            
-            ViewBag.PreferenceGroupList = preferenceGroupList;
-
+            ViewBag.PreferenceGroupList = preferenceGroupList;            
             return View(model);
         }
 
@@ -277,12 +276,12 @@ namespace SuccessHotelierHub.Controllers
                 //if (model.CountryId.HasValue)
                 //{
                 //    stateList = new SelectList(stateRepository.GetStates(model.CountryId), "Id", "Name").ToList();
-                    
+
                 //    cityList = new SelectList(cityRepository.GetCities(model.CountryId,model.StateId), "Id", "Name").ToList();
                 //}
 
                 //ViewBag.StateList = stateList;
-                //ViewBag.CityList = cityList;
+                //ViewBag.CityList = cityList;                
 
                 return View(model);
             }

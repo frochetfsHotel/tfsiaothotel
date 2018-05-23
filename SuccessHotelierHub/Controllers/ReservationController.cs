@@ -11,7 +11,7 @@ using System.Text;
 
 namespace SuccessHotelierHub.Controllers
 {
-    [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
+    //[HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
     public class ReservationController : Controller
     {
         #region Declaration
@@ -45,11 +45,14 @@ namespace SuccessHotelierHub.Controllers
         private RTCRepository rtcRepository = new RTCRepository();
         private AddOnsRepository addOnsRepository = new AddOnsRepository();
         private RateRepository rateRepository = new RateRepository();
-
+        private UserRepository userRepository = new UserRepository();
+        private UserGroupRepository userGroupRepository = new UserGroupRepository();
+        private CurrencyRepository currencyRepository = new CurrencyRepository();
         #endregion
 
         #region Reservation 
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult Create()
         {
             var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
@@ -258,6 +261,7 @@ namespace SuccessHotelierHub.Controllers
             return View(model);
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(ReservationVM model)
@@ -397,6 +401,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult Edit(Guid id)
         {
             ReservationVM model = new ReservationVM();
@@ -660,7 +665,7 @@ namespace SuccessHotelierHub.Controllers
                     model.TotalPrice = CurrencyManager.ParseAmountToUserCurrency(model.TotalPrice.Value, LogInManager.CurrencyCode);
                 }
 
-                #endregion
+                #endregion                
 
                 return View(model);
             }
@@ -668,6 +673,7 @@ namespace SuccessHotelierHub.Controllers
             return RedirectToAction("List");
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(ReservationVM model)
@@ -722,6 +728,7 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 #endregion
+
 
                 //Credit Card No.
                 model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
@@ -1140,6 +1147,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult Delete(Guid id)
         {
@@ -1181,6 +1189,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult List()
         {
             var reservationCancellationReasonList = reservationCancellationReasonRepository.GetReservationCancellationReasons();
@@ -1190,6 +1199,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult SearchReservation(SearchReservationParametersVM model)
         {
@@ -1242,6 +1252,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult CancelReservation(Guid id, Guid cancellationReasonId, string comment)
         {
@@ -1282,7 +1293,7 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
-
+        
         public string CreateReservation(ReservationVM model)
         {
             string reservationId = string.Empty;
@@ -1579,6 +1590,7 @@ namespace SuccessHotelierHub.Controllers
             return confirmationNo;
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult DeleteAll()
         {
@@ -1599,6 +1611,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT,TUTOR")]
         public ActionResult ReservationConfirmationReport(Guid? Id)
         {
             try
@@ -1608,80 +1621,107 @@ namespace SuccessHotelierHub.Controllers
                     return HttpNotFound();
                 }
 
-                var reservation = reservationRepository.GetReservationById(Id.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+                var reservation = reservationRepository.GetReservationById(Id.Value, null).FirstOrDefault();
 
                 ReservationConfirmationReportVM model = new ReservationConfirmationReportVM();
 
                 string confirmationNo = string.Empty;
+                double rate = 0;
+                string currencyCode = string.Empty, currencySymbol = string.Empty;
+                string cashierNumber = string.Empty;
 
-                if (reservation.IsEmailConfirmation)
+                if (reservation != null)
                 {
                     if (reservation.ProfileId.HasValue)
                     {
-                        var profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+                        var profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, null).FirstOrDefault();
+
+                        var userDetail = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
+                        var userGroupDetail = new UserGroupVM();
+
+                        if (userDetail != null)
+                        {
+                            userGroupDetail = userGroupRepository.GetUserGroupById(userDetail.UserGroupId);
+                            cashierNumber = userDetail.CashierNumber;
+                        }
+
+                        if(userGroupDetail != null && userGroupDetail.Id != null)
+                        {
+                            var currencyDetail = currencyRepository.GetCurrencyInfoById(userGroupDetail.CurrencyId).FirstOrDefault();
+
+                            if(currencyDetail != null)
+                            {
+                                currencyCode = currencyDetail.Code;
+                                currencySymbol = currencyDetail.CurrencySymbol;
+                            }
+                        }
 
                         if (profile != null)
                         {
                             var profileName = (profile.LastName + ' ' + profile.FirstName);
                             var email = profile.Email;
 
-                            if (!string.IsNullOrWhiteSpace(email))
+                            if (reservation.Rate.HasValue)
                             {
+                                rate = CurrencyManager.ParseAmountToUserCurrency(reservation.Rate.Value, currencyCode);
+                            }
 
-                                model.UserName = profile.FirstName;
-                                model.GuestName = profileName;
-                                model.ConfirmationNumber = reservation.ConfirmationNumber;
-                                model.ArrivalDate = reservation.ArrivalDate.Value.ToString("dd MMM yyyy");
-                                model.DepartureDate = reservation.DepartureDate.Value.ToString("dd MMM yyyy");
+                            model.UserName = profile.FirstName;
+                            model.GuestName = profileName;
+                            model.ConfirmationNumber = reservation.ConfirmationNumber;
+                            model.ArrivalDate = reservation.ArrivalDate.Value.ToString("dd MMM yyyy");
+                            model.DepartureDate = reservation.DepartureDate.Value.ToString("dd MMM yyyy");
 
-                                model.NoOfNight = reservation.NoOfNight;
-                                model.NoOfAdult = reservation.NoOfAdult.HasValue ? reservation.NoOfAdult.Value : 0;
-                                model.NoOfChildren = reservation.NoOfChildren.HasValue ? reservation.NoOfChildren.Value : 0;
-                                model.Rate = reservation.Rate;
-                                model.CashierName = LogInManager.UserName;
+                            model.NoOfNight = reservation.NoOfNight;
+                            model.NoOfAdult = reservation.NoOfAdult.HasValue ? reservation.NoOfAdult.Value : 0;
+                            model.NoOfChildren = reservation.NoOfChildren.HasValue ? reservation.NoOfChildren.Value : 0;
+                            model.Rate = rate;
+                            
+                            model.CashierName = cashierNumber;
 
-                                model.RatePerNight = Utility.Utility.FormatAmountWithTwoDecimal(reservation.Rate.HasValue ? reservation.Rate.Value : 0);
+                            model.RatePerNight = Utility.Utility.FormatAmountWithTwoDecimal(rate);
 
-                                //Method Of Payment.
-                                if (reservation.PaymentMethodId.HasValue)
+                            //Method Of Payment.
+                            if (reservation.PaymentMethodId.HasValue)
+                            {
+                                var paymentMethod = paymentMethodRepository.GetPaymentMethodById(reservation.PaymentMethodId.Value).FirstOrDefault();
+
+                                if (paymentMethod != null)
                                 {
-                                    var paymentMethod = paymentMethodRepository.GetPaymentMethodById(reservation.PaymentMethodId.Value).FirstOrDefault();
-
-                                    if (paymentMethod != null)
-                                    {
-                                        model.MethodOfPayment = paymentMethod.Name;
-                                    }
-                                    else
-                                    {
-                                        model.MethodOfPayment = string.Empty;
-                                    }
+                                    model.MethodOfPayment = paymentMethod.Name;
                                 }
                                 else
                                 {
                                     model.MethodOfPayment = string.Empty;
                                 }
+                            }
+                            else
+                            {
+                                model.MethodOfPayment = string.Empty;
+                            }
 
-                                //Accommodation
-                                if (reservation.RoomTypeId.HasValue)
+                            //Accommodation
+                            if (reservation.RoomTypeId.HasValue)
+                            {
+                                var roomType = roomTypeRepository.GetRoomTypeById(reservation.RoomTypeId.Value).FirstOrDefault();
+
+                                if (roomType != null)
                                 {
-                                    var roomType = roomTypeRepository.GetRoomTypeById(reservation.RoomTypeId.Value).FirstOrDefault();
-
-                                    if (roomType != null)
-                                    {
-                                        model.Accommodation = (Convert.ToString(reservation.NoOfRoom) + " " + roomType.Description);
-                                    }
-                                    else
-                                    {
-                                        model.Accommodation = string.Empty;
-                                    }
+                                    model.Accommodation = (Convert.ToString(reservation.NoOfRoom) + " " + roomType.Description);
                                 }
                                 else
                                 {
                                     model.Accommodation = string.Empty;
                                 }
-
-                                model.DepositPaid = "EUR";
                             }
+                            else
+                            {
+                                model.Accommodation = string.Empty;
+                            }
+
+                            model.DepositPaid = currencyCode;
+                            model.CurrencySymbol = currencySymbol;
+
                         }
                     }
                 }
@@ -1702,6 +1742,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult GetPriceDetails(Guid roomTypeId, Guid rateTypeId)
         {
@@ -1743,6 +1784,7 @@ namespace SuccessHotelierHub.Controllers
 
         #region Rate Query
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult RateQuery()
         {
             var profileId = (string)TempData["ProfileId"];
@@ -1795,6 +1837,7 @@ namespace SuccessHotelierHub.Controllers
             return View(model);
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult ViewRateSheet(RateQueryVM model)
         {
@@ -1830,6 +1873,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult ShowReservation(RateQueryVM model)
         {
@@ -1854,6 +1898,7 @@ namespace SuccessHotelierHub.Controllers
 
         #region Room Plan
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         public ActionResult RoomPlan()
         {
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode");
@@ -1869,6 +1914,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult SearchRoomPlan(RoomPlanVM model)
         {
@@ -1927,6 +1973,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult ChangeRoomAllocation(Guid reservationId, Guid roomId, DateTime? arrivalDate, DateTime? departureDate)
         {
@@ -1972,6 +2019,7 @@ namespace SuccessHotelierHub.Controllers
 
         #region Reservation  Remarks
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult AddReservationRemark(ReservationRemarkVM model)
         {
@@ -2014,6 +2062,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult UpdateReservationRemark(ReservationRemarkVM model)
         {
@@ -2056,6 +2105,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult DeleteReservationRemark(Guid id)
         {
@@ -2092,7 +2142,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
         [HttpPost]
         public ActionResult GetReservationRemarks(Guid reservationId)
         {
