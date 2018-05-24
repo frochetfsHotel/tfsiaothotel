@@ -136,6 +136,10 @@ namespace SuccessHotelierHub.Controllers
             var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
             var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
+
+            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            ViewBag.CompanyList = companyList;
+
             ReservationVM model = new ReservationVM();
             RateQueryVM rateQuery = new RateQueryVM();
             if (Session["RateQueryVM"] != null)
@@ -175,6 +179,7 @@ namespace SuccessHotelierHub.Controllers
                 model.IsWeekEndPrice = rateQuery.IsWeekEndPrice; // Week End Price.
 
                 model.PackageId = rateQuery.PackageId;
+                model.CompanyId = rateQuery.CompanyId;
 
                 double? dblWeekEndPrice = model.Rate;
                 if (model.RoomTypeId.HasValue && model.RateCodeId.HasValue)
@@ -608,6 +613,8 @@ namespace SuccessHotelierHub.Controllers
                 var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
                 var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
+                var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+                ViewBag.CompanyList = companyList;
 
                 ViewBag.TitleList = titleList;
                 ViewBag.VipList = vipList;
@@ -1195,6 +1202,9 @@ namespace SuccessHotelierHub.Controllers
             var reservationCancellationReasonList = reservationCancellationReasonRepository.GetReservationCancellationReasons();
 
             ViewBag.ReservationCancellationReasonList = reservationCancellationReasonList;
+
+            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            ViewBag.CompanyList = companyList;
 
             return View();
         }
@@ -1805,6 +1815,8 @@ namespace SuccessHotelierHub.Controllers
             //         }
             //     ), "Value", "Text").ToList();
 
+            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            ViewBag.CompanyList = companyList;
 
             ViewBag.RateTypeList = rateTypeList;
             ViewBag.RateSheetRoomTypeList = rateSheetRoomTypeList;
@@ -1859,6 +1871,16 @@ namespace SuccessHotelierHub.Controllers
                 ViewData["RateType"] = rateTypeList;
                 ViewData["RateSheetRoomType"] = rateSheetRoomTypeList;
                 ViewData["IsShowWeekEndPrice"] = blnShowWeekEndPrice;
+
+                if(model.CompanyId != null && model.CompanyId.HasValue)
+                {
+                    ViewData["ShowCorporateRate"] = true;
+                }
+                else
+                {
+                    ViewData["ShowCorporateRate"] = false;
+                }
+
 
                 #region Record Activity Log
                 RecordActivityLog.RecordActivity(Pages.RATEQUERY, "Searched rate sheet matrix.");

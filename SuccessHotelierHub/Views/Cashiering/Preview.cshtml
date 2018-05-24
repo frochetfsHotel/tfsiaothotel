@@ -118,7 +118,26 @@
                             <td style="width:50%;text-align:left" valign="top">
                                 <label class="mb5"><b>@Model.Title @Model.Name</b></label>
                                 <br />
-                                <label class="mb5"><b>@Html.Raw(Model.Address)</b></label> <br />                                
+                                <label class="mb5"><b>@Html.Raw(Model.Address)</b></label> <br />
+                                
+                                @{
+                                    if (!string.IsNullOrWhiteSpace(Model.CompanyName) || !string.IsNullOrWhiteSpace(Model.CompanyAddress))
+                                    {
+                                        <br/>
+                                        <label class="mb5"><b><u>Company Details: </u></b></label> <br />
+                                        if (!string.IsNullOrWhiteSpace(Model.CompanyName))
+                                        {
+                                            <label class="mb5"><b>@Model.CompanyName</b></label><br />
+                                        }
+                                        if (!string.IsNullOrWhiteSpace(Model.CompanyAddress))
+                                        {
+                                            <label class="mb5"><b>@Model.CompanyAddress</b></label><br />
+                                        }
+                                    }
+                                }
+                                
+                                
+                                
                             </td>
                             <td style="width:50%;">
                                 <table>

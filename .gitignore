@@ -3,7 +3,8 @@
 ################################################################################
 
 /packages
+/.svn
 /.vs
 /SuccessHotelierHub/Properties/PublishProfiles
 /SuccessHotelierHub/obj/Release
-/SuccessHotelierHub/obj/Debug
+

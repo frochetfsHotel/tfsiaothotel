@@ -5,13 +5,34 @@
 
     var rateTypeList = (List<RateTypeVM>)ViewData["RateType"];
     var rateSheetRoomTypeList = (List<RateSheetRoomTypeVM>)ViewData["RateSheetRoomType"];
+
     var isShowWeekEndPrice = (bool)ViewData["IsShowWeekEndPrice"];
+    var isShowCorporateRate = (bool)ViewData["ShowCorporateRate"];
 
     ReservationRepository reservationRepository = new ReservationRepository();
+    RateTypeCategoryRepository rateTypeCategoryRepository = new RateTypeCategoryRepository();
+
+    var coporateRateTypeCategory = rateTypeCategoryRepository.GetRateTypeCategoryByCode("CORP").FirstOrDefault();
+    var coporateRateTypeCategoryId = coporateRateTypeCategory != null ? Convert.ToString(coporateRateTypeCategory.Id) : "";
+
 }
 
 @if ((rateSheetRoomTypeList != null && rateSheetRoomTypeList.Count > 0) && (rateTypeList != null && rateTypeList.Count > 0))
 {
+
+    if(isShowCorporateRate == true)
+    {
+        var rateTypes = rateTypeList.Where(m => (string.IsNullOrWhiteSpace(coporateRateTypeCategoryId) || Convert.ToString(m.RateTypeCategoryId) == coporateRateTypeCategoryId)).ToList();
+
+        rateTypeList = rateTypes;
+    }
+    else
+    {
+        var rateTypes = rateTypeList.Where(m => (string.IsNullOrWhiteSpace(coporateRateTypeCategoryId) || Convert.ToString(m.RateTypeCategoryId) != coporateRateTypeCategoryId)).ToList();
+
+        rateTypeList = rateTypes;
+    }
+
     var firstHeaderRow = string.Empty;
     var secondRow = string.Empty;
     var thirdRow = string.Empty;

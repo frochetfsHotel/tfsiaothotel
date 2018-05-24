@@ -49210,3 +49210,360 @@ BEGIN
 
 END
 	
+/************************************************************************************************************************************************/ 
+	
+Name : Nilesh
+Date : 03-JAN-2018
+
+/************* Create RateCategory Table *********/
+
+
+/****** Object:  Table [dbo].[RateCategory]    Script Date: 3/26/2018 5:40:26 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[RateTypeCategory](
+	[Id] [uniqueidentifier] NOT NULL,	
+	[Code] [nvarchar](50) NULL,
+	[Name] [nvarchar](255) NULL,	
+	[Description] [nvarchar](MAX) NULL,	
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,	
+ CONSTRAINT [PK_RateTypeCategory] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/*********** Insert data into RateTypeCategory table **************/
+
+INSERT INTO [dbo].[RateTypeCategory] ([Id],[Code],[Name],[Description],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'CORP','Corporate','Corporate',(SELECT TOP 1 UserId FROM [dbo].[UserDetail] WHERE ISNULL(IsDeleted,0) = 0 AND Email = 'admin@hotelierhub.com'),GETDATE(),1)
+
+INSERT INTO [dbo].[RateTypeCategory] ([Id],[Code],[Name],[Description],[CreatedBy],[CreatedOn],[IsActive])
+VALUES (NEWID(),'NONCORP','Non Corporate','Non Corporate',(SELECT TOP 1 UserId FROM [dbo].[UserDetail] WHERE ISNULL(IsDeleted,0) = 0 AND Email = 'admin@hotelierhub.com'),GETDATE(),1)
+
+
+
+/*********** Add RateTypeCategoryId column in RateType Table ********/
+
+ALTER TABLE RateType ADD RateTypeCategoryId UNIQUEIDENTIFIER NULL 
+GO
+
+
+/************************************************************************************************************************ 
+	SP Name : GetRateTypeCategory
+	Comment : New SP Get RateTypeCategory 
+	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetRateTypeCategory]    Script Date: 5/23/2018 4:20:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetRateTypeCategory]
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RateTypeCategory]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Name]
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetRateTypeCategoryByCode
+	Comment : New SP Get RateTypeCategory by Code 
+	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetRateTypeCategoryByCode]    Script Date: 5/23/2018 4:20:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetRateTypeCategoryByCode]
+	@Code	NVARCHAR(50) =	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RateTypeCategory]
+		WHERE 	ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+				AND (ISNULL(@Code,'') = '' OR [Code] = @Code)
+		ORDER BY [Name]
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : GetRateTypeCategoryByName
+	Comment : New SP Get RateTypeCategory by Name 
+	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetRateTypeCategoryByName]    Script Date: 5/23/2018 4:20:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetRateTypeCategoryByName]
+	@Name	NVARCHAR(255)	= NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[RateTypeCategory]
+		WHERE 	ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+				AND (ISNULL(@Name,'') = '' OR [Name] = @Name)
+		ORDER BY [Name]
+END
+
+/************************************************************************************************************************ 
+	SP Name : AddRateType
+	Comment : Added RateTypeCategoryId Parameter 
+	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[AddRateType]    Script Date: 5/23/2018 3:54:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddRateType]
+	@RateTypeCode		NVARCHAR(25)					,
+	@Description		NVARCHAR(500)		=	NULL	,
+	@Amount				DECIMAL(18,2)					,	
+	@IsLeisRateType		BIT					=	NULL	,
+	@RateTypeCategoryId	UNIQUEIDENTIFIER	=	NULL	,
+	@IsActive			BIT					=	NULL	,	
+	@CreatedBy			INT					=	NULL
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[RateType]
+           ([Id]
+           ,[RateTypeCode]
+           ,[Description]
+		   ,[Amount]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+		   ,[IsLeisRateType]
+		   ,[RateTypeCategoryId]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@RateTypeCode
+			   ,@Description
+			   ,@Amount
+			   ,@CreatedBy
+			   ,GETDATE()
+			   ,@IsLeisRateType			   
+			   ,@RateTypeCategoryId
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateRateType	
+	Comment : Added RateTypeCategoryId Parameter 
+	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[UpdateRateType]    Script Date: 5/23/2018 3:56:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateRateType]
+	@Id					UNIQUEIDENTIFIER			,
+	@RateTypeCode		NVARCHAR(25)				,
+	@Description		NVARCHAR(500)		=	NULL	,	
+	@Amount				DECIMAL(18,2)		=	NULL	,
+	@IsLeisRateType		BIT					=	NULL	,	
+	@RateTypeCategoryId		UNIQUEIDENTIFIER	=	NULL	,
+	@IsActive			BIT					=	NULL	,
+	@UpdatedBy			INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[RateType] 
+		SET	[RateTypeCode]			=	@RateTypeCode
+           ,[Description]			=	@Description
+		   ,[Amount]				=	@Amount
+		   ,[UpdatedBy]				=	@UpdatedBy
+		   ,[IsLeisRateType]		=	@IsLeisRateType
+		   ,[RateTypeCategoryId]	=	@RateTypeCategoryId
+		   ,[IsActive]				=	@IsActive
+		   ,[UpdatedOn]				=	GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchRateType
+	Comment : Added RateTypeCategoryId Parameter 
+	
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[SearchRateType]    Script Date: 5/23/2018 3:56:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchRateType] '', 0, NULL, 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchRateType]		
+	@RateTypeCode		NVARCHAR(25)		=	NULL	,
+	@Amount				DECIMAL(18,2)		=	NULL	,
+	@RateTypeCategoryId		UNIQUEIDENTIFIER	=	NULL	,
+	@PageNum			INT					=	1		,
+	@PageSize			INT					=	10		,
+	@SortColumn			NVARCHAR(255)		=	NULL	,
+	@SortDirection		NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempRateType
+	(
+			[RowNum]			INT					NOT NULL
+		,	[Id]				UNIQUEIDENTIFIER	NOT NULL
+		,   [RateTypeCode]		NVARCHAR(25)		NOT NULL
+		,   [Description]		NVARCHAR(500)		NULL
+		,   [Amount]			DECIMAL(18,2)		NULL
+		,	[CreatedOn]			DATETIME			NULL
+		,	[IsLeisRateType]	BIT					NULL
+		,	[RateTypeCategoryId]	UNIQUEIDENTIFIER	NULL
+		,	[RateTypeCategory]		NVARCHAR(255)		NULL
+		,   [IsActive]			BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[RateType] RT
+							LEFT JOIN [dbo].[RateTypeCategory] RTC ON RTC.Id = RT.RateTypeCategoryId
+								AND ISNULL(RTC.IsDeleted,0) = 0								
+						WHERE	ISNULL(RT.IsDeleted,0) = 0
+								AND (ISNULL(@RateTypeCode,'') = '' OR RT.RateTypeCode LIKE '%'+ @RateTypeCode +'%')  
+								AND (@RateTypeCategoryId IS NULL OR RT.RateTypeCategoryId = @RateTypeCategoryId)
+								AND (ISNULL(@Amount,0) = 0 OR RT.[Amount] =  @Amount)	
+						)
+
+
+		INSERT INTO #tempRateType 
+		(
+			[RowNum]			, 
+			[Id]				, 
+			[RateTypeCode]		, 
+			[Description]		, 
+			[Amount]			, 
+			[CreatedOn]			, 
+			[IsLeisRateType]	,
+			[RateTypeCategoryId]	,
+			[RateTypeCategory]		,
+			[IsActive]
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN RT.[CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN RT.[CreatedOn] END DESC,
+
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'asc'
+						THEN RT.[RateTypeCode] END ASC,
+					CASE WHEN @SortColumn = 'RateTypeCode' and @SortDirection = 'desc'
+						THEN RT.[RateTypeCode] END DESC,
+
+					CASE WHEN @SortColumn = 'Amount' and @SortDirection = 'asc'
+						THEN RT.[Amount] END ASC,
+					CASE WHEN @SortColumn = 'Amount' and @SortDirection = 'desc'
+						THEN RT.[Amount] END DESC,
+
+					CASE WHEN @SortColumn = 'RateTypeCategory' and @SortDirection = 'asc'
+						THEN RTC.[Name] END ASC,
+					CASE WHEN @SortColumn = 'RateTypeCategory' and @SortDirection = 'desc'
+						THEN RTC.[Name] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN RT.[RateTypeCode] END ASC
+
+			) AS RowNum,
+			RT.[ID],
+			RT.[RateTypeCode],
+			RT.[Description],
+			RT.[Amount],
+			RT.[CreatedOn],
+			ISNULL(RT.[IsLeisRateType],0) AS [IsLeisRateType],
+			RT.RateTypeCategoryId,
+			RTC.[Name] AS RateTypeCategory,
+			ISNULL(RT.[IsActive],0) AS [IsActive]
+		FROM [RateType] RT 
+			 LEFT JOIN [dbo].[RateTypeCategory] RTC ON RTC.Id = RT.RateTypeCategoryId
+				AND ISNULL(RTC.IsDeleted,0) = 0	             
+		WHERE	ISNULL(RT.IsDeleted,0) = 0
+			AND (ISNULL(@RateTypeCode,'') = '' OR RT.RateTypeCode LIKE '%'+ @RateTypeCode +'%')  
+			AND (@RateTypeCategoryId IS NULL OR RT.RateTypeCategoryId = @RateTypeCategoryId)
+			AND (ISNULL(@Amount,0) = 0 OR RT.[Amount] =  @Amount)	
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],
+			temp.[RateTypeCode],
+			temp.[Description],
+			temp.[Amount],
+			temp.[CreatedOn],
+			temp.[IsLeisRateType],
+			temp.[RateTypeCategoryId],
+			temp.[RateTypeCategory],
+			temp.[IsActive], 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempRateType AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+

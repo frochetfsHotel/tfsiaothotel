@@ -52,12 +52,10 @@
                     <div class="row">
                         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                             @Html.LabelFor(m => m.CompanyId)
-                            <select class="form-control" id="CompanyId" name="CompanyId">
-                                <option value="">--Select Company--</option>
-                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F931">Company 1</option>
-                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F934">Company 2</option>
-                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Company 3</option>
-                            </select>
+                            @Html.DropDownListFor(m => m.CompanyId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.CompanyList, "Value", "Text"),
+                                "--Select Company--",
+                                new { @class = "form-control" })
                         </div>
                         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
                             @Html.LabelFor(m => m.ContactId)

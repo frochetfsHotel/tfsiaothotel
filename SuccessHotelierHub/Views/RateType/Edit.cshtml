@@ -45,12 +45,18 @@
                         @Html.LabelFor(m => m.Description)
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">
-                        <label class="container1" for="IsLeisRateType">
+                    <div class="col-md-3 form-group">
+                        @*<label class="container1" for="IsLeisRateType">
                             LEIS Rate Type
                             @Html.CheckBoxFor(m => m.IsLeisRateType)
                             <span class="checkmark"></span>
-                        </label>
+                        </label>*@
+                        @Html.LabelFor(m => m.RateTypeCategoryId)
+                        @Html.DropDownListFor(m => m.RateTypeCategoryId,
+                                        new SelectList((IEnumerable<SelectListItem>)ViewBag.RateTypeCategoryList, "Value", "Text"),
+                                        "Select Category",
+                                        new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.RateTypeCategoryId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">

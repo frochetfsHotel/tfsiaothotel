@@ -15,12 +15,16 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration
 
         private RateTypeRepository rateTypeRepository = new RateTypeRepository();
+        private RateTypeCategoryRepository rateTypeCategoryRepository = new RateTypeCategoryRepository();
 
         #endregion
 
         // GET: RateType
         public ActionResult Create()
         {
+            var rateTypeCategoryList = new SelectList(rateTypeCategoryRepository.GetRateTypeCategory(), "Id", "Name");
+            ViewBag.RateTypeCategoryList = rateTypeCategoryList;
+            
             return View();
         }
 
@@ -46,6 +50,8 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 #endregion
+
+                model.IsLeisRateType = false;
 
                 rateTypeId = rateTypeRepository.AddRateType(model);
 
@@ -117,6 +123,9 @@ namespace SuccessHotelierHub.Controllers
             {
                 model = rateType[0];
 
+                var rateTypeCategoryList = new SelectList(rateTypeCategoryRepository.GetRateTypeCategory(), "Id", "Name");
+                ViewBag.RateTypeCategoryList = rateTypeCategoryList;
+
                 return View(model);
             }
 
@@ -146,6 +155,8 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 #endregion
+
+                model.IsLeisRateType = false;
 
                 rateTypeId = rateTypeRepository.UpdateRateType(model);
 
@@ -281,6 +292,9 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult List()
         {
+            var rateTypeCategoryList = new SelectList(rateTypeCategoryRepository.GetRateTypeCategory(), "Id", "Name");
+            ViewBag.RateTypeCategoryList = rateTypeCategoryList;
+
             return View();
         }
 

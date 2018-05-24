@@ -43,6 +43,9 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult RegistrationCard()
         {
+            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            ViewBag.CompanyList = companyList;
+
             return View();
         }
 

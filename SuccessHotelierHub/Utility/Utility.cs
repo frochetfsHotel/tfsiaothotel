@@ -1146,4 +1146,20 @@ namespace SuccessHotelierHub.Utility
         public const string HASH = "#";
         public const string SPACE = " ";
     }
+
+    public static class CompanyInfo
+    {
+        public static List<CompanyVM> CompanyList
+        {
+            get
+            {
+                return new List<CompanyVM>()
+               {
+                  new CompanyVM() { Id = Guid.Parse("AC3BD2C0-D75B-475E-97F1-5DFBAB9C4C7E"), CompanyName = "Bausch & Lomb", CompanyAddress = "424/425, Cork Road Industrial Estate, Cork Rd, Waterford, Ireland " },
+                  new CompanyVM() { Id = Guid.Parse("2AB20BA4-5915-42E3-8F98-F64EB10BBC9C"), CompanyName = "House of Waterford Crystal", CompanyAddress = "28 The Mall, Waterford, Ireland" },
+                  new CompanyVM() { Id = Guid.Parse("EABEBA2A-AC17-458D-A23D-342142905858"), CompanyName = "Apple Ireland", CompanyAddress = "Hollyhill Industrial Estate, Hollyhill, Cork, Ireland" }
+               };
+            }
+        }
+    }
 }

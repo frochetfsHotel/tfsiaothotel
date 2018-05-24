@@ -48,6 +48,8 @@ namespace SuccessHotelierHub.Controllers
             var charges = additionalChargeRepository.GetAdditionalCharges();
             ViewBag.AdditionalChargeList = charges;
 
+            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            ViewBag.CompanyList = companyList;
 
             #region Record Activity Log
             RecordActivityLog.RecordActivity(Pages.SEARCH_GUESTS, "Goes to search guest page.");
@@ -732,6 +734,19 @@ namespace SuccessHotelierHub.Controllers
 
                     model.VATAmount = Math.Round((totalBalance - netAmount), 2);
                     model.NetAmount = netAmount;
+                }
+
+                //Company Info
+                if(reservation.CompanyId != null && reservation.CompanyId.HasValue)
+                {
+                    model.CompanyId = reservation.CompanyId;
+
+                    var companyInfo = Utility.CompanyInfo.CompanyList.Where(m => m.Id == reservation.CompanyId.Value).FirstOrDefault();
+                    if (companyInfo != null)
+                    {
+                        model.CompanyName = companyInfo.CompanyName;
+                        model.CompanyAddress = companyInfo.CompanyAddress;
+                    }
                 }
 
                 #region Record Activity Log

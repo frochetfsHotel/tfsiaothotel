@@ -24,6 +24,12 @@ namespace SuccessHotelierHub.Models
         [DisplayName("LEIS Rate Type")]
         public bool IsLeisRateType { get; set; }
 
+        [DisplayName("Category")]        
+        public Guid? RateTypeCategoryId { get; set; }
+
+        [DisplayName("Rate Type Category")]
+        public string RateTypeCategory { get; set; }
+
         public bool IsActive { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

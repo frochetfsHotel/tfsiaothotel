@@ -54,6 +54,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Description", Value = rateType.Description },
                     new SqlParameter { ParameterName = "@Amount", Value = rateType.Amount },
                     new SqlParameter { ParameterName = "@IsLeisRateType", Value = rateType.IsLeisRateType },
+                    new SqlParameter { ParameterName = "@RateTypeCategoryId", Value = rateType.RateTypeCategoryId },
                     new SqlParameter { ParameterName = "@IsActive", Value = rateType.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = rateType.CreatedBy }
                 };
@@ -74,6 +75,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Description", Value = rateType.Description },
                     new SqlParameter { ParameterName = "@Amount", Value = rateType.Amount },
                     new SqlParameter { ParameterName = "@IsLeisRateType", Value = rateType.IsLeisRateType },
+                    new SqlParameter { ParameterName = "@RateTypeCategoryId", Value = rateType.RateTypeCategoryId },
                     new SqlParameter { ParameterName = "@IsActive", Value = rateType.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = rateType.UpdatedBy }
                 };
@@ -104,6 +106,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@RateTypeCode", Value = model.RateTypeCode },
                     new SqlParameter { ParameterName = "@Amount", Value = model.Amount },
+                    new SqlParameter { ParameterName = "@RateTypeCategoryId", Value = model.RateTypeCategoryId },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

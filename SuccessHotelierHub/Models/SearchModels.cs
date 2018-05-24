@@ -303,6 +303,9 @@ namespace SuccessHotelierHub.Models
         public string RateTypeCode { get; set; }
         public double Amount { get; set; }
 
+        [DisplayName("Rate Type Category")]
+        public Guid? RateTypeCategoryId { get; set; }        
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -316,6 +319,14 @@ namespace SuccessHotelierHub.Models
         public double Amount { get; set; }        
         public DateTime? CreatedOn { get; set; }
         public bool IsLeisRateType { get; set; }
+
+        [DisplayName("Rate Type Category")]
+        public Guid? RateTypeCategoryId { get; set; }
+
+        [DisplayName("Rate Type Category")]
+        public string RateTypeCategory { get; set; }
+
+
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }

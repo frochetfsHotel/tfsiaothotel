@@ -270,6 +270,7 @@
     <Compile Include="Models\CheckInPaymentMethodVM.cs" />
     <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
     <Compile Include="Models\CityVM.cs" />
+    <Compile Include="Models\CompanyVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\CurrencyVM.cs" />
     <Compile Include="Models\CurrentUserRoleVM.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="Models\IndividualProfileVM.cs" />
     <Compile Include="Models\RateQueryVM.cs" />
     <Compile Include="Models\RateSheetResultVM.cs" />
+    <Compile Include="Models\RateTypeCategoryVM.cs" />
     <Compile Include="Models\RateTypeVM.cs" />
     <Compile Include="Models\ReservationAddOnsMappingVM.cs" />
     <Compile Include="Models\ReservationCancellationReasonVM.cs" />
@@ -365,6 +367,7 @@
     <Compile Include="Repository\ProfileRepository.cs" />
     <Compile Include="Repository\ProfileTypeRepository.cs" />
     <Compile Include="Repository\RateRepository.cs" />
+    <Compile Include="Repository\RateTypeCategoryRepository.cs" />
     <Compile Include="Repository\RateTypeRepository.cs" />
     <Compile Include="Repository\ReservationCancellationReasonRepository.cs" />
     <Compile Include="Repository\ReservationChargeRepository.cs" />
@@ -395,7 +398,6 @@
     <Compile Include="Utility\RecordActivityLog.cs" />
     <Compile Include="Utility\TempReservation.cs" />
     <Compile Include="Utility\Utility.cs" />
-    <Content Include="_app_offline.htm" />
     <Content Include="Content\css\AdminLTE\select2\select2-bootstrap.css" />
     <Content Include="Content\css\AdminLTE\select2\select2-spinner.gif" />
     <Content Include="Content\css\AdminLTE\select2\select2.css" />
@@ -409,6 +411,7 @@
     <Content Include="HtmlTemplates\SendFolioReport.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
+    <Content Include="_app_offline.htm" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\AdminLTE\AdminLTE.css" />
@@ -1874,6 +1877,7 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\css\AdminLTE\adminlte.css.map" />
     <Content Include="Content\css\AdminLTE\adminlte.min.css.map" />

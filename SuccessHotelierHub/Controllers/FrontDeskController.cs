@@ -47,6 +47,9 @@ namespace SuccessHotelierHub.Controllers
             var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
+            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            ViewBag.CompanyList = companyList;
+
             ViewBag.RoomTypeList = roomTypeList;
             ViewBag.RoomFeaturesList = roomFeaturesList;
 

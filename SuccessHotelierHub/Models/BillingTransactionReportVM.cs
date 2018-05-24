@@ -41,6 +41,10 @@ namespace SuccessHotelierHub.Models
 
         public string CurrencySymbol { get; set; }
 
+        public Guid? CompanyId { get; set; }
+        public string CompanyName { get; set; }
+        public string CompanyAddress { get; set; }
+
         public List<ReservationChargeVM> Transactions { get; set; }
 
 
