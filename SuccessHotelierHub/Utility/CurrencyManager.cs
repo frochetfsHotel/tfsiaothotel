@@ -17,6 +17,13 @@ namespace SuccessHotelierHub
         {
             var currencyList = new List<CurrencyVM>();
 
+            if (System.Web.HttpContext.Current.Application["CurrencyInfo"] == null)
+            {
+                CurrencyRepository currencyRepository = new CurrencyRepository();
+                var currencyInfoDetail = currencyRepository.GetCurrencyInfo();
+                System.Web.HttpContext.Current.Application["CurrencyInfo"] = currencyInfoDetail;
+            }
+
             if (System.Web.HttpContext.Current.Application["CurrencyInfo"] != null)
             {
                 currencyList = (List<CurrencyVM>)System.Web.HttpContext.Current.Application["CurrencyInfo"];
@@ -33,8 +40,15 @@ namespace SuccessHotelierHub
         public static CurrencyVM GetCurrencyInfoById(Guid currencyId)
         {
             var currencyInfo = new CurrencyVM();
-            
-            if(System.Web.HttpContext.Current.Application["CurrencyInfo"] != null)
+
+            if (System.Web.HttpContext.Current.Application["CurrencyInfo"] == null)
+            {
+                CurrencyRepository currencyRepository = new CurrencyRepository();
+                var currencyInfoDetail = currencyRepository.GetCurrencyInfo();
+                System.Web.HttpContext.Current.Application["CurrencyInfo"] = currencyInfoDetail;
+            }
+
+            if (System.Web.HttpContext.Current.Application["CurrencyInfo"] != null)
             {
                 var currencyInfoList = (List<CurrencyVM>) System.Web.HttpContext.Current.Application["CurrencyInfo"];
 
@@ -55,6 +69,14 @@ namespace SuccessHotelierHub
         public static CurrencyVM GetCurrencyInfoByCode(string currencyCode)
         {
             var currencyInfo = new CurrencyVM();
+
+            if (System.Web.HttpContext.Current.Application["CurrencyInfo"] == null)
+            {
+                CurrencyRepository currencyRepository = new CurrencyRepository();
+                var currencyInfoDetail = currencyRepository.GetCurrencyInfo();
+                System.Web.HttpContext.Current.Application["CurrencyInfo"] = currencyInfoDetail;
+            }
+
 
             if (System.Web.HttpContext.Current.Application["CurrencyInfo"] != null)
             {

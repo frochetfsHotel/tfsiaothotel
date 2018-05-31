@@ -49567,3 +49567,74 @@ BEGIN
 
 END
 
+/*****************************************************************************************************/
+
+Name : Nilesh
+Date : 31-May-2018
+
+/************************************************************************************************************************ 
+	Sp Name = [GetReservationDetailsForRoomPlan]
+	Comment : NoOfAdults Column Added
+	
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[GetReservationDetailsForRoomPlan]    Script Date: 31-May-18 12:02:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [GetReservationDetailsForRoomPlan]
+			@RoomId				=	'8a76740e-1e46-42c0-b3f8-eda2d31027b1'	,			
+			@StartDate			=	'2018/5/30'							,
+			@EndDate			=	'2018/6/5'							,
+			@UserId				=	2
+*/
+ALTER PROCEDURE [dbo].[GetReservationDetailsForRoomPlan]
+	@RoomId				UNIQUEIDENTIFIER	=	NULL	,	
+	@StartDate			NVARCHAR(15)		=	NULL	,
+	@EndDate			NVARCHAR(15)		=	NULL	,
+	@UserId				INT
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT DISTINCT
+				RL.ReservationId, 
+				RE.ProfileId, 
+				ISNULL(RE.FirstName,'') AS FirstName,
+				ISNULL(RE.LastName,'') AS LastName,
+				ISNULL(RE.NoOfNight,0) AS NoOfNight,
+				RL.RoomId, 
+				RL.RoomStatusId, 
+				ISNULL(RS.[Name],'') AS RoomStatus,
+				ISNULL(RS.ColorCode,'') AS RoomStatusColor,
+				CONVERT(varchar(12),RL.CheckInDate,103) AS CheckInDateString,
+				RL.CheckInDate,
+				CONVERT(varchar(12),RL.CheckOutDate,103) AS CheckOutDateString,
+				RL.CheckOutDate,
+				RE.NoOfAdult
+			FROM ReservationLog RL 
+				INNER JOIN Reservation RE ON RL.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0 AND RE.[CreatedBy] = @UserId
+				INNER JOIN Room R ON RL.RoomId = R.Id
+					AND ISNULL(R.IsDeleted,0) = 0  AND ISNULL(R.IsActive,0) = 1
+				INNER JOIN IndividualProfile IPR ON IPR.Id = RE.ProfileId
+					AND ISNULL(IPR.IsDeleted,0) = 0 AND ISNULL(IPR.IsActive,0) = 1
+					AND IPR.[CreatedBy] = @UserId
+				LEFT JOIN [dbo].[RoomStatus] RS ON RS.Id = (CASE WHEN RL.RoomStatusId IS NOT NULL THEN RL.RoomStatusId ELSE R.StatusId END)					
+					AND ISNULL(RS.IsDeleted,0) = 0  AND ISNULL(RS.IsActive,0) = 1 
+
+
+			WHERE ISNULL(RL.IsDeleted,0) = 0 AND ISNULL(RL.IsActive,0) = 1 
+				AND ISNULL(RE.IsCheckIn,0) = 1 AND ISNULL(RE.IsCheckOut,0) = 0
+				AND RL.[CreatedBy] = @UserId
+				AND RL.RoomId = @RoomId
+				AND (
+						(CAST(RL.CheckInDate  AS DATE)  BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE))
+						OR (CAST(RL.CheckOutDate AS DATE)  BETWEEN CAST(@StartDate AS DATE) AND CAST(@EndDate AS DATE))
+					) 
+
+			ORDER BY RL.CheckInDate, RL.CheckOutDate ASC
+
+END

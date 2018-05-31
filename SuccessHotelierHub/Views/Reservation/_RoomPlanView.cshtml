@@ -70,7 +70,7 @@
     }
 
     .spnReservation {
-        min-width:100%;
+        width: 100%;
     }
 
     /* define height and width of scrollable area. Add 16px to width for scrollbar*/
@@ -195,7 +195,7 @@
                             </td>
                             <td width='10%'>@room.RoomTypeCode</td>
 
-                    @if (reservationDetail != null && reservationDetail.Count > 0)
+                            @if (reservationDetail != null && reservationDetail.Count > 0)
                     {
                         bool blnFirst = true;
                         int cardColspan = 0;
@@ -211,29 +211,43 @@
                                 if (blnFirst)
                                 {
                                     blnFirst = false;
-                                            <td width='10%' class="text-center cursor-move assigned" style="padding:0">
-                                                <span style="margin-right:-1px !important;" 
-                                                      class="first btn item btn-xs bg-orange m-r-xs text-left-align p-l-xs spnReservation" 
-                                                      id="@("spnReservation_" + reservationInfo.ReservationId)" 
-                                                      data-reservationid="@(reservationInfo.ReservationId)" 
+                                            <td width='10%' class="text-center cursor-move assigned" style="padding:0" colspan="@(reservationInfo.NoOfNight - 1)">
+                                                <span style="margin-right:-1px !important; text-align:center!important;"
+                                                      class="first btn item btn-xs bg-orange m-r-xs text-left-align p-l-xs spnReservation"
+                                                      id="@("spnReservation_" + reservationInfo.ReservationId)"
+                                                      data-reservationid="@(reservationInfo.ReservationId)"
                                                       ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
                                                       title="Double click here to view reservation detail.">
-                                                    @(string.Format("{0} {1}", reservationInfo.LastName, reservationInfo.FirstName))
+                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfAdult))
                                                 </span>
                                             </td>
-                                    }
-                                    else
-                                    {
-                                            <td width='10%' class="text-center cursor-move assigned" style="padding:0">
-                                                <span style="margin-left:-8px;color:#ff851b !important;" 
-                                                      class="btn item btn-xs bg-orange m-r-xs text-left-align p-l-xs spnReservation" 
-                                                      id="@("spnReservation_" + reservationInfo.ReservationId)" 
-                                                      data-reservationid="@(reservationInfo.ReservationId)" 
-                                                      ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
-                                                      title="Double click here to view reservation detail.">
-                                                    @(string.Format("{0} {1}", reservationInfo.LastName, reservationInfo.FirstName))
-                                                </span>
-                                            </td>
+                                        }
+                                        else
+                                        {
+                                            if (reservationInfo.CheckOutDateString == dates[intI].DateString)
+                                            {
+                                                <td width='10%' class="text-center cursor-move assigned" style="padding:0">
+                                                    <span class="btn btn-xs m-r-xs text-left-align p-l-xs fa fa-arrow-right"
+                                                          id="@("spnReservation_" + reservationInfo.ReservationId)"
+                                                          data-reservationid="@(reservationInfo.ReservationId)"
+                                                          ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
+                                                          title="Double click here to view reservation detail.">
+                                                    </span>
+                                                </td>
+
+                                            }
+                                            else
+                                            {
+                                                @*<td width='10%' class="text-center cursor-move assigned" style="padding:0">
+                                                        <span class="btn btn-xs m-r-xs text-left-align p-l-xs"
+                                                              id="@("spnReservation_" + reservationInfo.ReservationId)"
+                                                              data-reservationid="@(reservationInfo.ReservationId)"
+                                                              ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
+                                                              title="Double click here to view reservation detail.">
+                                                        </span>
+                                                    </td>*@
+                                           } 
+
                                         }
 
                                         @*<td class="text-center cursor-move assigned" style="padding:0">
@@ -330,9 +344,10 @@ else
                     $(this).closest("td").addClass("assigned");
                     //$(this).closest("td").removeClass("drop");
 
-                    c.draggable({
-                        revert: true
-                    });
+                    c.draggable(
+                        {
+                            revert: true
+                        });
 
                     $(source).closest("td").addClass("drop1");
                     //$(source).closest("td").removeClass("assigned");

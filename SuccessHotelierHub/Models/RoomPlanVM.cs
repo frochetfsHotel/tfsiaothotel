@@ -59,12 +59,12 @@ namespace SuccessHotelierHub.Models
 
         public Guid Id { get; set; }
 
-        [DisplayName("Room Type")]        
+        [DisplayName("Room Type")]
         public Guid RoomTypeId { get; set; }
 
         public string RoomTypeCode { get; set; }
 
-        [DisplayName("Room #")]        
+        [DisplayName("Room #")]
         public string RoomNo { get; set; }
 
         [DisplayName("Type")]
@@ -118,5 +118,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Check Out Date")]
         public DateTime? CheckOutDate { get; set; }
+
+        public int NoOfAdult { get; set; }
     }
 }
