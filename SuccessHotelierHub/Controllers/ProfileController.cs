@@ -40,7 +40,7 @@ namespace SuccessHotelierHub.Controllers
                                 m => new SelectListItem()
                                 {
                                     Value = m.Id.ToString(),
-                                    Text = (m.Title + (!string.IsNullOrWhiteSpace(m.Salutation) ? " - " + m.Salutation : ""))
+                                    Text = (m.Title)
                                 }
                             ), "Value", "Text").ToList();
             var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
@@ -254,7 +254,7 @@ namespace SuccessHotelierHub.Controllers
                                 m => new SelectListItem()
                                 {
                                     Value = m.Id.ToString(),
-                                    Text = (m.Title + (!string.IsNullOrWhiteSpace(m.Salutation) ? " - " + m.Salutation : ""))
+                                    Text = (m.Title)
                                 }
                             ), "Value", "Text").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();

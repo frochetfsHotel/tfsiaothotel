@@ -49567,6 +49567,48 @@ BEGIN
 
 END
 
+
+/******************************************************************/
+
+Date:24-May-2018
+Name:Nilesh
+
+
+/************************************************************************************************************************ 
+	SP Name : GetTitle
+	Comment : Change dropdown list
+	
+***********************************************************************************************************************/ 
+/****** Object:  StoredProcedure [dbo].[GetTitle]    Script Date: 24-May-18 2:39:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetTitle]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT *, 1 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) = 'Mr'
+	UNION 
+	SELECT *, 2 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) = 'Mrs'
+	UNION
+	SELECT *, 3 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) = 'Ms'	
+	UNION
+    SELECT *, 4 AS SortOrder FROM [dbo].[Title]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			AND LTRIM(RTRIM([Title])) NOT IN ('Mrs','Ms')
+		
+	ORDER BY [SortOrder],[Title]
+END
+
+
 /*****************************************************************************************************/
 
 Name : Nilesh

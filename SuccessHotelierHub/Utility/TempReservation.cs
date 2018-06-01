@@ -575,9 +575,9 @@ namespace SuccessHotelierHub.Utility
 
                 #endregion
 
-                #region Record Activity Log
-                RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Created new reservation, Confirmation# : {0}", model.ConfirmationNumber));
-                #endregion
+                //#region Record Activity Log
+                //RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Created new reservation, Confirmation# : {0}", model.ConfirmationNumber));
+                //#endregion
 
             }
 
@@ -970,9 +970,9 @@ namespace SuccessHotelierHub.Utility
 
                     #endregion
 
-                    #region Record Activity Log
-                    RecordActivityLog.RecordActivity(Pages.CHECKIN, string.Format("Checked in profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
-                    #endregion
+                    //#region Record Activity Log
+                    //RecordActivityLog.RecordActivity(Pages.CHECKIN, string.Format("Checked in profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                    //#endregion
 
                 }
 
@@ -1138,9 +1138,9 @@ namespace SuccessHotelierHub.Utility
 
                         #endregion
 
-                        #region Record Activity Log
-                        RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
-                        #endregion
+                        //#region Record Activity Log
+                        //RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                        //#endregion
 
                     }
 
