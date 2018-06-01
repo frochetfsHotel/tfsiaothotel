@@ -607,7 +607,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Title 
 
                 var title = new TitleVM();
-                if (profile !=null && profile.TitleId.HasValue)
+                if (profile != null && profile.TitleId.HasValue)
                     title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
 
                 #endregion
@@ -681,6 +681,7 @@ namespace SuccessHotelierHub.Controllers
                 model.GSTRegistrationNumber = "";
 
                 model.VATTax = 9; //Default 9%.
+                model.VATTax2 = 23;
 
                 model.Transactions = transactions;
 
@@ -690,6 +691,8 @@ namespace SuccessHotelierHub.Controllers
                 var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault(); //Room Rent
 
                 double checkOutPaidPayment = 0;
+                double vat_9 = 0;
+                double vat_23 = 0;
                 foreach (var item in transactions)
                 {
                     int qty = 1;
@@ -708,10 +711,30 @@ namespace SuccessHotelierHub.Controllers
 
                     //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
 
+                    bool blnIsBreakFastCharge = false;
+
+                    if (item.AdditionalChargeId.HasValue && (item.Code != AdditionalChargeCode.ROOM_RENT && item.Code != AdditionalChargeCode.CHECK_OUT))
+                    {
+                        var breakfastChargeCategory = additionalChargeRepository.IsBrekFastCharges(item.AdditionalChargeId.Value).FirstOrDefault();
+
+                        if(breakfastChargeCategory != null)
+                        {
+                            blnIsBreakFastCharge = true;
+                        }
+                    }
+
                     //Room Rent
                     if (roomRentAdditionalCharge != null && roomRentAdditionalCharge.Id == item.AdditionalChargeId.Value)
                         roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
 
+                    if (item.Code == AdditionalChargeCode.ROOM_RENT || blnIsBreakFastCharge == true)
+                    {
+                        vat_9 += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+                    else if ((item.Code != AdditionalChargeCode.ROOM_RENT || blnIsBreakFastCharge == false) && item.Amount > 0)
+                    {
+                        vat_23 += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
                 }
 
 
@@ -729,15 +752,23 @@ namespace SuccessHotelierHub.Controllers
 
                 if (totalBalance > 0)
                 {
-                    double netAmount = 0;
-                    netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
+                    //double netAmount = 0;
+                    //netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
 
-                    model.VATAmount = Math.Round((totalBalance - netAmount), 2);
-                    model.NetAmount = netAmount;
+                    double VAT_9_CALCULATION = 0;
+                    VAT_9_CALCULATION = Math.Round(((vat_9 * 100) / (100 + model.VATTax)), 2);
+                    double VAT_23_CALCULATION = 0;
+                    VAT_23_CALCULATION = Math.Round(((vat_23 * 100) / (100 + model.VATTax2)), 2);
+
+                    //model.VATAmount = Math.Round((totalBalance - netAmount), 2);
+                    model.VATAmount = Math.Round((vat_9 - VAT_9_CALCULATION), 2);
+                    model.VATAmount2 = Math.Round((vat_23 - VAT_23_CALCULATION), 2);
+
+                    model.NetAmount = VAT_9_CALCULATION + VAT_23_CALCULATION;
                 }
 
                 //Company Info
-                if(reservation.CompanyId != null && reservation.CompanyId.HasValue)
+                if (reservation.CompanyId != null && reservation.CompanyId.HasValue)
                 {
                     model.CompanyId = reservation.CompanyId;
 
@@ -805,7 +836,7 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 #region Reservation Charges
-                
+
                 var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, reservation.CreatedBy);
 
                 #endregion
@@ -857,7 +888,7 @@ namespace SuccessHotelierHub.Controllers
                     model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.CityName) : profile.CityName;
                     //model.City = profile.CityName;
                 }
-                
+
 
                 if (!string.IsNullOrWhiteSpace(profile.StateName))
                 {
@@ -931,18 +962,18 @@ namespace SuccessHotelierHub.Controllers
                 model.TotalBalance = Math.Round(totalBalance, 2);
                 model.BalanceDue = Math.Round(balanceDue, 2);
 
-                if(reservation.CreatedBy.HasValue)
+                if (reservation.CreatedBy.HasValue)
                 {
                     var user = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
                     if (user != null)
                     {
-                        if(user.UserGroupId.HasValue)
+                        if (user.UserGroupId.HasValue)
                         {
                             var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
-                            if(userGroup != null)
+                            if (userGroup != null)
                             {
                                 var currency = currencyRepository.GetCurrencyInfoById(userGroup.CurrencyId).FirstOrDefault();
-                                if(currency != null)
+                                if (currency != null)
                                 {
                                     model.CurrencySymbol = currency.CurrencySymbol;
                                 }

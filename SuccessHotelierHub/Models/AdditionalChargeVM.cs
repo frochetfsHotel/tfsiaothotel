@@ -23,6 +23,10 @@ namespace SuccessHotelierHub.Models
         [DataType(DataType.Currency, ErrorMessage = "Please enter valid price.")]
         public double? Price { get; set; }
 
+        [DisplayName("Category")]
+        [Required(ErrorMessage = "Please select category.")]
+        public Guid? CategoryId { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

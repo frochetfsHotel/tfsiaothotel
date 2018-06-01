@@ -63,7 +63,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Description", Value = additionalCharge.Description },
                     new SqlParameter { ParameterName = "@Price", Value = additionalCharge.Price },
                     new SqlParameter { ParameterName = "@IsActive", Value = additionalCharge.IsActive },
-                    new SqlParameter { ParameterName = "@CreatedBy", Value = additionalCharge.CreatedBy }
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = additionalCharge.CreatedBy },
+                    new SqlParameter { ParameterName = "@CategoryId", Value = additionalCharge.CategoryId }
                 };
 
             chargeId = Convert.ToString(DALHelper.ExecuteScalar("AddAdditionalCharges", parameters));
@@ -82,7 +83,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Description", Value = additionalCharge.Description },
                     new SqlParameter { ParameterName = "@Price", Value = additionalCharge.Price },
                     new SqlParameter { ParameterName = "@IsActive", Value = additionalCharge.IsActive },
-                    new SqlParameter { ParameterName = "@UpdatedBy", Value = additionalCharge.UpdatedBy }
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = additionalCharge.UpdatedBy },
+                    new SqlParameter { ParameterName = "@CategoryId", Value = additionalCharge.CategoryId }
                 };
 
             chargeId = Convert.ToString(DALHelper.ExecuteScalar("UpdateAdditionalCharges", parameters));
@@ -157,8 +159,36 @@ namespace SuccessHotelierHub.Repository
 
             return charges;
         }
-
-
         #endregion Additional Charge
+
+        #region "Addtional Charges Category"
+
+        public List<AdditionalChargeCategoryVM> GetAdditionalChargeCategory()
+        {
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetAdditionalChargeCategories");
+
+            var category = new List<AdditionalChargeCategoryVM>();
+            category = DALHelper.CreateListFromTable<AdditionalChargeCategoryVM>(dt);
+
+            return category;
+        }
+
+
+        public List<AdditionalChargeCategoryVM> IsBrekFastCharges(Guid addionalChargeId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@AddionalChargeId", Value = addionalChargeId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("IsBrekFastCharges", parameters);
+
+            var category = new List<AdditionalChargeCategoryVM>();
+            category = DALHelper.CreateListFromTable<AdditionalChargeCategoryVM>(dt);
+
+            return category;
+        }
+
+        #endregion
     }
 }

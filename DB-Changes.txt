@@ -49680,3 +49680,195 @@ BEGIN
 			ORDER BY RL.CheckInDate, RL.CheckOutDate ASC
 
 END
+
+/*****************************************************************************************************/
+
+Name : Nilesh
+Date : 01-JUNE-2018
+
+/*****************************************************************************************************/
+
+
+/************************************************************************************************************************ 
+	Comment : Added  categoryid into AdditionalCharges table.	
+***********************************************************************************************************************/ 
+
+Alter table AdditionalCharges
+Add  CategoryId uniqueidentifier NULL
+
+
+
+/************************************************************************************************************************ 
+	Comment : Create new table AdditionalChargeCategory
+***********************************************************************************************************************/ 
+
+Create table AdditionalChargeCategory(
+Id uniqueidentifier primary key not null,
+Code nvarchar(25),
+Name nvarchar(25),
+Description  nvarchar(1000),
+IsActive bit null,
+IsDeleted bit null,
+CreatedBy int null,
+CreatedOn datetime null,
+UpdatedBy int null,
+UpdatedOn datetime null
+)
+
+
+/************************************************************************************************************************ 
+	Comment : Default data in AdditionalChargeCategory table.
+***********************************************************************************************************************/ 
+
+insert into AdditionalChargeCategory(Id,Code,Name,Description,IsActive,CreatedBy,CreatedOn)
+values(NEWID(),'BREAKFAST','Breakfast','Breakfast',1,1,GETDATE())
+insert into AdditionalChargeCategory(Id,Code,Name,Description,IsActive,CreatedBy,CreatedOn)
+values(NEWID(),'NONBREAKFAST','Non-Breakfast','Non-Breakfast',1,1,GETDATE())
+
+
+/************************************************************************************************************************ 
+Sp Name = [GetAdditionalChargeCategories]
+	Comment : New SP
+	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetAdditionalChargeCategories]    Script Date: 01-Jun-18 7:38:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[GetAdditionalChargeCategories]			
+AS
+BEGIN		
+	SET NOCOUNT ON;    
+	SELECT * FROM [dbo].[AdditionalChargeCategory]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+		ORDER BY [Code]
+END
+
+
+
+/************************************************************************************************************************ 
+	Sp Name = [AddAdditionalCharges]
+	Comment : Add CategoryId parameter
+	
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[AddAdditionalCharges]    Script Date: 01-Jun-18 7:36:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddAdditionalCharges]	
+	@Code				NVARCHAR(25)				,	
+	@Description		NVARCHAR(1000)				,				
+	@Price				DECIMAL(18,2)	=	NULL	,
+	@IsActive			BIT							,	
+	@CreatedBy			INT							,
+	@CategoryId			UNIQUEIDENTIFIER = NULL		
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[AdditionalCharges]
+           ([Id]		   
+           ,[Code]
+           ,[Description]
+		   ,[Price]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive]
+		   ,[CategoryId])
+     VALUES
+           (
+			   @Id			   
+			   ,@Code
+			   ,@Description
+			   ,@Price
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+			   ,@CategoryId
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+
+/************************************************************************************************************************ 
+	Sp Name = [UpdateAdditionalCharges]
+	Comment : Add CategoryId parameter
+	
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[UpdateAdditionalCharges]    Script Date: 01-Jun-18 7:39:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateAdditionalCharges]
+	@Id					UNIQUEIDENTIFIER				,
+	@Code				NVARCHAR(25)					,
+	@Description		NVARCHAR(1000)					,
+	@Price				DECIMAL(18,2)		=	NULL	,
+	@IsActive			BIT								,	
+	@UpdatedBy			INT								,
+	@CategoryId			UNIQUEIDENTIFIER	=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[AdditionalCharges] 
+		SET	[Code]			=	@Code
+           ,[Description]	=	@Description
+		   ,[Price]			=	@Price
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[IsActive]		=	@IsActive
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[CategoryId]    =	@CategoryId 
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+
+
+
+/************************************************************************************************************************ 
+	Sp Name = IsBrekFastCharges
+	Comment : Create SP IsBrekFastCharges
+***********************************************************************************************************************/ 
+
+
+
+/****** Object:  StoredProcedure [dbo].[IsBrekFastCharges]    Script Date: 01-Jun-18 7:48:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[IsBrekFastCharges]
+	@AddionalChargeId UNIQUEIDENTIFIER
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT ACC.* FROM [dbo].[AdditionalCharges] AC
+			INNER JOIN [AdditionalChargeCategory] ACC ON ACC.Id = AC.CategoryId	AND ISNULL(ACC.IsDeleted,0) = 0 
+		WHERE	ISNULL(AC.IsDeleted,0) = 0 
+				AND AC.Id = @AddionalChargeId
+				AND ACC.Code = 'BREAKFAST'
+		
+END
+	

@@ -21,7 +21,7 @@
         <div class="box-header with-border">
             <h3 class="box-title">Additional Charge Details</h3>
         </div>
-        @using (Html.BeginForm("Create", "AdditionalCharge", FormMethod.Post, new { id = "frmAdditionalCharge", enctype = "multipart/form-data" }))
+        @using (Html.BeginForm("Edit", "AdditionalCharge", FormMethod.Post, new { id = "frmAdditionalCharge", enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
 
@@ -31,6 +31,15 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CategoryId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.CategoryId,
+                                new SelectList((IEnumerable<SelectListItem>)ViewBag.CategoryList, "Value", "Text"),
+                                "--Select Category--",
+                                new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
+                    </div>
+
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Code, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
@@ -48,7 +57,7 @@
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
                     </div>
 
-                    <div class="col-md-3 form-group m-t-lg">
+                    <div class="col-md-1 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })

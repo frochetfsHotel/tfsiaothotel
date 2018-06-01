@@ -258,6 +258,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AdditionalChargeCategoryVM.cs" />
     <Compile Include="Models\AdditionalChargeVM.cs" />
     <Compile Include="Models\AddOnsVM.cs" />
     <Compile Include="Models\BillingInfoVM.cs" />

@@ -9,7 +9,7 @@ using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub.Controllers
 {
-    
+
     public class AdditionalChargeController : Controller
     {
         #region Declaration 
@@ -28,6 +28,16 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
+            var CategoryList = new SelectList(additionalChargeRepository.GetAdditionalChargeCategory()
+                            .Select(
+                                m => new SelectListItem()
+                                {
+                                    Value = m.Id.ToString(),
+                                    Text = m.Name
+                                }
+                            ), "Value", "Text").ToList();
+
+            ViewBag.CategoryList = CategoryList;
             return View();
         }
 
@@ -84,6 +94,17 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
+            var CategoryList = new SelectList(additionalChargeRepository.GetAdditionalChargeCategory()
+                            .Select(
+                                m => new SelectListItem()
+                                {
+                                    Value = m.Id.ToString(),
+                                    Text = m.Name
+                                }
+                            ), "Value", "Text").ToList();
+
+            ViewBag.CategoryList = CategoryList;
+
             var charge = additionalChargeRepository.GetAdditionalChargesById(id);
 
             AdditionalChargeVM model = new AdditionalChargeVM();
@@ -91,7 +112,7 @@ namespace SuccessHotelierHub.Controllers
             if (charge != null && charge.Count > 0)
             {
                 model = charge[0];
-                
+
                 return View(model);
             }
 
@@ -313,6 +334,6 @@ namespace SuccessHotelierHub.Controllers
             return blnAvailable;
         }
 
-      
+
     }
 }
