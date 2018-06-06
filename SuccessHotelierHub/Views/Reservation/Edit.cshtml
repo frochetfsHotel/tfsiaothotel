@@ -5,7 +5,7 @@
     ViewBag.Title = "Edit Reservation";
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;
-        
+
     var arrivalDayOfWeek = string.Empty;
     var departureDayOfWeek = string.Empty;
 
@@ -92,7 +92,7 @@
     {
         foreach (var addOns in selectedAddOns)
         {
-            selectedAddOnsHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this)' data-addonsid='{1}' data-price='{2}' data-addons='{3}'></i></span>", addOns.AddOnsName, addOns.AddOnsId, CurrencyManager.ParseAmountToUserCurrency(addOns.AddOnsPrice,LogInManager.CurrencyCode), addOns.AddOnsName);
+            selectedAddOnsHtml += string.Format("<span class='btn btn-xs bg-purple m-r-xs' id='spnAddOns_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removeAddOnsItem(this)' data-addonsid='{1}' data-price='{2}' data-addons='{3}'></i></span>", addOns.AddOnsName, addOns.AddOnsId, CurrencyManager.ParseAmountToUserCurrency(addOns.AddOnsPrice, LogInManager.CurrencyCode), addOns.AddOnsName);
         }
     }
     #endregion
@@ -192,12 +192,12 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Reservation Details</h3>
-            <div class="pull-right">         
+            <div class="pull-right">
                 @if (!string.IsNullOrWhiteSpace(reservationStatus))
                 {
                     <label class="m-r-lg">
-                        <b>Reservation Status : <span class="text-blue">@reservationStatus</span></b> 
-                    </label>       
+                        <b>Reservation Status : <span class="text-blue">@reservationStatus</span></b>
+                    </label>
                 }
                 <label class="" for="ConfirmationNumber">
                     <b>Confirmation# : @(!string.IsNullOrWhiteSpace(Model.ConfirmationNumber) ? Model.ConfirmationNumber : "0") </b>
@@ -214,7 +214,7 @@
             <!-- HIDDEN FIELD -->
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.ProfileId)
-            @Html.HiddenFor(m => m.ConfirmationNumber); 
+            @Html.HiddenFor(m => m.ConfirmationNumber);
             @Html.HiddenFor(m => m.IsWeekEndPrice);
             @Html.HiddenFor(m => m.IsCheckIn);
             @Html.HiddenFor(m => m.IsCheckOut);
@@ -294,9 +294,9 @@
                         @Html.TextBoxFor(m => m.MemberNo, new { @class = "form-control", placeholder = "Member #" })
                     </div>
                     @*<div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.MemberLvt)
-                        @Html.TextBoxFor(m => m.MemberLvt, new { @class = "form-control", placeholder = "Member LVT." })
-                    </div>*@
+                            @Html.LabelFor(m => m.MemberLvt)
+                            @Html.TextBoxFor(m => m.MemberLvt, new { @class = "form-control", placeholder = "Member LVT." })
+                        </div>*@
 
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.AgentId)
@@ -326,7 +326,7 @@
                 </div>
 
                 <div class="row">
-                    
+
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.SourceId)
                         <select class="form-control" id="SourceId" name="SourceId">
@@ -363,7 +363,7 @@
                     </div>
                     <div class="col-md-1 form-group">
                         @Html.LabelFor(m => m.NoOfNight)
-                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control",  onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "LoadTransactionSummary();" })
+                        @Html.TextBoxFor(m => m.NoOfNight, new { @class = "form-control", onkeydown = "onlyDigits(event)", onchange = "calculateDepartureDate();", onblur = "LoadTransactionSummary();" })
                     </div>
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DepartureDate, new { @class = "required-label" })
@@ -409,7 +409,7 @@
                         @Html.TextBoxFor(m => m.NoOfRoom, new { @class = "form-control", onkeydown = "onlyDigits(event)" })
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.RtcId)                        
+                        @Html.LabelFor(m => m.RtcId)
                         @Html.DropDownListFor(m => m.RtcId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.RtcList, "Value", "Text"),
                                 "--Select Rate to Charge--",
@@ -419,11 +419,11 @@
                         @Html.LabelFor(m => m.RoomNumbers)
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.RoomNumbers, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Room #",
-                                @readonly = "readonly"
-                            })
+                       {
+                           @class = "form-control",
+                           placeholder = "Room #",
+                           @readonly = "readonly"
+                       })
                             <div class="input-group-addon cursor-P openRoomSearchModal" onclick="openRoomSearchModal();">
                                 <i class="fa fa-search"></i>
                             </div>
@@ -431,13 +431,13 @@
                         @Html.HiddenFor(m => m.RoomIds)
                     </div>
                     @*<div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ExtnId)
-                        <select class="form-control" id="ExtnId" name="ExtnId">
-                            <option value="">--Select Extn.--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Extn 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Extn 2</option>
-                        </select>
-                    </div>*@
+                            @Html.LabelFor(m => m.ExtnId)
+                            <select class="form-control" id="ExtnId" name="ExtnId">
+                                <option value="">--Select Extn.--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Extn 1</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Extn 2</option>
+                            </select>
+                        </div>*@
                 </div>
                 <div class="row">
                     <div class="col-md-3 form-group">
@@ -454,7 +454,7 @@
                         @*@Html.LabelFor(m => m.Rate)*@
                         @Html.TextBoxFor(m => m.Rate, Utility.FormatAmountWithTwoDecimal(Model.Rate.HasValue ? Model.Rate.Value : 0), new { @class = "form-control", placeholder = "1.00", onkeypress = "onlyNumeric(event)", onblur = "LoadTransactionSummary();" })
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">                                               
+                    <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsFixedRate">
                             Fixed Rate
                             @Html.CheckBoxFor(m => m.IsFixedRate)
@@ -468,11 +468,11 @@
                                     "--Select Currency--",
                                     new { @class = "form-control", @disabled = "disabled" })
                         @*<select class="form-control" id="CurrencyId" name="CurrencyId">
-                            <option value="">--Select Currency--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">USD</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945" selected>EUR</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F905">INR</option>
-                        </select>*@
+                                <option value="">--Select Currency--</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">USD</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945" selected>EUR</option>
+                                <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F905">INR</option>
+                            </select>*@
                     </div>
 
 
@@ -481,35 +481,35 @@
                 <div class="row" id="divArrivalTime">
                     <div class="col-md-3 form-group">
                         @*@Html.LabelFor(m => m.PackageId)
-                        <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
-                            <option value="">--Select Package--</option>
-                            @if (packageList != null && packageList.Count > 0)
-                            {
-                                var packageDescription = "";
-                                foreach (var package in packageList)
+                            <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
+                                <option value="">--Select Package--</option>
+                                @if (packageList != null && packageList.Count > 0)
                                 {
-                                    packageDescription = package.Name;
-                                    packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
-                                    packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
+                                    var packageDescription = "";
+                                    foreach (var package in packageList)
+                                    {
+                                        packageDescription = package.Name;
+                                        packageDescription += !string.IsNullOrWhiteSpace(package.Description) ? " - " + package.Description : "";
+                                        packageDescription += package.Price.HasValue ? " (" + Utility.FormatAmountWithTwoDecimal(package.Price.Value) + ")" : "";
 
-                                    <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
-                                        @(packageDescription)
-                                    </option>
+                                        <option value="@package.Id" data-package-price="@package.Price" data-package-name="@package.Name">
+                                            @(packageDescription)
+                                        </option>
+                                    }
                                 }
-                            }
-                        </select>*@            
-                        
+                            </select>*@
+
                         <label for="PackageName">
                             Packages
                             <i class="fa fa-remove m-l-sm text-danger cursor-P" onclick="removeSelectedPackage();" title="Remove Package"> </i>
                         </label>
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.PackageName, new
-                           {
-                               @class = "form-control",
-                               placeholder = "Package",
-                               @readonly = "readonly"
-                           })
+                       {
+                           @class = "form-control",
+                           placeholder = "Package",
+                           @readonly = "readonly"
+                       })
                             <div class="input-group-addon cursor-P" onclick="openPackageTransactionModal();">
                                 <i class="fa fa-search"></i>
                             </div>
@@ -517,14 +517,14 @@
 
                         @Html.HiddenFor(m => m.PackageId)
                         <input type="hidden" id="PackagePrice" name="PackagePrice" value="@packageMapping.PackagePrice" />
-                        <input type="hidden" id="PackageQty" name="PackageQty" value="@packageMapping.Qty"/>
-                        <input type="hidden" id="PackagePostingRhythm" name="PackagePostingRhythm" value="@packageMapping.PostingRhythm"/>
-                        <input type="hidden" id="PackageBeginDate" name="PackageBeginDate" 
-                               value="@packageBeginDate"/>
-                        <input type="hidden" id="PackageEndDate" name="PackageEndDate" value="@packageEndDate"/> 
+                        <input type="hidden" id="PackageQty" name="PackageQty" value="@packageMapping.Qty" />
+                        <input type="hidden" id="PackagePostingRhythm" name="PackagePostingRhythm" value="@packageMapping.PostingRhythm" />
+                        <input type="hidden" id="PackageBeginDate" name="PackageBeginDate"
+                               value="@packageBeginDate" />
+                        <input type="hidden" id="PackageEndDate" name="PackageEndDate" value="@packageEndDate" />
                         <input type="hidden" id="PackageTotalAmount" name="PackageTotalAmount"
-                               value="@packageMapping.TotalAmount"/>   
-                                    
+                               value="@packageMapping.TotalAmount" />
+
                     </div>
                     <div class="col-md-3 form-group">
                         <div class="bootstrap-timepicker">
@@ -572,7 +572,7 @@
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.ReservationSourceId, new { @class = "required-label" })
-                       @Html.DropDownListFor(m => m.ReservationSourceId,
+                        @Html.DropDownListFor(m => m.ReservationSourceId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.ReservationSourceList, "Value", "Text"),
                                 "--Select Source--",
                                 new { @class = "form-control" })
@@ -580,17 +580,17 @@
                         @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
                     </div>
                     @*<div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.OriginId)                        
-                        @Html.DropDownListFor(m => m.OriginId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.OriginList, "Value", "Text"),
-                                "--Select Origin--",
-                                new { @class = "form-control" })
-                    </div>*@
+                            @Html.LabelFor(m => m.OriginId)
+                            @Html.DropDownListFor(m => m.OriginId,
+                                    new SelectList((IEnumerable<SelectListItem>)ViewBag.OriginList, "Value", "Text"),
+                                    "--Select Origin--",
+                                    new { @class = "form-control" })
+                        </div>*@
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" }) 
+                        @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.PaymentMethodId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
                                 "--Select Payment Method--",
@@ -605,8 +605,8 @@
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
-                        @Html.LabelFor(m => m.CardExpiryDate)                        
-                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate"/>
+                        @Html.LabelFor(m => m.CardExpiryDate)
+                        <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate" />
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
@@ -636,14 +636,14 @@
                 <div class="row">
                     <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.GuestBalance)
-                        @Html.TextBoxFor(m => m.GuestBalance, Utility.FormatAmountWithTwoDecimal(Model.GuestBalance.HasValue ? Model.GuestBalance.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", @readonly = "readonly"})
+                        @Html.TextBoxFor(m => m.GuestBalance, Utility.FormatAmountWithTwoDecimal(Model.GuestBalance.HasValue ? Model.GuestBalance.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", @readonly = "readonly" })
                     </div>
                     <div class="col-md-2 form-group">
                         @*@Html.LabelFor(m => m.DiscountAmount)*@
                         <label for="DiscountAmount">@(Html.Raw("Discount Amount (" + LogInManager.CurrencySymbol + ")"))</label>
-                        @Html.TextBoxFor(m => m.DiscountAmount, Utility.FormatAmountWithTwoDecimal(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)",  onchange ="ClearDiscountPercentage();", onblur = "LoadTransactionSummary();" })
+                        @Html.TextBoxFor(m => m.DiscountAmount, Utility.FormatAmountWithTwoDecimal(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value : 0), new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountPercentage();", onblur = "LoadTransactionSummary();" })
                     </div>
-                    <div class="col-md-2 form-group">                        
+                    <div class="col-md-2 form-group">
                         @Html.LabelFor(m => m.DiscountPercentage)
                         @Html.TextBoxFor(m => m.DiscountPercentage, new { @class = "form-control", placeholder = "0.00", onkeypress = "onlyNumeric(event)", onchange = "ClearDiscountAmount();", onblur = "LoadTransactionSummary();" })
                     </div>
@@ -657,12 +657,12 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.DiscountReason)
                         @Html.TextBoxFor(m => m.DiscountReason, new { @class = "form-control", placeholder = "Discount Reason" })
-                    </div>                  
+                    </div>
                 </div>
 
-                
+
                 <div class="row">
-                    <hr class="m-t-none"/>
+                    <hr class="m-t-none" />
                     <div class="col-xs-1 form-group">
                         <button type="button" class="btn btn-info btn-sm" onclick="openPreferenceModal();">
                             Preference
@@ -671,21 +671,21 @@
                     <div class="col-md-11 form-group" style="display:none;" id="divSelectedPreference">
                         <label for="ListOfSelectedPreferences" class="m-l-n col-sm-3 control-label m-r-n-xl"> Selected Preference : </label>
                         <div class="col-sm-9" id="ListOfSelectedPreferences">
-                                                        
+
                         </div>
                     </div>
                 </div>
 
                 <div class="row" style="display:none;">
-                    <hr class="m-t-none"/>
+                    <hr class="m-t-none" />
                     <div class="col-xs-1 form-group">
                         <button type="button" class="btn bg-navy btn-sm" onclick="openAddOnsModal();">
                             Add Ons
                         </button>
                     </div>
                     <div class="col-md-11 form-group" style="display:none;" id="divSelectedAddOns">
-                        <label for="ListOfSelectedAddOns" class="m-l-n col-sm-3 control-label m-r-n-xl"> 
-                            Selected Add Ons : 
+                        <label for="ListOfSelectedAddOns" class="m-l-n col-sm-3 control-label m-r-n-xl">
+                            Selected Add Ons :
                         </label>
                         <div class="col-sm-9" id="ListOfSelectedAddOns">
 
@@ -694,7 +694,7 @@
                 </div>
 
                 <div class="row">
-                    <hr class="m-t-none"/>
+                    <hr class="m-t-none" />
                     <div class="col-md-12 form-group">
                         @Html.LabelFor(m => m.Remarks)
                         @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", placeholder = "Remarks", rows = "3" })
@@ -727,7 +727,7 @@
 
 
                 <div class="row" id="totalSummary" style="display:none;">
-                    <hr/>
+                    <hr />
                     <div class="col-md-12 form-group">
                         <label class="label-bold">Transaction Summary :</label>
                         <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
@@ -758,15 +758,15 @@
                 <div class="col-md-8 text-left">
                     @if (Model.IsReservationCancel)
                     {
-                        <label class="text-left label-bold">Reservation Cancelled Reason :</label> 
+                        <label class="text-left label-bold">Reservation Cancelled Reason :</label>
                         <span class="text-red">@Model.CancellationReasonComment</span>
                     }
-                </div>                
+                </div>
                 <div class="col-md-4 text-right">
                     <button type="button" class="btn btn-success" onclick="updateReservation();">Update</button>
                     <a href="@btnCancelUrl" class="btn btn-danger">Cancel</a>
                 </div>
-                
+
             </div>
             <!-- /.box-footer -->
         }
@@ -774,7 +774,6 @@
 </section>
 
 <!-- This is the add reservation form-->
-
 <!-- Preference Modal Popup START -->
 <div class="modal fade" id="preferenceModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -796,7 +795,6 @@
     </div>
 </div>
 <!-- Preference Modal Popup END -->
-
 <!-- Advance Profile Search Modal START -->
 <div id="profileSearchModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -819,7 +817,6 @@
     </div>
 </div>
 <!-- Advance Profile Search Modal END -->
-
 <!-- RoomType Modal Popup START -->
 <div class="modal fade" id="roomTypeModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl">
@@ -841,7 +838,6 @@
     </div>
 </div>
 <!-- RoomType Modal Popup END -->
-
 <!-- Room Modal Popup START -->
 <div class="modal fade" id="roomModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl">
@@ -864,7 +860,6 @@
     </div>
 </div>
 <!-- Room Modal Popup END -->
-
 <!-- Add Ons Modal Popup START -->
 <div class="modal fade" id="addOnsModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -885,8 +880,6 @@
     </div>
 </div>
 <!-- Add Ons Modal Popup END -->
-
-
 <!-- Package Modal Popup START -->
 <div class="modal fade" id="packageModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-sm">
@@ -1372,7 +1365,7 @@
 
         selectPreferenceGroup("ROOOM FEATURES");
         $("form#frmAdvancePreferenceSearch #btnSearch").click();
-        
+
         $('#preferenceModal').modal('toggle');
     }
 
@@ -1548,6 +1541,17 @@
                 data: formData,
                 success: function (response) {
                     if (response.IsSuccess == false) {
+                        if (response.IsReservation) {
+                            swal({
+                                title: response.errorMessage,
+                                type: 'warning',
+                                showCloseButton: true,
+                                showCancelButton: false,
+                                focusConfirm: false,
+                                confirmButtonText: 'OK',
+                            })
+                            return false;
+                        }
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
@@ -2679,7 +2683,7 @@
     };
 </script>
 
-@section scripts {    
+@section scripts {
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>

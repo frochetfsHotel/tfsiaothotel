@@ -70,7 +70,7 @@
         .img_margin {
             margin: auto;
             display: block;
-            width:250%;
+            width: 250%;
             /*border-bottom: 1px solid #7c7c7c;*/
         }
 
@@ -119,11 +119,11 @@
                                 <label class="mb5"><b>@Model.Title @Model.Name</b></label>
                                 <br />
                                 <label class="mb5"><b>@Html.Raw(Model.Address)</b></label> <br />
-                                
+
                                 @{
                                     if (!string.IsNullOrWhiteSpace(Model.CompanyName) || !string.IsNullOrWhiteSpace(Model.CompanyAddress))
                                     {
-                                        <br/>
+                                        <br />
                                         <label class="mb5"><b><u>Company Details: </u></b></label> <br />
                                         if (!string.IsNullOrWhiteSpace(Model.CompanyName))
                                         {
@@ -135,9 +135,9 @@
                                         }
                                     }
                                 }
-                                
-                                
-                                
+
+
+
                             </td>
                             <td style="width:50%;">
                                 <table>
@@ -199,11 +199,11 @@
                                         <td>@transaction.Description</td>
                                         <td>@transaction.Code</td>
                                         <td>@(transaction.Qty.HasValue ? transaction.Qty.Value : 1)</td>
-                                        <td>@(Html.Raw(currencySymbol)) &nbsp;@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value : 0)</td>
-                                        <td></td>
+                                        <td>@(Html.Raw(currencySymbol)) &nbsp;@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value > 0 ? transaction.Amount.Value : 0 : 0)</td>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value < 0 ? transaction.Amount.Value : 0 : 0)</td>
                                     </tr>
                                 }
-                                }
+                            }
                         </tbody>
                     </table>
                     <br />
@@ -262,9 +262,9 @@
     </div>
     <footer style="text-align:center;">
         @*<div class="padding-zero footer">
-            <p>We hope you enjoyed your stay with us and look forward to welcoming you back soon!</p>
-            <p>You can book directly on line with us on www.rihs.com</p>
-        </div>*@
+                <p>We hope you enjoyed your stay with us and look forward to welcoming you back soon!</p>
+                <p>You can book directly on line with us on www.rihs.com</p>
+            </div>*@
         <table style="border:5px solid #000;">
             <tr style="">
                 <td style="text-align:center;padding-top:20px;"><p>We hope you enjoyed your stay with us and look forward to welcoming you back soon!</p></td>

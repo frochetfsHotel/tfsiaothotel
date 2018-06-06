@@ -26,7 +26,7 @@ namespace SuccessHotelierHub.Repository
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRateSheetDetail", parameters);
 
-            var rateSheetResultList = new List<RateSheetResultVM> ();
+            var rateSheetResultList = new List<RateSheetResultVM>();
             rateSheetResultList = DALHelper.CreateListFromTable<RateSheetResultVM>(dt);
 
             return rateSheetResultList;
@@ -83,12 +83,12 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@NoOfChildren", Value = reservation.NoOfChildren },
                     new SqlParameter { ParameterName = "@NoOfRoom", Value = reservation.NoOfRoom },
                     new SqlParameter { ParameterName = "@RoomTypeId", Value = reservation.RoomTypeId },
-                    new SqlParameter { ParameterName = "@RtcId", Value = reservation.RtcId },                    
+                    new SqlParameter { ParameterName = "@RtcId", Value = reservation.RtcId },
                     new SqlParameter { ParameterName = "@ExtnId", Value = reservation.ExtnId },
                     new SqlParameter { ParameterName = "@RateCodeId", Value = reservation.RateCodeId },
                     new SqlParameter { ParameterName = "@IsFixedRate", Value = reservation.IsFixedRate },
                     new SqlParameter { ParameterName = "@Rate", Value = reservation.Rate },
-                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },                    
+                    new SqlParameter { ParameterName = "@CurrencyId", Value = reservation.CurrencyId },
                     new SqlParameter { ParameterName = "@BlockCodeId", Value = reservation.BlockCodeId },
                     new SqlParameter { ParameterName = "@ETA", Value = reservation.ETA },
                     new SqlParameter { ParameterName = "@ReservationTypeId", Value = reservation.ReservationTypeId },
@@ -97,7 +97,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@OriginId", Value = reservation.OriginId },
                     new SqlParameter { ParameterName = "@PaymentMethodId", Value = reservation.PaymentMethodId },
                     new SqlParameter { ParameterName = "@CreditCardNo", Value = reservation.CreditCardNo },
-                    new SqlParameter { ParameterName = "@CardExpiryDate", Value = reservation.CardExpiryDate },                    
+                    new SqlParameter { ParameterName = "@CardExpiryDate", Value = reservation.CardExpiryDate },
                     new SqlParameter { ParameterName = "@CVVNo", Value = reservation.CVVNo },
                     new SqlParameter { ParameterName = "@ApprovalCode", Value = reservation.ApprovalCode },
                     new SqlParameter { ParameterName = "@ApprovalAmount", Value = reservation.ApprovalAmount },
@@ -118,7 +118,7 @@ namespace SuccessHotelierHub.Repository
                     //new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
                     new SqlParameter { ParameterName = "@Remarks", Value = string.Empty },
                     new SqlParameter { ParameterName = "@ConfirmationNumber", Value = reservation.ConfirmationNumber },
-                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },                    
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
                     new SqlParameter { ParameterName = "@FolioNumber", Value = reservation.FolioNumber },
                     new SqlParameter { ParameterName = "@IsDummyReservation", Value = reservation.IsDummyReservation },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
@@ -194,7 +194,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ItemInventoryId", Value = reservation.ItemInventoryId },
                     //new SqlParameter { ParameterName = "@Remarks", Value = reservation.Remarks },
                     new SqlParameter { ParameterName = "@Remarks", Value = string.Empty },
-                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },                    
+                    new SqlParameter { ParameterName = "@TotalPrice", Value = reservation.TotalPrice },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservation.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = reservation.UpdatedBy }
                 };
@@ -345,8 +345,8 @@ namespace SuccessHotelierHub.Repository
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Id", Value = id },                   
-                    new SqlParameter { ParameterName = "@TotalBalance", Value = totalBalance },                    
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@TotalBalance", Value = totalBalance },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
                 };
 
@@ -495,7 +495,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },                    
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
                     new SqlParameter { ParameterName = "@StartDate", Value = startDate },
                     new SqlParameter { ParameterName = "@EndDate", Value = endDate },
                     new SqlParameter { ParameterName = "@UserId", Value = userId }
@@ -546,7 +546,7 @@ namespace SuccessHotelierHub.Repository
             return reservationStatus;
         }
         #endregion
-        
+
         #region Reservation Remarks
 
         public List<ReservationRemarksResultVM> GetReservationRemarks(Guid reservationId, Guid? id, int userId)
@@ -591,7 +591,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@ReservationId", Value = remark.ReservationId },
                     new SqlParameter { ParameterName = "@Remarks", Value = remark.Remarks },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = remark.CreatedBy },
-                    new SqlParameter { ParameterName = "@CreatedOn", Value = remark.CreatedOn },                    
+                    new SqlParameter { ParameterName = "@CreatedOn", Value = remark.CreatedOn },
                 };
 
             remarkId = Convert.ToString(DALHelper.ExecuteScalar("AddReservationRemark", parameters));
@@ -1096,12 +1096,12 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@Date", Value = model.Date },                   
+                    new SqlParameter { ParameterName = "@Date", Value = model.Date },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
                     new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection },
-                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId }                    
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchBreakfastReport", parameters);
@@ -1129,6 +1129,47 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
+
+        #region "CHECK PREVIOUS RESERVATION OR NOT"
+        public List<GetPreviousReservationOrNotVM> GetPreviousReservationOrNot(Guid RoomId, DateTime? CheckInDate, TimeSpan? CheckInTime, Guid? ReservationId )
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomId", Value = RoomId },
+                    new SqlParameter { ParameterName = "@CheckInDate", Value = CheckInDate },
+                    new SqlParameter { ParameterName = "@CheckInTime", Value = CheckInTime },
+                    new SqlParameter { ParameterName = "@ReservationId", Value = ReservationId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetPreviousReservationOrNot", parameters);
+
+            var results = new List<GetPreviousReservationOrNotVM>();
+            results = DALHelper.CreateListFromTable<GetPreviousReservationOrNotVM>(dt);
+
+            return results;
+        }
+        #endregion
+
+        #region "Get Reservation Acclo"
+        public List<RoomPlanRoomAllocationDetailVM> GetRoomAllocationDetailsForRoomPlan(Guid? roomId, string startDate, string endDate, int userId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomId", Value = roomId },
+                    new SqlParameter { ParameterName = "@ArrivalDate", Value = startDate },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = endDate },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomAllocationDetailsForRoomPlan", parameters);
+
+            var AllocationDetails = new List<RoomPlanRoomAllocationDetailVM>();
+            AllocationDetails = DALHelper.CreateListFromTable<RoomPlanRoomAllocationDetailVM>(dt);
+
+            return AllocationDetails;
+        }
+        #endregion
+
     }
 }
 

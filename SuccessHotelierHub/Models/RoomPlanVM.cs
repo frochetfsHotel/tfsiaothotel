@@ -121,4 +121,43 @@ namespace SuccessHotelierHub.Models
 
         public int NoOfAdult { get; set; }
     }
+
+    public class RoomPlanRoomAllocationDetailVM
+    {
+        public Guid ReservationId { get; set; }
+
+        public Guid ProfileId { get; set; }
+
+        [DisplayName("First Name")]
+        public string FirstName { get; set; }
+
+        [DisplayName("Last Name")]
+        public string LastName { get; set; }
+
+        [DisplayName("No Of Night")]
+        public int NoOfNight { get; set; }
+
+        public Guid RoomId { get; set; }
+
+        //[DisplayName("Status")]
+        //public Guid? RoomStatusId { get; set; }
+
+        //public string RoomStatus { get; set; }
+
+        //public string RoomStatusColor { get; set; }
+
+        [DisplayName("Check In Date")]
+        public string ArrivalDateString { get; set; }
+
+        [DisplayName("Check In Date")]
+        public DateTime? ArrivalDate { get; set; }
+
+        [DisplayName("Check Out Date")]
+        public string DepartureDateString { get; set; }
+
+        [DisplayName("Check Out Date")]
+        public DateTime? DepartureDate { get; set; }
+
+        public int NoOfAdult { get; set; }
+    }
 }

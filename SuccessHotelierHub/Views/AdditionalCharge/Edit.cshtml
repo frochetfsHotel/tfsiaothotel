@@ -55,9 +55,10 @@
                         <label for="Price">Price (&euro;)</label>
                         @Html.TextBoxFor(m => m.Price, Utility.FormatAmountWithTwoDecimal(Model.Price.HasValue ? Model.Price.Value : 0), new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="col-md-1 form-group m-t-lg">
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })

@@ -90,7 +90,7 @@ namespace SuccessHotelierHub.Controllers
             //            Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
             //        }
             //    ), "Value", "Text").ToList();
-            
+
             var marketList = new SelectList(
                               marketRepository.GetMarkets()
                               .Select(
@@ -100,7 +100,7 @@ namespace SuccessHotelierHub.Controllers
                                       Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                   }
                       ), "Value", "Text").ToList();
-            
+
             var reservationSourceList = new SelectList(
                              reservationSourceRepository.GetReservationSources()
                              .Select(
@@ -110,8 +110,8 @@ namespace SuccessHotelierHub.Controllers
                                      Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                  }
                      ), "Value", "Text").ToList();
-            
-            
+
+
             var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
                     .Select(
@@ -252,8 +252,8 @@ namespace SuccessHotelierHub.Controllers
             ViewBag.MarketList = marketList;
             ViewBag.ReservationSourceList = reservationSourceList;
             ViewBag.PaymentMethodList = paymentMethodList;
-            ViewBag.RoomFeaturesList = roomFeaturesList;            
-            ViewBag.DiscountApprovedList = discountApprovedList;                        
+            ViewBag.RoomFeaturesList = roomFeaturesList;
+            ViewBag.DiscountApprovedList = discountApprovedList;
             ViewBag.RtcList = rtcList;
             ViewBag.CurrencyList = currencyList;
 
@@ -273,6 +273,16 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(model.ETAText), null);
+                if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        IsReservation = true,
+                        errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
+                    }, JsonRequestBehavior.AllowGet);
+                }
                 string confirmationNo = string.Empty;
 
                 confirmationNo = CreateReservation(model);
@@ -434,7 +444,7 @@ namespace SuccessHotelierHub.Controllers
                 {
                     model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
                 }
-                
+
 
                 #region Room Type
                 //Get Room Type Details.
@@ -470,7 +480,7 @@ namespace SuccessHotelierHub.Controllers
                 #region Add Ons Mapping
 
                 //Get AddOns Mapping
-                var selectedAddOns= reservationRepository.GetReservationAddOnsMapping(model.Id, null, LogInManager.LoggedInUserId);
+                var selectedAddOns = reservationRepository.GetReservationAddOnsMapping(model.Id, null, LogInManager.LoggedInUserId);
 
                 ViewBag.SelectedAddOns = selectedAddOns;
 
@@ -481,7 +491,7 @@ namespace SuccessHotelierHub.Controllers
                 //Get Package Mapping
                 var selectedPackage = reservationRepository.GetReservationPackageMapping(model.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
 
-                if(selectedPackage != null)
+                if (selectedPackage != null)
                 {
                     model.PackageId = selectedPackage.PackageId;
                 }
@@ -546,12 +556,12 @@ namespace SuccessHotelierHub.Controllers
                                 }
                             ), "Value", "Text").ToList();
                 var vipList = new SelectList(vipRepository.GetVip(), "Id", "Description").ToList();
-                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();                
+                var roomTypeList = new SelectList(roomTypeRepository.GetRoomType(string.Empty), "Id", "RoomTypeCode").ToList();
                 var rateTypeList = new SelectList(rateTypeRepository.GetRateType(string.Empty)
                                         .Select(
                                             m => new SelectListItem()
                                             {
-                                                Value = m.Id.ToString(),                                                
+                                                Value = m.Id.ToString(),
                                                 Text = m.RateTypeCode
                                             }
                                         ), "Value", "Text").ToList();
@@ -577,8 +587,8 @@ namespace SuccessHotelierHub.Controllers
                                       Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                   }
                       ), "Value", "Text").ToList();
-                                
-                
+
+
                 var reservationSourceList = new SelectList(
                               reservationSourceRepository.GetReservationSources()
                               .Select(
@@ -588,8 +598,8 @@ namespace SuccessHotelierHub.Controllers
                                       Text = !string.IsNullOrWhiteSpace(m.Description) ? m.Description : m.Name
                                   }
                       ), "Value", "Text").ToList();
-                                
-                
+
+
                 var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
                     .Select(
@@ -627,8 +637,8 @@ namespace SuccessHotelierHub.Controllers
                 ViewBag.MarketList = marketList;
                 ViewBag.ReservationSourceList = reservationSourceList;
                 ViewBag.PaymentMethodList = paymentMethodList;
-                ViewBag.RoomFeaturesList = roomFeaturesList;                
-                ViewBag.DiscountApprovedList = discountApprovedList;                                
+                ViewBag.RoomFeaturesList = roomFeaturesList;
+                ViewBag.DiscountApprovedList = discountApprovedList;
                 ViewBag.RtcList = rtcList;
                 ViewBag.CurrencyList = currencyList;
 
@@ -687,6 +697,17 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(model.ETAText), model.Id);
+                if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        IsReservation = true,
+                        errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
                 string reservationId = string.Empty;
 
                 model.UpdatedBy = LogInManager.LoggedInUserId;
@@ -741,7 +762,7 @@ namespace SuccessHotelierHub.Controllers
                 model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
 
                 reservationId = reservationRepository.UpdateReservation(model);
-                
+
                 if (!string.IsNullOrWhiteSpace(reservationId))
                 {
                     var source = string.Empty;
@@ -764,7 +785,7 @@ namespace SuccessHotelierHub.Controllers
                             roomIdsArr = roomIdsArr.Distinct().ToArray();
                         }
                     }
-                    
+
 
                     #region Delete Room Mapping
 
@@ -831,7 +852,7 @@ namespace SuccessHotelierHub.Controllers
 
                         }
                     }
-                   
+
                     #endregion
 
                     #region Save Reservation Preference Mapping
@@ -850,7 +871,7 @@ namespace SuccessHotelierHub.Controllers
                             preferenceItemsArr = preferenceItemsArr.Distinct().ToArray();
                         }
                     }
-                    
+
 
                     #region Delete Preference Mapping
 
@@ -1012,14 +1033,14 @@ namespace SuccessHotelierHub.Controllers
                         var packageDetails = reservationRepository.GetReservationPackageMapping(Guid.Parse(reservationId), null, LogInManager.LoggedInUserId);
 
                         //If Package mapping exist then delete.
-                        if(packageDetails != null && packageDetails.Count > 0)
+                        if (packageDetails != null && packageDetails.Count > 0)
                         {
                             reservationRepository.DeleteReservationPackageMappingByReservation(Guid.Parse(reservationId), LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
                         }
                     }
 
                     #endregion
-                    
+
                     #region Update Reservation Total Price
 
                     totalPrice = Utility.Utility.CalculateReservationTotalPrice(Guid.Parse(reservationId));
@@ -1052,7 +1073,7 @@ namespace SuccessHotelierHub.Controllers
                     }
 
                     #endregion
-                    
+
                     #region Update Reservation Total Balance.
 
                     if (model.IsCheckOut == false)
@@ -1069,7 +1090,7 @@ namespace SuccessHotelierHub.Controllers
 
                     if (!string.IsNullOrWhiteSpace(model.Remarks))
                     {
-                        ReservationRemarkVM remark = new ReservationRemarkVM();                        
+                        ReservationRemarkVM remark = new ReservationRemarkVM();
                         remark.ReservationId = Guid.Parse(reservationId);
                         remark.Remarks = model.Remarks;
                         remark.CreatedBy = LogInManager.LoggedInUserId;
@@ -1078,7 +1099,7 @@ namespace SuccessHotelierHub.Controllers
                             remark.CreatedOn = DateTime.Now;
                         }
 
-                        reservationRepository.AddReservationRemark(remark);                        
+                        reservationRepository.AddReservationRemark(remark);
                     }
 
                     #endregion
@@ -1121,7 +1142,7 @@ namespace SuccessHotelierHub.Controllers
                                 IsExternalUrl = true,
                                 data = new
                                 {
-                                    Url =  url,
+                                    Url = url,
                                     ReservationId = model.Id
                                 }
                             }, JsonRequestBehavior.AllowGet);
@@ -1303,7 +1324,7 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
-        
+
         public string CreateReservation(ReservationVM model)
         {
             string reservationId = string.Empty;
@@ -1352,7 +1373,7 @@ namespace SuccessHotelierHub.Controllers
             model.ConfirmationNumber = confirmationNo;
 
             #endregion
-            
+
             #region Generate Folio Number
             Int64 folioSuffix = 1;
 
@@ -1379,7 +1400,7 @@ namespace SuccessHotelierHub.Controllers
             model.FolioNumber = folioNo;
 
             #endregion
-            
+
             double totalBalance = 0, totalPrice = 0;
 
             totalPrice = Utility.Utility.CalculateRoomRentCharges(model.NoOfNight, (model.Rate.HasValue ? model.Rate.Value : 0), model.NoOfChildren, model.DiscountAmount, model.DiscountPercentage, (model.DiscountPercentage.HasValue ? true : false));
@@ -1450,7 +1471,7 @@ namespace SuccessHotelierHub.Controllers
 
                             roomRepository.AddUpdateReservationRoomMapping(reservationRoomMapping);
 
-                          
+
                             #region Remove Existing reservation if room status are dirty.
 
                             var reservationLog = reservationLogRepository.GetReservationLogByRoom(Guid.Parse(item.Trim()), model.Id, Guid.Parse(RoomStatusType.DIRTY), model.ArrivalDate, model.DepartureDate, LogInManager.LoggedInUserId).FirstOrDefault();
@@ -1534,17 +1555,17 @@ namespace SuccessHotelierHub.Controllers
                 if (model.PackageMappingList != null && model.PackageMappingList.Count > 0)
                 {
                     var packageMapping = model.PackageMappingList[0];
-                                        
+
                     if (packageMapping != null)
                     {
                         var packageDetail = packageRepository.GetPackageById(packageMapping.PackageId.Value).FirstOrDefault();
-                        if(packageDetail != null)
+                        if (packageDetail != null)
                         {
                             packageMapping.PackagePrice = packageDetail.Price;
                         }
 
                         packageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
-                        
+
                         packageMapping.ReservationId = model.Id;
                         packageMapping.CreatedBy = LogInManager.LoggedInUserId;
                         packageMapping.UpdatedBy = LogInManager.LoggedInUserId;
@@ -1552,8 +1573,8 @@ namespace SuccessHotelierHub.Controllers
                         reservationRepository.AddUpdateReservationPackageMapping(packageMapping);
                     }
                 }
-                #endregion 
-                
+                #endregion
+
                 #region Reservation Remarks 
 
                 if (model.RemarksList != null && model.RemarksList.Count > 0)
@@ -1655,11 +1676,11 @@ namespace SuccessHotelierHub.Controllers
                             cashierNumber = userDetail.CashierNumber;
                         }
 
-                        if(userGroupDetail != null && userGroupDetail.Id != null)
+                        if (userGroupDetail != null && userGroupDetail.Id != null)
                         {
                             var currencyDetail = currencyRepository.GetCurrencyInfoById(userGroupDetail.CurrencyId).FirstOrDefault();
 
-                            if(currencyDetail != null)
+                            if (currencyDetail != null)
                             {
                                 currencyCode = currencyDetail.Code;
                                 currencySymbol = currencyDetail.CurrencySymbol;
@@ -1686,7 +1707,7 @@ namespace SuccessHotelierHub.Controllers
                             model.NoOfAdult = reservation.NoOfAdult.HasValue ? reservation.NoOfAdult.Value : 0;
                             model.NoOfChildren = reservation.NoOfChildren.HasValue ? reservation.NoOfChildren.Value : 0;
                             model.Rate = rate;
-                            
+
                             model.CashierName = cashierNumber;
 
                             model.RatePerNight = Utility.Utility.FormatAmountWithTwoDecimal(rate);
@@ -1758,9 +1779,9 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var weekDayPrice =  rateRepository.GetWeekDayPrice(roomTypeId, rateTypeId).FirstOrDefault();
+                var weekDayPrice = rateRepository.GetWeekDayPrice(roomTypeId, rateTypeId).FirstOrDefault();
 
-                var weekEndPrice =  rateRepository.GetWeekEndPrice(roomTypeId, rateTypeId).FirstOrDefault();
+                var weekEndPrice = rateRepository.GetWeekEndPrice(roomTypeId, rateTypeId).FirstOrDefault();
 
                 if (weekDayPrice != null || weekEndPrice != null)
                 {
@@ -1800,7 +1821,7 @@ namespace SuccessHotelierHub.Controllers
             var profileId = (string)TempData["ProfileId"];
             var firstName = (string)TempData["FirstName"];
             var lastName = (string)TempData["LastName"];
-                        
+
             var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, DateTime.Now.ToString("MM/dd/yyyy"), LogInManager.LoggedInUserId);
 
             var rateTypeList = rateTypeRepository.GetRateType(string.Empty);
@@ -1864,7 +1885,7 @@ namespace SuccessHotelierHub.Controllers
                         blnShowWeekEndPrice = true;
                     }
                 }
-                                
+
                 var rateSheetRoomTypeList = roomTypeRepository.GetRoomTypeDetailsForRateSheet(string.Empty, model.ArrivalDate.Value.ToString("MM/dd/yyyy"), LogInManager.LoggedInUserId);
                 var rateTypeList = rateTypeRepository.GetRateType(model.RateTypeCode);
 
@@ -1872,7 +1893,7 @@ namespace SuccessHotelierHub.Controllers
                 ViewData["RateSheetRoomType"] = rateSheetRoomTypeList;
                 ViewData["IsShowWeekEndPrice"] = blnShowWeekEndPrice;
 
-                if(model.CompanyId != null && model.CompanyId.HasValue)
+                if (model.CompanyId != null && model.CompanyId.HasValue)
                 {
                     ViewData["ShowCorporateRate"] = true;
                 }

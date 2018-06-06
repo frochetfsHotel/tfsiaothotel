@@ -713,7 +713,7 @@ namespace SuccessHotelierHub.Controllers
 
                     bool blnIsBreakFastCharge = false;
 
-                    if (item.AdditionalChargeId.HasValue && (item.Code != AdditionalChargeCode.ROOM_RENT && item.Code != AdditionalChargeCode.CHECK_OUT))
+                    if (item.AdditionalChargeId.HasValue && (item.Code != AdditionalChargeCode.ROOM_RENT && item.AdditionalChargeId.Value == checkoutAdditionalCharge.Id))
                     {
                         var breakfastChargeCategory = additionalChargeRepository.IsBrekFastCharges(item.AdditionalChargeId.Value).FirstOrDefault();
 

@@ -1320,6 +1320,17 @@
                 success: function (response) {
                     if (!IsNullOrEmpty(response)) {
                         if (response.IsSuccess == false) {
+                            if (response.IsReservation) {
+                                swal({
+                                    title: response.errorMessage,
+                                    type: 'warning',
+                                    showCloseButton: true,
+                                    showCancelButton: false,
+                                    focusConfirm: false,
+                                    confirmButtonText: 'OK',
+                                })
+                                return false;
+                            }
                             showToaster(response.errorMessage, ToasterType.ERROR);
                         }
                         else {

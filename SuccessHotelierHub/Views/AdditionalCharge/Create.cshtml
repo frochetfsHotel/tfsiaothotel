@@ -51,7 +51,8 @@
                         @Html.TextBoxFor(m => m.Price, Utility.FormatAmountWithTwoDecimal(Model != null && Model.Price.HasValue ? Model.Price.Value : 1), new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event);" })
                         @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
                     </div>
-
+                </div>
+                <div class="row">
                     <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active

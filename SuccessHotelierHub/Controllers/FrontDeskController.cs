@@ -244,6 +244,17 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.CheckInDate, TimeSpan.Parse(model.CheckInTimeText), null);
+                if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        IsReservation = true,
+                        errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
                 CheckInCheckOutVM checkIn = new CheckInCheckOutVM();
                 ReservationChargeVM reservationCharge = new ReservationChargeVM();
 
@@ -282,7 +293,7 @@ namespace SuccessHotelierHub.Controllers
                         reservation.ETA = checkInTime;
                     }
 
-                    if(reservation.ETA.HasValue)
+                    if (reservation.ETA.HasValue)
                     {
                         checkInTime = reservation.ETA.Value;
                     }
@@ -311,7 +322,7 @@ namespace SuccessHotelierHub.Controllers
                     reservationChargeRepository.AddReservationCharges(reservationCharge);
 
                     #endregion
-                    
+
                     #region Save Reservation Room Mapping & Update Room Occupied Flag
 
                     var roomIds = model.RoomIds;
@@ -380,7 +391,7 @@ namespace SuccessHotelierHub.Controllers
 
                             ////Update Room Status CLEAN to DIRTY.
                             //roomRepository.UpdateRoomCheckInStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.DIRTY), true, LogInManager.LoggedInUserId);
-                            
+
                             #region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
 
                             reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
@@ -593,7 +604,7 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        
+
         public ActionResult PreviewRegistrationCard(Guid? Id)
         {
             if (Id == null)
@@ -628,7 +639,7 @@ namespace SuccessHotelierHub.Controllers
             }
             #endregion
 
-          
+
             #region Profile
 
             var profile = new IndividualProfileVM();
@@ -699,7 +710,7 @@ namespace SuccessHotelierHub.Controllers
             model.PhoneNo = profile.TelephoneNo;
             model.Name = (profile.FirstName + ' ' + profile.LastName);
             model.CarRegistrationNo = profile.CarRegistrationNo;
-            
+
             #region Fetch Address
             var address = "";
             if (!string.IsNullOrWhiteSpace(profile.Address))
@@ -712,7 +723,7 @@ namespace SuccessHotelierHub.Controllers
                 //address = profile.HomeAddress;
                 address = profile.HomeAddress.Replace(",", Delimeter.SPACE);
             }
-            
+
             model.Address = address;
 
             if (!string.IsNullOrWhiteSpace(profile.CityName))
@@ -720,7 +731,7 @@ namespace SuccessHotelierHub.Controllers
                 //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.CityName) : profile.CityName;
                 model.City = profile.CityName;
             }
-            
+
             if (!string.IsNullOrWhiteSpace(profile.StateName))
             {
                 //model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + profile.StateName) : profile.StateName;
@@ -757,11 +768,11 @@ namespace SuccessHotelierHub.Controllers
             model.ZipCode = profile.ZipCode;
             #endregion
 
-            model.RoomNumer = roomNumbers;          
+            model.RoomNumer = roomNumbers;
             model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
             model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
             model.NoOfNights = reservation.NoOfNight;
-            model.NoOfAdult = reservation.NoOfAdult;            
+            model.NoOfAdult = reservation.NoOfAdult;
             model.NoOfChildren = reservation.NoOfChildren;
 
             if (roomType != null)
@@ -777,7 +788,7 @@ namespace SuccessHotelierHub.Controllers
 
             //HTML to PDF
             string html = Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewRegistrationCard", model);
-        
+
             byte[] pdfBytes = Utility.Utility.GetPDF(html);
 
             //return File(pdfBytes, "application/pdf", string.Format("RegistrationCard_{0}.pdf", model.Id));
@@ -914,7 +925,7 @@ namespace SuccessHotelierHub.Controllers
 
                         //Get Package Mapping
                         var selectedPackage = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
-                        
+
                         if (selectedPackage != null)
                         {
                             model.PackageName = selectedPackage.PackageName;
@@ -1003,7 +1014,7 @@ namespace SuccessHotelierHub.Controllers
                         }
                         model.Rate = CurrencyManager.ParseAmountToUserCurrency(reservation.Rate, LogInManager.CurrencyCode);
                         model.ConfirmationNo = reservation.ConfirmationNumber;
-                        
+
                         //HTML to PDF
                         html.Append(Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewRegistrationCard", model));
                     }

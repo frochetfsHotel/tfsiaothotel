@@ -49871,4 +49871,115 @@ BEGIN
 				AND ACC.Code = 'BREAKFAST'
 		
 END
+
+
+
+
 	
+/*****************************************************************************************************************************
+
+name nilesh
+date 05-jun-2018
+
+******************************************************************************************************************************/
+	Sp Name = [AddCheckInDetail]
+	Comment = Checkout time Added when do Check in 
+	
+***************************************************************************************************************************	
+
+/****** Object:  StoredProcedure [dbo].[AddCheckInDetail]    Script Date: 05-Jun-18 1:53:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddCheckInDetail]	
+	@ReservationId	UNIQUEIDENTIFIER	=	NULL	,
+	@ProfileId		UNIQUEIDENTIFIER	=	NULL	,
+	@CheckInDate	DATETIME						,
+	@CheckInTime	TIME(7)				=	NULL	,	
+	@IsActive		BIT					=	NULL	,	
+	@CreatedBy		INT					=	NULL
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[CheckInCheckOutDetail]
+           ([Id]
+           ,[ReservationId]
+           ,[ProfileId]
+		   ,[CheckInDate]
+		   ,[CheckInTime]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+		   ,[CheckOutTime]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@ReservationId
+			   ,@ProfileId
+			   ,@CheckInDate
+			   ,@CheckInTime
+			   ,@CreatedBy
+			   ,GETDATE()		
+			   ,@CheckInTime	   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+
+
+/*******************************************************************************************************************************
+	Sp Name = [GetPreviousReservationOrNot]
+	Comment = Create SP GetPreviousReservationOrNot
+	
+***************************************************************************************************************************	*/
+
+
+/****** Object:  StoredProcedure [dbo].[GetPreviousReservationOrNot]    Script Date: 06-Jun-18 8:04:21 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetPreviousReservationOrNot]
+		@RoomId		 UNIQUEIDENTIFIER
+	,	@CheckInDate DATETIME	 = null
+	,	@CheckInTime TIME(7)	 = null
+	,	@ReservationId		 UNIQUEIDENTIFIER = NULL
+AS
+BEGIN		
+	SET NOCOUNT ON;    
+
+	SELECT 		
+		CD.CheckOutTime, 
+		R.DepartureDate		
+	FROM 
+		Reservation  R
+			INNER JOIN CheckInCheckOutDetail  CD
+				ON R.Id = CD.ReservationId  AND ISNULL(CD.IsDeleted,0) = 0
+			INNER JOIN ReservationRoomMapping RRM
+				ON R.Id = RRM.ReservationId AND ISNULL(RRM.IsDeleted,0) = 0
+					WHERE ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsCheckIn,0) = 1
+						AND RRM.RoomId =  @RoomID
+						AND (@ReservationId IS NULL OR R.Id != @ReservationId)
+						AND (@CheckInDate IS NULL OR DATEADD(MINUTE,CAST(FORMAT(CD.CheckOutTime,'mm') AS INT),  DATEADD(HOUR,CAST(FORMAT(CD.CheckOutTime,'hh') AS INT),  R.DepartureDate)) >=
+							DATEADD(MINUTE,CAST(FORMAT(@CheckInTime,'mm') AS INT),  DATEADD(HOUR,CAST(FORMAT(@CheckInTime,'hh') AS INT),  @CheckInDate)))
+END
+
+
+
+
+
+
+
+
+
+
