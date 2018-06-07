@@ -280,7 +280,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         strETAText = model.ETAText;
                     }
-                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(strETAText), null);
+                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(strETAText), null, LogInManager.LoggedInUserId);
                     if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
                     {
                         return Json(new
@@ -714,7 +714,7 @@ namespace SuccessHotelierHub.Controllers
                         strETAText = model.ETAText;
                     }
 
-                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(strETAText), model.Id);
+                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(strETAText), model.Id, LogInManager.LoggedInUserId);
                     if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
                     {
                         return Json(new

@@ -1131,14 +1131,15 @@ namespace SuccessHotelierHub.Repository
         #endregion
 
         #region "CHECK PREVIOUS RESERVATION OR NOT"
-        public List<GetPreviousReservationOrNotVM> GetPreviousReservationOrNot(Guid RoomId, DateTime? CheckInDate, TimeSpan? CheckInTime, Guid? ReservationId )
+        public List<GetPreviousReservationOrNotVM> GetPreviousReservationOrNot(Guid RoomId, DateTime? CheckInDate, TimeSpan? CheckInTime, Guid? ReservationId, int? userId)
         {
             SqlParameter[] parameters =
                {
                     new SqlParameter { ParameterName = "@RoomId", Value = RoomId },
                     new SqlParameter { ParameterName = "@CheckInDate", Value = CheckInDate },
                     new SqlParameter { ParameterName = "@CheckInTime", Value = CheckInTime },
-                    new SqlParameter { ParameterName = "@ReservationId", Value = ReservationId }
+                    new SqlParameter { ParameterName = "@ReservationId", Value = ReservationId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetPreviousReservationOrNot", parameters);

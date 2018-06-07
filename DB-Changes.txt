@@ -49975,6 +49975,52 @@ BEGIN
 END
 
 
+/*****************************************************************************************************************************
+
+name nilesh
+date 07-jun-2018
+
+******************************************************************************************************************************/
+/*****************
+Sp Name = [GetPreviousReservationOrNot]
+Comment = Day Calculation Changed in R.DepartureDate and added new userid [parameter
+*****************/
+
+/****** Object:  StoredProcedure [dbo].[GetPreviousReservationOrNot]    Script Date: 07-Jun-18 5:31:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- exec [GetPreviousReservationOrNot] 'ef0fd7d9-156c-4081-89d7-dee4c93d8463','2018-06-08','09:00',NULL
+ALTER PROCEDURE [dbo].[GetPreviousReservationOrNot]
+		@RoomId		 UNIQUEIDENTIFIER
+	,	@CheckInDate DATETIME				  = NULL
+	,	@CheckInTime TIME(7)				  = NULL
+	,	@ReservationId		 UNIQUEIDENTIFIER = NULL
+	,	@UserId		INT						  = NULL
+AS
+BEGIN		
+	SET NOCOUNT ON;    
+
+	SELECT 		
+		CD.CheckOutTime, 
+		R.DepartureDate		
+	FROM 
+		Reservation  R
+			INNER JOIN CheckInCheckOutDetail  CD
+				ON R.Id = CD.ReservationId  AND ISNULL(CD.IsDeleted,0) = 0
+					AND R.CreatedBy = @UserId
+			INNER JOIN ReservationRoomMapping RRM
+				ON R.Id = RRM.ReservationId AND ISNULL(RRM.IsDeleted,0) = 0
+					AND RRM.CreatedBy = @UserId
+					WHERE ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsCheckIn,0) = 1
+						AND RRM.RoomId =  @RoomID
+						AND (@ReservationId IS NULL OR R.Id != @ReservationId)
+						AND (@CheckInDate IS NULL OR DATEADD(MINUTE,CAST(FORMAT(CD.CheckOutTime,'mm') AS INT),  DATEADD(HOUR,CAST(FORMAT(CD.CheckOutTime,'hh') AS INT),  CONVERT(datetime,convert(varchar(8),R.DepartureDate,112)))) >=
+							DATEADD(MINUTE,CAST(FORMAT(@CheckInTime,'mm') AS INT),  DATEADD(HOUR,CAST(FORMAT(@CheckInTime,'hh') AS INT),  @CheckInDate)))
+END
+
+
 
 
 

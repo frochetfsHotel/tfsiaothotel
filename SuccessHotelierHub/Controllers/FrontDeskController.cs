@@ -252,7 +252,7 @@ namespace SuccessHotelierHub.Controllers
                         strETAText = model.CheckInTimeText;
                     }
 
-                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.CheckInDate, TimeSpan.Parse(strETAText), null);
+                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.CheckInDate, TimeSpan.Parse(strETAText), null, LogInManager.LoggedInUserId);
                     if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
                     {
                         return Json(new
