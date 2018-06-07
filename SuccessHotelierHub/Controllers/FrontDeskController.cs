@@ -244,17 +244,25 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.CheckInDate, TimeSpan.Parse(model.CheckInTimeText), null);
-                if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                if (!string.IsNullOrWhiteSpace(model.RoomIds))
                 {
-                    return Json(new
+                    string strETAText = "10:00";
+                    if (!string.IsNullOrWhiteSpace(model.CheckInTimeText))
                     {
-                        IsSuccess = false,
-                        IsReservation = true,
-                        errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
-                    }, JsonRequestBehavior.AllowGet);
-                }
+                        strETAText = model.CheckInTimeText;
+                    }
 
+                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.CheckInDate, TimeSpan.Parse(strETAText), null);
+                    if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            IsReservation = true,
+                            errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
                 CheckInCheckOutVM checkIn = new CheckInCheckOutVM();
                 ReservationChargeVM reservationCharge = new ReservationChargeVM();
 

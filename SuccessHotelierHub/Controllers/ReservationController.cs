@@ -273,15 +273,23 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(model.ETAText), null);
-                if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                if (!string.IsNullOrWhiteSpace(model.RoomIds))
                 {
-                    return Json(new
+                    string strETAText = "10:00";
+                    if (!string.IsNullOrWhiteSpace(model.ETAText))
                     {
-                        IsSuccess = false,
-                        IsReservation = true,
-                        errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
-                    }, JsonRequestBehavior.AllowGet);
+                        strETAText = model.ETAText;
+                    }
+                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(strETAText), null);
+                    if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            IsReservation = true,
+                            errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
+                        }, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 string confirmationNo = string.Empty;
 
@@ -697,15 +705,25 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
-                var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(model.ETAText), model.Id);
-                if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+
+                if (!string.IsNullOrWhiteSpace(model.RoomIds))
                 {
-                    return Json(new
+                    string strETAText = "10:00";
+                    if (!string.IsNullOrWhiteSpace(model.ETAText))
                     {
-                        IsSuccess = false,
-                        IsReservation = true,
-                        errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
-                    }, JsonRequestBehavior.AllowGet);
+                        strETAText = model.ETAText;
+                    }
+
+                    var checkReservationOrNot = reservationRepository.GetPreviousReservationOrNot(Guid.Parse(model.RoomIds), model.ArrivalDate, TimeSpan.Parse(strETAText), model.Id);
+                    if (checkReservationOrNot != null && checkReservationOrNot.Count > 0)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            IsReservation = true,
+                            errorMessage = "Selected room already checked in by another user. please select check in (ETA) time after " + checkReservationOrNot.Select(m => m.DepartureDate != null ? m.DepartureDate.Value.ToString("dd MMM yyyy") : null).FirstOrDefault() + " " + checkReservationOrNot.Select(m => m.CheckOutTime != null ? m.CheckOutTime : null).FirstOrDefault() + ""
+                        }, JsonRequestBehavior.AllowGet);
+                    }
                 }
 
                 string reservationId = string.Empty;
@@ -722,7 +740,6 @@ namespace SuccessHotelierHub.Controllers
 
                     model.ETA = time.TimeOfDay;
                 }
-
 
                 double totalBalance = 0, totalPrice = 0;
 
