@@ -725,7 +725,25 @@ namespace SuccessHotelierHub.Controllers
                         }, JsonRequestBehavior.AllowGet);
                     }
                 }
+                var GetReservationLogDetail = reservationLogRepository.GetReservationLogByReservationId(model.Id, LogInManager.LoggedInUserId).FirstOrDefault();
+                if (GetReservationLogDetail != null)
+                {
+                    ReservationLogVM reservationLog = new ReservationLogVM();
+                    reservationLog.Id = GetReservationLogDetail.Id;
+                    reservationLog.IsActive = GetReservationLogDetail.IsActive;
+                    reservationLog.ReservationId = GetReservationLogDetail.ReservationId;
+                    reservationLog.ProfileId = GetReservationLogDetail.ProfileId;
+                    reservationLog.RoomId = model.RoomIds != null ? Guid.Parse(model.RoomIds) : GetReservationLogDetail.RoomId;
+                    reservationLog.RoomStatusId = GetReservationLogDetail.RoomStatusId;
+                    reservationLog.CheckInDate = model.ArrivalDate;
+                    reservationLog.CheckInTime = GetReservationLogDetail.CheckInTime;
+                    reservationLog.CheckOutDate = model.DepartureDate;
+                    reservationLog.CheckOutTime = GetReservationLogDetail.CheckOutTime;
+                    reservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+                    reservationLog.IsActive = GetReservationLogDetail.IsActive;
 
+                    reservationLogRepository.UpdateReservationLog(reservationLog);
+                }
                 string reservationId = string.Empty;
 
                 model.UpdatedBy = LogInManager.LoggedInUserId;

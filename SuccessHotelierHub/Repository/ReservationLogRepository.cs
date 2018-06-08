@@ -147,7 +147,24 @@ namespace SuccessHotelierHub.Repository
             return reservationLog;
         }
 
+        #region
 
+        #endregion "Get ReservationLog Details using reservationId"
+        public List<ReservationLogVM> GetReservationLogByReservationId(Guid reservationId, int userId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = reservationId },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationLogByReservationId", parameters);
+
+            var reservationLog = new List<ReservationLogVM>();
+            reservationLog = DALHelper.CreateListFromTable<ReservationLogVM>(dt);
+
+            return reservationLog;
+        }
         #endregion
     }
 }

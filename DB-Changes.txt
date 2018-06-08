@@ -50023,6 +50023,38 @@ END
 
 
 
+/**********************************************************************************************************
+name nilesh
+date 07-jun-2018
+***********************************************************************************************************
+Sp Name : Get reservationlog using reservationId
+Comment : Create new sp for reservation log
+
+************************************************************************************************************
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE GetReservationLogByReservationId
+	@ReservationId		UNIQUEIDENTIFIER	=	NULL	,
+	@UserId	INT			
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[ReservationLog]
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND ReservationId = @ReservationId
+				AND [CreatedBy] = @UserId
+		ORDER BY CreatedOn DESC
+END
+
+
 
 
 
