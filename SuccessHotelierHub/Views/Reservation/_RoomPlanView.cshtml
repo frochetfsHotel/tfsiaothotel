@@ -15,9 +15,9 @@
 
     if (dates != null)
     {
-        firstHeaderRowHtml += "<th colspan='3' style='width: 30%;'>";
+        firstHeaderRowHtml += "<th style='width: 30%;'>";
 
-        secondHeaderRowHtml += "<th class='text-center' width='8%'>Room#</th>";
+        secondHeaderRowHtml += "<th class='text-center' width='10%'>Room#</th>";
         secondHeaderRowHtml += "<th class='text-center' width='10%'>Room Status</th>";
         secondHeaderRowHtml += "<th class='text-center' width='10%'>Room Type</th>";
 
@@ -43,76 +43,6 @@
 }
 
 <style type="text/css">
-    /*td.drop {
-            background: #fff;
-            width: 100px;
-        }
-        td.over {
-            background: #FBEC88;
-        }
-        .assigned {
-            background: #fafafa;
-            color: #444;
-        }
-        .trash {
-            background-color: red;
-        }
-        #tblRoomPlan .btn[class*='bg-']:hover {
-            box-shadow: none;
-        }
-        #tblRoomPlan thead > tr > th {
-            padding: 3px !important;
-        }
-        .spnReservation {
-            width: 100%;
-        }
-        div.tableContainer {
-            clear: both;
-            overflow: auto;
-            width: 100%;
-        }
-        html > body div.tableContainer {
-            overflow: hidden;
-            width: 100%;
-        }
-        div.tableContainer table {
-            float: left;
-        }
-
-        thead.fixedHeader tr {
-            position: relative;
-        }
-        thead.fixedHeader th {
-            font-weight: normal;
-            padding: 4px 3px;
-            text-align: left;
-        }
-        html > body tbody.scrollContent {
-            display: block;
-            height: 400px;
-            overflow: auto;
-            width: 100%;
-        }
-        html > body thead.fixedHeader {
-            display: table;
-            overflow: auto;
-            width: 100%;
-        }
-        tbody.scrollContent td, tbody.scrollContent tr.normalRow td {
-            border-bottom: none;
-            border-left: none;
-            padding: 2px 3px 3px 4px;
-        }
-        tbody.scrollContent tr.alternateRow td {
-            border-bottom: none;
-            border-left: none;
-            border-top: 1px solid #DDD;
-            padding: 2px 3px 3px 4px;
-        }
-        td {
-            position: relative;
-        }*/
-
     .tableContainer table {
         width: 100%;
         border-collapse: collapse;
@@ -126,9 +56,6 @@
         display: block;
         height: 35px !important;
     }
-    /*.datepicker-days .tableContainer thead, tbody, tr, td, th{
-               height: auto !important;
-       }*/
 
     .tableContainer tr:after {
         content: ' ';
@@ -140,7 +67,6 @@
     .tableContainer thead th {
         height: 30px;
         line-height: 30px;
-        /*text-align: left;*/
     }
 
 
@@ -148,6 +74,7 @@
         height: 500px !important;
         overflow-y: auto;
         width: 100%;
+        overflow-x: hidden;
     }
 
     /*any os other than mac*/
@@ -165,9 +92,10 @@
     }
 
     .table-class thead.fixedHeader tr th, .table-class tbody.scrollContent td {
-        width: 10%;
+        /*width: 10%;*/
         float: left;
         /*border-right: 1px solid black;*/
+        position: relative;
     }
 
     .table-class {
@@ -212,13 +140,6 @@
         display: none;
     }
 
-    .table-condensed thead tr {
-        /*display: none;*/
-    }
-    /*.datepicker-days td, th {
-        display: table-cell;
-        vertical-align: inherit;
-    }*/
     .datepicker-days td, th {
         display: table-cell;
         vertical-align: inherit;
@@ -234,6 +155,28 @@
 
     .table-condensed > tbody > tr > td, .table-condensed > tbody > tr > th {
         width: 26px;
+    }
+
+    .border-radius-none {
+        border-radius: 0;
+    }
+
+    .border-none {
+        border-left: none !important;
+        border-right: none !important;
+    }
+
+    .border-bottom-none {
+        border-bottom: none;
+    }
+
+    .arrow-right {
+        color: #ff851b;
+        font-size: 16px;
+    }
+
+    th.text-center {
+        padding: 8px 2px !important;
     }
 </style>
 
@@ -267,12 +210,12 @@
                         var reservationDetail = reservationRepository.GetReservationDetailsForRoomPlan(room.Id, startDate, endDate, LogInManager.LoggedInUserId);
 
                         <tr data-roomid="@(room.Id)" data-roomtypeid="@(room.RoomTypeId)" data-roomtypecode="@(room.RoomTypeCode)" data-roomno="@(room.RoomNo)" data-tr-id="@("tr_" + room.Id)" id="@("tr_" + room.Id)">
-                            <td>@room.RoomNo</td>
-                            <td class="tdRoomStatus" style="background-color:@statusBGColor; color:#fff"
+                            <td width="10%">@room.RoomNo</td>
+                            <td width="10%" class="tdRoomStatus" style="background-color:@statusBGColor; color:#fff"
                                 data-background-color="@statusBGColor" data-room-status="@room.RoomStatus">
                                 @room.RoomStatus
                             </td>
-                            <td>@room.RoomTypeCode</td>
+                            <td width="10%">@room.RoomTypeCode</td>
 
                             @if (reservationDetail != null && reservationDetail.Count > 0)
                             {
@@ -282,14 +225,13 @@
                                     var reservationInfo = reservationDetail.Where(i => (i.CheckInDate.Value.Date <= dates[intI].Date.Value.Date) && (i.CheckOutDate.Value.Date >= dates[intI].Date.Value.Date)).FirstOrDefault();
                                     if (reservationInfo != null)
                                     {
-
-
                                         if (blnFirst)
                                         {
                                             blnFirst = false;
-                                            <td class="text-center cursor-move assigned" style="padding:0; width:10%;">
+
+                                            <td class="text-center cursor-move assigned" style="padding:5px; width:10%;">
                                                 <span style="margin-right:-1px !important; text-align:center!important;"
-                                                      class="width-100 first btn item btn-xs bg-orange m-r-xs text-left-align p-l-xs spnReservation"
+                                                      class="btn btn-xs m-r-xs p-l-xs bg-orange  text-left-align  width-100 item first spnReservation"
                                                       id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                       data-reservationid="@(reservationInfo.ReservationId)"
                                                       ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
@@ -302,19 +244,23 @@
                                         {
                                             if (reservationInfo.CheckOutDateString == dates[intI].DateString)
                                             {
-                                                <td class="text-center cursor-move assigned text-center-align" style="padding:7px;">
-                                                    <span class="btn btn-xs m-r-xs p-l-xs fa fa-arrow-right"
+                                                <td class="text-center cursor-move assigned padding-zero border-none text-center-align" style="width:10%;padding:7px 0px !important; ">
+                                                    @*<span class="btn btn-xs border-radius-none bg-orange width-100 text-center padding-zero border-bottom-none"  style="width:89%;">
+
+                                                        </span>*@
+                                                    <span class="btn btn-xs padding-zero fa fa-long-arrow-right arrow-right"
                                                           id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                           data-reservationid="@(reservationInfo.ReservationId)"
                                                           ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
                                                           title="Double click here to view reservation detail.">
                                                     </span>
                                                 </td>
+                                                blnFirst = true;
                                             }
                                             else
                                             {
-                                                <td class="text-center cursor-move assigned" style="padding:7px;text-align:center;">
-                                                    <span class="btn btn-xs m-r-xs text-left-align p-l-xs fa fa-minus"
+                                                <td class="text-center cursor-move assigned border-none" style="padding:10px 0px;text-align:center;width:10%;">
+                                                    <span class="btn btn-xs border-radius-none bg-orange width-100 text-center padding-zero border-bottom-none"
                                                           id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                           data-reservationid="@(reservationInfo.ReservationId)"
                                                           ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"

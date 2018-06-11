@@ -706,6 +706,7 @@ namespace SuccessHotelierHub.Controllers
             try
             {
 
+                #region "check selected room is already check in by another user or not"
                 if (!string.IsNullOrWhiteSpace(model.RoomIds))
                 {
                     string strETAText = "10:00";
@@ -725,6 +726,26 @@ namespace SuccessHotelierHub.Controllers
                         }, JsonRequestBehavior.AllowGet);
                     }
                 }
+                #endregion
+
+                string reservationId = string.Empty;
+
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+                model.IsActive = true;
+
+                #region "convert ETA string to time"
+                string ETAText = model.ETAText;
+                if (!string.IsNullOrWhiteSpace(ETAText))
+                {
+                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                    string date = (todayDate + " " + ETAText);
+                    DateTime time = Convert.ToDateTime(date);
+
+                    model.ETA = time.TimeOfDay;
+                }
+                #endregion
+
+                #region "update reservation log details using reservation"
                 var GetReservationLogDetail = reservationLogRepository.GetReservationLogByReservationId(model.Id, LogInManager.LoggedInUserId).FirstOrDefault();
                 if (GetReservationLogDetail != null)
                 {
@@ -736,7 +757,7 @@ namespace SuccessHotelierHub.Controllers
                     reservationLog.RoomId = model.RoomIds != null ? Guid.Parse(model.RoomIds) : GetReservationLogDetail.RoomId;
                     reservationLog.RoomStatusId = GetReservationLogDetail.RoomStatusId;
                     reservationLog.CheckInDate = model.ArrivalDate;
-                    reservationLog.CheckInTime = GetReservationLogDetail.CheckInTime;
+                    reservationLog.CheckInTime = model.ETA;
                     reservationLog.CheckOutDate = model.DepartureDate;
                     reservationLog.CheckOutTime = GetReservationLogDetail.CheckOutTime;
                     reservationLog.UpdatedBy = LogInManager.LoggedInUserId;
@@ -744,20 +765,7 @@ namespace SuccessHotelierHub.Controllers
 
                     reservationLogRepository.UpdateReservationLog(reservationLog);
                 }
-                string reservationId = string.Empty;
-
-                model.UpdatedBy = LogInManager.LoggedInUserId;
-                model.IsActive = true;
-
-                string ETAText = model.ETAText;
-                if (!string.IsNullOrWhiteSpace(ETAText))
-                {
-                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                    string date = (todayDate + " " + ETAText);
-                    DateTime time = Convert.ToDateTime(date);
-
-                    model.ETA = time.TimeOfDay;
-                }
+                #endregion
 
                 double totalBalance = 0, totalPrice = 0;
 
