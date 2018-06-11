@@ -134,7 +134,7 @@ namespace SuccessHotelierHub.Utility
 
                                 var weekEndPrice = rateRepository.GetWeekEndPrice(tempReservation.RoomTypeId.Value, tempReservation.RateCodeId.Value).FirstOrDefault();
 
-                                if(weekDayPrice != null)
+                                if (weekDayPrice != null)
                                 {
                                     reservation.Rate = weekDayPrice.Amount;
                                 }
@@ -906,6 +906,7 @@ namespace SuccessHotelierHub.Utility
                                 lstReservationLog.RoomId = Guid.Parse(item.Trim());
                                 lstReservationLog.CheckInDate = model.CheckInDate.Value;
                                 lstReservationLog.CheckInTime = checkInTime;
+                                lstReservationLog.CheckOutTime = checkInTime;
                                 lstReservationLog.CheckOutDate = reservation.DepartureDate;
                                 lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.DIRTY);
                                 lstReservationLog.IsActive = true;
@@ -921,6 +922,7 @@ namespace SuccessHotelierHub.Utility
                                 reservationLog.RoomId = Guid.Parse(item.Trim());
                                 reservationLog.CheckInDate = model.CheckInDate.Value;
                                 reservationLog.CheckInTime = checkInTime;
+                                reservationLog.CheckOutTime = checkInTime;
                                 reservationLog.CheckOutDate = reservation.DepartureDate;
                                 reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.DIRTY);
                                 reservationLog.IsActive = true;
