@@ -148,17 +148,16 @@
             startDate = $('#Date').val();
         }
         $('#StartDate').val(startDate);
-
+        AjaxRequestStart()
         //Ajax Request to fetch Room Plan View.
         $.ajax({
             beforeSend: function (xhr) {
-                showLoader();
+               
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 ShowErrorMessage(jqXHR.status, errorThrown);
             },
-            complete: function () {
-                hideLoader();
+            complete: function () {               
             },
             url: '@Url.Content("~/Reservation/SearchRoomPlan")',
             type: 'POST',
@@ -170,7 +169,7 @@
                 else {
                     $('#divRoomPlanView').html('');
                     $('#divRoomPlanView').html(response);
-
+                    AjaxRequestFinish()
                     if (!IsNullOrEmpty($('#hdnRoomTableRowIdToScroll').val())) {
                         goToSpecificRoomDetail($('#hdnRoomTableRowIdToScroll').val());
                     }

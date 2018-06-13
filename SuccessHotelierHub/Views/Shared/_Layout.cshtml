@@ -10,22 +10,25 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/scripts")
-    @RenderSection("styles", required:false)
+    @RenderSection("styles", required: false)
     @*<script type="text/javascript">
-        var appInsights=window.appInsights||function(config){
-            function r(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s=u.createElement(o),i,f;for(s.src=config.url||"//az416426.vo.msecnd.net/scripts/a/ai.0.js",u.getElementsByTagName(o)[0].parentNode.appendChild(s),t.cookie=u.cookie,t.queue=[],i=["Event","Exception","Metric","PageView","Trace"];i.length;)r("track"+i.pop());return r("setAuthenticatedUserContext"),r("clearAuthenticatedUserContext"),config.disableExceptionTracking||(i="onerror",r("_"+i),f=e[i],e[i]=function(config,r,u,e,o){var s=f&&f(config,r,u,e,o);return s!==!0&&t["_"+i](config,r,u,e,o),s}),t
-        }({
-            instrumentationKey:"3f35cab0-44be-4563-a1dc-e8a2413211fd"
-        });
-        
-        window.appInsights=appInsights;
-        appInsights.trackPageView();
-    </script>*@
+            var appInsights=window.appInsights||function(config){
+                function r(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s=u.createElement(o),i,f;for(s.src=config.url||"//az416426.vo.msecnd.net/scripts/a/ai.0.js",u.getElementsByTagName(o)[0].parentNode.appendChild(s),t.cookie=u.cookie,t.queue=[],i=["Event","Exception","Metric","PageView","Trace"];i.length;)r("track"+i.pop());return r("setAuthenticatedUserContext"),r("clearAuthenticatedUserContext"),config.disableExceptionTracking||(i="onerror",r("_"+i),f=e[i],e[i]=function(config,r,u,e,o){var s=f&&f(config,r,u,e,o);return s!==!0&&t["_"+i](config,r,u,e,o),s}),t
+            }({
+                instrumentationKey:"3f35cab0-44be-4563-a1dc-e8a2413211fd"
+            });
+
+            window.appInsights=appInsights;
+            appInsights.trackPageView();
+        </script>*@
 </head>
 <body class="skin-blue sidebar-mini hold-transition">
     <!-- Loading START -->
     <div id="divLoader" class="loader" style="z-index: 9999; display: none;">
         <img style="display: block; margin: auto" alt="progress" src="~/Content/img/ajax-loader.gif">
+    </div>
+    <div style="display:none; z-index:9999;" id="ProgressBar" class="loader">        
+            <img src="@Url.Content("~/Content/img/ajax-loader.gif")" style="display:block;margin:auto;">        
     </div>
     <!-- Loading END -->
     <div class="wrapper">
@@ -37,8 +40,19 @@
         @Html.Partial("Footer")
     </div>
 
-    
-    @Scripts.Render("~/bundles/bootstrap")    
-    @RenderSection("scripts", required: false)    
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        var ajaxRequestCount = 0;
+        function AjaxRequestStart() {
+            ajaxRequestCount++,
+            $("#ProgressBar").show();
+        }
+
+        function AjaxRequestFinish() {
+            ajaxRequestCount > 0 && ajaxRequestCount--, ajaxRequestCount == 0 && $("#ProgressBar").hide();
+        }
+    </script>
 </body>
 </html>

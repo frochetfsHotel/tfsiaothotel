@@ -51,10 +51,17 @@
         overflow: auto;
     }
 
-    .tableContainer thead, tbody, tr, td, th {
+    .tableContainer thead, tr, th, tbody {
         box-sizing: border-box;
         display: block;
+    }
+
+    .fixedHeader tr th {
         height: 35px !important;
+    }
+
+    .scrollContent tr td {
+        min-height: 35px !important;
     }
 
     .tableContainer tr:after {
@@ -145,12 +152,8 @@
         vertical-align: inherit;
     }
 
-    .datepicker-days .tableContainer thead, tbody, tr, td, th {
+    .datepicker-days {
         height: auto !important;
-    }
-
-    .fixedHeader tr th, .scrollContent tr td {
-        height: 35px !important;
     }
 
     .table-condensed > tbody > tr > td, .table-condensed > tbody > tr > th {
@@ -177,6 +180,10 @@
 
     th.text-center {
         padding: 8px 2px !important;
+    }
+
+    .bg-sky {
+        background-color: #1AAFFE;
     }
 </style>
 
@@ -208,14 +215,15 @@
                         }
 
                         var reservationDetail = reservationRepository.GetReservationDetailsForRoomPlan(room.Id, startDate, endDate, LogInManager.LoggedInUserId);
+                        var AllocationDetail = reservationRepository.GetRoomAllocationDetailsForRoomPlan(room.Id, startDate, endDate, LogInManager.LoggedInUserId);
 
                         <tr data-roomid="@(room.Id)" data-roomtypeid="@(room.RoomTypeId)" data-roomtypecode="@(room.RoomTypeCode)" data-roomno="@(room.RoomNo)" data-tr-id="@("tr_" + room.Id)" id="@("tr_" + room.Id)">
-                            <td width="10%">@room.RoomNo</td>
-                            <td width="10%" class="tdRoomStatus" style="background-color:@statusBGColor; color:#fff"
+                            <td width="10%" class="@("td_" + room.Id)">@room.RoomNo</td>
+                            <td width="10%" class="tdRoomStatus @("td_" + room.Id)" style="background-color:@statusBGColor; color:#fff"
                                 data-background-color="@statusBGColor" data-room-status="@room.RoomStatus">
                                 @room.RoomStatus
                             </td>
-                            <td width="10%">@room.RoomTypeCode</td>
+                            <td width="10%" class="@("td_" + room.Id)">@room.RoomTypeCode</td>
 
                             @if (reservationDetail != null && reservationDetail.Count > 0)
                             {
@@ -229,14 +237,14 @@
                                         {
                                             blnFirst = false;
 
-                                            <td class="text-center cursor-move assigned" style="padding:5px; width:10%;">
+                                            <td class="text-center cursor-move assigned" style="padding:5px; width:@(reservationInfo.CheckOutDate <= dates[dates.Count - 1].Date ? (reservationInfo.DaysInWeek == 1? reservationInfo.DaysInWeek :reservationInfo.DaysInWeek  - 1) * 10 : reservationInfo.DaysInWeek * 10)%;">
                                                 <span style="margin-right:-1px !important; text-align:center!important;"
                                                       class="btn btn-xs m-r-xs p-l-xs bg-orange  text-left-align  width-100 item first spnReservation"
                                                       id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                       data-reservationid="@(reservationInfo.ReservationId)"
                                                       ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
                                                       title="Double click here to view reservation detail.">
-                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfAdult))
+                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
                                                 </span>
                                             </td>
                                         }
@@ -257,17 +265,17 @@
                                                 </td>
                                                 blnFirst = true;
                                             }
-                                            else
-                                            {
-                                                <td class="text-center cursor-move assigned border-none" style="padding:10px 0px;text-align:center;width:10%;">
-                                                    <span class="btn btn-xs border-radius-none bg-orange width-100 text-center padding-zero border-bottom-none"
-                                                          id="@("spnReservation_" + reservationInfo.ReservationId)"
-                                                          data-reservationid="@(reservationInfo.ReservationId)"
-                                                          ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
-                                                          title="Double click here to view reservation detail.">
-                                                    </span>
-                                                </td>
-                                            }
+                                            @*else
+                                                {
+                                                    <td class="text-center cursor-move assigned border-none" style="padding:10px 0px;text-align:center;width:10%;">
+                                                        <span class="btn btn-xs border-radius-none bg-orange width-100 text-center padding-zero border-bottom-none"
+                                                              id="@("spnReservation_" + reservationInfo.ReservationId)"
+                                                              data-reservationid="@(reservationInfo.ReservationId)"
+                                                              ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
+                                                              title="Double click here to view reservation detail.">
+                                                        </span>
+                                                    </td>
+                                                }*@
                                         }
                                         intI = intI + 1;
                                     }
@@ -281,13 +289,56 @@
                             }
                             else
                             {
-                                <td class="drop" width="10%"></td>
-                                <td class="drop" width="10%"></td>
-                                <td class="drop" width="10%"></td>
-                                <td class="drop" width="10%"></td>
-                                <td class="drop" width="10%"></td>
-                                <td class="drop" width="10%"></td>
-                                <td class="drop" width="10%"></td>
+                                if (AllocationDetail != null)
+                                {
+                                    bool allocateFirst = true;
+                                    for (int intK = 0; intK < dates.Count;)
+                                    {
+                                        var allocationInfo = AllocationDetail.Where(i => (i.ArrivalDate.Value.Date <= dates[intK].Date.Value.Date) && (i.DepartureDate.Value.Date >= dates[intK].Date.Value.Date)).ToList();
+                                        if (allocationInfo.Count > 0)
+                                        {
+                                            allocateFirst = true;
+                                            if (allocateFirst)
+                                            {
+                                                allocateFirst = false;
+                                                <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
+                                                    @foreach (var item in allocationInfo)
+                                                    {
+                                                        <span style="margin:3px -1px !important; text-align:center!important;"
+                                                              class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
+                                                              id="@("spnReservation_" + item.ReservationId)"
+                                                              data-reservationid="@(item.ReservationId)"
+                                                              ondblclick="GotoReservationEdit('@(item.ReservationId)')"
+                                                              title="Double click here to view reservation detail.">
+                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, item.NoOfNight))
+                                                        </span>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td width='10%' class="@("td_" + room.Id)" height="@(allocationInfo.Count * 35)px!important"></td>
+                                            }
+                                            intK = intK + 1;
+                                        }
+                                        else
+                                        {
+                                            allocateFirst = true;
+                                            intK++;
+                                            <td width='10%' class="drop @("td_" + room.Id)"></td>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <td class="drop" width="10%"></td>
+                                    <td class="drop" width="10%"></td>
+                                    <td class="drop" width="10%"></td>
+                                    <td class="drop" width="10%"></td>
+                                    <td class="drop" width="10%"></td>
+                                    <td class="drop" width="10%"></td>
+                                    <td class="drop" width="10%"></td>
+                                }
                             }
                         </tr>
                     }
@@ -321,6 +372,19 @@ else
 }
 
 <script type="text/javascript">
+
+    var AllocatedRoom = @Html.Raw(ViewBag.AllocationFullDetail);
+    $(document).ready(function () {
+        if (AllocatedRoom != null) {
+            $(AllocatedRoom).each(function(){
+                var max = 0;
+                $('.td_' + this).each(function () {
+                    max = Math.max($(this).height(), max);
+                }).height(max);
+            })
+        }
+    })
+
     $(function () {
         $('.tblRoomPlan td span.item').draggable({
             revert: true,
@@ -492,6 +556,3 @@ else
         redirectTo(url);
     }
 </script>
-
-
-

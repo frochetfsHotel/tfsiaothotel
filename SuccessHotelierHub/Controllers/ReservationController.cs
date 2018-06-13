@@ -8,6 +8,7 @@ using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace SuccessHotelierHub.Controllers
 {
@@ -2039,6 +2040,10 @@ namespace SuccessHotelierHub.Controllers
 
                 var roomDetails = roomRepository.GetRoomDetailsForRoomPlan(model.RoomTypeId, model.FloorId, model.Rooms, startDate, endDate, LogInManager.LoggedInUserId);
                 ViewBag.RoomDetail = roomDetails;
+
+                var allocationFullDetail = reservationRepository.GetRoomAllocationDetailsForRoomPlan(null, startDate, endDate, LogInManager.LoggedInUserId);
+                var getRecordCountHaveMoreThenone = allocationFullDetail.GroupBy(x => x.RoomId).Where(g => g.Count() > 1).Select(y => y.Key).ToList();
+                ViewBag.allocationFullDetail = JsonConvert.SerializeObject(getRecordCountHaveMoreThenone);
 
                 ViewBag.Dates = dates;
                 ViewBag.FirstDate = firstDate;

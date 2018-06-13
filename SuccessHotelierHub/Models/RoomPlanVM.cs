@@ -120,6 +120,8 @@ namespace SuccessHotelierHub.Models
         public DateTime? CheckOutDate { get; set; }
 
         public int NoOfAdult { get; set; }
+
+        public int DaysInWeek { get; set; }
     }
 
     public class RoomPlanRoomAllocationDetailVM
