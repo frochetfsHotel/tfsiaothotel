@@ -33,7 +33,7 @@
                 @Html.LabelFor(m => m.Preference)
                 @Html.TextBoxFor(m => m.Preference, new { @class = "form-control" })
             </div>
-            <div class="col-md-4 col-sm-3 col-xs-12 form-group mt_25">
+            <div class="col-md-4 col-sm-4 col-xs-12 form-group mt_25">
                 <button type="button" class="btn btn-success m-r-xs" id="btnSearch" onclick="searchPreference()">Search</button>
                 <button type="button" class="btn btn-danger" id="btnClear" onclick="clearPreferenceSearch()">Clear</button>
             </div>
@@ -47,9 +47,9 @@
     </div>
 
     <div class="row m-t-sm" id="divPreferences" style="display:none;">
-        <div class="col-md-12 form-group">
+        <div class="col-xs-12 form-group">
             <label class="m-l-n col-md-2 control-label m-r-n-xl"> Preferences : </label>
-            <div class="col-md-10" id="selectedPreferences">
+            <div class="col-md-10 padding-zero" id="selectedPreferences">
             </div>
         </div>
     </div>

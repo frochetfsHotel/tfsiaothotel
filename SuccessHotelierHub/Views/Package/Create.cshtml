@@ -31,30 +31,30 @@
                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-8 form-group">
-                        @Html.LabelFor(m => m.Description)
-                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-md-4 form-group">
                         <label for="Price">Price (&euro;)</label>
-                        @Html.TextBoxFor(m => m.Price,  new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)", value= "0.00" })           
-                        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })             
+                        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", onkeypress = "onlyNumeric(event)", value = "0.00" })
+                        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.CalculationRatioId)
                         @Html.DropDownListFor(m => m.CalculationRatioId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewBag.CalculationRatioList, "Value", "Text"),
                                 "--Select Calculation Ratio--",
-                                new { @class = "form-control" })                        
+                                new { @class = "form-control" })
                     </div>
-                    <div class="col-md-4 form-group m-t-lg">
+                </div>
+                <div class="row">
+                    <div class="col-md-2 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
                             <span class="checkmark"></span>
                         </label>
+                    </div>
+                    <div class="col-md-10 form-group">
+                        @Html.LabelFor(m => m.Description)
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
                 </div>
             </div>

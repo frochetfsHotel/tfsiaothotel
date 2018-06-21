@@ -34,7 +34,7 @@ namespace SuccessHotelierHub.Models
         public string Code { get; set; }
         public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
-        public bool IsActive { get; set; }        
+        public bool IsActive { get; set; }
         public int TotalCount { get; set; }
     }
     #endregion
@@ -59,7 +59,7 @@ namespace SuccessHotelierHub.Models
         public string PreferenceGroupDescription { get; set; }
         public string PreferenceCode { get; set; }
         public string Preference { get; set; }
-        
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
     }
@@ -187,7 +187,7 @@ namespace SuccessHotelierHub.Models
     }
 
     #endregion
-    
+
     #region Search Reservation
 
     public class SearchReservationParametersVM
@@ -264,7 +264,7 @@ namespace SuccessHotelierHub.Models
     public class SearchReservationResultVM
     {
         public int RowNum { get; set; }
-        public Guid Id { get; set; }        
+        public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -304,7 +304,7 @@ namespace SuccessHotelierHub.Models
         public double Amount { get; set; }
 
         [DisplayName("Rate Type Category")]
-        public Guid? RateTypeCategoryId { get; set; }        
+        public Guid? RateTypeCategoryId { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -316,7 +316,7 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string RateTypeCode { get; set; }
         public string Description { get; set; }
-        public double Amount { get; set; }        
+        public double Amount { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsLeisRateType { get; set; }
 
@@ -344,7 +344,7 @@ namespace SuccessHotelierHub.Models
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
-        public string RoomTypeCode { get; set; }                
+        public string RoomTypeCode { get; set; }
         public int RoomCapacity { get; set; }
 
         public List<ColumnName> columns { get; set; }
@@ -355,9 +355,9 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
-        public string RoomTypeCode { get; set; }        
+        public string RoomTypeCode { get; set; }
         public int RoomCapacity { get; set; }
-        public string Description { get; set; }        
+        public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
@@ -416,19 +416,19 @@ namespace SuccessHotelierHub.Models
         //Room Type
         public Guid RoomTypeId { get; set; }
         public string RoomTypeCode { get; set; }
-        public int AvailableRooms { get; set; }    
+        public int AvailableRooms { get; set; }
         public int RoomCapacity { get; set; }
         public string RoomTypeDescription { get; set; }
 
         //Rate Type
         public Guid RateTypeId { get; set; }
-        public string RateTypeCode { get; set; }        
+        public string RateTypeCode { get; set; }
         public string RateTypeDescription { get; set; }
 
         //Room Type Rate Type Mapping
         public Guid RoomTypeRateTypeMappingId { get; set; }
-        public double Amount { get; set; }        
-        public string RoomTypeRateTypeMappingDescription { get; set; }        
+        public double Amount { get; set; }
+        public string RoomTypeRateTypeMappingDescription { get; set; }
     }
     #endregion
 
@@ -542,7 +542,7 @@ namespace SuccessHotelierHub.Models
         public Guid? RoomTypeId { get; set; }
         public string RoomTypeCode { get; set; }
         public Guid? RateTypeId { get; set; }
-        public string RateTypeCode { get; set; }        
+        public string RateTypeCode { get; set; }
         public double Amount { get; set; }
         public string Description { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -568,7 +568,7 @@ namespace SuccessHotelierHub.Models
         public string Description { get; set; }
 
         public int PageNum { get; set; }
-        public int PageSize { get; set; }        
+        public int PageSize { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -603,7 +603,7 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
 
         public string Code { get; set; }
-        public string Description { get; set; }        
+        public string Description { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
@@ -656,7 +656,7 @@ namespace SuccessHotelierHub.Models
         public string LastName { get; set; }
 
         [DisplayName("First Name")]
-        public string FirstName { get; set; }        
+        public string FirstName { get; set; }
 
         [DisplayName("TA Record Locator")]
         public string TARecordLocator { get; set; }
@@ -774,8 +774,8 @@ namespace SuccessHotelierHub.Models
         public Guid? BlockCodeId { get; set; }
 
         [DisplayName("Checked Out")]
-        public  bool IsShowCheckedOut { get; set; }
-        
+        public bool IsShowCheckedOut { get; set; }
+
         [DisplayName("Checked In")]
         public bool IsShowCheckedIn { get; set; }
 
@@ -800,9 +800,9 @@ namespace SuccessHotelierHub.Models
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public string ArrivalDate { get; set; }        
+        public string ArrivalDate { get; set; }
         public string DepartureDate { get; set; }
-                
+
         public string RoomNumbers { get; set; }
         public double? Balance { get; set; }
         public Guid? ReservationStatusId { get; set; }
@@ -817,7 +817,7 @@ namespace SuccessHotelierHub.Models
 
         public Guid? GroupId { get; set; }
         public string Group { get; set; }
-                
+
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
@@ -849,7 +849,7 @@ namespace SuccessHotelierHub.Models
     public class SearchAdditionalChargeResultVM
     {
         public int RowNum { get; set; }
-        public Guid Id { get; set; }        
+        public Guid Id { get; set; }
         public string Code { get; set; }
         public string Description { get; set; }
         public double? Price { get; set; }
@@ -924,7 +924,7 @@ namespace SuccessHotelierHub.Models
             order = new List<ColumnOrderInfo>();
         }
 
-        [DisplayName("Country")]        
+        [DisplayName("Country")]
         public int? CountryId { get; set; }
 
         public string Code { get; set; }
@@ -967,7 +967,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("State")]
         public int? StateId { get; set; }
-        
+
         public string Name { get; set; }
 
         public int PageNum { get; set; }
@@ -986,7 +986,7 @@ namespace SuccessHotelierHub.Models
 
         public int? StateId { get; set; }
         public string StateName { get; set; }
-        
+
         public string Name { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
@@ -1005,7 +1005,7 @@ namespace SuccessHotelierHub.Models
         }
 
         public int PageNum { get; set; }
-        public int PageSize { get; set; }        
+        public int PageSize { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -1024,7 +1024,7 @@ namespace SuccessHotelierHub.Models
         public int TotalCount { get; set; }
     }
     #endregion
-    
+
     #region Search Floor
 
     public class SearchFloorParametersVM
@@ -1083,7 +1083,7 @@ namespace SuccessHotelierHub.Models
         public string Name { get; set; }
 
         [DisplayName("Description")]
-        public string Description { get; set; }   
+        public string Description { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -1314,7 +1314,7 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
-        [DisplayName("User Group")]        
+        [DisplayName("User Group")]
         public Guid? UserGroupId { get; set; }
 
         [DisplayName("User Role")]
@@ -1375,7 +1375,7 @@ namespace SuccessHotelierHub.Models
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
-        
+
         [DisplayName("Name")]
         public string Name { get; set; }
 
@@ -1414,7 +1414,7 @@ namespace SuccessHotelierHub.Models
         }
 
         public int PageNum { get; set; }
-        public int PageSize { get; set; }        
+        public int PageSize { get; set; }
 
         public Guid TutorId { get; set; }
 
@@ -1648,7 +1648,7 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
-        [DisplayName("Title")]        
+        [DisplayName("Title")]
         public string Title { get; set; }
 
         [DisplayName("Salutation")]
@@ -1690,10 +1690,10 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Title")]
         public string Title { get; set; }
-        
+
         [DisplayName("Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? Date { get; set; }
 
         [DisplayName("Description")]
@@ -1725,6 +1725,49 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search Company
+    public class SearchCompanyParametersVM
+    {
+        public SearchCompanyParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Title")]
+        public string CompanyName { get; set; }
+
+        [DisplayName("Description")]
+        public string CompanyAddress { get; set; }
+
+        public Boolean IsActive { get; set; }
+
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+    public class SearchCompanyResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("CompanyName")]
+        public string CompanyName { get; set; }
+
+        [DisplayName("CompanyAddress")]
+        public string CompanyAddress { get; set; }
+
+        public Boolean IsActive { get; set; }
+
+
+        public DateTime? CreatedOn { get; set; }       
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
     #region Search Reservation Log
 
     public class SearchUsersReservationLogParametersVM
@@ -1742,8 +1785,8 @@ namespace SuccessHotelierHub.Models
         public Guid? UserGUID { get; set; }
 
         public int UserId { get; set; }
-        
-        [DisplayName("Start Date")]        
+
+        [DisplayName("Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? StartDate { get; set; }
@@ -1773,7 +1816,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Confirmation #")]
         public string ConfirmationNumber { get; set; }
 
-        [DisplayName("Last Name")]        
+        [DisplayName("Last Name")]
         public string LastName { get; set; }
 
         [DisplayName("First Name")]
@@ -1781,7 +1824,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Arrival Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? ArrivalDate { get; set; }
 
         [DisplayName("Nights")]
@@ -1789,7 +1832,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Departure Date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]        
+        [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DepartureDate { get; set; }
 
         [DisplayName("Adults")]
@@ -1800,15 +1843,15 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("No Of Rooms.")]
         public int NoOfRoom { get; set; }
-                        
+
         public Guid? RoomTypeId { get; set; }
 
-        [DisplayName("Room Type")]        
-        public string RoomTypeCode { get; set; }       
+        [DisplayName("Room Type")]
+        public string RoomTypeCode { get; set; }
 
         [DisplayName("Room #")]
         public string RoomNumbers { get; set; }
-        
+
         public Guid? RateTypeId { get; set; }
 
         public string RateTypeCode { get; set; }
@@ -1821,10 +1864,10 @@ namespace SuccessHotelierHub.Models
         public double? GuestBalance { get; set; }
 
         public string CurrencySymbol { get; set; }
-        
+
         public bool IsEmailConfirmation { get; set; }
 
-        public DateTime? CreatedOn { get; set; }        
+        public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
 
@@ -2061,7 +2104,7 @@ namespace SuccessHotelierHub.Models
 
     public class SearchAdvancePackageResultVM
     {
-        public int RowNum { get; set; }        
+        public int RowNum { get; set; }
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -2076,11 +2119,11 @@ namespace SuccessHotelierHub.Models
         public string CalculationRatio { get; set; }
 
         public DateTime? CreatedOn { get; set; }
-        public bool IsActive { get; set; }        
+        public bool IsActive { get; set; }
     }
 
     #endregion
-    
+
     #region Search Add Ons
 
     public class SearchAddOnsParametersVM
@@ -2117,7 +2160,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Price")]
         [DisplayFormat(DataFormatString = "{0:C0}")]
-        public double Price { get; set; }        
+        public double Price { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
@@ -2172,7 +2215,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("First Name")]
         public string FirstName { get; set; }
-        
+
         [DisplayName("Arrival From")]
         public string ArrivalFrom { get; set; }
 
@@ -2215,7 +2258,7 @@ namespace SuccessHotelierHub.Models
         public int NoOfRoom { get; set; }
         public string RoomNo { get; set; }
         public string RoomTypeCode { get; set; }
-        public string RateTypeCode { get; set; }        
+        public string RateTypeCode { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
@@ -2329,7 +2372,7 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Date")]
         public DateTime? Date { get; set; }
 
-        public int UserId { get; set; }        
+        public int UserId { get; set; }
 
         public int PageNum { get; set; }
         public int PageSize { get; set; }
@@ -2359,9 +2402,9 @@ namespace SuccessHotelierHub.Models
         public int NoOfChildren { get; set; }
         public int NoOfNight { get; set; }
 
-        public string ArrivalDate { get; set; }        
+        public string ArrivalDate { get; set; }
         public string DepartureDate { get; set; }
-        
+
         public string RateTypeCode { get; set; }
         public string Remarks { get; set; }
 
@@ -2391,7 +2434,7 @@ namespace SuccessHotelierHub.Models
         }
 
         public int PageNum { get; set; }
-        public int PageSize { get; set; }        
+        public int PageSize { get; set; }
 
         [DisplayName("Name")]
         public string Name { get; set; }
@@ -2413,7 +2456,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Description")]
         public string Description { get; set; }
-        
+
         [DisplayName("Currency Id")]
         public Guid? CurrencyId { get; set; }
 
@@ -2422,7 +2465,7 @@ namespace SuccessHotelierHub.Models
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
-        
+
         public int TotalCount { get; set; }
     }
     #endregion
@@ -2444,7 +2487,7 @@ namespace SuccessHotelierHub.Models
         public string Code { get; set; }
 
         [DisplayName("Name")]
-        public string Name { get; set; }        
+        public string Name { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }

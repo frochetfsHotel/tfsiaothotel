@@ -576,7 +576,7 @@ textarea {
 
 /*Avoid scroll bar issue.*/
 .table-responsive {
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 .cursor-P{
@@ -642,7 +642,7 @@ li.page-item.pull-left.liPageNum {
     font-weight:400 !important;
 }
 header .nav>li>a {
-    padding: 10px 30px;
+    padding: 10px 24px;
 }
 .main-header .logo {
     height: 64px;
@@ -998,6 +998,12 @@ width:100% !important;
 .width_35{
     width:35% !important;
 }
+.width150{
+    width:150px !important;
+}
+.width85{
+    width:85px !important;
+}
 .width_40{
     width:40% !important;
 }
@@ -1037,7 +1043,15 @@ width:100% !important;
 .width_100{
     width:100% !important;
 }
-
+.width20{
+    width: 20px !important;
+}
+.width210 {
+    width: 210px !important;
+}
+.width230 {
+    width: 230px !important;
+}
 .text-weekend-bgcolor{
     /*background-color:#fff000 !important;*/
     background-color: #bf7fbf !important;
@@ -1136,4 +1150,10 @@ div.input-group-addon {
 /*******SWAL 2 */
 .swal2-popup .swal2-title{
     font-size: 28px !important;
+}
+.table-responsive{
+    border: none;
+}
+.table-responsive .table-bordered {
+    border: 1px solid #f4f4f4;
 }

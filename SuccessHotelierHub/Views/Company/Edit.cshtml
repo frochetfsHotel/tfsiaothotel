@@ -1,0 +1,104 @@
+﻿@model SuccessHotelierHub.Models.CompanyVM
+@{
+    ViewBag.Title = "Edit Company";
+}
+
+<section class="content-header">
+    <h1>
+        Company <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Company</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Company Details</h3>
+        </div>
+        @using (Html.BeginForm("Edit", "Company", FormMethod.Post, new { id = "frmCompany", enctype = "multipart/form-data" }))
+            {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CompanyName, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", placeholder = "Company Name", @onkeypress = "stopformSubmitOnEnter()" })
+                        @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CompanyAddress)
+                        @Html.TextAreaFor(m => m.CompanyAddress, new { @class = "form-control", placeholder = "Company Address", rows = "3" })
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateCompany();">Update</button>
+                <a href="@Url.Action("List", "Company")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function hstopformSubmitOnEnter() {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            return false;
+        }
+    }
+
+    function validateCompany() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmCompany").valid() == false) {
+            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function updateCompany() {
+
+        if (validateCompany()) {
+            $.ajax({
+                url: '@Url.Content("~/Company/Edit")',
+                type: 'POST',
+                data: $('#frmCompany').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Company details updated successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/Company/List")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

@@ -133,15 +133,15 @@
                             @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", placeholder = "Postal Code" })
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3">
+                    <div class="">
+                        <div class="pull-left">
                             <label class="container1" for="IsShowCheckedIn">
                                 Checked In
                                 @Html.CheckBoxFor(m => m.IsShowCheckedIn)
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-9 form-group text-right">
+                        <div class="pull-right form-group text-right">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchArrival()">
                                 Search
                             </button>

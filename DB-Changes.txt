@@ -50159,10 +50159,323 @@ BEGIN
 					AND (@RoomId IS null OR RRM.RoomId = @RoomId)
 END
 
+***********************************************************************************************************
+Sp Name : [GetPreviousReservationOrNot]
+Comment : Is Check Out cluase added
+
+************************************************************************************************************
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetPreviousReservationOrNot]
+		@RoomId		 UNIQUEIDENTIFIER
+	,	@CheckInDate DATETIME				  = NULL
+	,	@CheckInTime TIME(7)				  = NULL
+	,	@ReservationId		 UNIQUEIDENTIFIER = NULL
+	,	@UserId		INT						  = NULL
+AS
+BEGIN		
+	SET NOCOUNT ON;    
+
+	SELECT 		
+		CD.CheckOutTime, 
+		R.DepartureDate	,
+		R.*
+	FROM 
+		Reservation  R
+			INNER JOIN CheckInCheckOutDetail  CD
+				ON R.Id = CD.ReservationId  AND ISNULL(CD.IsDeleted,0) = 0
+					AND R.CreatedBy = @UserId
+			INNER JOIN ReservationRoomMapping RRM
+				ON R.Id = RRM.ReservationId AND ISNULL(RRM.IsDeleted,0) = 0
+					AND RRM.CreatedBy = @UserId
+					WHERE ISNULL(R.IsDeleted,0) = 0 AND ISNULL(R.IsCheckIn,0) = 1 AND ISNULL(R.IsCheckOut,0) = 0
+						AND RRM.RoomId =  @RoomID
+						AND (@ReservationId IS NULL OR R.Id != @ReservationId)
+						AND (@CheckInDate IS NULL OR DATEADD(MINUTE,CAST(FORMAT(CD.CheckOutTime,'mm') AS INT),  DATEADD(HOUR,CAST(FORMAT(CD.CheckOutTime,'hh') AS INT),  CONVERT(datetime,convert(varchar(8),R.DepartureDate,112)))) >=
+							DATEADD(MINUTE,CAST(FORMAT(@CheckInTime,'mm') AS INT),  DATEADD(HOUR,CAST(FORMAT(@CheckInTime,'hh') AS INT),  @CheckInDate)))
+END
 
 
+/******************************************************************************************************************
+Name : Nilesh
+Date : 20 june 2018
+****************************************************************************************************************/
+Create company table and update table record
+
+****************************************************************************************************************
+Create table Company(
+Id uniqueidentifier  not null,
+CompanyName nvarchar(50) null ,
+CompanyAddress nvarchar(500) null,
+IsActive bit null,
+IsDeleted bit null,
+CreatedBy int null,
+CreatedOn datetime null,
+UpdatedBy int null,
+UpdatedOn datetime null
+)
+
+insert into Company (Id,CompanyName,CompanyAddress,IsActive,CreatedBy,CreatedOn)
+values('AC3BD2C0-D75B-475E-97F1-5DFBAB9C4C7E','Bausch & Lomb','424/425, Cork Road Industrial Estate, Cork Rd, Waterford, Ireland.',1,1,GETDATE())
+insert into Company (Id,CompanyName,CompanyAddress,IsActive,CreatedBy,CreatedOn)
+values('2AB20BA4-5915-42E3-8F98-F64EB10BBC9C','House of Waterford Crystal','28 The Mall, Waterford, Ireland.',1,1,GETDATE())
+insert into Company (Id,CompanyName,CompanyAddress,IsActive,CreatedBy,CreatedOn)
+values('EABEBA2A-AC17-458D-A23D-342142905858','Apple Ireland','Hollyhill Industrial Estate, Hollyhill, Cork, Ireland.',1,1,GETDATE())
 
 
+************************************************************************************************************************
+Sp Name : GetCompanies
+Comment : get Company by ID
+************************************************************************************************************************
+GO
+/****** Object:  StoredProcedure [dbo].[GetCompanies]    Script Date: 20-Jun-18 5:56:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
+Create PROCEDURE [dbo].[GetCompanyById]
+@Id UNIQUEIDENTIFIER
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+    
+	SELECT * from [dbo].[Company]
+			WHERE Isnull(IsActive,0) = 1 AND Isnull(IsDeleted,0) = 0
+				AND Id = @Id		
+END
+*************************************************************************************************************************
+sp Name : Add Company
+Comment : insert New Record in GetCompanie
+*************************************************************************************************************************
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE AddCompany
+	@CompanyName	NVARCHAR(50),
+	@CompanyAddress NVARCHAR(500),
+	@IsActive		BIT,
+	@CreatedBy		INT	
+AS
+BEGIN		
+	SET NOCOUNT ON;
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+    
+	INSERT INTO [dbo].[Company]
+			 (
+				 [Id]
+				,[CompanyName]
+				,[CompanyAddress]
+				,[IsActive]
+				,[CreatedBy]
+				,[CreatedOn]
+			 )
+	VALUES
+			(
+				 @Id
+				,@CompanyName
+				,@CompanyAddress
+				,@IsActive
+				,@CreatedBy
+				,GETDATE()	
+			)
+				
+	SELECT @Id AS Id   
+	
+END
+*************************************************************************************************************************
+sp Name : Update Company
+Comment : update Record in company
+*************************************************************************************************************************
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE UpdateCompany
+@Id				UNIQUEIDENTIFIER,
+@CompanyName	NVARCHAR(50),
+@CompanyAddress NVARCHAR(500),
+@IsActive		BIT,
+@UpdatedBy		INT
+
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+	UPDATE Company 
+		SET CompanyName		= @CompanyName
+		,	CompanyAddress	= @CompanyAddress
+		,	IsActive		= @IsActive
+		,	UpdatedBy		= @IsActive
+		,	UpdatedOn		= GETDATE()
+		Where Id = @Id
+
+	Select @Id As Id
+    
+	
+END
+GO
+
+*************************************************************************************************************************
+sp Name : DeleteCompany
+Comment : update Record in company
+*************************************************************************************************************************
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE DeleteCompany
+@Id				UNIQUEIDENTIFIER,
+@UpdatedBy		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE Company 
+		SET IsDeleted 		= 1
+		,	IsActive 		= 0
+		,	UpdatedBy		= @UpdatedBy
+		,	UpdatedOn		= GETDATE()
+		Where Id = @Id
+
+	Select @Id As Id
+    	
+END
+GO
+***********************************************************************************************************************************
+Sp Name : Search Company
+Comment : Search All Company info 
+***********************************************************************************************************************************
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- exec SearchCompany null,null,1,10,null,null
+CREATE PROCEDURE SearchCompany	
+	@CompanyName	NVARCHAR(50)	=	NULL	,		
+	@CompanyAddress	NVARCHAR(500)	=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+AS
+BEGIN
+	
+	
+	SET NOCOUNT ON;
+   
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempCompany
+	(
+		[RowNum]			INT					NOT NULL
+	,	[Id]				UNIQUEIDENTIFIER	NOT NULL,
+		[CompanyName]		NVARCHAR(50)		NULL ,
+		[CompanyAddress]	NVARCHAR(500)		NULL,
+		[IsActive]			BIT					NULL,				
+		[CreatedOn]			DATETIME			NULL,				
+	)
+	--DECLARATIONS OVER
+
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Company]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@CompanyName,'') = '' OR [CompanyName] LIKE '%'+ @CompanyName +'%')  
+								AND (ISNULL(@CompanyAddress,'') = '' OR [CompanyAddress] LIKE '%'+ @CompanyAddress +'%')								
+						)
+
+	INSERT INTO #tempCompany 
+		(
+				[RowNum]			
+			,	[Id]				
+			,	[CompanyName]		
+			,	[CompanyAddress]	
+			,	[CreatedOn]		
+			,	[IsActive]			
+				
+		)
+		SELECT 
+			ROW_NUMBER() OVER 
+			(	
+				ORDER BY  
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+						THEN [CreatedOn] END ASC,
+					CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+						THEN [CreatedOn] END DESC,					
+
+					CASE WHEN @SortColumn = 'CompanyName' and @SortDirection = 'asc'
+						THEN [CompanyName] END ASC,
+					CASE WHEN @SortColumn = 'CompanyName' and @SortDirection = 'desc'
+						THEN [CompanyName] END DESC,
+
+					CASE WHEN @SortColumn = 'CompanyAddress' and @SortDirection = 'asc'
+						THEN [CompanyAddress] END ASC,
+					CASE WHEN @SortColumn = 'CompanyAddress' and @SortDirection = 'desc'
+						THEN [CompanyAddress] END DESC,
+
+					CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+						THEN [CompanyName] END ASC
+
+			) AS RowNum,
+			[Id],											
+			ISNULL([CompanyName], '') AS [CompanyName],
+			ISNULL([CompanyAddress],'') AS [CompanyAddress],
+			[CreatedOn],
+			[IsActive]
+		FROM [dbo].[Company]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@CompanyName,'') = '' OR [CompanyName] LIKE '%'+ @CompanyName +'%')  
+					AND (ISNULL(@CompanyAddress,'') = '' OR [CompanyAddress] LIKE '%'+ @CompanyAddress +'%') 	
+
+					-- DATA PREPARED, MOVING TO PAGGING					
+					
+					-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[CompanyName],		
+			temp.[CompanyAddress],			
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempCompany AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED							
+END
+GO
+
+***********************************************************************************************************************************
+Sp Name : Get Company List
+Comment : Get All Companies
+***********************************************************************************************************************************
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE GetCompanyList
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+    
+	SELECT * from Company Where ISNULL(IsActive , 0) = 1 AND ISNULL(IsDeleted, 0) = 0
+	ORDER BY CompanyName ASC
+END
+GO
 
 

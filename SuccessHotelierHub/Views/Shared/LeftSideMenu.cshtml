@@ -4,13 +4,14 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="~/Content/img/user-profile.png" class="img-circle" alt="User Image" style="border:1px solid #515865">
+                <img src="@Url.Content("~/Content/img/user-profile.png")" class="img-circle" alt="User Image" style="border:1px solid #515865">
             </div>
             <div class="pull-left info">
                 <p>@LogInManager.UserName</p>
                 <p class="font-weight-400">
-                @*<i class="fa fa-user-secret m-r-xs"></i>*@                 
-                <small style="font-weight:400">@LogInManager.UserRoleName</small></p>
+                    @*<i class="fa fa-user-secret m-r-xs"></i>*@
+                    <small style="font-weight:400">@LogInManager.UserRoleName</small>
+                </p>
             </div>
         </div>
         <!-- sidebar menu: : style can be found in sidebar.less -->
@@ -55,7 +56,7 @@
             </li>
             <li><a href="@Url.Action("Index","PropertyCalendar")"><i class="fa fa-calendar"></i>Calendar</a></li>
             <li><a href="#"><i class="fa fa-group"></i>Groups *</a></li>
-            
+
             <li><a href="#"><i class="fa fa-building-o"></i>Floor Plan *</a></li>
             @*<li><a href="#"><i class="fa fa-bed"></i>Room Plan *</a></li>*@
 
@@ -81,7 +82,7 @@
         @if (LogInManager.HasRights("ADMIN"))
         {
             <ul class="sidebar-menu tree leftsidemenu" id="MenusMasterScreens" data-widget="tree" style="display:none;">
-                
+
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-cogs"></i> Preference Master
@@ -469,8 +470,8 @@
                             </a>
                         </li>
                     </ul>
-                </li>   
-                
+                </li>
+
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-header" aria-hidden="true"></i> Title
@@ -497,17 +498,31 @@
                     </ul>
                 </li>
 
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-tripadvisor" aria-hidden="true"></i> Company
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="@Url.Action("Create", "Company")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                        <li><a href="@Url.Action("List", "Company")"><i class="fa fa-search"></i> Search </a></li>
+                    </ul>
+                </li>
+
+
                 <li>
                     <a href="@Url.Action("BulkReservation", "Common")">
                         <i class="fa fa-book" aria-hidden="true"></i> Bulk Reservation
                     </a>
-                </li>   
-                
+                </li>
+
                 <li>
                     <a href="@Url.Action("Index", "ErrorLog")">
                         <i class="fa fa-bug" aria-hidden="true"></i> Error Log
                     </a>
-                </li>           
+                </li>
 
             </ul>
         }
@@ -521,8 +536,8 @@
                 </li>
             </ul>
         }
-            
-        
+
+
     </section>
     <!-- /.sidebar -->
 </aside>

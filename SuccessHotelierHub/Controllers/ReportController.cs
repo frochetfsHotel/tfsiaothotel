@@ -30,6 +30,7 @@ namespace SuccessHotelierHub.Controllers
         private TitleRepository titleRepository = new TitleRepository();
         private CountryRepository countryRepository = new CountryRepository();
         private PreferenceRepository preferenceRepository = new PreferenceRepository();
+        private CompanyRepository CompanyRepository = new CompanyRepository();
 
         #endregion
 
@@ -43,7 +44,7 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult RegistrationCard()
         {
-            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
             return View();

@@ -49,6 +49,7 @@ namespace SuccessHotelierHub.Controllers
         private UserRepository userRepository = new UserRepository();
         private UserGroupRepository userGroupRepository = new UserGroupRepository();
         private CurrencyRepository currencyRepository = new CurrencyRepository();
+        private CompanyRepository CompanyRepository = new CompanyRepository();
         #endregion
 
         #region Reservation 
@@ -138,7 +139,7 @@ namespace SuccessHotelierHub.Controllers
             var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
 
-            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
             ReservationVM model = new ReservationVM();
@@ -632,7 +633,7 @@ namespace SuccessHotelierHub.Controllers
                 var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
                 var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
-                var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+                var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
                 ViewBag.CompanyList = companyList;
 
                 ViewBag.TitleList = titleList;
@@ -1268,7 +1269,7 @@ namespace SuccessHotelierHub.Controllers
 
             ViewBag.ReservationCancellationReasonList = reservationCancellationReasonList;
 
-            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
             return View();
@@ -1880,7 +1881,7 @@ namespace SuccessHotelierHub.Controllers
             //         }
             //     ), "Value", "Text").ToList();
 
-            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
             ViewBag.RateTypeList = rateTypeList;

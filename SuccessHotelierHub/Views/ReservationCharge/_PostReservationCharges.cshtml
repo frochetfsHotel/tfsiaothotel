@@ -59,22 +59,22 @@
                                 </td>
                                 <td>
                                     <input type="text" id="Amount_1" name="Amount_1"
-                                           class="form-control" placeholder="Amount" 
-                                           onkeypress = "onlyNumeric(event)"  value="0.00"/>
+                                           class="form-control" placeholder="Amount"
+                                           onkeypress="onlyNumeric(event)" value="0.00" />
                                 </td>
                                 <td>
-                                    <textarea id="Description_1" name="Description_1" rows="1" 
+                                    <textarea id="Description_1" name="Description_1" rows="1"
                                               class="form-control"></textarea>
                                 </td>
                                 <td>
                                     <input type="text" id="Qty_1" name="Qty_1"
                                            class="form-control" value="1"
-                                           onkeydown = "onlyDigits(event)"/>
+                                           onkeydown="onlyDigits(event)" />
                                 </td>
                                 @*<td>
-                                    <input type="text" id="Supplement_1" name="Supplement_1"
-                                           class="form-control" placeholder="Supplement" />
-                                </td>*@
+                                        <input type="text" id="Supplement_1" name="Supplement_1"
+                                               class="form-control" placeholder="Supplement" />
+                                    </td>*@
                                 <td>
                                     <input type="text" id="Reference_1" name="Reference_1"
                                            class="form-control" placeholder="Reference" />
@@ -82,8 +82,8 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>                
-            </div>            
+                </div>
+            </div>
         </div>
 
         <div class="box-footer text-right">
@@ -156,11 +156,6 @@
         html += "<input type='text' id='Qty_" + rowNumber + "' name='Qty_" + rowNumber + "' class='form-control' onkeydown='onlyDigits(event)' value='1'>";
         html += "</td>";
 
-        ////Supplement
-        //html += "<td>";
-        //html += "<input type='text' id='Supplement_" + rowNumber + "' name='Supplement_" + rowNumber + "' class='form-control' placeholder='Supplement'>";
-        //html += "</td>";
-
         //Reference
         html += "<td>";
         html += "<input type='text' id='Reference_" + rowNumber + "' name='Reference_" + rowNumber + "' class='form-control' placeholder='Reference'>";
@@ -186,13 +181,14 @@
     function removeRow(element) {
         $(element).closest("tr").remove();
     }
+
     function validateReservationCharges() {
         var errorMessage = "";
         var blnValid = true;
         var blnAmountValid = true;
 
         $("form#frmReservationCharge #tblTransactionCharges tbody tr").each(function () {
-            var rowNumber = $(this).attr("data-rownumber");            
+            var rowNumber = $(this).attr("data-rownumber");
             if (!IsNullOrEmpty(rowNumber)) {
                 rowNumber = parseInt(rowNumber);
                 var code = $('form#frmReservationCharge #Code_' + rowNumber).val();
@@ -228,7 +224,7 @@
 
             var listReservationCharge = [];
 
-            $("form#frmReservationCharge #tblTransactionCharges tbody tr").each(function () {                
+            $("form#frmReservationCharge #tblTransactionCharges tbody tr").each(function () {
                 var rowNumber = $(this).attr("data-rownumber");
 
                 if (!IsNullOrEmpty(rowNumber)) {
@@ -243,8 +239,7 @@
                     modelReservationCharge.Code = $('form#frmReservationCharge #Code_' + rowNumber).val();
                     modelReservationCharge.Description = $('form#frmReservationCharge #Description_' + rowNumber).val();
                     modelReservationCharge.Amount = $('form#frmReservationCharge #Amount_' + rowNumber).val();
-                    modelReservationCharge.Qty = $('form#frmReservationCharge #Qty_' + rowNumber).val();
-                    //modelReservationCharge.Supplement = $('form#frmReservationCharge #Supplement_' + rowNumber).val();
+                    modelReservationCharge.Qty = $('form#frmReservationCharge #Qty_' + rowNumber).val();                    
                     modelReservationCharge.Reference = $('form#frmReservationCharge #Reference_' + rowNumber).val();
                     modelReservationCharge.IsActive = true;
 
@@ -264,8 +259,7 @@
                         hideLoader();
                     },
                     url: '@Url.Content("~/ReservationCharge/AddCharges")',
-                    type: 'POST',
-                    //data: $('#frmReservationCharge').serialize(),
+                    type: 'POST',                    
                     data: { models: listReservationCharge },
                     success: function (response) {
                         if (response.IsSuccess == false) {
@@ -288,7 +282,7 @@
                         }
                         return false;
                     }
-                });                
+                });
             } else {
                 showToaster("Please add atleast one transaction charge", ToasterType.ERROR);
                 return false;
@@ -301,8 +295,7 @@
         $('form#frmReservationCharge #Code_1').val('');
         $('form#frmReservationCharge #Description_1').val('');
         $('form#frmReservationCharge #Amount_1').val('0.00');
-        $('form#frmReservationCharge #Qty_1').val('1');
-        //$('form#frmReservationCharge #Supplement_1').val('');
+        $('form#frmReservationCharge #Qty_1').val('1');        
         $('form#frmReservationCharge #Reference_1').val('');
         $('form#frmReservationCharge #AdditionalChargeId_1').val('');
         $('form#frmReservationCharge #hdnTotalTransactionCharges').val('1');

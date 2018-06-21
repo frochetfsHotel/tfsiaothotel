@@ -253,9 +253,6 @@
                                             if (reservationInfo.CheckOutDateString == dates[intI].DateString)
                                             {
                                                 <td class="text-center cursor-move assigned padding-zero border-none text-center-align" style="width:10%;padding:7px 0px !important; ">
-                                                    @*<span class="btn btn-xs border-radius-none bg-orange width-100 text-center padding-zero border-bottom-none"  style="width:89%;">
-
-                                                        </span>*@
                                                     <span class="btn btn-xs padding-zero fa fa-long-arrow-right arrow-right"
                                                           id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                           data-reservationid="@(reservationInfo.ReservationId)"
@@ -265,17 +262,6 @@
                                                 </td>
                                                 blnFirst = true;
                                             }
-                                            @*else
-                                                {
-                                                    <td class="text-center cursor-move assigned border-none" style="padding:10px 0px;text-align:center;width:10%;">
-                                                        <span class="btn btn-xs border-radius-none bg-orange width-100 text-center padding-zero border-bottom-none"
-                                                              id="@("spnReservation_" + reservationInfo.ReservationId)"
-                                                              data-reservationid="@(reservationInfo.ReservationId)"
-                                                              ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
-                                                              title="Double click here to view reservation detail.">
-                                                        </span>
-                                                    </td>
-                                                }*@
                                         }
                                         intI = intI + 1;
                                     }

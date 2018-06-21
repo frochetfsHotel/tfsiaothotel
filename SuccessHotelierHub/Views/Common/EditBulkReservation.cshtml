@@ -112,7 +112,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-blue m-l-xl" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
+                        <span class="text-blue" id="ArrivalDayOfWeek">@arrivalDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.ArrivalDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -127,7 +127,7 @@
                                 <i class="fa fa-calendar"></i>
                             </div>
                         </div>
-                        <span class="text-blue m-l-xl" id="DepartureDayOfWeek">@departureDayOfWeek</span>
+                        <span class="text-blue" id="DepartureDayOfWeek">@departureDayOfWeek</span>
                         @Html.ValidationMessageFor(m => m.DepartureDate, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-1 form-group">
@@ -248,7 +248,7 @@
                     <hr />
                     <div class="col-md-12 form-group">
                         <label class="label-bold">Transaction Summary :</label>
-                        <label class="m-l-md text-blue">Total Price : <span id="totalPrice"></span></label>
+                        <label class="m-l-sm text-blue">Total Price : <span id="totalPrice"></span></label>
                         <div class="table-responsive table_maxTransactionSummary">
                             <table class="table table-bordered table-striped" id="tblTransactionSummary">
                                 <thead>

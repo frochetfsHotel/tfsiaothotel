@@ -19,7 +19,7 @@
         Search Guests <small>Search</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
-        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content(" ~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="">Guests</li>
         <li class="active">Search</li>
     </ol>
@@ -66,9 +66,10 @@
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.CompanyId)
                             @Html.DropDownListFor(m => m.CompanyId,
-                                    new SelectList((IEnumerable<SelectListItem>)ViewBag.CompanyList, "Value", "Text"),
-                                    "--Select Company--",
-                                    new { @class = "form-control" })
+                            new SelectList((IEnumerable<SelectListItem>
+                                )ViewBag.CompanyList, "Value", "Text"),
+                                "--Select Company--",
+                                new { @class = "form-control" })
                         </div>
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.GroupId)
@@ -79,7 +80,7 @@
                                 <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F936">Group 3</option>
                             </select>
                         </div>
-                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
+                        <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             @Html.LabelFor(m => m.BlockCodeId)
                             <select class="form-control" id="BlockCodeId" name="BlockCodeId">
                                 <option value="">--Select Group Code--</option>
@@ -129,14 +130,14 @@
                                 <tr>
                                     <th>Room</th>
                                     <th>Last Name</th>
-                                    <th>First Name</th>                                                                        
+                                    <th>First Name</th>
                                     <th>Arrival</th>
                                     <th>Departure</th>
                                     <th>Balance</th>
                                     <th class="width_15">Status</th>
                                     <th>Company</th>
                                     <th>Group</th>
-                                    <th class="width_20">Action</th>
+                                    <th class="width85">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -165,11 +166,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">
-                        Billing - [<span class="spnGuestName"></span> - <span class="spnRoomNumbers"></span>]
-                        &nbsp; <span class="spnCheckedOutLabel text-blue" style="display:none;">Checked Out</span>
-                        <a href="#" id="lnkPrint" class="btn btn-sm btn-warning m-r-md pull-right" style="display:none;" target="_blank">Print</a>
-                    </h4>
+                <h4 class="modal-title">
+                    Billing - [<span class="spnGuestName"></span> - <span class="spnRoomNumbers"></span>]
+                    &nbsp; <span class="spnCheckedOutLabel text-blue" style="display:none;">Checked Out</span>
+                    <a href="#" id="lnkPrint" class="btn btn-sm btn-warning m-r-md pull-right" style="display:none;" target="_blank">Print</a>
+                </h4>
             </div>
             <div class="modal-body modal-body_padding" id="divBillingInfo">
                 <form id="frmBillingInfo" name="frmBillingInfo" enctype="multipart/form-data">
@@ -179,47 +180,47 @@
                     <div class="row">
                         <div class="col-md-3">
                             <label for="Balance">Balance (@Html.Raw(LogInManager.CurrencySymbol))</label>
-                            <input type="text" id="Balance" name="Balance" class="form-control" readonly="readonly" 
-                                   value=""/>
+                            <input type="text" id="Balance" name="Balance" class="form-control" readonly="readonly"
+                                   value="" />
                         </div>
                         <div class="col-md-2">
                             <label for="ArrivalDate">Arrival</label>
-                            <input type="text" id="ArrivalDate" name="ArrivalDate"  class="form-control" readonly="readonly" value="" />
+                            <input type="text" id="ArrivalDate" name="ArrivalDate" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-3">
                             <label for="Company">Company</label>
-                            <input type="text" id="Company" name="Company" class="form-control"  readonly="readonly" value="" />
+                            <input type="text" id="Company" name="Company" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
                             <label for="RateCode">Rate Code</label>
-                            <input type="text" id="RateCode" name="RateCode"  class="form-control" readonly="readonly" value="" />
+                            <input type="text" id="RateCode" name="RateCode" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
                             <label for="NoOfRooms">Prs</label>
-                            <input type="text" id="NoOfRooms" name="NoOfRooms" class="form-control"  readonly="readonly" 
+                            <input type="text" id="NoOfRooms" name="NoOfRooms" class="form-control" readonly="readonly"
                                    value="" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3">
                             <label for="Status">Status</label>
-                            <input type="text" id="Status" name="Status"  class="form-control" readonly="readonly" value="" />
+                            <input type="text" id="Status" name="Status" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
                             <label for="DepartureDate">Depart</label>
-                            <input type="text" id="DepartureDate" name="DepartureDate"  class="form-control" readonly="readonly" value="" />
+                            <input type="text" id="DepartureDate" name="DepartureDate" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-3">
                             <label for="Group">Group</label>
-                            <input type="text" id="Group" name="Group"  class="form-control" readonly="readonly" value="" />
+                            <input type="text" id="Group" name="Group" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
                             <label for="RoomRent">Rate (@Html.Raw(LogInManager.CurrencySymbol))</label>
-                            <input type="text" id="RoomRent" name="RoomRent"  class="form-control" readonly="readonly" value="" />
+                            <input type="text" id="RoomRent" name="RoomRent" class="form-control" readonly="readonly" value="" />
                         </div>
                         <div class="col-md-2">
                             <label for="RoomTypeCode">Room Type</label>
-                            <input type="text" id="RoomTypeCode" name="RoomTypeCode"  class="form-control" readonly="readonly" 
+                            <input type="text" id="RoomTypeCode" name="RoomTypeCode" class="form-control" readonly="readonly"
                                    value="" />
                         </div>
                     </div>
@@ -232,12 +233,12 @@
                                 <input type="hidden" id="hdnPaymentMethodId" name="hdnPaymentMethodId" />
                                 <input type="hidden" id="hdnPaymentMethodCode" name="hdnPaymentMethodCode" />
                                 <input type="hidden" id="hdnPaymentMethodName" name="hdnPaymentMethodName" />
-                                
+
                                 <span class="spnPaymentMethodCode">VA</span>
                                 <span class="spnTotalBalance"></span>
                                 <button class="m-l-md btn btn-sm btn-info" type="button" id="btnAddCharge" onclick="openReservationChargeModal();">Post</button>
                             </div>
-                            <hr/>
+                            <hr />
                             <div class="clearfix"></div>
                         </div>
                         <div class="col-md-12">
@@ -251,29 +252,27 @@
                                             <th>Description</th>
                                             <th>Qty</th>
                                             <th>Amount</th>
-                                            @*<th>Supplement</th>*@
                                             <th>Reference</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
-                        
-                        
+
+
                     </div>
-                    <hr/>
+                    <hr />
                     <div class="row">
                         <div class="col-md-12 text-right">
                             <input type="button" class="btn btn-sm btn-primary m-r-sm" id="btnBillingOk" data-dismiss="modal"
                                    value="OK" />
-                            <input type="button" class="btn btn-sm btn-success" id="btnCheckOut" onclick="CheckOut();" 
+                            <input type="button" class="btn btn-sm btn-success" id="btnCheckOut" onclick="CheckOut();"
                                    value="Check Out" />
                         </div>
                     </div>
                 </form>
-                
+
             </div>
             <div class="clearfix"></div>
         </div>
@@ -281,7 +280,6 @@
     </div>
 </div>
 <!--  Billing Info  Modal END -->
-
 <!-- Check Out Payment Method Modal START -->
 <div id="checkOutPaymentModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog">
@@ -300,7 +298,6 @@
     </div>
 </div>
 <!--  Check Out Payment Method Modal END -->
-
 <!-- Reservation Charges Modal START -->
 <div id="reservationChargeModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl">
@@ -308,27 +305,24 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Add New Transaction Charge
+                <h4 class="modal-title">
+                    Add New Transaction Charge
                     <button type="button" id="btnAddNewTransactionRow" name="btnAddNewTransactionRow"
                             onclick="AddNewTransactionRow();"
                             class="btn btn-info btn-sm pull-right m-r-md">
                         Add New Transaction
                     </button>
                 </h4>
-                
+
             </div>
             <div class="modal-body modal-body_padding" id="divReservationChargeModal">
-                @Html.Partial("~/Views/ReservationCharge/_PostReservationCharges.cshtml",
-                            new ViewDataDictionary {
-                                    { "Source", "SearchGuest" }
-                                })
+                @Html.Partial("~/Views/ReservationCharge/_PostReservationCharges.cshtml", new ViewDataDictionary { { "Source", "SearchGuest" } })
             </div>
             <div class="clearfix"></div>
         </div>
     </div>
 </div>
 <!-- Reservation Charges Modal END -->
-
 <!-- Additional Charges Modal START -->
 <div id="additionalChargeModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -338,19 +332,14 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Search Additional Charges</h4>
             </div>
-            <div class="modal-body modal-body_padding" id="divAdditionalChargeModal">                
-                @Html.Partial("~/Views/AdditionalCharge/_AdvanceSearch.cshtml",
-                            new ViewDataDictionary {
-                                    { "Source", "SearchGuest" },
-                                    { "AdditionalCharge", ViewBag.AdditionalChargeList},
-                                })
+            <div class="modal-body modal-body_padding" id="divAdditionalChargeModal">
+                @Html.Partial("~/Views/AdditionalCharge/_AdvanceSearch.cshtml", new ViewDataDictionary { { "Source", "SearchGuest" }, { "AdditionalCharge", ViewBag.AdditionalChargeList }, })
             </div>
             <div class="clearfix"></div>
         </div>
     </div>
 </div>
 <!-- Additional Charges Modal END -->
-
 <!-- Email Form Modal START -->
 <div id="emailFormModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-sm">
@@ -368,6 +357,91 @@
     </div>
 </div>
 <!--  Email Form Modal END -->
+<!-- Reservation Charges Modal START -->
+<div id="SplitPaymentModal" class="modal" role="dialog">
+    <div class="modal-dialog" style="width:60%">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Check Out - Split Payment Method</h4>
+                <button type="button" onclick="AddNewSplitPayment();" class="btn btn-info btn-sm pull-right m-r-md">Add New Payment</button>
+            </div>
+            <div class="modal-body modal-body_padding" id="divSplitPaymentMethod">
+                <div class="row">
+                    @using (Html.BeginForm("SplitPayment", "ReservationCharge", FormMethod.Post, new { id = "frmSplitPayment", enctype = "multipart/form-data" }))
+                    {
+                        <input type="hidden" value="test" id="hdnSaveReservationId" />
+                        <input type="hidden" value="test" id="hdnCheckOutDate" />
+                        <input type="hidden" id="hdnTotalAmount" name="hdnTotalAmount" value="" />
+                        <input type="hidden" id="hdnTotalSplitPayment" name="hdnTotalSplitPayment" value="1" />
+                        <div class="box-body pt_10 pb-0">
+                            <div class="row tbl_max_height">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" id="tblSplitPayment">
+                                        <thead>
+                                            <tr>
+                                                <th class="width_2"></th>
+                                                <th class="width_15">Method Of Payment</th>
+                                                <th class="width_15">Amount (@Html.Raw(LogInManager.CurrencySymbol))</th>
+                                                <th class="width_10">Credit Card #</th>
+                                                <th class="width_25">Expiration Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr data-rownumber="1">
+                                                <td>
+                                                    <span class="text-red font_20 cursor-P" onclick="removeRow(this);"><i class="fa fa-remove text"></i></span>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" data-val="true" data-val-required="Please select payment method." id="SplitPaymentId_1" name="SplitPaymentId_1" onchange="SelectSplitPaymentMethod(1)">
+                                                        <option value="">-- Select Payment Method--</option>
+                                                        <option value="f5675c7b-397a-4349-8dfd-7d9421a2299e">AE - American Express</option>
+                                                        <option value="58bc4291-177a-4258-b68a-22aea58ff217">CS - Cash</option>
+                                                        <option value="9f19777a-c984-4770-870a-f271b448aeb7">DS - Discover</option>
+                                                        <option value="59b7a188-b794-4aca-b00f-12613b822f52">LA - Laser</option>
+                                                        <option value="099518d7-42b2-4055-bb8e-f99609e197c1">MC - Master Card</option>
+                                                        <option value="ab47b5ad-0c79-47e8-ac0f-799fd4872f3b">VA - Visa</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange=' calculatTotalAmount(this)' value="0.00" />
+                                                </td>
+                                                <td>
+                                                    <input class="form-control HideWhenCashIsSelected_1" id="CreditCardNo_1" maxlength="16" minlength="16" name="CreditCardNo_1" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="XXXXXXXXXXXX4242">
+                                                </td>
+                                                <td>
+                                                    <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td></td>
+                                                <td>Total Amount</td>
+                                                <td> <label id="lblFinalAmount"></label>&nbsp;<label>-</label>&nbsp;  <label id="lblDiductAmount"></label>&nbsp; = &nbsp;<label id="lblpayableAmount"></label></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-footer text-right">
+                            <button type="button" class="btn btn-success m-r-xs" onclick="return saveSplitPayment();">Ok</button>
+                            <button type="button" class="btn btn-danger m-r-xs" data-dismiss="modal">Cancel</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+<!-- Reservation Charges Modal END -->
 
 
 <script type="text/javascript">
@@ -376,6 +450,136 @@
     var grdReservation;
     var IsSearchButtonClicked = false;
     var IsTransactionGridUpdated = false;
+
+    var IsValidOrNot = true;
+    function checkValueIsNumericOrNot(e) {
+        if ((e.key >= 0 && e.key <= 9) || (e.keyCode == 8) || (e.keyCode == 9) || (e.key == ".")) {
+            return true
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    function saveSplitPayment() {
+        IsValidOrNot = true;
+        var listOfSplitPayment = [];
+        var ReservationId = $('#hdnSaveReservationId').val();
+        var CheckOutDate = $('#hdnCheckOutDate').val();
+        $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function () {
+            var rowNumber = $(this).attr("data-rownumber");
+            if (!IsNullOrEmpty(rowNumber)) {
+                rowNumber = parseInt(rowNumber);
+                var modelSplitPayment = {};
+                modelSplitPayment.ReservationId = ReservationId;
+                modelSplitPayment.CheckOutDate = CheckOutDate;
+                modelSplitPayment.PaymentMethodId = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).val();
+                modelSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
+                modelSplitPayment.CreditCardNo = $('form#frmSplitPayment #CreditCardNo_' + rowNumber).val();
+                modelSplitPayment.CardExpiryDate = $('form#frmSplitPayment #CardExpiryDate_' + rowNumber).val();
+                modelSplitPayment.PaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected').text();
+                listOfSplitPayment.push(modelSplitPayment);
+            }
+        })
+
+
+        if (listOfSplitPayment != null) {
+            var TotalAmountOfSplitPayment = 0;
+            var TotalPaybleAmount = $('#hdnTotalAmount').val();
+            $(listOfSplitPayment).each(function () {
+                TotalAmountOfSplitPayment = parseFloat(TotalAmountOfSplitPayment) + parseFloat(this.Amount);
+                if (this.PaymentMethod.trim() == "CS - Cash") {
+                    if ((IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0)) {
+                        IsValidOrNot = false;
+                    }
+                }
+                else {
+                    if (IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0 || IsNullOrEmpty(this.CreditCardNo) || IsNullOrEmpty(this.CardExpiryDate) || !IsValidCreditCardNo(this.CreditCardNo)) {
+                        IsValidOrNot = false;
+                    }
+                }
+            })
+
+            if (!IsValidOrNot || parseFloat(TotalAmountOfSplitPayment.toFixed(2)) != parseFloat(TotalPaybleAmount)) {
+                showToaster("Please fill all the required field first", ToasterType.ERROR);
+                return false;
+            }
+
+            var formData = $('form#frmCheckOutPayment').serializeObject()
+            $.ajax({
+                url: '@Url.Content("~/Cashiering/AddSplitPayment")',
+                type: 'POST',
+                data: { Checkoutmodel: formData, model: listOfSplitPayment },
+                success: function (result) {
+                    if (result.IsSuccess) {
+                        var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' + ReservationId;
+                        swal({
+                            title: '' + result.Name + ' checked out successfully.',
+                            type: 'success',
+                            html: "<a href='" + url + "' target='_blank'>Click here to see folio report.</a>",
+                            showCloseButton: true,
+                            showCancelButton: false,
+                            focusConfirm: false,
+                            confirmButtonText: 'OK',
+                        }).then((result) => {
+                            //Close all the modal.
+                            $('.modal').modal('hide');
+                        });
+                        searchGuest();
+                    }
+                    else {
+                        toastr.error("Something went wrong, please try after sometime")
+                        return false;
+                    }
+                }
+            })
+        }
+    }
+
+    function bindSplitPaymentGrid(data) {
+        var TotalPaybleAmount = $('#hdnTotalAmount').val();
+        if (data != null) {
+            var html = "";
+
+            html += '<thead>'
+            html += '<tr>'
+            html += '<td>Payment Method</td>'
+            html += '<td>Amount</td>'
+            html += '<td>Card Number</td>'
+            html += '<td>Expire Date</td>'
+            html += '</tr>'
+            html += '</thead>'
+            html += '<tbody></tbody>'
+
+            $(data).each(function () {
+
+                html += '<tr>'
+
+                //html += "<td>";
+                //html += "<span class='text-red font_20 cursor-P' onclick='removeTransactionCharge(this);'>";
+                //html += "<i class='fa fa-remove text'></i>";
+                //html += " </span>";
+                //html += "<input type='hidden' id='AdditionalChargeId_' name='AdditionalChargeId_' value='0'>";
+                //html += "</td>";
+
+                html += '<td>' + this.PaymentMethod + '</td>'
+                html += '<td>' + this.Amount + '</td>'
+
+                if (this.PaymentMethod == "CS - Cash") {
+                    html += '<td></td>'
+                    html += '<td></td>'
+                }
+                else {
+                    html += '<td>' + this.CreditCardNo + '</td>'
+                    html += '<td>' + this.CardExpiryDate + '</td>'
+                }
+                html += '</tr>'
+            })
+            html += '<tfoot><tr><td>Total Amount</td><td>' + TotalPaybleAmount + '</td></tr></tfoot>'
+            $('#tblSplitPaymentDetails').append(html)
+        }
+    }
 
     $(document).ready(function () {
 
@@ -518,12 +722,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.RoomNumbers + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.RoomNumbers + '</a> ';
                     }
@@ -537,12 +739,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.LastName + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.LastName + '</a> ';
                     }
@@ -555,12 +755,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.FirstName + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.FirstName + '</a> ';
                     }
@@ -573,12 +771,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.ArrivalDate + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.ArrivalDate + '</a> ';
                     }
@@ -591,12 +787,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.DepartureDate + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.DepartureDate + '</a> ';
                     }
@@ -609,12 +803,10 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '@(Html.Raw(LogInManager.CurrencySymbol))' + ' ' + FormatNumberWithTwoDecimal(full.Balance) + ' ';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + '@(Html.Raw(LogInManager.CurrencySymbol))' + ' ' + FormatNumberWithTwoDecimal(full.Balance) + '</a> ';
                     }
@@ -627,12 +819,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.ReservationStatusName + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.ReservationStatusName + '</a> ';
                     }
@@ -645,12 +835,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.Company + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.Company + '</a> ';
                     }
@@ -663,12 +851,10 @@
                 orderable: false,
                 render: function (data, type, full, meta) {
                     var html = "";
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         html += '' + full.Group + '';
                     }
-                    else
-                    {
+                    else {
                         html += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                         + ' class="">' + full.Group + '</a> ';
                     }
@@ -683,10 +869,9 @@
                 render: function (data, type, full, meta) {
                     var buttons = '';
 
-                    if (full.IsCheckOut == true)
-                    {
+                    if (full.IsCheckOut == true) {
                         //buttons += ' <button type="button" class="btn bg-purple btn-xs m-r-xs">Checked Out</button>';
-                        var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' +  full.Id;
+                        var url = '@Url.Content("~/Cashiering/Preview")' + '?Id=' + full.Id;
                         buttons += '<a href="' + url + '" target="_blank" '
                                  + ' class="btn btn-warning btn-xs m-r-xs" title="Folio">Folio</a> ';
 
@@ -695,8 +880,7 @@
                         buttons += '<a href="javascript:void(0);" onclick="ReverseCheckOut(\'' + full.Id + '\')" '
                                                         + ' class="btn btn-primary btn-xs m-r-xs" title="Reverse Check-Out">RCO</a> ';
                     }
-                    else
-                    {
+                    else {
                         buttons += '<a href="javascript:void(0);" onclick="OpenBillingForm(\'' + full.Id + '\')" '
                                  + ' class="btn btn-primary btn-xs m-r-xs" title="Billing">Billing</a> ';
                     }
@@ -727,7 +911,7 @@
                 },
                 url: '@Url.Content("~/Cashiering/GetBillingInfo")',
                 type: 'POST',
-                data: { reservationId: id, source : "SearchGuest" },
+                data: { reservationId: id, source: "SearchGuest" },
                 success: function (response) {
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
@@ -807,14 +991,13 @@
             var html = "";
             for (i = 0; i < data.length; i++) {
                 var amount = (IsNullOrEmpty(data[i].Amount) ? "0" : data[i].Amount);
-                var qty =  (IsNullOrEmpty(data[i].Qty) ? "1" : data[i].Qty);
-                html += "<tr id='trCharge_" + data[i].Id + "' data-chargeid='" + data[i].Id +"'>";
+                var qty = (IsNullOrEmpty(data[i].Qty) ? "1" : data[i].Qty);
+                html += "<tr id='trCharge_" + data[i].Id + "' data-chargeid='" + data[i].Id + "'>";
 
                 //Delete  Charge
                 if (!IsNullOrEmpty(data[i].Code)) {
                     //Room Rent, Package Charge.
-                    if (data[i].Code != "1000" && data[i].Code != "9005")
-                    {
+                    if (data[i].Code != "1000" && data[i].Code != "9005") {
                         html += "<td><span class='text-red font_20 cursor-P' onclick='removeTransactionCharge(this);'><i class='fa fa-remove text'></i></span></td>";
                     } else {
                         html += "<td></td>";

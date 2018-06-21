@@ -22,7 +22,7 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please select check out date.")]
         public DateTime? CheckOutDate { get; set; }
 
-        [DisplayName("Check Out Time")]        
+        [DisplayName("Check Out Time")]
         public TimeSpan? CheckOutTime { get; set; }
 
         [DisplayName("Check Out Time")]
@@ -51,5 +51,7 @@ namespace SuccessHotelierHub.Models
         public double? Amount { get; set; }
 
         public string Reference { get; set; }
+
+        public Boolean SplitPayment { get; set; }
     }
 }

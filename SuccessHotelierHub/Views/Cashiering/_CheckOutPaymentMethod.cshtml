@@ -58,48 +58,58 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 col-sm-4 col-xs-12 form-group">            
+        <div class="col-md-4 col-sm-4 col-xs-12 form-group">
             <label class="required-label" for="Amount">Amount (@Html.Raw(LogInManager.CurrencySymbol))</label>
-            @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model.Amount.HasValue? Model.Amount.Value : 0),new { @class = "form-control", onkeypress = "onlyNumeric(event)" })
+            @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model.Amount.HasValue ? Model.Amount.Value : 0), new { @class = "form-control", onkeypress = "onlyNumeric(event)" })
 
         </div>
     </div>
-        <div class="row">
-            <div class="col-md-4">
-                @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
-                @Html.DropDownListFor(m => m.PaymentMethodId,
+    <div class="row" id="divHidePaymentMethod">
+        <div class="col-md-4">
+            @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
+            @Html.DropDownListFor(m => m.PaymentMethodId,
                                 new SelectList((IEnumerable<SelectListItem>)ViewData["PaymentMethodList"], "Value", "Text"),
                                 "--Select Payment Method--",
-                                new { @class = "form-control" , onchange = "SelectPaymentMethod();" })
-                @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
+                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
+            @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
 
-            </div>
-            <div class="col-md-5 divCreditCardInfo">
-                @Html.LabelFor(m => m.CreditCardNo)
-                @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
-            </div>
-            <div class="col-md-3 divCreditCardInfo divCardExpiryDate">
-                @Html.LabelFor(m => m.CardExpiryDate)
-                <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate" />
-            </div>
         </div>
-        <div class="row m-t-sm">
-            <div class="col-md-12">
-                @Html.LabelFor(m => m.Reference)
-                @Html.TextAreaFor(m => m.Reference, new { @class = "form-control", placeholder = "Reference", rows = "3" })
-            </div>
+        <div class="col-md-5 divCreditCardInfo">
+            @Html.LabelFor(m => m.CreditCardNo)
+            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
         </div>
-        <div class="row">
-            <div class="col-md-12 col-xs-12 form-group mt_25 text-right">
-                <button type="button" class="btn btn-success m-r-xs btnCheckOutOk" id="btnCheckOutOk">OK</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnClose">Close</button>
-            </div>
-            <div class="clearfix"></div>
+        <div class="col-md-3 divCreditCardInfo divCardExpiryDate">
+            @Html.LabelFor(m => m.CardExpiryDate)
+            <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate" />
         </div>
-        @*</div>*@
+    </div>
+    <div class="row m-t-sm">
+        <div class="col-md-12">
+            @Html.LabelFor(m => m.Reference)
+            @Html.TextAreaFor(m => m.Reference, new { @class = "form-control", placeholder = "Reference", rows = "3" })
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped" id="tblSplitPaymentDetails"></table>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <label class="container1">
+                Split Payment
+                @Html.CheckBoxFor(m => m.SplitPayment, new { @class = "", @onchange = "CustomerSplitPayment()" })
+                <span class="checkmark"></span>
+            </label>
+        </div>
+
+        <div class="col-md-12 col-xs-12 form-group mt_25 text-right" id="divSavePayment">
+            <button type="button" class="btn btn-success m-r-xs btnCheckOutOk" id="btnCheckOutOk">OK</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnClose">Close</button>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    @*</div>*@
 }
 <div class="clearfix"></div>
-
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -170,12 +180,173 @@
         });
     });
 
+    function CustomerSplitPayment() {
+        var IsChecked = $('#SplitPayment').prop('checked')
+        if (IsChecked) {
+            $('#divHidePaymentMethod').hide()
+            $('#divSavePayment').hide()
+            clearReservationChargesData()
+            $('#SplitPaymentModal').modal('show')
+            $('#hdnSaveReservationId').attr('value', '@Model.ReservationId')
+            $('#hdnCheckOutDate').attr('value', '@Model.CheckOutDate')
+            $('#txtAmount_1').val('@Model.Amount')
+            $('#hdnTotalAmount').val('@Model.Amount')
+            $('#lblFinalAmount').text('@Model.Amount')
+            $('#lblDiductAmount').text('@Model.Amount')
+            $('#lblpayableAmount').text(0)
+        }
+        else {
+            $('#divHidePaymentMethod').show()
+            $('#divSavePayment').show()
+        }
+    }
+
+    function AddNewSplitPayment() {
+        var tableRowLength = $('#tblSplitPayment tbody tr').length;
+        if (tableRowLength < 6) {
+
+
+            var rowNumber = $('form#frmSplitPayment #hdnTotalSplitPayment').val();
+
+            if (!IsNullOrEmpty(rowNumber)) {
+                rowNumber = parseInt(rowNumber) + 1;
+            }
+            else {
+                rowNumber = 1;
+            }
+
+            var html = '';
+
+            //Create New Row
+            html += '<tr data-rownumber="' + rowNumber + '">';
+
+            //Remove Button + Hidden Field
+            html += "<td>";
+            html += "<span class='text-red font_20 cursor-P' onclick='removeRow(this);'>";
+            html += "<i class='fa fa-remove text'></i>";
+            html += " </span>";
+            html += "<input type='hidden' id='AdditionalChargeId_" + rowNumber + "' name='AdditionalChargeId_" + rowNumber + "' value='0'>";
+            html += "</td>";
+
+            //Paymnt method
+            html += '<td>';
+            html += '<select class="form-control" data-val="true" data-val-required="Please select payment method." id="SplitPaymentId_' + rowNumber + '" name="SplitPaymentId_' + rowNumber + '" onchange="SelectSplitPaymentMethod(' + rowNumber + ')"><option value="">-- Select Payment Method--</option><option value="f5675c7b-397a-4349-8dfd-7d9421a2299e">AE - American Express</option><option value="58bc4291-177a-4258-b68a-22aea58ff217">CS - Cash</option><option value="9f19777a-c984-4770-870a-f271b448aeb7">DS - Discover</option><option value="59b7a188-b794-4aca-b00f-12613b822f52">LA - Laser</option><option value="099518d7-42b2-4055-bb8e-f99609e197c1">MC - Master Card</option><option value="ab47b5ad-0c79-47e8-ac0f-799fd4872f3b">VA - Visa</option></select>'
+            html += '</td>';
+
+            //Amount
+            html += "<td>";
+            html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculatTotalAmount(this)' value='0.00' />";
+            html += "</td>";
+
+            //Credit Card Number
+            html += '<td>';
+            html += '<input class="form-control HideWhenCashIsSelected_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16" minlength="16" name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="XXXXXXXXXXXX4242">';
+            html += '</td>';
+
+            //Card ExpiryDate
+            html += '<td>';
+            html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'
+            html += '</td>';
+
+            html += '</tr>';
+
+
+            $('form#frmSplitPayment #tblSplitPayment tbody').append(html);
+
+            $('form#frmSplitPayment #hdnTotalSplitPayment').val(rowNumber);
+
+            var listOfSplitPayment = [];
+            var TotalAmount = $('#hdnTotalAmount').val()
+            if (TotalAmount == $('#txtAmount_1').val()) {
+                var DevideCharge = (parseFloat(TotalAmount) / rowNumber)
+                $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function () {
+                    var rowNumber = $(this).attr("data-rownumber");
+                    if (!IsNullOrEmpty(rowNumber)) {
+                        rowNumber = parseInt(rowNumber);
+                        var objSplitPayment = {};
+                        objSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
+                        listOfSplitPayment.push(objSplitPayment);
+                        $('#txtAmount_' + rowNumber).val(parseFloat(DevideCharge));
+                    }
+                })
+            }
+        }
+        else {
+            toastr.error("there are no more payment method")
+        }
+    }
+
+    function calculatTotalAmount(value) {
+        var MinusFromTotalAmount = 0;
+        var listOfSplitPayment = [];
+        var TotalAmount = $('#hdnTotalAmount').val()
+        $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function () {
+            var rowNumber = $(this).attr("data-rownumber");
+            if (!IsNullOrEmpty(rowNumber)) {
+                rowNumber = parseInt(rowNumber);
+                var objSplitPayment = {};
+                objSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
+                listOfSplitPayment.push(objSplitPayment);
+                if (objSplitPayment.Amount != null && objSplitPayment.Amount != "") {
+                    MinusFromTotalAmount = parseFloat(objSplitPayment.Amount) + parseFloat(MinusFromTotalAmount);
+                    var Diffrence = parseFloat(TotalAmount) - parseFloat(MinusFromTotalAmount)
+                    if (parseFloat(Diffrence) < 0) {
+                        toastr.error("inserted values is greater then total amount")
+                        $('#' + value.id).val("0.00")
+                        return false;
+                    }
+                    $('#lblDiductAmount').text(parseFloat(MinusFromTotalAmount).toFixed(2))
+                    $('#lblpayableAmount').text(parseFloat(Diffrence).toFixed(2))
+                }
+            }
+        })
+    }
+
+    function SelectSplitPaymentMethod(RowNumber) {
+        var SelectedDropDownvalue = [];
+        if (!IsNullOrEmpty($('#SplitPaymentId_' + RowNumber).val())) {
+            Insidetext = '#SplitPaymentId_' + RowNumber + ' ' + 'option:selected';
+            var splitPaymentMethod = $(Insidetext).text();
+            var MethodId = $('#SplitPaymentId_' + RowNumber).val();
+            var splitPaymentMethodName = splitPaymentMethod;
+            if (Contains(splitPaymentMethod, '-')) {
+                splitPaymentMethodName = trim(splitPaymentMethod.split('-')[1]);
+            }
+
+            $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function (index) {
+                var rowNumber = $(this).attr("data-rownumber");
+                if (!IsNullOrEmpty(rowNumber)) {
+                    rowNumber = parseInt(rowNumber);
+                    var objSplitPayment = {};
+                    objSplitPayment.PaymentMethodtext = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected').text();
+                    objSplitPayment.PaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).val();
+                    if (objSplitPayment.PaymentMethod != "") {
+                        SelectedDropDownvalue.push(objSplitPayment);
+                    }
+
+                }
+            })
+            var Samevalue = $.grep(SelectedDropDownvalue, function (element) { return element.PaymentMethod == MethodId; })
+            if (Samevalue.length > 1) {
+                $('#SplitPaymentId_' + RowNumber).val("");
+                toastr.error("Please select another payment method, selected payment method is already exist")
+                return false;
+            }
+
+            if (trim(splitPaymentMethodName) == 'Cash') {
+                $('.HideWhenCashIsSelected_' + RowNumber).hide();
+            } else {
+                $('.HideWhenCashIsSelected_' + RowNumber).show();
+            }
+        }
+    }
+
     //Check Out
     function validateCheckOut() {
         var blnValid = true;
 
         if (!IsNullOrEmpty($('form#frmCheckOutPayment #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmCheckOutPayment #PaymentMethodId option:selected').text();            
+            var paymentMethod = $('form#frmCheckOutPayment #PaymentMethodId option:selected').text();
 
             var paymentMethodName = paymentMethod;
             if (Contains(paymentMethod, '-')) {
@@ -234,6 +405,16 @@
 
             $('#PaymentMethod').val(paymentMethod);
         }
+
+    }
+
+    function clearReservationChargesData() {
+        $('form#frmSplitPayment #SplitPaymentId_1').val('');
+        $('form#frmSplitPayment #CardExpiryDate_1').val('');
+        $('.HideWhenCashIsSelected_1').show();
+
+        //Remove all the rows except first one.
+        $("form#frmSplitPayment  #tblSplitPayment tbody").find("tr:gt(0)").remove();
 
     }
 

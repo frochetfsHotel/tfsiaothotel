@@ -250,3 +250,4 @@ E:\Projects\TFSHH\src\SuccessHotelierHub\bin\Microsoft.Owin.Security.Twitter.xml
 E:\Projects\TFSHH\src\SuccessHotelierHub\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 E:\Projects\TFSHH\src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.dll
 E:\Projects\TFSHH\src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.pdb
+E:\Projects\TFSHH\src\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.csprojResolveAssemblyReference.cache

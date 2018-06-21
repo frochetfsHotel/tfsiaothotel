@@ -26,7 +26,7 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
-        
+
         public ActionResult ShowAddReservationCharge()
         {
             return PartialView("_AddReservationCharges");
@@ -43,7 +43,7 @@ namespace SuccessHotelierHub.Controllers
                 model.CreatedBy = LogInManager.LoggedInUserId;
                 model.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                 chargeId = reservationChargeRepository.AddReservationCharges(model);
-                
+
                 if (!string.IsNullOrWhiteSpace(chargeId))
                 {
                     model.Id = Guid.Parse(chargeId);
@@ -51,7 +51,7 @@ namespace SuccessHotelierHub.Controllers
                     #region Update Reservation Total Balance.
                     var reservation = new ReservationVM();
 
-                    if(model.ReservationId.HasValue)
+                    if (model.ReservationId.HasValue)
                         reservation = reservationRepository.GetReservationById(model.ReservationId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
                     double totalBalance = 0;
@@ -73,7 +73,7 @@ namespace SuccessHotelierHub.Controllers
                         reservationRepository.UpdateReservationTotalBalance(reservation.Id, totalBalance, LogInManager.LoggedInUserId);
                     }
                     #endregion
-                    
+
 
                     var transaction = new List<ReservationChargeVM>();
                     transaction.Add(model);
@@ -106,8 +106,8 @@ namespace SuccessHotelierHub.Controllers
             {
                 Utility.Utility.LogError(e, "Create");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
-            } 
-       }
+            }
+        }
 
         [HttpPost]
         public ActionResult AddCharges(List<ReservationChargeVM> models)
@@ -124,7 +124,7 @@ namespace SuccessHotelierHub.Controllers
                 if (models != null)
                 {
                     reservationId = models[0].ReservationId;
-                    
+
 
                     foreach (var model in models)
                     {
@@ -135,13 +135,13 @@ namespace SuccessHotelierHub.Controllers
 
                         double? transactionAmount = 0;
                         double? oldAmount = 0;
-                        if(model.Amount.HasValue)
+                        if (model.Amount.HasValue)
                         {
                             oldAmount = model.Amount;
                             transactionAmount = CurrencyManager.ConvertAmountToBaseCurrency(model.Amount, LogInManager.CurrencyCode);
                             model.Amount = transactionAmount;
                         }
-                                                
+
                         chargeId = reservationChargeRepository.AddReservationCharges(model);
 
                         if (!string.IsNullOrWhiteSpace(chargeId))
@@ -163,7 +163,7 @@ namespace SuccessHotelierHub.Controllers
                             model.Amount = oldAmount;
                         }
                     }
-                    
+
                 }
 
                 if (blnIsChargesInserted)
@@ -177,11 +177,11 @@ namespace SuccessHotelierHub.Controllers
                     if (reservation != null)
                     {
 
-                        if(reservation.GuestBalance.HasValue)
+                        if (reservation.GuestBalance.HasValue)
                         {
                             totalBalance = reservation.GuestBalance.Value;
                         }
-                       
+
 
                         totalBalance += totalAmount;
 
@@ -287,7 +287,5 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
-
-
     }
 }

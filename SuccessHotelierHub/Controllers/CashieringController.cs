@@ -10,7 +10,7 @@ using System.IO;
 
 namespace SuccessHotelierHub.Controllers
 {
-    
+
     public class CashieringController : Controller
     {
         #region Declaration
@@ -32,6 +32,7 @@ namespace SuccessHotelierHub.Controllers
         private UserRepository userRepository = new UserRepository();
         private UserGroupRepository userGroupRepository = new UserGroupRepository();
         private CurrencyRepository currencyRepository = new CurrencyRepository();
+        private CompanyRepository CompanyRepository = new CompanyRepository();
 
         #endregion
 
@@ -48,7 +49,7 @@ namespace SuccessHotelierHub.Controllers
             var charges = additionalChargeRepository.GetAdditionalCharges();
             ViewBag.AdditionalChargeList = charges;
 
-            var companyList = new SelectList(Utility.CompanyInfo.CompanyList, "Id", "CompanyName").ToList();
+            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
             #region Record Activity Log
@@ -192,7 +193,7 @@ namespace SuccessHotelierHub.Controllers
                 model.RateCodeId = reservation.RateCodeId;
                 model.RateCode = rateType.RateTypeCode;
                 model.Rate = CurrencyManager.ParseAmountToUserCurrency(reservation.Rate, LogInManager.CurrencyCode);
-                model.RoomRent = CurrencyManager.ParseAmountToUserCurrency(reservation.TotalPrice, LogInManager.CurrencyCode);                
+                model.RoomRent = CurrencyManager.ParseAmountToUserCurrency(reservation.TotalPrice, LogInManager.CurrencyCode);
 
                 model.RoomTypeId = reservation.RoomTypeId;
                 model.RoomTypeCode = roomType.RoomTypeCode;
@@ -487,7 +488,7 @@ namespace SuccessHotelierHub.Controllers
 
                         //Update Total Balance.
                         if (totalAmount > reservation.GuestBalance)
-                        {   
+                        {
                             reservation.GuestBalance = 0;
                         }
                         else
@@ -702,7 +703,7 @@ namespace SuccessHotelierHub.Controllers
 
                     if (checkoutAdditionalCharge != null && checkoutAdditionalCharge.Id == item.AdditionalChargeId.Value)  //Check out
                     {
-                        checkOutPaidPayment = item.Amount.HasValue ? item.Amount.Value : 0;
+                        checkOutPaidPayment += item.Amount.HasValue ? item.Amount.Value : 0;
                     }
                     else
                     {
@@ -717,7 +718,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         var breakfastChargeCategory = additionalChargeRepository.IsBrekFastCharges(item.AdditionalChargeId.Value).FirstOrDefault();
 
-                        if(breakfastChargeCategory != null)
+                        if (breakfastChargeCategory != null)
                         {
                             blnIsBreakFastCharge = true;
                         }
@@ -772,7 +773,7 @@ namespace SuccessHotelierHub.Controllers
                 {
                     model.CompanyId = reservation.CompanyId;
 
-                    var companyInfo = Utility.CompanyInfo.CompanyList.Where(m => m.Id == reservation.CompanyId.Value).FirstOrDefault();
+                    var companyInfo = CompanyRepository.GetCompanyList().Where(m => m.Id == reservation.CompanyId.Value).FirstOrDefault();
                     if (companyInfo != null)
                     {
                         model.CompanyName = companyInfo.CompanyName;
@@ -1387,6 +1388,191 @@ namespace SuccessHotelierHub.Controllers
                 Utility.Utility.LogError(e, "ReverseCheckIn");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
+        }
+
+
+        [HttpPost]
+        public ActionResult AddSplitPayment(List<SplitPaymentVM> model, CheckOutPaymentMethodVM Checkoutmodel)
+        {
+            CheckInCheckOutVM checkOut = new CheckInCheckOutVM();
+            var checkInDetails = checkInCheckOutRepository.GetCheckInDetails(Checkoutmodel.ReservationId, Checkoutmodel.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+            var checkOutId = "";
+            if (checkInDetails != null)
+            {
+                string CheckOutTimeText = Checkoutmodel.CheckOutTimeText;
+                TimeSpan checkOutTime = new TimeSpan();
+
+                if (!string.IsNullOrWhiteSpace(CheckOutTimeText))
+                {
+                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                    string date = (todayDate + " " + CheckOutTimeText);
+                    DateTime time = Convert.ToDateTime(date);
+                    checkOutTime = time.TimeOfDay;
+                }
+                double totalAmount = 0;
+                if (model != null && model.Count > 0)
+                {
+                    var reservation = reservationRepository.GetReservationById(model.Select(m => m.ReservationId).First(), LogInManager.LoggedInUserId).FirstOrDefault();
+
+                    if (reservation != null)
+                    {
+                        #region Add Entry for Minus All the Expenses
+                        var checkOutCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
+
+                        foreach (var item in model)
+                        {
+                            totalAmount = item.Amount != 0 ? item.Amount : 0;
+
+                            totalAmount = CurrencyManager.ConvertAmountToBaseCurrency(totalAmount, LogInManager.CurrencyCode);
+
+                            ReservationChargeVM reservationCharge = new ReservationChargeVM();
+                            reservationCharge.ReservationId = reservation.Id;
+                            reservationCharge.AdditionalChargeId = checkOutCharge.Id;
+                            reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
+                            reservationCharge.Code = checkOutCharge.Code;
+                            reservationCharge.Description = item.PaymentMethod;
+                            reservationCharge.TransactionDate = item.CheckOutDate.Value;
+                            reservationCharge.Amount = -(totalAmount);
+                            reservationCharge.Qty = 1;
+                            reservationCharge.IsActive = true;
+                            reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
+                            reservationChargeRepository.AddReservationCharges(reservationCharge);
+
+                        }
+                        #endregion
+
+                        #region Update Room Occupied Flag
+
+                        var roomIds = Checkoutmodel.RoomIds;
+                        if (!string.IsNullOrWhiteSpace(roomIds))
+                        {
+                            var roomIdsArr = roomIds.Split(',');
+
+                            if (roomIdsArr != null)
+                            {
+                                //Remove Duplication.
+                                roomIdsArr = roomIdsArr.Distinct().ToArray();
+
+                                foreach (var item in roomIdsArr)
+                                {
+                                    ////Update Room Occupied Flag.
+                                    //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
+
+                                    ////Update Room Status DIRTY to CLEAN.
+                                    //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
+
+                                    #region Add Reservation Log
+
+                                    var lstReservationLog = reservationLogRepository.GetReservationLogDetails(Checkoutmodel.ReservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                                    if (lstReservationLog != null)
+                                    {
+                                        lstReservationLog.ReservationId = Checkoutmodel.ReservationId;
+                                        lstReservationLog.ProfileId = Checkoutmodel.ProfileId;
+                                        lstReservationLog.RoomId = Guid.Parse(item.Trim());
+                                        lstReservationLog.CheckInDate = reservation.ArrivalDate;
+                                        lstReservationLog.CheckOutDate = Checkoutmodel.CheckOutDate;
+                                        lstReservationLog.CheckOutTime = checkOutTime;
+                                        lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                        lstReservationLog.IsActive = true;
+                                        lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                        reservationLogRepository.UpdateReservationLog(lstReservationLog);
+                                    }
+                                    else
+                                    {
+                                        ReservationLogVM reservationLog = new ReservationLogVM();
+                                        reservationLog.ReservationId = Checkoutmodel.ReservationId;
+                                        reservationLog.ProfileId = Checkoutmodel.ProfileId;
+                                        reservationLog.RoomId = Guid.Parse(item.Trim());
+                                        reservationLog.CheckInDate = reservation.ArrivalDate;
+                                        reservationLog.CheckOutDate = Checkoutmodel.CheckOutDate;
+                                        reservationLog.CheckOutTime = checkOutTime;
+                                        reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                        reservationLog.IsActive = true;
+                                        reservationLog.CreatedBy = LogInManager.LoggedInUserId;
+
+                                        reservationLogRepository.AddReservationLog(reservationLog);
+                                    }
+
+                                    #endregion
+                                }
+                            }
+                        }
+
+                        #endregion
+
+                        #region Update Check Out Details
+
+                        checkOut.Id = checkInDetails.Id;
+                        checkOut.ReservationId = Checkoutmodel.ReservationId;
+                        checkOut.ProfileId = Checkoutmodel.ProfileId;
+                        checkOut.CheckOutDate = Checkoutmodel.CheckOutDate.Value;
+                        checkOut.CheckOutTime = checkOutTime;
+                        checkOut.CheckOutReference = Checkoutmodel.Reference;
+                        checkOut.IsActive = true;
+                        checkOut.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        checkOutId = checkInCheckOutRepository.UpdateCheckOutDetail(checkOut);
+
+                        #endregion
+
+                        #region Update Reservation
+                        foreach (var item in model)
+                        {
+                            reservation.PaymentMethodId = item.PaymentMethodId;
+                            //reservation.CreditCardNo = model.CreditCardNo;
+                            if (!string.IsNullOrWhiteSpace(item.CreditCardNo))
+                            {
+                                reservation.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(item.CreditCardNo);
+                            }
+                            reservation.CardExpiryDate = item.CardExpiryDate;
+
+                            //Replace Departure date with  check out date.
+                            //reservation.DepartureDate = model.CheckOutDate.Value;
+
+                            //Update Total Balance.
+                            if (totalAmount > reservation.GuestBalance)
+                            {
+                                reservation.GuestBalance = 0;
+                            }
+                            else
+                            {
+                                reservation.GuestBalance -= totalAmount;
+                            }
+
+                            reservation.UpdatedBy = LogInManager.LoggedInUserId;
+                            reservationRepository.UpdateReservation(reservation);
+                        }
+
+                        #endregion
+
+                        #region Update Reservation Check Out Flag
+
+                        reservationRepository.UpdateReservationCheckOutFlag(Checkoutmodel.ReservationId, true, LogInManager.LoggedInUserId);
+
+                        #endregion
+
+                        #region Update Reservation Status
+
+                        reservationRepository.UpdateReservationStatus(Checkoutmodel.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
+
+                        #endregion
+
+                        #region Record Activity Log
+                        RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                        #endregion                       
+                    }
+                }
+
+
+            }
+            return Json(new
+            {
+                CheckOutId = checkOutId,
+                Name = Checkoutmodel.Name,
+                IsSuccess = true
+            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

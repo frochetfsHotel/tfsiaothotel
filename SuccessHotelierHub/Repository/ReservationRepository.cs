@@ -1151,7 +1151,7 @@ namespace SuccessHotelierHub.Repository
         }
         #endregion
 
-        #region "Get Reservation Acclo"
+        #region "GET ROOM ALLOCATION DETAIL FOR ROOM PLAN"
         public List<RoomPlanRoomAllocationDetailVM> GetRoomAllocationDetailsForRoomPlan(Guid? roomId, string startDate, string endDate, int userId)
         {
             SqlParameter[] parameters =
