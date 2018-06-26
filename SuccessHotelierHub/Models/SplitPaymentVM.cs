@@ -10,10 +10,12 @@ namespace SuccessHotelierHub.Models
     public class SplitPaymentVM
     {
         public Guid ReservationId { get; set; }
-        
+
         [DisplayName("Method Of Payment")]
         [Required(ErrorMessage = "Please select payment method.")]
         public Guid? PaymentMethodId { get; set; }
+
+        public string CVVNo { get; set; }
 
         public double Amount { get; set; }
 

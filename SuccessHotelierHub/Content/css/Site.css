@@ -910,7 +910,7 @@ label{
 }
 .dashboard_bg {
     background: url('../img/Dashboardbg.jpg');
-    /*background-position: center;*/
+    background-position: right;
     background-size: cover;
     /*min-height:546px;*/
 }
@@ -1069,7 +1069,7 @@ width:100% !important;
   background-image:url(../img/banner_3.jpg);
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: top center;
+  background-position: top left;
   height: 500px;
   width: 100%;
   margin: 0;

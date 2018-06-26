@@ -328,6 +328,7 @@ namespace SuccessHotelierHub.Controllers
                     model.CreditCardNo = Utility.Utility.MaskCreditCardNo(reservation.CreditCardNo);
                 }
                 model.CardExpiryDate = reservation.CardExpiryDate;
+                model.CVVNo = reservation.CVVNo;
                 model.RoomNumbers = roomNumbers;
                 model.RoomIds = roomIds;
                 model.RoomTypeId = reservation.RoomTypeId;
@@ -385,6 +386,7 @@ namespace SuccessHotelierHub.Controllers
                         reservationCharge.ReservationId = reservation.Id;
                         reservationCharge.PaymentMethodId = model.PaymentMethodId;
                         reservationCharge.AdditionalChargeId = checkOutCharge.Id;
+                        reservationCharge.CVVNo = model.CVVNo;
                         reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                         reservationCharge.Code = checkOutCharge.Code;
                         reservationCharge.Description = model.PaymentMethod;
@@ -1432,6 +1434,7 @@ namespace SuccessHotelierHub.Controllers
                             reservationCharge.ReservationId = reservation.Id;
                             reservationCharge.AdditionalChargeId = checkOutCharge.Id;
                             reservationCharge.PaymentMethodId = item.PaymentMethodId;
+                            reservationCharge.CVVNo = item.CVVNo;
                             reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                             reservationCharge.Code = checkOutCharge.Code;
                             reservationCharge.Description = item.PaymentMethod;

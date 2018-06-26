@@ -43,8 +43,8 @@ namespace SuccessHotelierHub.Controllers
                                     }
                                 ), "Value", "Text").ToList();
 
-            var studentRoleId =  userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
-            
+            var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
+
             ViewBag.UserRoleList = userRoleList;
             ViewBag.UserGroupList = userGroupList;
 
@@ -54,7 +54,7 @@ namespace SuccessHotelierHub.Controllers
                 model.UserRoleId = studentRoleId;
                 model.Password = Utility.Utility.GenerateRandomPassword(8);
             }
-
+            model.UserGroupId = userGroupRepository.GetUserGroups().Where(m => m.Name == "Ireland Student").Select(m => m.Id).FirstOrDefault();
             return View(model);
         }
 
@@ -180,7 +180,7 @@ namespace SuccessHotelierHub.Controllers
             if (user != null && user.Count > 0)
             {
                 model = user[0];
-                                
+
                 var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
                 var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
                                 .Select(
@@ -423,7 +423,7 @@ namespace SuccessHotelierHub.Controllers
 
                 model.PageSize = Constants.PAGESIZE;
                 var users = userRepository.SearchUserDetail(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
-                
+
                 int totalRecords = 0;
                 var dbRecords = users.Select(m => m.TotalCount).FirstOrDefault();
 
@@ -434,7 +434,7 @@ namespace SuccessHotelierHub.Controllers
                 {
                     foreach (var user in users)
                     {
-                        if(!string.IsNullOrWhiteSpace(user.Password))
+                        if (!string.IsNullOrWhiteSpace(user.Password))
                             user.Password = Utility.Utility.Decrypt(user.Password, Utility.Utility.EncryptionKey);
                     }
                 }
@@ -566,7 +566,7 @@ namespace SuccessHotelierHub.Controllers
 
                     return Json(new
                     {
-                        IsSuccess = true                      
+                        IsSuccess = true
                     }, JsonRequestBehavior.AllowGet);
                 }
                 else

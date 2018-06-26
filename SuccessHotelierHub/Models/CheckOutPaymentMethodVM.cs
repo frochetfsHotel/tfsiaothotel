@@ -35,6 +35,9 @@ namespace SuccessHotelierHub.Models
 
         public string PaymentMethod { get; set; }
 
+        [DisplayName("CVV #")]
+        public string CVVNo { get; set; }
+
         [DisplayName("Credit Card #")]
         public string CreditCardNo { get; set; }
 

@@ -386,6 +386,7 @@
                                                 <th class="">Amount (@Html.Raw(LogInManager.CurrencySymbol))</th>
                                                 <th class="">Credit Card #</th>
                                                 <th class="width150">Expiration Date</th>
+                                                <th class="width150">CVV #</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -405,13 +406,16 @@
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange=' calculatTotalAmount(this)' value="0.00" />
+                                                    <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange="calculatTotalAmount(this)" value="0.00" />
                                                 </td>
                                                 <td>
                                                     <input class="form-control HideWhenCashIsSelected_1" id="CreditCardNo_1" maxlength="16" minlength="16" name="CreditCardNo_1" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="">
                                                 </td>
                                                 <td>
                                                     <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
+                                                </td>
+                                                <td>
+                                                    <input id="CardVerificationValue_1" name="CardVerificationValue_1" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_1" onkeydown="onlyDigits(event)" maxlength="4" minlength="3"/>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -479,6 +483,7 @@
                 modelSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
                 modelSplitPayment.CreditCardNo = $('form#frmSplitPayment #CreditCardNo_' + rowNumber).val();
                 modelSplitPayment.CardExpiryDate = $('form#frmSplitPayment #CardExpiryDate_' + rowNumber).val();
+                modelSplitPayment.CVVNo = $('form#frmSplitPayment #CardVerificationValue_' + rowNumber).val();
                 modelSplitPayment.PaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected').text();
                 listOfSplitPayment.push(modelSplitPayment);
             }
@@ -496,7 +501,7 @@
                     }
                 }
                 else {
-                    if (IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0 || IsNullOrEmpty(this.CreditCardNo) || IsNullOrEmpty(this.CardExpiryDate) || !IsValidCreditCardNo(this.CreditCardNo)) {
+                    if (IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0 || IsNullOrEmpty(this.CreditCardNo) || IsNullOrEmpty(this.CardExpiryDate) || !IsValidCreditCardNo(this.CreditCardNo) || IsNullOrEmpty(this.CVVNo) ||!IsValidCVVNo(this.CVVNo) ) {
                         IsValidOrNot = false;
                     }
                 }
@@ -504,6 +509,7 @@
 
             if (!IsValidOrNot || parseFloat(TotalAmountOfSplitPayment.toFixed(2)) != parseFloat(TotalPaybleAmount)) {
                 showToaster("Please fill all the required field first", ToasterType.ERROR);
+                AjaxRequestFinish();
                 return false;
             }
 

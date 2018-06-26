@@ -52,5 +52,7 @@ namespace SuccessHotelierHub.Models
 
         public Guid? PaymentMethodId { get; set; }
 
+        public string CVVNo { get; set; }
+
     }
 }

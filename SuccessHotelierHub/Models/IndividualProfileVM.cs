@@ -33,9 +33,10 @@ namespace SuccessHotelierHub.Models
         [RegularExpression("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$", ErrorMessage = "Please enter valid email address")]
         public string Email { get; set; }
 
+        [Display(Name = "Address Line 1")]
         public string Address { get; set; }
 
-        [Display(Name = "Home Address")]
+        [Display(Name = "Address Line 2")]
         public string HomeAddress { get; set; }
 
         public int? CountryId { get; set; }

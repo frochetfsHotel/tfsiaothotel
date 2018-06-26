@@ -82,6 +82,10 @@
             @Html.LabelFor(m => m.CardExpiryDate)
             <input id="CardExpiryDate" name="CardExpiryDate" type="text" placeholder="MM/YY" class="masked form-control" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" value="@Model.CardExpiryDate" />
         </div>
+        <div class="col-md-4 divCreditCardInfo m-t-sm">
+            @Html.LabelFor(m => m.CVVNo)
+            @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "4", minlength = "3" })
+        </div>
     </div>
     <div class="row m-t-sm">
         <div class="col-md-12">
@@ -90,10 +94,7 @@
         </div>
     </div>
     <div class="row">
-        <table class="table table-striped" id="tblSplitPaymentDetails"></table>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3 m-t-sm">
             <label class="container1">
                 Split Payment
                 @Html.CheckBoxFor(m => m.SplitPayment, new { @class = "", @onchange = "CustomerSplitPayment()" })
@@ -248,6 +249,10 @@
         html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'
         html += '</td>';
 
+        html += '<td>'
+        html += '<input id="CardVerificationValue_' + rowNumber + '" name="CardVerificationValue_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" maxlength="4" minlength="3"/>'
+        html += '</td>'
+
         html += '</tr>';
 
         // append html to split payment model
@@ -341,6 +346,7 @@
             if (trim(paymentMethodName) != 'Cash') {
                 var creditCardNo = $('form#frmCheckOutPayment #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmCheckOutPayment #CardExpiryDate').val();
+                var CVVNo = $('form#frmCheckOutPayment #CVVNo').val();
 
                 var errorText = "";
                 if (IsNullOrEmpty(creditCardNo)) {
@@ -358,6 +364,18 @@
                     blnValid = false;
                 }
 
+                if (IsNullOrEmpty(CVVNo)) {
+                    errorText += "Please enter CVV number." + Delimeter.BREAKLINE;
+                    blnValid = false
+                }
+                else {
+                    if (!IsValidCVVNo(CVVNo)) {
+                        errorText += "Please enter valid CVV number." + Delimeter.BREAKLINE;
+                        blnValid = false
+                    }
+                }
+
+
                 if (blnValid == false) {
                     showToaster(errorText, ToasterType.ERROR);
                     return false;
@@ -371,6 +389,17 @@
         }
 
         return true;
+    }
+
+
+    function IsValidCVVNo(number) {
+        if (!IsNullOrEmpty(number)) {
+            if (number.length == 3 || number.length == 4) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     function SelectPaymentMethod() {

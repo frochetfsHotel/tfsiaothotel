@@ -50998,3 +50998,91 @@ BEGIN
 					WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
 
 END
+
+
+/************************************************************************************************************************
+Name : Nilesh
+DATE : 26-June-2018
+*************************************************************************************************************************/
+
+/**********************************************************************************************************************
+Comment : CardVerificationValue Column Added in reservationCharges
+*************************************************************************************************************************/
+
+ALTER TABLE ReservationCharges ADD CVVNo NVARCHAR(25)
+
+/****************************************************************************************************************************
+Sp Name : AddReservationCharges
+Comment :  CVVNo Field Added in PaymentMethod
+*******************************************************************************************************************************/
+
+ALTER PROCEDURE [dbo].[AddReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@PaymentMethodId		UNIQUEIDENTIFIER	=	NULL	,
+	@Code					NVARCHAR(25)		=	NULL	,
+	@Description			NVARCHAR(1000)		=	NULL	,
+	@TransactionDate		DATETIME			=	NULL	,
+	@Amount					DECIMAL(18,2)		=	NULL	,
+	@Qty					INT					=	NULL	,
+	@Supplement				NVARCHAR(255)		=	NULL	,
+	@Reference				NVARCHAR(500)		=	NULL	,
+	@AdditionalChargeSource	NVARCHAR(500)		=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@CreatedBy				INT					=	NULL	,
+	@CreditCardNo			NVARCHAR(50)		=	NULL	,
+	@CardExpiryDate			NVARCHAR(25)		=	NULL	,
+	@CVVNo  NVARCHAR(25)        =	NULL
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationCharges]
+           ([Id]		   
+           ,[ReservationId]
+		   ,[PaymentMethodId]
+           ,[AdditionalChargeId]
+		   ,[Code]
+		   ,[Description]
+		   ,[TransactionDate]
+		   ,[Amount]
+		   ,[Qty]
+		   ,[Supplement]
+		   ,[Reference]
+		   ,[AdditionalChargeSource]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive]
+		   ,[CardExpiryDate]
+		   ,[CreditCardNo]
+		   ,[CVVNo]
+		   )
+     VALUES
+           (
+			   @Id			   
+			   ,@ReservationId
+			   ,@PaymentMethodId
+			   ,@AdditionalChargeId
+			   ,@Code
+			   ,@Description
+			   ,@TransactionDate
+			   ,@Amount
+			   ,@Qty
+			   ,@Supplement
+			   ,@Reference
+			   ,@AdditionalChargeSource
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+			   ,@CardExpiryDate
+			   ,@CreditCardNo
+			   ,@CVVNo
+           )
+
+		SELECT @Id AS Id
+    
+END
