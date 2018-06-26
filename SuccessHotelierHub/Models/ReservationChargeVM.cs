@@ -10,7 +10,7 @@ namespace SuccessHotelierHub.Models
     public class ReservationChargeVM
     {
         public Guid Id { get; set; }
-        
+
         public Guid? ReservationId { get; set; }
 
         [DisplayName("Date")]
@@ -45,5 +45,12 @@ namespace SuccessHotelierHub.Models
         public DateTime? UpdatedOn { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-    }    
+
+        public string CreditCardNo { get; set; }
+
+        public string CardExpiryDate { get; set; }
+
+        public Guid? PaymentMethodId { get; set; }
+
+    }
 }

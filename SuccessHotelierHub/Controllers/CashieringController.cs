@@ -383,6 +383,7 @@ namespace SuccessHotelierHub.Controllers
 
                         ReservationChargeVM reservationCharge = new ReservationChargeVM();
                         reservationCharge.ReservationId = reservation.Id;
+                        reservationCharge.PaymentMethodId = model.PaymentMethodId;
                         reservationCharge.AdditionalChargeId = checkOutCharge.Id;
                         reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                         reservationCharge.Code = checkOutCharge.Code;
@@ -390,6 +391,8 @@ namespace SuccessHotelierHub.Controllers
                         reservationCharge.TransactionDate = model.CheckOutDate.Value;
                         reservationCharge.Amount = -(totalAmount);
                         reservationCharge.Qty = 1;
+                        reservationCharge.CreditCardNo = reservation.CreditCardNo;
+                        reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
                         reservationCharge.IsActive = true;
                         reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
 
@@ -1428,6 +1431,7 @@ namespace SuccessHotelierHub.Controllers
                             ReservationChargeVM reservationCharge = new ReservationChargeVM();
                             reservationCharge.ReservationId = reservation.Id;
                             reservationCharge.AdditionalChargeId = checkOutCharge.Id;
+                            reservationCharge.PaymentMethodId = item.PaymentMethodId;
                             reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                             reservationCharge.Code = checkOutCharge.Code;
                             reservationCharge.Description = item.PaymentMethod;
@@ -1435,6 +1439,11 @@ namespace SuccessHotelierHub.Controllers
                             reservationCharge.Amount = -(totalAmount);
                             reservationCharge.Qty = 1;
                             reservationCharge.IsActive = true;
+                            reservationCharge.CardExpiryDate = item.CardExpiryDate;
+
+                            //Credit Card No.
+                            reservationCharge.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(item.CreditCardNo);
+
                             reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
                             reservationChargeRepository.AddReservationCharges(reservationCharge);
 
@@ -1560,7 +1569,7 @@ namespace SuccessHotelierHub.Controllers
                         #endregion
 
                         #region Record Activity Log
-                        RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                        RecordActivityLog.RecordActivity(Pages.SPLIT_PAYMENT, string.Format("Split-Payment added and checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
                         #endregion                       
                     }
                 }

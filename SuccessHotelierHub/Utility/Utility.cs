@@ -863,7 +863,8 @@ namespace SuccessHotelierHub.Utility
             {
                 text = number.Substring(number.Length - 4, 4);
             }
-            else {
+            else
+            {
                 text = number;
             }
 
@@ -1016,7 +1017,7 @@ namespace SuccessHotelierHub.Utility
     {
         public const string ROOM_RENT = "1000";
         public const string CHECK_OUT = "9004";
-        public const string PACKAGE = "9005";        
+        public const string PACKAGE = "9005";
     }
 
     public static class AdditionalChargeSource
@@ -1043,6 +1044,8 @@ namespace SuccessHotelierHub.Utility
         public const string SEARCH_GUESTS = "Search Guests";
         public const string BILLING_TRANSACTION = "Billing Transaction";
         public const string CHECKOUT = "Check Out";
+        public const string SPLIT_PAYMENT = "Split-Payment and Check Out";
+        public const string DAILY_CASHSHEET_REPORT = "Daily CashSheet Report";
 
         //Master
         public const string PREFERENCEGROUP = "Preference Group";
@@ -1161,5 +1164,5 @@ namespace SuccessHotelierHub.Utility
                };
             }
         }
-    }
+    }    
 }

@@ -50180,8 +50180,7 @@ BEGIN
 
 	SELECT 		
 		CD.CheckOutTime, 
-		R.DepartureDate	,
-		R.*
+		R.DepartureDate	,		
 	FROM 
 		Reservation  R
 			INNER JOIN CheckInCheckOutDetail  CD
@@ -50478,4 +50477,524 @@ BEGIN
 END
 GO
 
+/************************************************************************************************************************
+22 june 2018
+*************************************************************************************************************************/
 
+
+/****** Object:  StoredProcedure [dbo].[DeleteReservationAndRoomMappingByRoom]    Script Date: 22-Jun-18 5:41:13 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[DeleteReservationAndRoomMappingByRoom]
+	@RoomId			UNIQUEIDENTIFIER	,
+	@ReservationId	UNIQUEIDENTIFIER	,
+	@UpdatedBy		INT					,
+	@UserId			INT					
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	--Remove ReservationRoomMapping
+	UPDATE RRM 
+		SET	RRM.IsDeleted = 1,
+			RRM.UpdatedOn = GETDATE(),
+			RRM.UpdatedBy = @UpdatedBy
+		FROM ReservationRoomMapping RRM
+			INNER JOIN Reservation RE ON RRM.ReservationId = RE.Id
+				AND ISNULL(RE.IsDeleted,0) = 0
+				AND ISNULL(RE.IsCheckIn,0) = 0
+		WHERE	ISNULL(RRM.IsDeleted,0) = 0 
+				AND RRM.RoomId = @RoomId
+				AND RRM.ReservationId <> @ReservationId
+				AND ISNULL(RE.IsCheckIn,0) = 0
+				AND RRM.[CreatedBy] = @UserId
+				AND RE.[CreatedBy] = @UserId
+
+
+					
+	--Remove ReservationLog
+	 UPDATE RL
+		SET RL.IsDeleted = 1,
+			RL.UpdatedOn = GETDATE(),
+			RL.UpdatedBy = @UpdatedBy
+		FROM ReservationLog RL
+			INNER JOIN Reservation RE ON RL.ReservationId = RE.Id
+			AND ISNULL(RE.IsDeleted,0) = 0
+			AND ISNULL(RE.IsCheckIn,0) = 0
+		WHERE	ISNULL(RL.IsDeleted,0) = 0 
+			AND RL.RoomId = @RoomId
+			AND RL.ReservationId <> @ReservationId
+			AND RL.[CreatedBy] = @UserId
+			AND RE.[CreatedBy] = @UserId
+	
+
+	SELECT @RoomId AS Id
+    
+END
+
+
+/****************************************************************************************************************
+Alter table  ReservationCharges ADD CreditCardNo NVARCHAR(50)
+Alter table  ReservationCharges ADD CardExpiryDate NVARCHAR(25)
+**********************************************************************************************************************\
+USE [SuccessHotelierHub_Dev]
+GO
+/****** Object:  StoredProcedure [dbo].[AddReservationCharges]    Script Date: 22-Jun-18 7:36:35 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@Code					NVARCHAR(25)		=	NULL	,
+	@Description			NVARCHAR(1000)		=	NULL	,
+	@TransactionDate		DATETIME			=	NULL	,
+	@Amount					DECIMAL(18,2)		=	NULL	,
+	@Qty					INT					=	NULL	,
+	@Supplement				NVARCHAR(255)		=	NULL	,
+	@Reference				NVARCHAR(500)		=	NULL	,
+	@AdditionalChargeSource	NVARCHAR(500)		=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@CreatedBy				INT					=	NULL	,
+	@CreditCardNo			NVARCHAR(50)		=	NULL	,
+	@CardExpiryDate			NVARCHAR(25)		=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationCharges]
+           ([Id]		   
+           ,[ReservationId]
+           ,[AdditionalChargeId]
+		   ,[Code]
+		   ,[Description]
+		   ,[TransactionDate]
+		   ,[Amount]
+		   ,[Qty]
+		   ,[Supplement]
+		   ,[Reference]
+		   ,[AdditionalChargeSource]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive]
+		   ,[CardExpiryDate]
+		   ,[CreditCardNo]
+		   )
+     VALUES
+           (
+			   @Id			   
+			   ,@ReservationId
+			   ,@AdditionalChargeId
+			   ,@Code
+			   ,@Description
+			   ,@TransactionDate
+			   ,@Amount
+			   ,@Qty
+			   ,@Supplement
+			   ,@Reference
+			   ,@AdditionalChargeSource
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+			   ,@CardExpiryDate
+			   ,@CreditCardNo
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+**********************************************************************************************************************\
+
+USE [SuccessHotelierHub_Dev]
+GO
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 22-Jun-18 7:43:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'3836abff-095a-43f8-98ea-b5c5db75bcc9'	,
+		@AdditionalChargeId		=	NULL									,
+		@UserId					=	1
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@UserId					INT					=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET CURRENCY CONVERSION RATE : END
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeSource = 'AC' -- Additional  Charge				
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeSource = 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND RC.AdditionalChargeSource <> 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+	UNION
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RC.CreditCardNo, 4)) END )AS Code,
+		RC.Description,4 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0					
+					AND (ISNULL(@UserId,0) = 0 OR RE.[CreatedBy] = @UserId)
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+
+	ORDER BY SortOrder
+END
+
+
+/****************************************************************************/
+
+UPDATE RC SET RC.CreditCardNo = (R.CreditCardNo) ,
+RC.CardExpiryDate = R.CardExpiryDate
+FROM ReservationCharges  RC INNER JOIN Reservation R ON R.Id = RC.ReservationId 
+WHERE RC.Code = '9004' AND LTRIM(RTRIM(Description)) <> 'CS - Cash'
+
+
+
+/***********************************************************************************************************************************
+Sp Name : GetCompanyById
+Comment : Remove IsActive Where condition
+*************************************************************************************************************************************/
+
+
+
+/***** Object:  StoredProcedure [dbo].[GetCompanyById]    Script Date: 6/22/2018 6:13:32 PM *****/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetCompanyById]
+@Id UNIQUEIDENTIFIER
+AS
+BEGIN
+ 
+ SET NOCOUNT ON;
+    
+ SELECT * FROM [dbo].[Company]
+   WHERE Isnull(IsDeleted,0) = 0
+    AND Id = @Id  
+END
+
+
+/*****************************************************************************************************************************************
+Name : Nilesh
+Date : 25 june 2017
+*****************************************************************************************************************************************/
+
+/******************************************************************************************************************************************
+PaymentmethodId column Added in ReservationCharges table
+*******************************************************************************************************************************************/
+ALTER TABLE ReservationCharges 
+Add PaymentMethodId UNIQUEIDENTIFIER null
+
+
+/*****************************************************************************************************************************************
+sp name = AddReservationCharges
+Comment = paymentmethodid column added
+*****************************************************************************************************************************************/
+GO
+/****** Object:  StoredProcedure [dbo].[AddReservationCharges]    Script Date: 25-Jun-18 12:35:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@PaymentMethodId		UNIQUEIDENTIFIER	=	NULL	,
+	@Code					NVARCHAR(25)		=	NULL	,
+	@Description			NVARCHAR(1000)		=	NULL	,
+	@TransactionDate		DATETIME			=	NULL	,
+	@Amount					DECIMAL(18,2)		=	NULL	,
+	@Qty					INT					=	NULL	,
+	@Supplement				NVARCHAR(255)		=	NULL	,
+	@Reference				NVARCHAR(500)		=	NULL	,
+	@AdditionalChargeSource	NVARCHAR(500)		=	NULL	,
+	@IsActive				BIT					=	NULL	,	
+	@CreatedBy				INT					=	NULL	,
+	@CreditCardNo			NVARCHAR(50)		=	NULL	,
+	@CardExpiryDate			NVARCHAR(25)		=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationCharges]
+           ([Id]		   
+           ,[ReservationId]
+		   ,[PaymentMethodId]
+           ,[AdditionalChargeId]
+		   ,[Code]
+		   ,[Description]
+		   ,[TransactionDate]
+		   ,[Amount]
+		   ,[Qty]
+		   ,[Supplement]
+		   ,[Reference]
+		   ,[AdditionalChargeSource]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive]
+		   ,[CardExpiryDate]
+		   ,[CreditCardNo]
+		   )
+     VALUES
+           (
+			   @Id			   
+			   ,@ReservationId
+			   ,@PaymentMethodId
+			   ,@AdditionalChargeId
+			   ,@Code
+			   ,@Description
+			   ,@TransactionDate
+			   ,@Amount
+			   ,@Qty
+			   ,@Supplement
+			   ,@Reference
+			   ,@AdditionalChargeSource
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+			   ,@CardExpiryDate
+			   ,@CreditCardNo
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+/**************************************************************************************************************
+Comment : Manuaaly update Reservation Recoed
+*************************************************************************************************************/
+update ReservationCharges
+Set PaymentmethodId = 'F5675C7B-397A-4349-8DFD-7D9421A2299E'
+Where Code = 9004 AND Description = 'AE - American Express'
+
+update ReservationCharges
+Set PaymentmethodId = '58BC4291-177A-4258-B68A-22AEA58FF217'
+Where Code = 9004 AND Description = 'CS - Cash'
+
+update ReservationCharges
+Set PaymentmethodId = '9F19777A-C984-4770-870A-F271B448AEB7'
+Where Code = 9004 AND Description = 'DS - Discover'
+
+update ReservationCharges
+Set PaymentmethodId = '59B7A188-B794-4ACA-B00F-12613B822F52'
+Where Code = 9004 AND Description = 'LA - Laser'
+
+update ReservationCharges
+Set PaymentmethodId = '099518D7-42B2-4055-BB8E-F99609E197C1'
+Where Code = 9004 AND Description = 'MC - Master Card'
+
+update ReservationCharges
+Set PaymentmethodId = 'AB47B5AD-0C79-47E8-AC0F-799FD4872F3B'
+Where Code = 9004 AND Description = 'VA - Visa'
+
+/**********************************************************************************************************************
+Sp Name : [GetDailyCashSheet]
+Comment : Add column paymentmethodid
+**********************************************************************************************************************/
+GO
+/****** Object:  StoredProcedure [dbo].[GetDailyCashSheet]    Script Date: 25-Jun-18 1:01:23 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- exec  getdailycashsheet 2,'06/25/2018'
+ALTER PROCEDURE [dbo].[GetDailyCashSheet]
+@CreatedBy INT		= NULL,
+@CreatedOn DATETIME	= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+    
+	SELECT
+		RC.Description 
+	   ,RC.PaymentMethodId
+	   ,ABS(SUM(ISNULL(RC.AMOUNT,0))) AS TotalAmount 
+	FROM ReservationCharges As RC
+		INNER JOIN Reservation AS RL
+			ON RC.ReservationId = RL.Id	
+				WHERE RC.CreatedBy = @CreatedBy   
+					AND Code = 9004  
+					AND CASt(RC.CreatedOn AS date ) = @CreatedOn
+					AND ISNULL(IsCheckOut,0) = 1
+					AND ISNULL(RC.IsActive,0) = 1 
+					AND ISNULL(RC.IsDeleted,0) = 0 
+					AND ISNULL(RL.IsActive,0) = 1
+					AND ISNULL(RL.IsDeleted,0) = 0
+		 GROUP BY RC.Description,RC.PaymentMethodId
+		  ORDER BY TotalAmount DESC
+
+END
+
+
+/*******************************************************************************************************************************
+sp name  : GetDailyCashSheetList
+Comment	 : Sorting Added
+*******************************************************************************************************************************/
+/****** Object:  StoredProcedure [dbo].[GetDailyCashSheetList]    Script Date: 25-Jun-18 2:43:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- exec GetDailyCashSheetList 1,10,'','',2
+ALTER PROCEDURE [dbo].[GetDailyCashSheetList]
+	@PageNum						INT  = NULL,
+	@PageSize						INT = NULL,
+	@SortColumn						NVARCHAR(255)		=	NULL,
+	@SortDirection					NVARCHAR(20)		=	NULL,
+	@CreatedBy						INT					= null
+	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+	
+	CREATE TABLE #TEMPDAILYCASHSHEET
+	(		
+	rownum int null,
+		CreatedDate NVARCHAR(25),
+		TotalAmount DECIMAL(18,2),
+		TotalCount  INT		 
+	)
+
+	INSERT INTO #TEMPDAILYCASHSHEET
+	(
+	RowNum, 
+	CreatedDate,
+	TotalAmount
+	)
+   SELECT
+  ROW_number() over(order by  CONVERT(varchar(20),RC.CreatedOn,103) desc)   as RowNum ,   	
+	CONVERT(varchar(20),RC.CreatedOn,103) AS CreatedDate,
+	ABS(SUM(ISNULL(RC.AMOUNT,0))) AS TotalAmount
+		FROM ReservationCharges AS RC
+			INNER JOIN Reservation AS RL
+				ON RC.ReservationId = RL.Id	
+			WHERE RC.CreatedBy = @CreatedBy 
+				AND Code = 9004  		
+				AND ISNULL(RL.IsCheckOut,0) = 1
+				AND ISNULL(RC.IsActive,0) = 1 
+				AND ISNULL(RC.IsDeleted,0) = 0 
+				AND ISNULL(RL.IsActive,0) = 1
+				AND ISNULL(RL.IsDeleted,0) = 0
+					GROUP by CONVERT(varchar(20),RC.CreatedOn,103) 
+
+					Select 
+					ROW_NUMBER()OVER(
+				ORDER BY
+							
+						CASE WHEN @SortColumn = 'TotalAmount' and @SortDirection = 'asc'
+							THEN TotalAmount END ASC,
+						CASE WHEN @SortColumn = 'TotalAmount' and @SortDirection = 'desc'
+							THEN TotalAmount END DESC,
+
+						CASE WHEN @SortColumn = 'CreatedDate' and @SortDirection = 'asc'
+							THEN CreatedDate END ASC,
+						CASE WHEN @SortColumn = 'CreatedDate' and @SortDirection = 'desc'
+							THEN CreatedDate END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN CreatedDate END DESC
+   ) AS RowNum,		
+					CreatedDate,
+					TotalAmount,
+					Count (*) over () TotalCount
+					FROM #TEMPDAILYCASHSHEET AS temp
+					WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+
+END

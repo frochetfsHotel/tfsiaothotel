@@ -276,6 +276,7 @@
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\CurrencyVM.cs" />
     <Compile Include="Models\CurrentUserRoleVM.cs" />
+    <Compile Include="Models\DaliyCashSheetReportVM.cs" />
     <Compile Include="Models\DiscountApprovedVM.cs" />
     <Compile Include="Models\ErrorLogVM.cs" />
     <Compile Include="Models\FloorVM.cs" />
@@ -291,6 +292,7 @@
     <Compile Include="Models\PackageVM.cs" />
     <Compile Include="Models\PagesVM.cs" />
     <Compile Include="Models\PaginationVM.cs" />
+    <Compile Include="Models\PaymentMethodEnum.cs" />
     <Compile Include="Models\PaymentMethodVM.cs" />
     <Compile Include="Models\PreferenceGroupVM.cs" />
     <Compile Include="Models\PreferenceVM.cs" />
@@ -357,6 +359,7 @@
     <Compile Include="Repository\CompanyRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
     <Compile Include="Repository\CurrencyRepository.cs" />
+    <Compile Include="Repository\DailyCashSheetRepository.cs" />
     <Compile Include="Repository\DiscountApprovedRepository.cs" />
     <Compile Include="Repository\ErrorLogRepository.cs" />
     <Compile Include="Repository\FloorRepository.cs" />
@@ -416,6 +419,7 @@
     <Content Include="HtmlTemplates\ReservationConfirmationEmail.html" />
     <Content Include="HtmlTemplates\SendFolioReport.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
+    <Content Include="Views\Report\PreviewDailyCashReport.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -2171,6 +2175,7 @@
     <Content Include="Views\Company\Create.cshtml" />
     <Content Include="Views\Company\Edit.cshtml" />
     <Content Include="Views\Company\List.cshtml" />
+    <Content Include="Views\Report\DailyCashSheet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

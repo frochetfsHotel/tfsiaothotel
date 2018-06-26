@@ -30,7 +30,8 @@ namespace SuccessHotelierHub.Controllers
         private TitleRepository titleRepository = new TitleRepository();
         private CountryRepository countryRepository = new CountryRepository();
         private PreferenceRepository preferenceRepository = new PreferenceRepository();
-        private CompanyRepository CompanyRepository = new CompanyRepository();
+        private CompanyRepository companyRepository = new CompanyRepository();
+        private DailyCashSheetRepository dailyCashSheetRepository = new DailyCashSheetRepository();
 
         #endregion
 
@@ -44,7 +45,7 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult RegistrationCard()
         {
-            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
+            var companyList = new SelectList(companyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
             return View();
@@ -574,7 +575,7 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
-                model.UserId = LogInManager.LoggedInUserId;                
+                model.UserId = LogInManager.LoggedInUserId;
 
                 var reservations = reservationRepository.SearchBreakfastReport(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
@@ -607,7 +608,6 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult PreviewBreakfastReport(string date, string showDate)
         {
-
             BreakFastReport model = new BreakFastReport();
             model.Date = showDate;
 
@@ -615,7 +615,7 @@ namespace SuccessHotelierHub.Controllers
             model.Results = results;
 
             #region Record Activity Log
-            RecordActivityLog.RecordActivity(Pages.SEARCH_REGISTRATION_CARD, "Generated break fast pdf report.");
+            RecordActivityLog.RecordActivity(Pages.SEARCH_REGISTRATION_CARD, "Generate Daily CashSheet Report.");
             #endregion
 
             //HTML to PDF
@@ -623,13 +623,141 @@ namespace SuccessHotelierHub.Controllers
 
             byte[] pdfBytes = Utility.Utility.GetPDF(html);
 
-            //return File(pdfBytes, "application/pdf", "BreakFastReport.pdf");
-
             return File(pdfBytes, "application/pdf");
-
-            //return View(model);
         }
 
         #endregion Breakfast Report
+
+        public ActionResult DailyCashSheet()
+        {
+            return View();
+        }
+
+        public ActionResult SearchDaliyCashReport(SearchDailyCashSheetParameterVM model)
+        {
+            try
+            {
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+                model.UserId = LogInManager.LoggedInUserId;
+
+                var DailyCashSheet = dailyCashSheetRepository.SearchDailyCashSeetReport(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                var ConvertAmountToUserCurrency = DailyCashSheet.Select(m => new
+                {
+                    TotalAmount = CurrencyManager.ParseAmountToUserCurrency(m.TotalAmount, LogInManager.CurrencyCode),
+                    RowNum = m.RowNum,
+                    CreatedDate = m.CreatedDate,
+                    TotalCount = m.TotalCount
+
+                }).ToList();
+
+                int totalRecords = 0;
+                var dbRecords = DailyCashSheet.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.DAILY_CASHSHEET_REPORT, "Searched daily cashsheet report.");
+                #endregion
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = ConvertAmountToUserCurrency
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SearchBreakfastReport");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        public ActionResult PreviewDailyCashReport(string date, string showDate)
+        {
+            try
+            {
+                int UserId = Convert.ToInt32(LogInManager.LoggedInUser.UserId);
+                DailyCashSheet model = new DailyCashSheet();
+                model.Date = showDate;
+                model.Day = showDate != null ? Convert.ToDateTime(showDate).DayOfWeek.ToString() : null;
+                var DailyCashSheet = dailyCashSheetRepository.GetDailyCashSheet(UserId, date).ToList();
+
+                if (DailyCashSheet.Count <= 0)
+                {
+                    return RedirectToAction("DailyCashSheet");
+                }
+
+                model.Result = DailyCashSheet;
+
+                foreach (var item in model.Result)
+                {
+                    model.SumOfTotalAmount += item.TotalAmount;
+                }
+
+                var notInDailyCashSheet = "";
+                foreach (var item in new AllPaymentMethod().Methods)
+                {
+                    if (!model.Result.Any(m => m.PaymentMethodId == Guid.Parse(item)))
+                    {
+                        notInDailyCashSheet += item + ",";
+                    }
+
+                }
+
+                ViewBag.NotInDailyCashSheetList = notInDailyCashSheet.Split(',');
+
+                model.SumOfTotalAmount = model.SumOfTotalAmount > 0 ? CurrencyManager.ParseAmountToUserCurrency(model.SumOfTotalAmount, LogInManager.CurrencyCode) : 0.00;
+
+                string html = Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewDailyCashReport", model);
+
+                byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+                return File(pdfBytes, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                Utility.Utility.LogError(ex, "PreviewDailyCashReport");
+                return RedirectToAction("DailyCashSheet");
+            }
+        }
+
+        public ActionResult CheckRecordHaveOrNot(string date)
+        {
+            int UserId = Convert.ToInt32(LogInManager.LoggedInUser.UserId);
+            var DailyCashSheet = dailyCashSheetRepository.GetDailyCashSheet(UserId, date).ToList();
+            if (DailyCashSheet.Count <= 0)
+            {
+                return Json(new
+                {
+                    ErrorMsg = "No Record Found",
+                    IsSuccess = false,
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new
+            {
+                IsSuccess = true,
+            }, JsonRequestBehavior.AllowGet);
+
+        }
     }
 }

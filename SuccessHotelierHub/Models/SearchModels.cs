@@ -1763,7 +1763,7 @@ namespace SuccessHotelierHub.Models
         public Boolean IsActive { get; set; }
 
 
-        public DateTime? CreatedOn { get; set; }       
+        public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }
     }
     #endregion
@@ -2422,6 +2422,36 @@ namespace SuccessHotelierHub.Models
 
 
     #endregion
+
+    #region "Search Report CashSheet"
+    public class SearchDailyCashSheetParameterVM
+    {
+        public SearchDailyCashSheetParameterVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public DateTime? Date { get; set; }
+        public int UserId { get; set; }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchDaliyCashSheetReportResultVM
+    {
+        public int RowNum { get; set; }
+        public string CreatedDate { get; set; }
+        public double TotalAmount { get; set; }
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+
 
     #region Search User Group
 

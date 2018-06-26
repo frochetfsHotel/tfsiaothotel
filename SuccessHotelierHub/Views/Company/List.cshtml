@@ -8,7 +8,7 @@
 }
 
 @{
-    var PagerName = "HolidayGrid";
+    var PagerName = "CompanyGrid";
 }
 
 <section class="content-header">
@@ -34,18 +34,18 @@
         <form class="frmCompanyList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
-                    <div class="row">                       
+                    <div class="row">
                         <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.CompanyName, new { @class = "required-label" })
-                            @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", placeholder = "Title" })
+                            @Html.LabelFor(m => m.CompanyName)
+                            @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", placeholder = "Company Name" })
                         </div>
                         <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.CompanyAddress)
-                            @Html.TextAreaFor(m => m.CompanyAddress, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                            @Html.TextAreaFor(m => m.CompanyAddress, new { @class = "form-control", placeholder = "Company Address", rows = "3" })
                         </div>
                         <div class="col-md-3 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchCompany()">Search</button>
-                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearHoliday()">Clear</button>
+                            <button type="button" id="btnClear" class="btn btn-danger" onclick="clearCompany()">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -57,11 +57,11 @@
                         <table class="table table-bordered table-hover table-striped" id="tblCompany">
                             <thead>
                                 <tr>
-                                    <th></th>                                    
-                                    <th>Company Name</th>
-                                    <th>Company Address</th>
-                                    <th>Status</th>
-                                    <th class="width85">Action</th>
+                                    <th></th>
+                                    <th class="width_20">Company Name</th>
+                                    <th class="width_50">Company Address</th>
+                                    <th class="width_5">Status</th>
+                                    <th class="width_25">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -92,16 +92,17 @@
     });
 
 
-    function SearchCompanyParameters(d) {       
+    function SearchCompanyParameters(d) {
         var CompanyName = $('#CompanyName').val();
         var CompanyAddress = $('#CompanyAddress').val();
 
-        d.PageNum = currentPage;        
+        d.PageNum = currentPage;
         d.CompanyName = CompanyName;
         d.CompanyAddress = CompanyAddress;
     }
 
     function CompanyGridDataBound(response) {
+        AjaxRequestFinish();
         if (response.IsSuccess == true) {
             @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
             return response.data;
@@ -123,18 +124,10 @@
 
 
     function InitializeCompanyGrid() {
+        AjaxRequestStart();
         grdCompany = $('#tblCompany').DataTable({
             serverSide: true,
             ajax: {
-                beforeSend: function (xhr) {
-                    showLoader();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    ShowErrorMessage(jqXHR.status, errorThrown);
-                },
-                complete: function () {
-                    hideLoader();
-                },
                 url: '@Url.Content("~/Company/Search")',
                 data: SearchCompanyParameters,
                 dataSrc: CompanyGridDataBound,
@@ -156,7 +149,7 @@
                 data: "CreatedOn",
                 orderable: true,
                 "visible": false
-            },          
+            },
             {
                 targets: 1,
                 data: "CompanyName",
@@ -211,11 +204,10 @@
     }
 
     function clearCompany() {
-        $('#Date').val('');
-        $('#Title').val('');
-        $('#Description').val('');
+        $('#CompanyName').val('');
+        $('#CompanyAddress').val('');
 
-        searchHoliday();
+        searchCompany();
     }
 
     function deleteCompany(item, e, id) {
@@ -230,7 +222,7 @@
             confirmButtonText: 'Yes'
         }).then((result) => {
             if (result.value) {
-                $.ajax({                  
+                $.ajax({
                     url: '@Url.Content("~/Company/Delete")',
                     type: 'POST',
                     data: { id: id },

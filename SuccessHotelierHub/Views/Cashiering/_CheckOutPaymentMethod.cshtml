@@ -180,102 +180,106 @@
         });
     });
 
+
+    //open model and set default value
     function CustomerSplitPayment() {
         var IsChecked = $('#SplitPayment').prop('checked')
         if (IsChecked) {
-            $('#divHidePaymentMethod').hide()
-            $('#divSavePayment').hide()
-            clearReservationChargesData()
-            $('#SplitPaymentModal').modal('show')
-            $('#hdnSaveReservationId').attr('value', '@Model.ReservationId')
-            $('#hdnCheckOutDate').attr('value', '@Model.CheckOutDate')
-            $('#txtAmount_1').val('@Model.Amount')
-            $('#hdnTotalAmount').val('@Model.Amount')
-            $('#lblFinalAmount').text('@Model.Amount')
-            $('#lblDiductAmount').text('@Model.Amount')
-            $('#lblpayableAmount').text(0)
+            $('#divHidePaymentMethod').hide();
+            $('#divSavePayment').hide();
+            clearSplitPaymentData();
+            $('#SplitPaymentModal').modal('show');
+            $('#hdnSaveReservationId').attr('value', '@Model.ReservationId');
+            $('#hdnCheckOutDate').attr('value', '@Model.CheckOutDate');
+            $('#txtAmount_1').val('@Model.Amount');
+            $('#hdnTotalAmount').val('@Model.Amount');
+            $('#lblFinalAmount').text('@Model.Amount');
+            $('#lblDiductAmount').text('@Model.Amount');
+            $('#lblpayableAmount').text(0);
         }
         else {
-            $('#divHidePaymentMethod').show()
-            $('#divSavePayment').show()
+            $('#divHidePaymentMethod').show();
+            $('#divSavePayment').show();
         }
     }
 
+    //Add split payment new row in modal
     function AddNewSplitPayment() {
-        var tableRowLength = $('#tblSplitPayment tbody tr').length;
-        if (tableRowLength < 6) {
+        //get row number
+        var rowNumber = $('form#frmSplitPayment #hdnTotalSplitPayment').val();
 
-
-            var rowNumber = $('form#frmSplitPayment #hdnTotalSplitPayment').val();
-
-            if (!IsNullOrEmpty(rowNumber)) {
-                rowNumber = parseInt(rowNumber) + 1;
-            }
-            else {
-                rowNumber = 1;
-            }
-
-            var html = '';
-
-            //Create New Row
-            html += '<tr data-rownumber="' + rowNumber + '">';
-
-            //Remove Button + Hidden Field
-            html += "<td>";
-            html += "<span class='text-red font_20 cursor-P' onclick='removeRow(this);'>";
-            html += "<i class='fa fa-remove text'></i>";
-            html += " </span>";
-            html += "<input type='hidden' id='AdditionalChargeId_" + rowNumber + "' name='AdditionalChargeId_" + rowNumber + "' value='0'>";
-            html += "</td>";
-
-            //Paymnt method
-            html += '<td>';
-            html += '<select class="form-control" data-val="true" data-val-required="Please select payment method." id="SplitPaymentId_' + rowNumber + '" name="SplitPaymentId_' + rowNumber + '" onchange="SelectSplitPaymentMethod(' + rowNumber + ')"><option value="">-- Select Payment Method--</option><option value="f5675c7b-397a-4349-8dfd-7d9421a2299e">AE - American Express</option><option value="58bc4291-177a-4258-b68a-22aea58ff217">CS - Cash</option><option value="9f19777a-c984-4770-870a-f271b448aeb7">DS - Discover</option><option value="59b7a188-b794-4aca-b00f-12613b822f52">LA - Laser</option><option value="099518d7-42b2-4055-bb8e-f99609e197c1">MC - Master Card</option><option value="ab47b5ad-0c79-47e8-ac0f-799fd4872f3b">VA - Visa</option></select>'
-            html += '</td>';
-
-            //Amount
-            html += "<td>";
-            html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculatTotalAmount(this)' value='0.00' />";
-            html += "</td>";
-
-            //Credit Card Number
-            html += '<td>';
-            html += '<input class="form-control HideWhenCashIsSelected_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16" minlength="16" name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="XXXXXXXXXXXX4242">';
-            html += '</td>';
-
-            //Card ExpiryDate
-            html += '<td>';
-            html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'
-            html += '</td>';
-
-            html += '</tr>';
-
-
-            $('form#frmSplitPayment #tblSplitPayment tbody').append(html);
-
-            $('form#frmSplitPayment #hdnTotalSplitPayment').val(rowNumber);
-
-            var listOfSplitPayment = [];
-            var TotalAmount = $('#hdnTotalAmount').val()
-            if (TotalAmount == $('#txtAmount_1').val()) {
-                var DevideCharge = (parseFloat(TotalAmount) / rowNumber)
-                $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function () {
-                    var rowNumber = $(this).attr("data-rownumber");
-                    if (!IsNullOrEmpty(rowNumber)) {
-                        rowNumber = parseInt(rowNumber);
-                        var objSplitPayment = {};
-                        objSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
-                        listOfSplitPayment.push(objSplitPayment);
-                        $('#txtAmount_' + rowNumber).val(parseFloat(DevideCharge));
-                    }
-                })
-            }
+        if (!IsNullOrEmpty(rowNumber)) {
+            rowNumber = parseInt(rowNumber) + 1;
         }
         else {
-            toastr.error("there are no more payment method")
+            rowNumber = 1;
+        }
+
+        var html = '';
+
+        //Create New Row
+        html += '<tr data-rownumber="' + rowNumber + '">';
+
+        //Remove Button + Hidden Field
+        html += "<td>";
+        html += "<span class='text-red font_20 cursor-P' onclick='removeSplitPaymentRow(this);'>";
+        html += "<i class='fa fa-remove text'></i>";
+        html += " </span>";
+        html += "<input type='hidden' id='AdditionalChargeId_" + rowNumber + "' name='AdditionalChargeId_" + rowNumber + "' value='0'>";
+        html += "</td>";
+
+        //Paymnt method
+        html += '<td>';
+        html += '<select class="form-control" data-val="true" data-val-required="Please select payment method." id="SplitPaymentId_' + rowNumber + '" name="SplitPaymentId_' + rowNumber + '" onchange="SelectSplitPaymentMethod(' + rowNumber + ')"><option value="">-- Select Payment Method--</option><option value="f5675c7b-397a-4349-8dfd-7d9421a2299e">AE - American Express</option><option value="58bc4291-177a-4258-b68a-22aea58ff217">CS - Cash</option><option value="9f19777a-c984-4770-870a-f271b448aeb7">DS - Discover</option><option value="59b7a188-b794-4aca-b00f-12613b822f52">LA - Laser</option><option value="099518d7-42b2-4055-bb8e-f99609e197c1">MC - Master Card</option><option value="ab47b5ad-0c79-47e8-ac0f-799fd4872f3b">VA - Visa</option></select>'
+        html += '</td>';
+
+        //Amount
+        html += "<td>";
+        html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculatTotalAmount(this)' value='0.00' />";
+        html += "</td>";
+
+        //Credit Card Number
+        html += '<td>';
+        html += '<input class="form-control HideWhenCashIsSelected_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16" minlength="16" name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="">';
+        html += '</td>';
+
+        //Card ExpiryDate
+        html += '<td>';
+        html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'
+        html += '</td>';
+
+        html += '</tr>';
+
+        // append html to split payment model
+        $('form#frmSplitPayment #tblSplitPayment tbody').append(html);
+
+        // when add new row devide in two rows from the total amount
+        $('form#frmSplitPayment #hdnTotalSplitPayment').val(rowNumber);
+        var listOfSplitPayment = [];
+        var TotalAmount = $('#hdnTotalAmount').val()
+        if (TotalAmount == $('#txtAmount_1').val()) {
+            var DevideCharge = (parseFloat(TotalAmount) / 2)
+            $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function () {
+                var rowNumber = $(this).attr("data-rownumber");
+                if (!IsNullOrEmpty(rowNumber)) {
+                    rowNumber = parseInt(rowNumber);
+                    var objSplitPayment = {};
+                    objSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
+                    listOfSplitPayment.push(objSplitPayment);
+                    $('#txtAmount_' + rowNumber).val(parseFloat(DevideCharge));
+                }
+            })
         }
     }
 
+    //remove row from split payment then refresh total amount value
+    function removeSplitPaymentRow(element) {
+        $(element).closest("tr").remove();
+
+        calculatTotalAmount(this);
+    }
+
+    //Total Amount calculation and set value
     function calculatTotalAmount(value) {
         var MinusFromTotalAmount = 0;
         var listOfSplitPayment = [];
@@ -291,7 +295,7 @@
                     MinusFromTotalAmount = parseFloat(objSplitPayment.Amount) + parseFloat(MinusFromTotalAmount);
                     var Diffrence = parseFloat(TotalAmount) - parseFloat(MinusFromTotalAmount)
                     if (parseFloat(Diffrence) < 0) {
-                        toastr.error("inserted values is greater then total amount")
+                        toastr.error("Please check your entered amount is greater than total remaining payable amount")
                         $('#' + value.id).val("0.00")
                         return false;
                     }
@@ -302,6 +306,7 @@
         })
     }
 
+    //in split payment cash is selected then hide the credit card number and Expiry date field
     function SelectSplitPaymentMethod(RowNumber) {
         var SelectedDropDownvalue = [];
         if (!IsNullOrEmpty($('#SplitPaymentId_' + RowNumber).val())) {
@@ -311,26 +316,6 @@
             var splitPaymentMethodName = splitPaymentMethod;
             if (Contains(splitPaymentMethod, '-')) {
                 splitPaymentMethodName = trim(splitPaymentMethod.split('-')[1]);
-            }
-
-            $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function (index) {
-                var rowNumber = $(this).attr("data-rownumber");
-                if (!IsNullOrEmpty(rowNumber)) {
-                    rowNumber = parseInt(rowNumber);
-                    var objSplitPayment = {};
-                    objSplitPayment.PaymentMethodtext = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected').text();
-                    objSplitPayment.PaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).val();
-                    if (objSplitPayment.PaymentMethod != "") {
-                        SelectedDropDownvalue.push(objSplitPayment);
-                    }
-
-                }
-            })
-            var Samevalue = $.grep(SelectedDropDownvalue, function (element) { return element.PaymentMethod == MethodId; })
-            if (Samevalue.length > 1) {
-                $('#SplitPaymentId_' + RowNumber).val("");
-                toastr.error("Please select another payment method, selected payment method is already exist")
-                return false;
             }
 
             if (trim(splitPaymentMethodName) == 'Cash') {
@@ -408,14 +393,14 @@
 
     }
 
-    function clearReservationChargesData() {
+    function clearSplitPaymentData() {
         $('form#frmSplitPayment #SplitPaymentId_1').val('');
         $('form#frmSplitPayment #CardExpiryDate_1').val('');
+        $('form#frmSplitPayment #CreditCardNo_1').val('');
         $('.HideWhenCashIsSelected_1').show();
-
+        $('form#frmSplitPayment #hdnTotalSplitPayment').val(1);
         //Remove all the rows except first one.
         $("form#frmSplitPayment  #tblSplitPayment tbody").find("tr:gt(0)").remove();
-
     }
 
 </script>

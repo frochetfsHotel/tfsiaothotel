@@ -401,11 +401,11 @@ namespace SuccessHotelierHub.Controllers
                             ////Update Room Status CLEAN to DIRTY.
                             //roomRepository.UpdateRoomCheckInStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.DIRTY), true, LogInManager.LoggedInUserId);
 
-                            #region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
-
-                            reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
-
-                            #endregion
+                            //Commented by Raju: 22-JUNE-2018 (Due to functionality change)
+                            //#region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.) 
+                            //reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                            //#endregion
+                            //Commented by Raju: 22-JUNE-2018 (Due to functionality change)
 
                             #region Add Reservation Log
 

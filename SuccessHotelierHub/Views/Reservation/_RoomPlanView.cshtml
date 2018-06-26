@@ -238,7 +238,7 @@
                                             blnFirst = false;
 
                                             <td class="text-center cursor-move assigned" style="padding:5px; width:@(reservationInfo.CheckOutDate <= dates[dates.Count - 1].Date ? (reservationInfo.DaysInWeek == 1? reservationInfo.DaysInWeek :reservationInfo.DaysInWeek  - 1) * 10 : reservationInfo.DaysInWeek * 10)%;">
-                                                <span style="margin-right:-1px !important; text-align:center!important;"
+                                                <span style="margin-right:-1px !important; text-align:center!important;font-size:10px;"
                                                       class="btn btn-xs m-r-xs p-l-xs bg-orange  text-left-align  width-100 item first spnReservation"
                                                       id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                       data-reservationid="@(reservationInfo.ReservationId)"
@@ -267,9 +267,38 @@
                                     }
                                     else
                                     {
-                                        blnFirst = true;
+                                        var allocationInfo = AllocationDetail.Where(i => (i.ArrivalDate.Value.Date <= dates[intI].Date.Value.Date) && (i.DepartureDate.Value.Date >= dates[intI].Date.Value.Date)).ToList();
+                                        if (allocationInfo.Count > 0)
+                                        {
+                                            if (blnFirst)
+                                            {
+                                                <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
+                                                    @foreach (var item in allocationInfo)
+                                                    {
+                                                        <span style="margin:3px -1px !important; text-align:center!important;font-size:10px;"
+                                                              class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
+                                                              id="@("spnReservation_" + item.ReservationId)"
+                                                              data-reservationid="@(item.ReservationId)"
+                                                              ondblclick="GotoReservationEdit('@(item.ReservationId)')"
+                                                              title="Double click here to view reservation detail.">
+                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, item.NoOfNight))
+                                                        </span>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td width='10%' class="@("td_" + room.Id)" height="@(allocationInfo.Count * 35)px!important"></td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            blnFirst = true;
+
+                                            <td class="drop" width="10%"></td>
+                                        }
                                         intI++;
-                                        <td class="drop" width="10%"></td>
+
                                     }
                                 }
                             }
@@ -290,7 +319,7 @@
                                                 <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
                                                     @foreach (var item in allocationInfo)
                                                     {
-                                                        <span style="margin:3px -1px !important; text-align:center!important;"
+                                                        <span style="margin:3px -1px !important; text-align:center!important; font-size:10px;"
                                                               class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
                                                               id="@("spnReservation_" + item.ReservationId)"
                                                               data-reservationid="@(item.ReservationId)"

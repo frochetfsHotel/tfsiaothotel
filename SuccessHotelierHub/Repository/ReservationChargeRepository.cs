@@ -72,6 +72,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@ReservationId", Value = reservationCharge.ReservationId },
                     new SqlParameter { ParameterName = "@AdditionalChargeId", Value = reservationCharge.AdditionalChargeId },
+                    new SqlParameter { ParameterName = "@PaymentMethodId", Value = reservationCharge.PaymentMethodId },
                     new SqlParameter { ParameterName = "@Code", Value = reservationCharge.Code },
                     new SqlParameter { ParameterName = "@Description", Value = reservationCharge.Description },
                     new SqlParameter { ParameterName = "@TransactionDate", Value = reservationCharge.TransactionDate },
@@ -81,7 +82,9 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Reference", Value = reservationCharge.Reference },
                     new SqlParameter { ParameterName = "@AdditionalChargeSource", Value = reservationCharge.AdditionalChargeSource },
                     new SqlParameter { ParameterName = "@IsActive", Value = reservationCharge.IsActive },
-                    new SqlParameter { ParameterName = "@CreatedBy", Value = reservationCharge.CreatedBy }
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = reservationCharge.CreatedBy },
+                    new SqlParameter { ParameterName = "@CreditCardNo", Value = reservationCharge.CreditCardNo },
+                    new SqlParameter { ParameterName = "@CardExpiryDate", Value = reservationCharge.CardExpiryDate }
                 };
 
             chargeId = Convert.ToString(DALHelper.ExecuteScalar("AddReservationCharges", parameters));

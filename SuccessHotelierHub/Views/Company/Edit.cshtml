@@ -35,8 +35,9 @@
                         @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CompanyAddress)
+                        @Html.LabelFor(m => m.CompanyAddress, new { @class = "required-label" })
                         @Html.TextAreaFor(m => m.CompanyAddress, new { @class = "form-control", placeholder = "Company Address", rows = "3" })
+                        @Html.ValidationMessageFor(m => m.CompanyAddress, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
@@ -56,7 +57,7 @@
 </section>
 
 <script type="text/javascript">
-    function hstopformSubmitOnEnter() {
+    function stopformSubmitOnEnter() {
         if (event.keyCode == 13) {
             event.preventDefault();
             return false;
@@ -79,13 +80,14 @@
 
 
     function updateCompany() {
-
         if (validateCompany()) {
+            AjaxRequestStart();
             $.ajax({
                 url: '@Url.Content("~/Company/Edit")',
                 type: 'POST',
                 data: $('#frmCompany').serialize(),
                 success: function (response) {
+                    AjaxRequestFinish();
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }

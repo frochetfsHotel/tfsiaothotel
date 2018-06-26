@@ -819,7 +819,7 @@ namespace SuccessHotelierHub.Utility
                     reservationCharge.Description = roomRentCharge.Description;
                     reservationCharge.TransactionDate = reservation.ArrivalDate;
                     reservationCharge.Amount = totalPrice;
-                    reservationCharge.Qty = 1;
+                    reservationCharge.Qty = 1;                    
                     reservationCharge.IsActive = true;
                     reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
 
@@ -1022,10 +1022,13 @@ namespace SuccessHotelierHub.Utility
                         reservationCharge.AdditionalChargeId = checkOutCharge.Id;
                         reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                         reservationCharge.Code = checkOutCharge.Code;
+                        reservationCharge.PaymentMethodId = model.PaymentMethodId;
                         reservationCharge.Description = model.PaymentMethod;
                         reservationCharge.TransactionDate = model.CheckOutDate.Value;
                         reservationCharge.Amount = -(totalAmount);
                         reservationCharge.Qty = 1;
+                        reservationCharge.CreditCardNo = reservation.CreditCardNo;
+                        reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
                         reservationCharge.IsActive = true;
                         reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
 

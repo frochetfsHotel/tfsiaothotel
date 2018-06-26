@@ -14,7 +14,7 @@ namespace SuccessHotelierHub.Controllers
     {
         #region Declaration
 
-        private CompanyRepository CompanyRepository = new CompanyRepository();
+        private CompanyRepository companyRepository = new CompanyRepository();
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace SuccessHotelierHub.Controllers
                 string companyId = string.Empty;
                 model.CreatedBy = LogInManager.LoggedInUserId;
 
-                companyId = CompanyRepository.AddCompany(model);
+                companyId = companyRepository.AddCompany(model);
 
                 if (!string.IsNullOrWhiteSpace(companyId))
                 {
@@ -74,7 +74,7 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult Edit(Guid id)
         {
-            var company = CompanyRepository.GetCompanyById(id);
+            var company = companyRepository.GetCompanyById(id);
 
             CompanyVM model = new CompanyVM();
 
@@ -96,7 +96,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 string companyId = string.Empty;
                 model.UpdatedBy = LogInManager.LoggedInUserId;
-                companyId = CompanyRepository.UpdateCompany(model);
+                companyId = companyRepository.UpdateCompany(model);
 
                 if (!string.IsNullOrWhiteSpace(companyId))
                 {
@@ -136,7 +136,7 @@ namespace SuccessHotelierHub.Controllers
             {
                 string companyId = string.Empty;
 
-                companyId = CompanyRepository.DeleteCompany(id, LogInManager.LoggedInUserId);
+                companyId = companyRepository.DeleteCompany(id, LogInManager.LoggedInUserId);
 
                 if (!string.IsNullOrWhiteSpace(companyId))
                 {
@@ -154,7 +154,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "CompanyId details not deleted successfully."
+                        errorMessage = "Company details not deleted successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -189,7 +189,7 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
-                var Companies = CompanyRepository.SearchHoliday(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                var Companies = companyRepository.SearchHoliday(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;
                 var dbRecords = Companies.Select(m => m.TotalCount).FirstOrDefault();
