@@ -54,5 +54,7 @@ namespace SuccessHotelierHub.Models
 
         public string CVVNo { get; set; }
 
+        public bool IsDummyReservationPayment { get; set; }
+
     }
 }

@@ -86,6 +86,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@CreditCardNo", Value = reservationCharge.CreditCardNo },
                     new SqlParameter { ParameterName = "@CardExpiryDate", Value = reservationCharge.CardExpiryDate },
                     new SqlParameter { ParameterName = "@CVVNo", Value = reservationCharge.CVVNo},
+                    new SqlParameter { ParameterName = "IsDummyReservationPayment", Value = reservationCharge.IsDummyReservationPayment}                    
                 };
 
             chargeId = Convert.ToString(DALHelper.ExecuteScalar("AddReservationCharges", parameters));

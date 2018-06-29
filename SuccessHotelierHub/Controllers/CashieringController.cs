@@ -387,6 +387,7 @@ namespace SuccessHotelierHub.Controllers
                         reservationCharge.PaymentMethodId = model.PaymentMethodId;
                         reservationCharge.AdditionalChargeId = checkOutCharge.Id;
                         reservationCharge.CVVNo = model.CVVNo;
+                        reservationCharge.IsDummyReservationPayment = false;
                         reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                         reservationCharge.Code = checkOutCharge.Code;
                         reservationCharge.Description = model.PaymentMethod;
@@ -1435,6 +1436,7 @@ namespace SuccessHotelierHub.Controllers
                             reservationCharge.AdditionalChargeId = checkOutCharge.Id;
                             reservationCharge.PaymentMethodId = item.PaymentMethodId;
                             reservationCharge.CVVNo = item.CVVNo;
+                            reservationCharge.IsDummyReservationPayment = false;
                             reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
                             reservationCharge.Code = checkOutCharge.Code;
                             reservationCharge.Description = item.PaymentMethod;

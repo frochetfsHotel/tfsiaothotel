@@ -1164,5 +1164,5 @@ namespace SuccessHotelierHub.Utility
                };
             }
         }
-    }    
+    }
 }

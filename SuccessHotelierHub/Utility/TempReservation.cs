@@ -1031,6 +1031,7 @@ namespace SuccessHotelierHub.Utility
                         reservationCharge.CreditCardNo = reservation.CreditCardNo;
                         reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
                         reservationCharge.IsActive = true;
+                        reservationCharge.IsDummyReservationPayment = true;
                         reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
 
                         reservationChargeRepository.AddReservationCharges(reservationCharge);

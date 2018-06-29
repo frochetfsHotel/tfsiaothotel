@@ -33,7 +33,7 @@
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuFrontDesk">
-                    <a href="javascript:void(0);"  onclick="setCurrentMenu('FrontDesk','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('FrontDesk','@Url.Content("~/Home/Default")');">
                         <i class="fa fa-building-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Front Desk</span>
                     </a>
                 </li>
@@ -45,11 +45,11 @@
                         <i class="fa fa-money font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Cashiering</span>
                     </a>
                 </li>
-            } 
+            }
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuEndOfDayScreen">
-                    <a href="javascript:void(0);">
+                    <a href="javascript:void(0); " onclick="setCurrentMenu('EndOfDay','@Url.Content("~/Report/DailyCashSheet")');">
                         <i class="fa fa-clock-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">End Of Day</span>
                     </a>
                 </li>
@@ -94,23 +94,23 @@
         </div>
 
         @*<div class="navbar-custom-menu">
-            <ul class="nav navbar-nav">
-                <!-- User Account: style can be found in dropdown.less -->
-                <li class="dropdown user user-menu">
-                    <a href="#" class="dropdown-toggle p-22" data-toggle="dropdown" aria-expanded="false">
-                        <img src="~/Content/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                        <span class="hidden_xs">@LogInManager.UserName</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <!-- Menu Footer-->
-                        <li class="user-footer">
-                            <div class="pull-right">
-                                <a href="@Url.Action("SignOut","Account")" class="btn btn-default btn-flat">Sign out</a>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>*@
+                <ul class="nav navbar-nav">
+                    <!-- User Account: style can be found in dropdown.less -->
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle p-22" data-toggle="dropdown" aria-expanded="false">
+                            <img src="~/Content/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                            <span class="hidden_xs">@LogInManager.UserName</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-right">
+                                    <a href="@Url.Action("SignOut","Account")" class="btn btn-default btn-flat">Sign out</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>*@
     </nav>
 </header>

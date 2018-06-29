@@ -29,4 +29,9 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
     }
+
+    public class GetUserGroupByNameVM
+    {
+        public Guid ID { get; set; }       
+    }
 }

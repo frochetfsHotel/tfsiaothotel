@@ -54,7 +54,7 @@ namespace SuccessHotelierHub.Controllers
                 model.UserRoleId = studentRoleId;
                 model.Password = Utility.Utility.GenerateRandomPassword(8);
             }
-            model.UserGroupId = userGroupRepository.GetUserGroups().Where(m => m.Name == "Ireland Student").Select(m => m.Id).FirstOrDefault();
+            model.UserGroupId = userGroupRepository.GetUserGroupByName().FirstOrDefault().ID;
             return View(model);
         }
 

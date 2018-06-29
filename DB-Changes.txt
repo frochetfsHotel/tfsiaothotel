@@ -51086,3 +51086,213 @@ BEGIN
 		SELECT @Id AS Id
     
 END
+
+/************************************************************************************************************************
+Name : Nilesh
+DATE : 29-June-2018
+*************************************************************************************************************************/
+
+/**********************************************************************************************************************
+Comment :update payment method value and one column Added in reservation charges table
+*************************************************************************************************************************/
+
+UPDATE PaymentMethod SET NAME = 'VISA Debit',Code = 'VD' WHERE NAME = 'VISA Debit'
+ALTER TABLE ReservationCharges ADD IsDummyReservationPayment BIT NULL
+
+/************************************************************************************************************************
+Sp NAME	: AddReservationCharges
+Comment : IsDummyReservation Field Added
+************************************************************************************************************************/
+GO
+/****** Object:  StoredProcedure [dbo].[AddReservationCharges]    Script Date: 29-Jun-18 3:47:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddReservationCharges]	
+	@ReservationId				UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId			UNIQUEIDENTIFIER	=	NULL	,
+	@PaymentMethodId			UNIQUEIDENTIFIER	=	NULL	,
+	@Code						NVARCHAR(25)		=	NULL	,
+	@Description				NVARCHAR(1000)		=	NULL	,
+	@TransactionDate			DATETIME			=	NULL	,
+	@Amount						DECIMAL(18,2)		=	NULL	,
+	@Qty						INT					=	NULL	,
+	@Supplement					NVARCHAR(255)		=	NULL	,
+	@Reference					NVARCHAR(500)		=	NULL	,
+	@AdditionalChargeSource		NVARCHAR(500)		=	NULL	,
+	@IsActive					BIT					=	NULL	,	
+	@CreatedBy					INT					=	NULL	,
+	@CreditCardNo				NVARCHAR(50)		=	NULL	,
+	@CardExpiryDate				NVARCHAR(25)		=	NULL	,
+	@CVVNo						NVARCHAR(25)        =	NULL	,
+	@IsDummyReservationPayment	BIT					=   NULL
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[ReservationCharges]
+           ([Id]		   
+           ,[ReservationId]
+		   ,[PaymentMethodId]
+           ,[AdditionalChargeId]
+		   ,[Code]
+		   ,[Description]
+		   ,[TransactionDate]
+		   ,[Amount]
+		   ,[Qty]
+		   ,[Supplement]
+		   ,[Reference]
+		   ,[AdditionalChargeSource]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive]
+		   ,[CardExpiryDate]
+		   ,[CreditCardNo]
+		   ,[CVVNo]
+		   ,[ISDummyReservationPayment]
+		   )
+     VALUES
+           (
+			   @Id			   
+			   ,@ReservationId
+			   ,@PaymentMethodId
+			   ,@AdditionalChargeId
+			   ,@Code
+			   ,@Description
+			   ,@TransactionDate
+			   ,@Amount
+			   ,@Qty
+			   ,@Supplement
+			   ,@Reference
+			   ,@AdditionalChargeSource
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+			   ,@CardExpiryDate
+			   ,@CreditCardNo
+			   ,@CVVNo
+			   ,@IsDummyReservationPayment
+           )
+
+		SELECT @Id AS Id
+    
+END
+
+/************************************************************************************************************************
+Sp NAME	: GetDailyCashSheetList
+Comment : only get that type of record who's status dummyreservation is not true
+************************************************************************************************************************/
+
+ALTER PROCEDURE [dbo].[GetDailyCashSheetList]
+	@PageNum						INT					= NULL,
+	@PageSize						INT					= NULL,
+	@SortColumn						NVARCHAR(255)		= NULL,
+	@SortDirection					NVARCHAR(20)		= NULL,
+	@CreatedBy						INT					= NULL
+	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+	
+	CREATE TABLE #TEMPDAILYCASHSHEET
+	(		
+		rownum			INT				NULL,
+		CreatedDate		NVARCHAR(25),
+		TotalAmount		DECIMAL(18,2),
+		TotalCount		INT		 
+	)
+
+	INSERT INTO #TEMPDAILYCASHSHEET
+	(
+		RowNum, 
+		CreatedDate,
+		TotalAmount
+	)
+   SELECT
+		ROW_number() OVER(ORDER BY  CONVERT(VARCHAR(20),RC.CreatedOn,103) DESC)   AS RowNum ,   	
+		CONVERT(VARCHAR(20),RC.CreatedOn,103) AS CreatedDate,
+		ABS(SUM(ISNULL(RC.AMOUNT,0))) AS TotalAmount
+			FROM ReservationCharges AS RC
+				INNER JOIN Reservation AS RL
+					ON RC.ReservationId = RL.Id	
+				WHERE RC.CreatedBy = @CreatedBy 
+					AND Code = 9004  		
+					AND ISNULL(RL.IsCheckOut,0) = 1
+					AND ISNULL(RC.IsActive,0) = 1 
+					AND ISNULL(RC.IsDeleted,0) = 0 
+					AND ISNULL(RL.IsActive,0) = 1
+					AND ISNULL(RL.IsDeleted,0) = 0
+					AND ISNULL(RC.IsDummyReservationPayment,0) = 0
+						GROUP by CONVERT(varchar(20),RC.CreatedOn,103) 
+
+	SELECT 
+		ROW_NUMBER()OVER(
+			ORDER BY							
+				CASE WHEN @SortColumn = 'TotalAmount' and @SortDirection = 'asc'
+					THEN TotalAmount END ASC,
+				CASE WHEN @SortColumn = 'TotalAmount' and @SortDirection = 'desc'
+					THEN TotalAmount END DESC,
+
+				CASE WHEN @SortColumn = 'CreatedDate' and @SortDirection = 'asc'
+					THEN CreatedDate END ASC,
+				CASE WHEN @SortColumn = 'CreatedDate' and @SortDirection = 'desc'
+					THEN CreatedDate END DESC,
+
+				CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+					THEN CreatedDate END DESC
+				) AS RowNum,		
+				CreatedDate,
+				TotalAmount,
+				COUNT (*) OVER () TotalCount
+				FROM #TEMPDAILYCASHSHEET AS temp
+				WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+
+END
+
+/****************************************************************************************************************************
+Sp NAME : GetDailyCashSheet
+Comment : Clause Added for only get that type of record who's record is not dummy
+****************************************************************************************************************************/
+
+GO
+/****** Object:  StoredProcedure [dbo].[GetDailyCashSheet]    Script Date: 29-Jun-18 4:36:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- exec  getdailycashsheet 2,'06/25/2018'
+ALTER PROCEDURE [dbo].[GetDailyCashSheet]
+@CreatedBy INT		= NULL,
+@CreatedOn DATETIME	= NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+    
+	Select
+		RC.Description 
+	   ,RC.PaymentMethodId
+	   ,ABS(SUM(ISNULL(RC.AMOUNT,0))) AS TotalAmount 
+	FROM ReservationCharges As RC
+		INNER JOIN Reservation AS RL
+			ON RC.ReservationId = RL.Id	
+				WHERE RC.CreatedBy = @CreatedBy   
+					AND Code = 9004  
+					AND CASt(RC.CreatedOn AS date ) = @CreatedOn
+					AND ISNULL(IsCheckOut,0) = 1
+					AND ISNULL(RC.IsActive,0) = 1 
+					AND ISNULL(RC.IsDeleted,0) = 0 
+					AND ISNULL(RL.IsActive,0) = 1
+					AND ISNULL(RL.IsDeleted,0) = 0
+					AND ISNULL(RC.IsDummyReservationPayment,0) = 0
+		 GROUP BY Rc.Description,RC.PaymentMethodId
+		 order by TotalAmount DESC
+
+END
+

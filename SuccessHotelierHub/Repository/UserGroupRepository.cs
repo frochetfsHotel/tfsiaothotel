@@ -140,8 +140,15 @@ namespace SuccessHotelierHub.Repository
         #endregion
 
         #region User Group Currency
+        public List<GetUserGroupByNameVM>GetUserGroupByName()
+        {
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserGroupByName");
 
+            var userGroupList = new List<GetUserGroupByNameVM>();
+            userGroupList = DALHelper.CreateListFromTable<GetUserGroupByNameVM>(dt);
 
+            return userGroupList;
+        }
 
         #endregion
     }

@@ -2180,6 +2180,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\AccountController\" />
+    <Folder Include="Views\EndOfDay\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
