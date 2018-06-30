@@ -1171,6 +1171,43 @@ namespace SuccessHotelierHub.Repository
         }
         #endregion
 
+
+        #region
+        public List<GetRateSheetByRoomTypeVM> GetRateTypeOrderBy(Guid RoomTypeId, bool IsShowWeekEndPrice, bool IsShowCorporateRate)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = RoomTypeId },                   
+                    new SqlParameter { ParameterName = "@IsShowWeekEndPrice", Value = IsShowWeekEndPrice},
+                     new SqlParameter { ParameterName = "@IsShowCorporateRate", Value = IsShowCorporateRate}
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRateTypeOrderBy", parameters);
+
+            var results = new List<GetRateSheetByRoomTypeVM>();
+            results = DALHelper.CreateListFromTable<GetRateSheetByRoomTypeVM>(dt);
+
+            return results;
+        }
+        #endregion
+
+        #region
+        public List<GetRateSheetByRoomTypeVM> GetRateSheetByRoomType(bool IsShowWeekEndPrice, bool IsShowCorporateRate)
+        {
+            SqlParameter[] parameters =
+               {                   
+                    new SqlParameter { ParameterName = "@IsShowWeekEndPrice", Value = IsShowWeekEndPrice},
+                    new SqlParameter { ParameterName = "@IsShowCorporateRate", Value = IsShowCorporateRate},
+                }; 
+
+             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRateSheetByRoomType", parameters);
+
+            var results = new List<GetRateSheetByRoomTypeVM>();
+            results = DALHelper.CreateListFromTable<GetRateSheetByRoomTypeVM>(dt);
+
+            return results;
+        }
+        #endregion                
     }
 }
 

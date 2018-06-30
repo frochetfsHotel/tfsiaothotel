@@ -20,7 +20,7 @@
 @if ((rateSheetRoomTypeList != null && rateSheetRoomTypeList.Count > 0) && (rateTypeList != null && rateTypeList.Count > 0))
 {
 
-    if(isShowCorporateRate == true)
+    if (isShowCorporateRate == true)
     {
         var rateTypes = rateTypeList.Where(m => (string.IsNullOrWhiteSpace(coporateRateTypeCategoryId) || Convert.ToString(m.RateTypeCategoryId) == coporateRateTypeCategoryId)).ToList();
 
@@ -56,19 +56,33 @@
         thirdRow += (string.Format("<td>{0}</td>", ""));
     }
 
-    foreach (var rateType in rateTypeList)
+    int Total = 0;
+    List<GetRateSheetByRoomTypeVM> RatesheetroomDetail = new List<GetRateSheetByRoomTypeVM>();
+    for (int i = 0; i < rateSheetRoomTypeList.Count; i++)
     {
-        nextRowHtml += "<tr>";
-        nextRowHtml += (string.Format("<td>{0}</td>", rateType.RateTypeCode));
-        nextRowHtml += (string.Format("<td>{0}</td>", LogInManager.CurrencyCode));
-        nextRowHtml += "<td></td>";
+        var ttRatesheetroomDetail = reservationRepository.GetRateTypeOrderBy(rateSheetRoomTypeList[i].Id, isShowWeekEndPrice, isShowCorporateRate).ToList();
+        var total = ttRatesheetroomDetail.Count;
+        if (i == 0 || total > Total)
+        {
+            Total = total;
+            RatesheetroomDetail = ttRatesheetroomDetail;
+        }
+    }
 
+
+    //var rateSheetRoomtypeDetail = reservationRepository.GetRateTypeOrderBy(rateSheetRoomTypeList[1].Id, isShowWeekEndPrice, isShowCorporateRate).ToList();
+
+    var rateSheetDetail = reservationRepository.GetRateSheetByRoomType(isShowWeekEndPrice, isShowCorporateRate).ToList();
+
+    string RatesheetWithDesc = string.Empty;
+    foreach (var item in RatesheetroomDetail)
+    {
+        nextRowHtml += string.Format("<tr><td>{0}</td><td>{1}</td><td></td>", item.RateTypeCode, LogInManager.CurrencyCode);
         foreach (var roomType in rateSheetRoomTypeList)
         {
-            var rateSheetDetail = reservationRepository.GetRateSheetDetail(rateType.Id, roomType.Id, isShowWeekEndPrice).FirstOrDefault();
+            var row = rateSheetDetail.Where(x => x.RateTypeId == item.RateTypeId && x.RoomTypeId == roomType.Id).FirstOrDefault();
             string colorClass = "text-green";
-
-            if (rateSheetDetail != null)
+            if (row != null)
             {
                 if (roomType.AvailableRooms == 0)
                 {
@@ -76,13 +90,13 @@
                 }
 
                 nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\" data-availablerooms=\"{9}\">{0}</td>",
-                    (rateSheetDetail.Amount > 0 ?  Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(rateSheetDetail.Amount, LogInManager.CurrencyCode)) : ""), 
-                    rateType.Id, 
+                    (row.Amount > 0 ? Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(row.Amount, LogInManager.CurrencyCode)) : ""),
+                    row.RateTypeId,
                     roomType.Id,
-                    rateSheetDetail.Description,
-                    rateSheetDetail.Id,
-                     (rateSheetDetail.Amount > 0 ? Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(rateSheetDetail.Amount, LogInManager.CurrencyCode)) : ""),
-                    rateType.RateTypeCode,
+                    row.Description,
+                    row.Id,
+                     (row.Amount > 0 ? Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(row.Amount, LogInManager.CurrencyCode)) : ""),
+                    row.RateTypeCode,
                     roomType.RoomTypeCode,
                     colorClass,
                     roomType.AvailableRooms));
@@ -91,20 +105,17 @@
             {
                 colorClass = "text-red";
                 nextRowHtml += (string.Format("<td class=\"cursor-P {8}\" data-ratetypeid=\"{1}\" data-roomtypeid=\"{2}\" data-description=\"{3}\" data-id=\"{4}\" data-amount=\"{5}\" data-ratetypecode=\"{6}\" data-roomtypecode=\"{7}\" onclick=\"showRateInfo(this);\" data-availablerooms=\"{9}\">{0}</td>",
-                    "", rateType.Id, roomType.Id,
+                    "", item.Id, item.RoomTypeId,
                     string.Empty,
                     string.Empty,
                     "",
-                    rateType.RateTypeCode,
+                    item.RateTypeCode,
                     roomType.RoomTypeCode,
                     colorClass, 0));
             }
         }
-
         nextRowHtml += "</tr>";
     }
-
-
 
     <table class="table table-bordered table-striped">
         <thead>

@@ -281,6 +281,7 @@
     <Compile Include="Models\ErrorLogVM.cs" />
     <Compile Include="Models\FloorVM.cs" />
     <Compile Include="Models\GetPreviousReservationOrNotVM.cs" />
+    <Compile Include="Models\GetRateSheetByRoomTypeVM.cs" />
     <Compile Include="Models\GuestRegistrationCardVM.cs" />
     <Compile Include="Models\HolidayVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
