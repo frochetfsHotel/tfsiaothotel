@@ -56,27 +56,27 @@
         thirdRow += (string.Format("<td>{0}</td>", ""));
     }
 
-    int Total = 0;
+    //prepare table matrix order by amount asecnding and select that row who have max rate type
+    int TotalRow = 0;
     List<GetRateSheetByRoomTypeVM> RatesheetroomDetail = new List<GetRateSheetByRoomTypeVM>();
     for (int i = 0; i < rateSheetRoomTypeList.Count; i++)
     {
-        var ttRatesheetroomDetail = reservationRepository.GetRateTypeOrderBy(rateSheetRoomTypeList[i].Id, isShowWeekEndPrice, isShowCorporateRate).ToList();
-        var total = ttRatesheetroomDetail.Count;
-        if (i == 0 || total > Total)
+        var SelectMaxRowInRatesheetroomDetail = reservationRepository.GetRateTypeOrderBy(rateSheetRoomTypeList[i].Id, isShowWeekEndPrice, isShowCorporateRate).ToList();
+        var SelectedtotalRow = SelectMaxRowInRatesheetroomDetail.Count;
+        if (i == 0 || SelectedtotalRow > TotalRow)
         {
-            Total = total;
-            RatesheetroomDetail = ttRatesheetroomDetail;
+            TotalRow = SelectedtotalRow;
+            RatesheetroomDetail = SelectMaxRowInRatesheetroomDetail;
         }
     }
 
-
-    //var rateSheetRoomtypeDetail = reservationRepository.GetRateTypeOrderBy(rateSheetRoomTypeList[1].Id, isShowWeekEndPrice, isShowCorporateRate).ToList();
-
+    //select all table maping and prepare here
     var rateSheetDetail = reservationRepository.GetRateSheetByRoomType(isShowWeekEndPrice, isShowCorporateRate).ToList();
-
-    string RatesheetWithDesc = string.Empty;
+  
+    //Selected ratetype Column order by Amount ascending order
     foreach (var item in RatesheetroomDetail)
     {
+        // prepare row by room type and row type mapping
         nextRowHtml += string.Format("<tr><td>{0}</td><td>{1}</td><td></td>", item.RateTypeCode, LogInManager.CurrencyCode);
         foreach (var roomType in rateSheetRoomTypeList)
         {
@@ -117,6 +117,7 @@
         nextRowHtml += "</tr>";
     }
 
+    //rate sheet matrix table Display here
     <table class="table table-bordered table-striped">
         <thead>
 

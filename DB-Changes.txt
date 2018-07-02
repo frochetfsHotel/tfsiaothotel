@@ -51296,3 +51296,142 @@ BEGIN
 
 END
 
+/***************************************************************************************************************************************
+NAME : Nilesh
+Date : 30-june-2018
+****************************************************************************************************************************************/
+/***************************************************************************************************************************************
+Sp NAME : GetRateTypeOrderBy
+Comment  : rate type get Asc order 
+******************************************************************************************************************************************/
+ALTER PROCEDURE [dbo].[GetRateTypeOrderBy]	
+		@RoomTypeId				UNIQUEIDENTIFIER
+	,	@IsShowWeekEndPrice		BIT					= NULL
+	,	@IsShowCorporateRate	BIT					= NULL
+	
+AS
+BEGIN		
+	SET NOCOUNT ON;
+
+	DECLARE @Amount AS DECIMAL(10,2)
+	SET @Amount = 0
+	
+	IF ISNULL(@IsShowCorporateRate,0) = 0
+	BEGIN
+    		SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RTRTM.Amount		,
+				RT.RateTypeCode		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id				
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId
+				WHERE RoomTypeId = @RoomTypeId
+					AND IsWeekEndPrice = @IsShowWeekEndPrice
+					AND ISNULL(RT.IsDeleted,0) = 0
+					AND ISNULL(RTRTM.IsDeleted,0) = 0
+					AND ISNULL(ROT.IsDeleted,0) = 0
+					AND Code = 'NONCORP'					
+				ORDER BY RTRTM.Amount ASC
+	END
+	ELSE
+	BEGIN
+			SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RT.RateTypeCode		,
+				RTRTM.Amount		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId
+				WHERE RoomTypeId = @RoomTypeId
+					AND IsWeekEndPrice = @IsShowWeekEndPrice
+					AND ISNULL(RT.IsDeleted,0) = 0
+					AND ISNULL(RTRTM.IsDeleted,0) = 0
+					AND ISNULL(ROT.IsDeleted,0) = 0
+					AND Code = 'CORP'
+				ORDER BY RTRTM.Amount ASC
+	END
+END
+/***************************************************************************************************************************************
+Sp NAME : GetRateSheetByRoomType
+Comment  : rate type get Asc order 
+******************************************************************************************************************************************/
+
+GO
+/****** Object:  StoredProcedure [dbo].[GetRateSheetByRoomType]    Script Date: 30-Jun-18 7:23:17 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- [GetRateSheetByRoomType] 0,1
+ALTER PROCEDURE [dbo].[GetRateSheetByRoomType]	
+	@IsShowWeekEndPrice		BIT						NULL,
+	@IsShowCorporateRate    BIT						NULL
+	
+	
+AS
+BEGIN		
+	SET NOCOUNT ON;
+	    
+	IF ISNULL(@IsShowCorporateRate,0) = 0
+	BEGIN
+			SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RTRTM.Amount		,
+				RT.RateTypeCode		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId						 
+						WHERE IsWeekEndPrice = @IsShowWeekEndPrice
+							AND ISNULL(RT.IsDeleted,0) = 0
+							AND ISNULL(ROT.IsDeleted,0) = 0
+							AND ISNULL(RTRTM.IsDeleted,0) = 0
+							AND Code = 'NONCORP'
+							
+						ORDER BY RTRTM.Amount ASC
+	END
+	ELSE
+	BEGIN			
+			SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RTRTM.Amount		,
+				RT.RateTypeCode		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId
+						WHERE IsWeekEndPrice = @IsShowWeekEndPrice
+							AND ISNULL(RT.IsDeleted,0) = 0
+							AND ISNULL(RTRTM.IsDeleted,0) = 0
+							AND ISNULL(ROT.IsDeleted,0) = 0
+							AND Code = 'CORP'							
+						ORDER BY RTRTM.Amount ASC
+	END			
+
+END
