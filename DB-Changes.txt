@@ -51435,3 +51435,1191 @@ BEGIN
 	END			
 
 END
+
+/***************************************************************************************************************************************
+NAME : Nilesh
+Date : 02-july-2018
+****************************************************************************************************************************************/
+/***************************************************************************************************************************************
+Sp NAME : GetRateTypeOrderBy
+Comment  : IsActive Clause Added
+******************************************************************************************************************************************/
+GO
+/****** Object:  StoredProcedure [dbo].[GetRateTypeOrderBy]    Script Date: 02-Jul-18 2:30:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- EXEC GetRateTypeOrderBy	'488fe9ed-4aa6-45d9-88f6-67fe6d5886d6','1','0'
+ALTER PROCEDURE [dbo].[GetRateTypeOrderBy]	
+		@RoomTypeId				UNIQUEIDENTIFIER
+	,	@IsShowWeekEndPrice		BIT					= NULL
+	,	@IsShowCorporateRate	BIT					= NULL
+	
+AS
+BEGIN		
+	SET NOCOUNT ON;
+
+	DECLARE @Amount AS DECIMAL(10,2)
+	SET @Amount = 0
+	
+	IF ISNULL(@IsShowCorporateRate,0) = 0
+	BEGIN
+    		SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RTRTM.Amount		,
+				RT.RateTypeCode		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id				
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId
+				WHERE RoomTypeId = @RoomTypeId
+					AND IsWeekEndPrice = @IsShowWeekEndPrice
+					AND ISNULL(RT.IsDeleted,0) = 0
+					AND ISNULL(RTRTM.IsDeleted,0) = 0
+					AND ISNULL(ROT.IsDeleted,0) = 0
+					AND ISNULL(RT.IsActive,0) = 1
+					AND ISNULL(RTRTM.IsActive,0) = 1
+					AND ISNULL(ROT.IsActive,0) = 1
+					AND Code = 'NONCORP'					
+				ORDER BY RTRTM.Amount ASC
+	END
+	ELSE
+	BEGIN
+			SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RT.RateTypeCode		,
+				RTRTM.Amount		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId
+				WHERE RoomTypeId = @RoomTypeId
+					AND IsWeekEndPrice = @IsShowWeekEndPrice
+					AND ISNULL(RT.IsDeleted,0) = 0
+					AND ISNULL(RTRTM.IsDeleted,0) = 0
+					AND ISNULL(ROT.IsDeleted,0) = 0
+					AND ISNULL(RT.IsActive,0) = 1
+					AND ISNULL(RTRTM.IsActive,0) = 1
+					AND ISNULL(ROT.IsActive,0) = 1
+					AND Code = 'CORP'
+				ORDER BY RTRTM.Amount ASC
+	END
+END
+
+/***************************************************************************************************************************************
+Sp NAME : GetRateSheetByRoomType
+Comment  : IsActive Clause Added
+******************************************************************************************************************************************/
+GO
+/****** Object:  StoredProcedure [dbo].[GetRateSheetByRoomType]    Script Date: 02-Jul-18 2:34:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- [GetRateSheetByRoomType] 0,1
+ALTER PROCEDURE [dbo].[GetRateSheetByRoomType]	
+	@IsShowWeekEndPrice		BIT				=		NULL,
+	@IsShowCorporateRate    BIT				=		NULL
+	
+	
+AS
+BEGIN		
+	SET NOCOUNT ON;
+	    
+	IF ISNULL(@IsShowCorporateRate,0) = 0
+	BEGIN
+			SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RTRTM.Amount		,
+				RT.RateTypeCode		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId						 
+						WHERE IsWeekEndPrice = @IsShowWeekEndPrice
+							AND ISNULL(RT.IsDeleted,0) = 0
+							AND ISNULL(ROT.IsDeleted,0) = 0
+							AND ISNULL(RTRTM.IsDeleted,0) = 0
+							AND ISNULL(RT.IsActive,0) = 1
+							AND ISNULL(RTRTM.IsActive,0) = 1
+							AND ISNULL(ROT.IsActive,0) = 1
+							AND Code = 'NONCORP'
+							
+						ORDER BY RTRTM.Amount ASC
+	END
+	ELSE
+	BEGIN			
+			SELECT
+				RTRTM.Id			,
+				RTRTM.RoomTypeId	,
+				RTRTM.RateTypeId	,
+				RTRTM.Amount		,
+				RT.RateTypeCode		,
+				RT.Description	
+			FROM RoomTypeRateTypeMapping RTRTM
+				INNER JOIN RateType RT 
+					ON RTRTM.RateTypeId = RT.Id 
+				INNER JOIN RateTypeCategory RTC
+					ON RT.RateTypeCategoryId = RTC.Id
+				INNER JOIN RoomType ROT
+					ON ROT.Id = RTRTM.RoomTypeId
+						WHERE IsWeekEndPrice = @IsShowWeekEndPrice
+							AND ISNULL(RT.IsDeleted,0) = 0
+							AND ISNULL(RTRTM.IsDeleted,0) = 0
+							AND ISNULL(ROT.IsDeleted,0) = 0
+							AND ISNULL(RT.IsActive,0) = 1
+							AND ISNULL(RTRTM.IsActive,0) = 1
+							AND ISNULL(ROT.IsActive,0) = 1
+							AND Code = 'CORP'							
+						ORDER BY RTRTM.Amount ASC
+	END			
+
+END
+
+/**************************************************************************************************************************/
+
+Name : Nilesh
+Date : 28-AUG-2018
+
+/************************************************************************************************************************ 
+	SP Name : SearchAdvanceAdditionalCharge
+	Comment : Sort by Code column 	
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchAdvanceAdditionalCharge]    Script Date: 8/28/2018 12:34:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchAdvanceAdditionalCharge]
+			@Code	= ''			
+*/
+ALTER PROCEDURE [dbo].[SearchAdvanceAdditionalCharge]
+	@Code		NVARCHAR(50)	=	NULL	,
+	@UserId		INT						
+	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET CURRENCY CONVERSION RATE : END
+	
+	SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY TRY_CAST(AC.[Code] AS BIGINT) ASC
+
+				) AS RowNum,
+				AC.[Id], 
+				AC.[Code],
+				AC.[Description],
+				ISNULL([dbo].[fnParseAmountByCurrency] (AC.[Price], @CurrencyConversionRate),0) AS [Price],				
+				AC.[CreatedOn], 
+				AC.[IsActive]
+			FROM [dbo].[AdditionalCharges] AC					
+				WHERE	ISNULL(IsActive,0)  = 1 AND ISNULL(AC.IsDeleted,0) = 0
+						AND (
+								ISNULL(@Code,'') = '' OR 
+								(AC.[Code] LIKE '%'+ @Code +'%' 
+									OR AC.[Description] LIKE '%'+ @Code +'%')
+							)
+
+						--Avoid Room Rent, Package and CheckOut
+						AND ISNULL(AC.[Code],'') NOT IN ('1000','9004', '9005')
+END
+
+/************************************************************************************************************************ 
+	Add new columns SortOrder in Nationality Table.
+***********************************************************************************************************************/ 
+
+ALTER TABLE Nationality ADD SortOrder INT NULL 
+GO
+
+/************************************************************************************************************************ 
+	SP Name : AddNationality
+	Comment : Add SortOrder Parameter
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[AddNationality]    Script Date: 8/28/2018 5:08:23 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddNationality]	
+	@Name			NVARCHAR(255)				,	
+	@Description	NVARCHAR(MAX)	=	NULL	,
+	@SortOrder		INT				=	NULL	,
+	@IsActive		BIT				=	NULL	,	
+	@CreatedBy		INT				=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[Nationality]
+           ([Id]           
+           ,[Name]		   
+		   ,[Description]
+		   ,[SortOrder]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id			   
+			   ,@Name
+			   ,@Description
+			   ,@SortOrder
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateNationality
+	Comment : Add SortOrder Parameter
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[UpdateNationality]    Script Date: 8/28/2018 5:09:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateNationality]
+	@Id				UNIQUEIDENTIFIER			,
+	@Name			NVARCHAR(255)				,	
+	@Description	NVARCHAR(MAX)	=	NULL	,
+	@SortOrder		INT				=	NULL	,
+	@IsActive		BIT				=	NULL	,	
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Nationality]
+		SET	[Name]			=	@Name		   
+		   ,[Description]	=	@Description
+		   ,[SortOrder]		=	@SortOrder
+		   ,[UpdatedBy]		=	@UpdatedBy
+		   ,[UpdatedOn]		=	GETDATE()
+		   ,[IsActive]		=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchNationality
+	Comment : Add SortOrder Parameter
+***********************************************************************************************************************/ 
+
+
+/****** Object:  StoredProcedure [dbo].[SearchNationality]    Script Date: 8/28/2018 5:10:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchNationality] '', '', 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchNationality]			
+	@Name			NVARCHAR(255)	=	NULL	,	
+	@Description	NVARCHAR(MAX)	=	NULL	,
+	@SortOrder		INT				=	NULL	,	
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempNationality
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			UNIQUEIDENTIFIER	NOT NULL		
+		,   [Name]			NVARCHAR(255)		NOT NULL	
+		,   [Description]	NVARCHAR(MAX)		NULL	
+		,	[SortOrder]		INT					NULL
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Nationality]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+								AND (@SortOrder IS NULL OR [SortOrder] = @SortOrder) 
+						)
+
+
+		INSERT INTO #tempNationality 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Description], 
+			[SortOrder],
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'asc'
+							THEN [Description] END ASC,
+						CASE WHEN @SortColumn = 'Description' and @SortDirection = 'desc'
+							THEN [Description] END DESC,
+
+						CASE WHEN @SortColumn = 'SortOrder' and @SortDirection = 'asc'
+							THEN [SortOrder] END ASC,
+						CASE WHEN @SortColumn = 'SortOrder' and @SortDirection = 'desc'
+							THEN [SortOrder] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],				
+				[Name],
+				[Description],
+				[SortOrder],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[Nationality]
+			WHERE	ISNULL(IsDeleted,0) = 0								
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%')  
+					AND (@SortOrder IS NULL OR [SortOrder] = @SortOrder) 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],			
+			temp.[Name],			
+			temp.[Description],	
+			temp.[SortOrder],		
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempNationality AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : GetNationality
+	Comment : Sort by Sort Order, Name
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetNationality]    Script Date: 8/28/2018 6:03:12 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetNationality]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	-- Temp Table : Nationality
+	CREATE TABLE #tempNationality
+	(
+			[Id]			[uniqueidentifier]	NOT NULL
+		,	[Name]			[nvarchar](255)		NULL
+		,   [Description]	[nvarchar](max)		NULL
+		,   [CreatedBy]		[int]				NULL
+		,   [CreatedOn]		[datetime]			NULL
+		,   [UpdatedBy]		[int]				NULL
+		,   [UpdatedOn]		[datetime]			NULL
+		,   [IsActive]		[bit]				NULL
+		,   [SortOrder]		[int]				NULL
+		,   [IsDeleted]		[bit]				NULL
+	)
+
+
+	-- Get Nationality Where Sort Order IS NOT NULL
+	INSERT INTO #tempNationality
+	(
+			[Id]			
+		,	[Name]			
+		,   [Description]	
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]		
+		,   [IsActive]		
+		,   [SortOrder]		
+		,   [IsDeleted]		
+	)	
+    SELECT 
+		[Id]			
+		,[Name]			
+		,[Description]	
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]		
+		,[IsActive]		
+		,[SortOrder]		
+		,[IsDeleted]	
+		FROM [dbo].[Nationality]
+			WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 AND [SortOrder] IS NOT NULL
+			ORDER BY [SortOrder], [Name]
+
+	-- Get Nationality Where Sort Order IS NULL
+	INSERT INTO #tempNationality
+	(
+			[Id]			
+		,	[Name]			
+		,   [Description]	
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]		
+		,   [IsActive]		
+		,   [SortOrder]		
+		,   [IsDeleted]		
+	)
+    SELECT 
+		[Id]			
+		,[Name]			
+		,[Description]	
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]		
+		,[IsActive]		
+		,[SortOrder]		
+		,[IsDeleted] 
+		FROM [dbo].[Nationality]
+			WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 AND [SortOrder] IS NULL
+			ORDER BY [Name]
+
+	--Select data
+	SELECT * FROM #tempNationality
+
+	--Drop temp table.
+	DROP TABLE #tempNationality
+END
+
+
+/************************************************************************************************************************ 
+	Add new columns SortOrder in Country Table.
+***********************************************************************************************************************/ 
+
+ALTER TABLE Country ADD SortOrder INT NULL 
+GO
+
+/************************************************************************************************************************ 
+	SP Name : GetCountries
+	Comment : Sort by Sort Order, Name
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetCountries]    Script Date: 8/29/2018 10:54:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetCountries]
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	-- Temp Table : Country
+	CREATE TABLE #tempCountry
+	(
+			[Id]		[int]			NOT NULL
+		,	[Code]		[nvarchar](10)	NOT NULL
+		,	[Name]		[nvarchar](255) NOT NULL
+		,	[IsActive]	[bit]			NULL
+		,	[IsDeleted] [bit]			NULL
+		,	[CreatedBy] [int]			NULL
+		,	[CreatedOn] [datetime]		NULL
+		,	[UpdatedBy] [int]			NULL
+		,	[UpdatedOn] [datetime]		NULL
+		,	[SortOrder] [int]			NULL
+	)
+
+
+	-- Get Country Where Sort Order IS NOT NULL
+	INSERT INTO #tempCountry
+	(
+			[Id]			
+		,   [Code]
+		,	[Name]			
+		,   [IsActive]		
+		,   [IsDeleted]		
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]					
+		,   [SortOrder]			
+	)	
+	SELECT
+		[Id]			
+		,[Code]
+		,[Name]			
+		,[IsActive]		
+		,[IsDeleted]		
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]					
+		,[SortOrder]	
+		FROM Country
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND ISNULL(IsActive,0) = 1
+				AND [SortOrder] IS NOT NULL
+		ORDER BY [SortOrder], [Name]
+	
+	-- Get Country Where Sort Order IS NOT NULL
+	INSERT INTO #tempCountry
+	(
+			[Id]			
+		,   [Code]
+		,	[Name]			
+		,   [IsActive]		
+		,   [IsDeleted]		
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]					
+		,   [SortOrder]			
+	)	
+	SELECT
+		[Id]			
+		,[Code]
+		,[Name]			
+		,[IsActive]		
+		,[IsDeleted]		
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]					
+		,[SortOrder]	
+		FROM Country
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND ISNULL(IsActive,0) = 1
+				AND [SortOrder] IS  NULL
+		ORDER BY [Name]
+
+	
+	--Select data
+	SELECT * FROM #tempCountry
+
+	--Drop temp table.
+	DROP TABLE #tempCountry
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : AddCountry
+	Comment : Add SortOrder Parameter
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[AddCountry]    Script Date: 8/29/2018 11:00:30 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddCountry]
+	@Code			NVARCHAR(20)				,
+	@Name			NVARCHAR(255)				,	
+	@SortOrder		INT				=	NULL	,
+	@IsActive		BIT				=	NULL	,	
+	@CreatedBy		INT				=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id INT
+	SET @Id = (SELECT ISNULL(MAX(Id),0) AS MaxId FROM Country)
+
+	SET @Id = (ISNULL(@Id,0) + 1)
+
+	INSERT INTO [dbo].[Country]
+           ([Id]
+           ,[Code]
+           ,[Name]		   
+		   ,[SortOrder]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id
+			   ,@Code
+			   ,@Name
+			   ,@SortOrder
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/************************************************************************************************************************ 
+	SP Name : UpdateCountry
+	Comment : Add SortOrder Parameter
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[UpdateCountry]    Script Date: 8/29/2018 11:01:26 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateCountry]
+	@Id				INT							,
+	@Code			NVARCHAR(20)				,
+	@Name			NVARCHAR(255)				,	
+	@SortOrder		INT				=	NULL	,
+	@IsActive		BIT				=	NULL	,	
+	@UpdatedBy		INT				=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[Country]
+		SET [Code]	=	@Code
+           ,[Name]	=	@Name	
+		   ,[SortOrder] = @SortOrder	   
+		   ,[UpdatedBy]	=	@UpdatedBy
+		   ,[UpdatedOn]	=	GETDATE()
+		   ,[IsActive]	=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+/************************************************************************************************************************ 
+	SP Name : SearchCountry
+	Comment : Add SortOrder Parameter
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[SearchCountry]    Script Date: 8/29/2018 11:02:31 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchCountry] '', '', NULL, 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchCountry]		
+	@Code			NVARCHAR(20)	=	NULL	,
+	@Name			NVARCHAR(255)	=	NULL	,	
+	@SortOrder		INT				=	NULL	,
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempCountry
+	(
+			[RowNum]		INT					NOT NULL
+		,	[Id]			INT					NOT NULL
+		,   [Code]			NVARCHAR(20)		NOT NULL
+		,   [Name]			NVARCHAR(255)		NULL	
+		,	[SortOrder]		INT					NULL	
+		,	[CreatedOn]		DATETIME			NULL
+		,   [IsActive]		BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[Country]
+						WHERE	ISNULL(IsDeleted,0) = 0
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+								AND (@SortOrder IS NULL OR [SortOrder] = @SortOrder)
+						)
+
+
+		INSERT INTO #tempCountry 
+		(
+			[RowNum], 
+			[Id], 
+			[Code], 
+			[Name], 
+			[SortOrder],
+			[CreatedOn], 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN [Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN [Code] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+
+						CASE WHEN @SortColumn = 'SortOrder' and @SortDirection = 'asc'
+							THEN [SortOrder] END ASC,
+						CASE WHEN @SortColumn = 'SortOrder' and @SortDirection = 'desc'
+							THEN [SortOrder] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],
+				[Code],
+				[Name],
+				[SortOrder],
+				[CreatedOn],
+				[IsActive]
+			FROM [dbo].[Country]
+				WHERE	ISNULL(IsDeleted,0) = 0
+						AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+						AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')
+						AND (@SortOrder IS NULL OR [SortOrder] = @SortOrder) 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[Id],
+			temp.[Code],
+			temp.[Name],	
+			temp.[SortOrder],		
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempCountry AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+/************************************************************************************************************************ 
+	SP Name : GetReservationCharges
+	Comment : Add PaymentId in output result
+***********************************************************************************************************************/ 
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 8/30/2018 12:56:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'3836abff-095a-43f8-98ea-b5c5db75bcc9'	,
+		@AdditionalChargeId		=	NULL									,
+		@UserId					=	1
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@UserId					INT					=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.UserGroupId = UG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET CURRENCY CONVERSION RATE : END
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeSource = 'AC' -- Additional  Charge				
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeSource = 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND RC.AdditionalChargeSource <> 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+	UNION
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RC.CreditCardNo, 4)) END )AS Code,
+		RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId, 4 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0					
+					AND (ISNULL(@UserId,0) = 0 OR RE.[CreatedBy] = @UserId)
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+
+	ORDER BY SortOrder
+END
+
+
+
+/***************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetCountries]    Script Date: 8/31/2018 7:59:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetCountries]
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	-- Temp Table : Country
+	CREATE TABLE #tempCountry
+	(
+			[Id]		[int]			NOT NULL
+		,	[Code]		[nvarchar](10)	NOT NULL
+		,	[Name]		[nvarchar](255) NOT NULL
+		,	[IsActive]	[bit]			NULL
+		,	[IsDeleted] [bit]			NULL
+		,	[CreatedBy] [int]			NULL
+		,	[CreatedOn] [datetime]		NULL
+		,	[UpdatedBy] [int]			NULL
+		,	[UpdatedOn] [datetime]		NULL
+		,	[SortOrder] [int]			NULL
+		,	[TempSortOrder]	[int]		NULL
+	)
+
+
+	-- Get Country Where Sort Order IS NOT NULL
+	INSERT INTO #tempCountry
+	(
+			[Id]			
+		,   [Code]
+		,	[Name]			
+		,   [IsActive]		
+		,   [IsDeleted]		
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]					
+		,   [SortOrder]		
+		,	[TempSortOrder]	
+	)	
+	SELECT
+		[Id]			
+		,[Code]
+		,[Name]			
+		,[IsActive]		
+		,[IsDeleted]		
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]					
+		,[SortOrder]	
+		,[SortOrder] AS [TempSortOrder]
+		FROM Country
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND ISNULL(IsActive,0) = 1
+				AND [SortOrder] IS NOT NULL
+		ORDER BY [SortOrder], [Name]
+	
+	-- Get Country Where Sort Order IS NOT NULL
+	INSERT INTO #tempCountry
+	(
+			[Id]			
+		,   [Code]
+		,	[Name]			
+		,   [IsActive]		
+		,   [IsDeleted]		
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]					
+		,   [SortOrder]	
+		,	[TempSortOrder]		
+	)	
+	SELECT
+		[Id]			
+		,[Code]
+		,[Name]			
+		,[IsActive]		
+		,[IsDeleted]		
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]					
+		,[SortOrder]	
+		,999999 AS [TempSortOrder]
+		FROM Country
+		WHERE	ISNULL(IsDeleted,0) = 0 
+				AND ISNULL(IsActive,0) = 1
+				AND [SortOrder] IS  NULL
+		ORDER BY [Name]
+
+	
+	--Select data
+	SELECT * FROM #tempCountry  ORDER BY [TempSortOrder], [Name]
+
+	--Drop temp table.
+	DROP TABLE #tempCountry
+END
+
+
+
+/***************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetNationality]    Script Date: 8/31/2018 7:55:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetNationality]	
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	-- Temp Table : Nationality
+	CREATE TABLE #tempNationality
+	(
+			[Id]			[uniqueidentifier]	NOT NULL
+		,	[Name]			[nvarchar](255)		NULL
+		,   [Description]	[nvarchar](max)		NULL
+		,   [CreatedBy]		[int]				NULL
+		,   [CreatedOn]		[datetime]			NULL
+		,   [UpdatedBy]		[int]				NULL
+		,   [UpdatedOn]		[datetime]			NULL
+		,   [IsActive]		[bit]				NULL
+		,   [SortOrder]		[int]				NULL
+		,   [IsDeleted]		[bit]				NULL
+		,	[TempSortOrder]	[int]				NULL
+	)
+
+
+	-- Get Nationality Where Sort Order IS NOT NULL
+	INSERT INTO #tempNationality
+	(
+			[Id]			
+		,	[Name]			
+		,   [Description]	
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]		
+		,   [IsActive]		
+		,   [SortOrder]		
+		,   [IsDeleted]	
+		,	[TempSortOrder]
+	)	
+    SELECT 
+		[Id]			
+		,[Name]			
+		,[Description]	
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]		
+		,[IsActive]		
+		,[SortOrder]		
+		,[IsDeleted]	
+		,[SortOrder] AS [TempSortOrder]
+		FROM [dbo].[Nationality]
+			WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 AND [SortOrder] IS NOT NULL
+			ORDER BY [SortOrder], [Name]
+
+	-- Get Nationality Where Sort Order IS NULL
+	INSERT INTO #tempNationality
+	(
+			[Id]			
+		,	[Name]			
+		,   [Description]	
+		,   [CreatedBy]		
+		,   [CreatedOn]		
+		,   [UpdatedBy]		
+		,   [UpdatedOn]		
+		,   [IsActive]		
+		,   [SortOrder]		
+		,   [IsDeleted]		
+		,	[TempSortOrder]
+	)
+    SELECT 
+		[Id]			
+		,[Name]			
+		,[Description]	
+		,[CreatedBy]		
+		,[CreatedOn]		
+		,[UpdatedBy]		
+		,[UpdatedOn]		
+		,[IsActive]		
+		,[SortOrder]		
+		,[IsDeleted] 
+		,999999 AS [TempSortOrder]
+		FROM [dbo].[Nationality]
+			WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 AND [SortOrder] IS NULL
+			ORDER BY [Name]
+
+	--Select data
+	SELECT * FROM #tempNationality ORDER BY [TempSortOrder], [Name]
+
+	--Drop temp table.
+	DROP TABLE #tempNationality
+END
+
+

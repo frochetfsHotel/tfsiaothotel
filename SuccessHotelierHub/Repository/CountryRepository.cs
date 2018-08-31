@@ -44,6 +44,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Code", Value = country.Code },
                     new SqlParameter { ParameterName = "@Name", Value = country.Name },
+                    new SqlParameter { ParameterName = "@SortOrder", Value = country.SortOrder },
                     new SqlParameter { ParameterName = "@IsActive", Value = country.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = country.CreatedBy }
                 };
@@ -62,6 +63,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Id", Value = country.Id },
                     new SqlParameter { ParameterName = "@Code", Value = country.Code },
                     new SqlParameter { ParameterName = "@Name", Value = country.Name },
+                    new SqlParameter { ParameterName = "@SortOrder", Value = country.SortOrder },
                     new SqlParameter { ParameterName = "@IsActive", Value = country.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = country.UpdatedBy }
                 };
@@ -92,6 +94,7 @@ namespace SuccessHotelierHub.Repository
                 {
                     new SqlParameter { ParameterName = "@Code", Value = model.Code },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@SortOrder", Value = model.SortOrder },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

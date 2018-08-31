@@ -16,6 +16,9 @@ namespace SuccessHotelierHub.Models
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        [DisplayName("Sort Number")]
+        public int? SortOrder { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

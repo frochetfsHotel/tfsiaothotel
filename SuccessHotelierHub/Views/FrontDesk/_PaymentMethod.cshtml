@@ -76,7 +76,7 @@
         </div>
         <div class="col-md-5 divCreditCardInfo">
             @Html.LabelFor(m => m.CreditCardNo)
-            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
+            @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16" })
         </div>
         <div class="col-md-3 divCreditCardInfo divCardExpiryDate">
             @Html.LabelFor(m => m.CardExpiryDate)
@@ -222,7 +222,7 @@
         }
 
         if ($("form#frmCheckInPayment").valid() == false) {
-            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
             return false;
         }
 

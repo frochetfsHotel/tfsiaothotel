@@ -285,6 +285,7 @@
     <Compile Include="Models\GuestRegistrationCardVM.cs" />
     <Compile Include="Models\HolidayVM.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\InterimBillInfoVM.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MarketVM.cs" />
     <Compile Include="Models\NationalityVM.cs" />
@@ -2177,6 +2178,7 @@
     <Content Include="Views\Company\Edit.cshtml" />
     <Content Include="Views\Company\List.cshtml" />
     <Content Include="Views\Report\DailyCashSheet.cshtml" />
+    <Content Include="Views\Cashiering\PreviewInterimBill.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

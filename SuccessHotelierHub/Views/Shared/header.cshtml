@@ -18,14 +18,14 @@
 
         <ul class="nav navbar-nav">
             <li class="active text-center topMenu" id="menuDashboard">
-                <a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');">
+                <a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');" title="Dashboard">
                     <i class="fa fa-th font_20 m-b-xs"></i><br /> <span class="span_none">Dashboard</span> <span class="sr-only">(current)</span>
                 </a>
             </li>
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuReservation">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('Reservation','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('Reservation','@Url.Content("~/Home/Default")');" title="Reservations">
                         <i class="fa fa-ticket font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reservations</span>
                     </a>
                 </li>
@@ -33,7 +33,7 @@
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuFrontDesk">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('FrontDesk','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('FrontDesk','@Url.Content("~/Home/Default")');" title="Front Desk">
                         <i class="fa fa-building-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Front Desk</span>
                     </a>
                 </li>
@@ -41,7 +41,7 @@
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuCashiering">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('Cashiering','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('Cashiering','@Url.Content("~/Home/Default")');" title="Cashiering">
                         <i class="fa fa-money font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Cashiering</span>
                     </a>
                 </li>
@@ -49,7 +49,7 @@
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuEndOfDayScreen">
-                    <a href="javascript:void(0); " onclick="setCurrentMenu('EndOfDay','@Url.Content("~/Report/DailyCashSheet")');">
+                    <a href="javascript:void(0); " onclick="setCurrentMenu('EndOfDay','@Url.Content("~/Report/DailyCashSheet")');" title="End Of Day">
                         <i class="fa fa-clock-o font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">End Of Day</span>
                     </a>
                 </li>
@@ -57,7 +57,7 @@
             @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("STUDENT"))
             {
                 <li class="text-center topMenu" id="menuReportsScreen">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('ReportsScreen','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('ReportsScreen','@Url.Content("~/Home/Default")');" title="Reports">
                         <i class="fa fa-file-text font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Reports</span>
                     </a>
                 </li>
@@ -65,7 +65,7 @@
             @if (LogInManager.HasRights("ADMIN"))
             {
                 <li class="text-center topMenu" id="menuMasterScreen">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('MasterScreen','@Url.Content("~/Home/Default")');" title="Master Screens">
                         <i class="fa fa-cc-mastercard font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Master Screens</span>
                     </a>
                 </li>
@@ -73,7 +73,7 @@
             @if (LogInManager.HasRights("TUTOR"))
             {
                 <li class="text-center topMenu" id="menuManageStudents">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('ManageStudents','@Url.Content("~/Home/Default")');">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('ManageStudents','@Url.Content("~/Home/Default")');" title="Manage Students">
                         <i class="fa fa-address-book font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Manage Students</span>
                     </a>
                 </li>
@@ -85,7 +85,7 @@
             <ul class="nav navbar-nav">
                 <!-- User Account: style can be found in dropdown.less -->
                 <li class="dropdown user user-menu">
-                    <a href="@Url.Action("SignOut","Account")" class="dropdown-toggle p-22">
+                    <a href="@Url.Action("SignOut","Account")" class="dropdown-toggle p-22" title="Logout">
                         <i class="fa fa-sign-out"></i>
                         <span class="hidden_xs">Logout</span>
                     </a>

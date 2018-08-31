@@ -35,15 +35,19 @@
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Code)
                             @Html.TextBoxFor(m => m.Code, new { @class = "form-control", placeholder = "Code" })
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
-                        <div class="col-md-4 form-group mt_25">
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.SortOrder)
+                            @Html.TextBoxFor(m => m.SortOrder, new { @class = "form-control", placeholder = "Sort Number", onkeydown = "onlyDigits(event)" })
+                        </div>
+                        <div class="col-md-3 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchCountry()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearCountry()">Clear</button>
                         </div>
@@ -63,10 +67,11 @@
                             <thead>
                                 <tr>
                                     <th class="width20"></th>
-                                    <th>Code</th>
-                                    <th>Name</th>                                    
-                                    <th>Status</th>
-                                    <th class="width85">Action</th>
+                                    <th class="width_20">Code</th>
+                                    <th class="width_30">Name</th>  
+                                    <th class="width_10">Sort #</th>                                  
+                                    <th class="width_15">Status</th>
+                                    <th class="width_25">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -101,10 +106,12 @@
     function SearchCountryParameters(d) {
         var code = $('#Code').val();
         var name = $('#Name').val();
+        var sortOrder = $('#SortOrder').val();
 
         d.PageNum = currentPage;
         d.Code = code;
         d.Name = name;
+        d.SortOrder = sortOrder;
     }
 
     function CountryGridDataBound(response) {
@@ -197,6 +204,11 @@
             },
             {
                 targets: 3,
+                data: "SortOrder",
+                orderable: true
+            },
+            {
+                targets: 4,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -209,7 +221,7 @@
                 }
             },
             {
-                targets: 4,
+                targets: 5,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -242,6 +254,7 @@
     function clearCountry() {
         $('#Code').val('');
         $('#Name').val('');
+        $('#SortOrder').val('');
 
         searchCountry();
     }

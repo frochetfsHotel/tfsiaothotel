@@ -29,16 +29,20 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Name, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-4 form-group">
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Description)
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
-                    <div class="col-md-4 form-group m-t-lg">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.SortOrder)
+                        @Html.TextBoxFor(m => m.SortOrder, new { @class = "form-control", placeholder = "Sort Number", onkeydown = "onlyDigits(event)" })
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
                             @Html.CheckBoxFor(m => m.IsActive)
@@ -63,7 +67,7 @@
 
 
         if ($("#frmNationality").valid() == false) {
-            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
             blnValid = false;
         }
 

@@ -109,7 +109,7 @@ function showToaster(message, toastrType) {
         toastr.success(ToasterTitle.SUCCESS, message);
     }
     else if (toastrType == ToasterType.ERROR) {
-        toastr.error(ToasterTitle.ERROR, message);
+        toastr.error(message);
     }
     else if (toastrType == ToasterType.INFO) {
         toastr.info(ToasterTitle.INFO, message);
@@ -615,6 +615,16 @@ function IsValidCreditCardNo(number) {
             return false;
         }
         return true;
+    }
+    return false;
+}
+
+function IsValidCVVNo(number) {
+    if (!IsNullOrEmpty(number)) {
+        if (number.length == 3) {
+            return true;
+        }
+        return false;
     }
     return false;
 }

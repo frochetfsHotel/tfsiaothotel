@@ -30,7 +30,25 @@
     {
         strRate = string.Format("{0:0.00}", Model.Rate.Value);
     }
-    
+
+    #region Reservation Type
+    //Reservation Type List
+    var reservationTypeList = (List<SelectListItem>)ViewBag.ReservationTypeList;
+    var GuranteedReservationTypeId = "";
+    var NonGuranteedReservationTypeId = "";
+    if (reservationTypeList != null && reservationTypeList.Count > 0)
+    {
+        GuranteedReservationTypeId = reservationTypeList.Where(i => i.Text == "Guarantee Type").FirstOrDefault().Value;
+        NonGuranteedReservationTypeId = reservationTypeList.Where(i => i.Text == "Non-Guaranteed").FirstOrDefault().Value;
+
+        //Default Reservation Type = "Guarantee Type
+        if (Model.ReservationTypeId.HasValue == false && !string.IsNullOrWhiteSpace(GuranteedReservationTypeId))
+        {
+            Model.ReservationTypeId = Guid.Parse(GuranteedReservationTypeId);
+        }
+    }
+    #endregion
+
 }
 
 
@@ -229,7 +247,7 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16" })
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
@@ -238,7 +256,7 @@
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
-                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", minlength = "3", maxlength = "4" })
+                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "3" })
                         @Html.ValidationMessageFor(m => m.CVVNo, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -475,7 +493,7 @@
         }
 
         if ($("#frmBulkReservation").valid() == false) {
-            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
             blnValid = false;
         }
 
@@ -636,11 +654,17 @@
                 $('form#frmBulkReservation label[for="CreditCardNo"]').removeClass("label-bold");
                 $('form#frmBulkReservation label[for="CardExpiryDate"]').removeClass("label-bold");
                 $('form#frmBulkReservation label[for="CVVNo"]').removeClass("label-bold");
+
+                //Set Reservation Type = 'Non-Guaranteed'
+                $("form#frmBulkReservation #ReservationTypeId").val('@NonGuranteedReservationTypeId');
             } else {
                 //Set Label Bold.
                 $('form#frmBulkReservation label[for="CreditCardNo"]').addClass("label-bold");
                 $('form#frmBulkReservation label[for="CardExpiryDate"]').addClass("label-bold");
                 $('form#frmBulkReservation label[for="CVVNo"]').addClass("label-bold");
+
+                //Set Reservation Type = 'Guarantee Type'
+                $("form#frmBulkReservation #ReservationTypeId").val('@GuranteedReservationTypeId');
             }
         }
 
@@ -698,7 +722,7 @@
                             var result = response.data;
 
                             if (!IsNullOrEmpty(result)) {
-                               
+
                                 var optionHtml = "";
                                 optionHtml += "<option value=''>--Select Room--</option>";
 
@@ -718,7 +742,7 @@
     }
 
     function RoomChange() {
-        if (!IsNullOrEmpty($('form#frmBulkReservation #RoomId').val())) {            
+        if (!IsNullOrEmpty($('form#frmBulkReservation #RoomId').val())) {
             var roomNo = $('form#frmBulkReservation #RoomId option:selected').text();
 
             $('form#frmBulkReservation #RoomNo').val(roomNo);

@@ -72,5 +72,17 @@ namespace SuccessHotelierHub.Models
 
         public List<ReservationChargeVM> Transactions { get; set; }
 
+        [DisplayName("Total Amount")]
+        public double? TotalAmount { get; set; }
+
+        [DisplayName("Total Additional Charge Amount")]
+        public double? TotalAdditionalChargeAmount { get; set; }
+
+        [DisplayName("Total Payable Amount")]
+        public double? TotalPayableAmount { get; set; }
+
+        [DisplayName("Total Paid Amount")]
+        public double? TotalPaidAmount { get; set; }
+
     }
 }

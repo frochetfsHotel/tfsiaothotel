@@ -898,6 +898,9 @@ namespace SuccessHotelierHub.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        [DisplayName("Sort Number")]
+        public int? SortOrder { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -908,6 +911,7 @@ namespace SuccessHotelierHub.Models
         public int Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public int? SortOrder { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
@@ -1009,6 +1013,9 @@ namespace SuccessHotelierHub.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
+        [DisplayName("Sort Number")]
+        public int? SortOrder { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -1019,6 +1026,7 @@ namespace SuccessHotelierHub.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public int? SortOrder { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }

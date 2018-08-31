@@ -52,6 +52,17 @@ namespace SuccessHotelierHub.Controllers
             var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
+            var paymentMethodList = new SelectList(
+                     paymentMethodRepository.GetPaymentMethods()
+                     .Select(
+                         m => new SelectListItem()
+                         {
+                             Value = m.Id.ToString(),
+                             Text = (m.Code + " - " + m.Name)
+                         }
+                ), "Value", "Text").ToList();
+            ViewBag.PaymentMethodList = paymentMethodList;
+
             #region Record Activity Log
             RecordActivityLog.RecordActivity(Pages.SEARCH_GUESTS, "Goes to search guest page.");
             #endregion
@@ -247,7 +258,36 @@ namespace SuccessHotelierHub.Controllers
                     //model.Status = "DUE OUT";
                 }
 
-                model.Transactions = transactions;
+                if (transactions != null && transactions.Count > 0)
+                {
+                    //Total Amount
+                    var totalAmount = transactions.Where(m => m.PaymentMethodId.HasValue == false).Sum(m => m.Amount);
+
+                    totalAmount = totalAmount.HasValue ? Math.Round(totalAmount.Value, 2) : 0;
+
+                    model.TotalAmount = totalAmount;
+
+                    //Total Additional Charge Amount (Other than Room Rent)
+                    var totalAdditionalChargeAmount = transactions.Where(m => m.PaymentMethodId.HasValue == false && m.Code != "1000").Sum(m => m.Amount);
+
+                    totalAdditionalChargeAmount = totalAdditionalChargeAmount.HasValue ? Math.Round(totalAdditionalChargeAmount.Value, 2) : 0;
+
+                    model.TotalAdditionalChargeAmount = totalAdditionalChargeAmount;
+
+                    //Total Paid Amount
+                    var totalPaidAmount = transactions.Where(m => m.PaymentMethodId.HasValue == true).Sum(m => m.Amount);
+
+                    totalPaidAmount = totalPaidAmount.HasValue ? Math.Abs(Math.Round(totalPaidAmount.Value, 2)) : 0;
+
+                    model.TotalPaidAmount = totalPaidAmount;
+
+                    //Total Payable Amount.
+                    model.TotalPayableAmount = Math.Round(((double)(totalAmount - totalPaidAmount)),2);
+
+
+                    var charges = transactions.Where(m => m.PaymentMethodId.HasValue == false).ToList();
+                    model.Transactions = charges;
+                }
 
 
                 return Json(new
@@ -596,8 +636,7 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 #region Reservation Charges
-
-                //var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
+                
                 var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
                 #endregion
@@ -1066,7 +1105,6 @@ namespace SuccessHotelierHub.Controllers
 
                     #region Reservation Charges
 
-                    //var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, null);
                     var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, reservation.CreatedBy);
 
                     #endregion
@@ -1427,9 +1465,10 @@ namespace SuccessHotelierHub.Controllers
 
                         foreach (var item in model)
                         {
-                            totalAmount = item.Amount != 0 ? item.Amount : 0;
+                            totalAmount = totalAmount + (item.Amount != 0 ? item.Amount : 0);
 
-                            totalAmount = CurrencyManager.ConvertAmountToBaseCurrency(totalAmount, LogInManager.CurrencyCode);
+                            var amount = item.Amount;
+                            amount = CurrencyManager.ConvertAmountToBaseCurrency(amount, LogInManager.CurrencyCode);
 
                             ReservationChargeVM reservationCharge = new ReservationChargeVM();
                             reservationCharge.ReservationId = reservation.Id;
@@ -1441,7 +1480,7 @@ namespace SuccessHotelierHub.Controllers
                             reservationCharge.Code = checkOutCharge.Code;
                             reservationCharge.Description = item.PaymentMethod;
                             reservationCharge.TransactionDate = item.CheckOutDate.Value;
-                            reservationCharge.Amount = -(totalAmount);
+                            reservationCharge.Amount = -(amount);
                             reservationCharge.Qty = 1;
                             reservationCharge.IsActive = true;
                             reservationCharge.CardExpiryDate = item.CardExpiryDate;
@@ -1453,6 +1492,9 @@ namespace SuccessHotelierHub.Controllers
                             reservationChargeRepository.AddReservationCharges(reservationCharge);
 
                         }
+
+                        totalAmount = CurrencyManager.ConvertAmountToBaseCurrency(totalAmount, LogInManager.CurrencyCode);
+
                         #endregion
 
                         #region Update Room Occupied Flag
@@ -1531,33 +1573,20 @@ namespace SuccessHotelierHub.Controllers
 
                         #endregion
 
-                        #region Update Reservation
-                        foreach (var item in model)
+                        #region Update Reservation  
+
+                        //Update Total Balance.
+                        if (totalAmount > reservation.GuestBalance)
                         {
-                            reservation.PaymentMethodId = item.PaymentMethodId;
-                            //reservation.CreditCardNo = model.CreditCardNo;
-                            if (!string.IsNullOrWhiteSpace(item.CreditCardNo))
-                            {
-                                reservation.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(item.CreditCardNo);
-                            }
-                            reservation.CardExpiryDate = item.CardExpiryDate;
-
-                            //Replace Departure date with  check out date.
-                            //reservation.DepartureDate = model.CheckOutDate.Value;
-
-                            //Update Total Balance.
-                            if (totalAmount > reservation.GuestBalance)
-                            {
-                                reservation.GuestBalance = 0;
-                            }
-                            else
-                            {
-                                reservation.GuestBalance -= totalAmount;
-                            }
-
-                            reservation.UpdatedBy = LogInManager.LoggedInUserId;
-                            reservationRepository.UpdateReservation(reservation);
+                            reservation.GuestBalance = 0;
                         }
+                        else
+                        {
+                            reservation.GuestBalance -= totalAmount;
+                        }
+
+                        reservation.UpdatedBy = LogInManager.LoggedInUserId;
+                        reservationRepository.UpdateReservation(reservation);
 
                         #endregion
 
@@ -1578,8 +1607,6 @@ namespace SuccessHotelierHub.Controllers
                         #endregion                       
                     }
                 }
-
-
             }
             return Json(new
             {
@@ -1588,5 +1615,572 @@ namespace SuccessHotelierHub.Controllers
                 IsSuccess = true
             }, JsonRequestBehavior.AllowGet);
         }
+
+
+        #region Interim Bill
+
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
+        [HttpPost]
+        public ActionResult GetInterimBillInfo(Guid reservationId)
+        {
+            try
+            {
+                InterimBillInfoVM model = new InterimBillInfoVM();
+
+                model = this.GetInterimBillDetails(reservationId);                
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = model
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetInterimBillInfo");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        private InterimBillInfoVM GetInterimBillDetails(Guid reservationId)
+        {
+            var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
+
+
+            #region Reservation Charges
+
+            var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
+
+            #endregion
+
+            #region Room Mapping
+
+            //Get Room Mapping
+            var selectedRooms = roomRepository.GetReservationRoomMapping(reservationId, null, LogInManager.LoggedInUserId);
+            var roomIds = string.Empty;
+            var roomNumbers = string.Empty;
+
+            if (selectedRooms != null && selectedRooms.Count > 0)
+            {
+                foreach (var room in selectedRooms)
+                {
+                    roomIds += string.Format("{0},", room.RoomId);
+                    roomNumbers += string.Format("{0}, ", room.RoomNo);
+                }
+
+                if (!string.IsNullOrWhiteSpace(roomIds))
+                {
+                    //Remove Last Comma.
+                    roomIds = Utility.Utility.RemoveLastCharcter(roomIds, ',');
+                }
+
+                if (!string.IsNullOrWhiteSpace(roomNumbers))
+                {
+                    //Remove Last Comma.
+                    roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                }
+            }
+
+            #endregion
+
+            InterimBillInfoVM model = new InterimBillInfoVM();
+
+            model.ReservationId = reservation.Id;
+            model.ProfileId = reservation.ProfileId;
+            model.Name = (reservation.LastName + " " + reservation.FirstName).Trim();
+
+            model.RoomNumbers = roomNumbers;
+            model.RoomIds = roomIds;
+            model.RoomTypeId = reservation.RoomTypeId;
+
+            model.Balance = CurrencyManager.ParseAmountToUserCurrency(reservation.GuestBalance, LogInManager.CurrencyCode);
+            model.ArrivalDate = reservation.ArrivalDate;
+            model.DepartureDate = reservation.DepartureDate;
+            model.CheckOutTime = reservation.ETA;
+
+            model.RoomRent = CurrencyManager.ParseAmountToUserCurrency(reservation.TotalPrice, LogInManager.CurrencyCode);
+
+            #region Payment Method
+            if (reservation.PaymentMethodId.HasValue)
+            {
+                var paymentMethod = paymentMethodRepository.GetPaymentMethodById(reservation.PaymentMethodId.Value).FirstOrDefault();
+
+                if (paymentMethod != null)
+                {
+                    model.PaymentMethodId = paymentMethod.Id;
+                    model.PaymentMethodCode = paymentMethod.Code;
+                    model.PaymentMethodName = paymentMethod.Name;
+                }
+            }
+            #endregion
+
+            if (reservation.IsCheckOut)
+            {
+                model.IsCheckedOut = reservation.IsCheckOut;
+            }
+            else
+            {
+                model.IsCheckedOut = false;
+            }
+
+
+            if (transactions != null && transactions.Count > 0)
+            {
+                //Total Amount
+                var totalAmount = transactions.Where(m => m.PaymentMethodId.HasValue == false).Sum(m => m.Amount);
+
+                totalAmount = totalAmount.HasValue ? Math.Round(totalAmount.Value, 2) : 0;
+
+                model.TotalAmount = totalAmount;
+
+                //Total Paid Amount
+                var totalPaidAmount = transactions.Where(m => m.PaymentMethodId.HasValue == true).Sum(m => m.Amount);
+
+                totalPaidAmount = totalPaidAmount.HasValue ? Math.Abs(Math.Round(totalPaidAmount.Value, 2)) : 0;
+
+                model.TotalPaidAmount = totalPaidAmount;
+
+                //Total Payable Amount.
+                model.TotalPayableAmount = Math.Round(((double)(totalAmount - totalPaidAmount)), 2);
+            }
+
+            return model;
+        }
+
+        [HttpPost]
+        public ActionResult PayInterimBill(List<InterimBillInfoVM> model)
+        {
+            try
+            {
+                if (model != null && model.Count > 0)
+                {
+                    CheckInCheckOutVM checkOut = new CheckInCheckOutVM();
+
+                    var reservationId = model[0].ReservationId;
+                    var profileId = model[0].ProfileId;
+                    var roomIds = model[0].RoomIds;
+                    var totalPayableAmount = model[0].TotalPayableAmount;
+
+                    var checkInDetails = checkInCheckOutRepository.GetCheckInDetails(reservationId, profileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+                    var checkOutId = "";
+
+                    if (checkInDetails != null)
+                    {
+                        double totalAmount = 0;
+                        if (model != null && model.Count > 0)
+                        {
+                            var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                            if (reservation != null)
+                            {                                   
+                                var arrivalDate = reservation.ArrivalDate;
+                                var departureDate = reservation.DepartureDate;
+                                var checkOutTime = reservation.ETA;
+
+                                #region Add Entry for Minus All the Expenses
+                                var checkOutCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
+
+                                foreach (var item in model)
+                                {
+                                    totalAmount = totalAmount + (item.Amount != 0 ? item.Amount : 0);
+
+                                    var amount = item.Amount;
+                                    amount = CurrencyManager.ConvertAmountToBaseCurrency(amount, LogInManager.CurrencyCode);
+
+                                    ReservationChargeVM reservationCharge = new ReservationChargeVM();
+                                    reservationCharge.ReservationId = reservation.Id;
+                                    reservationCharge.AdditionalChargeId = checkOutCharge.Id;
+                                    reservationCharge.PaymentMethodId = item.PaymentMethodId;
+                                    reservationCharge.CVVNo = item.CVVNo;
+                                    reservationCharge.IsDummyReservationPayment = false;
+                                    reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
+                                    reservationCharge.Code = checkOutCharge.Code;
+                                    reservationCharge.Description = item.PaymentMethodName;
+                                    reservationCharge.TransactionDate = departureDate;
+                                    reservationCharge.Amount = -(amount);
+                                    reservationCharge.Qty = 1;
+                                    reservationCharge.IsActive = true;
+                                    reservationCharge.CardExpiryDate = item.CardExpiryDate;
+
+                                    //Credit Card No.
+                                    reservationCharge.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(item.CreditCardNo);
+
+                                    reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
+                                    reservationChargeRepository.AddReservationCharges(reservationCharge);
+                                }
+
+                                double dblTotalAmount = totalAmount;
+                                totalAmount = CurrencyManager.ConvertAmountToBaseCurrency(totalAmount, LogInManager.CurrencyCode);
+
+                                #endregion
+
+                                #region Update Reservation  
+
+                                //Update Total Balance.
+                                if (totalAmount > reservation.GuestBalance)
+                                {
+                                    reservation.GuestBalance = 0;
+                                }
+                                else
+                                {
+                                    reservation.GuestBalance -= totalAmount;
+                                }
+
+                                reservation.UpdatedBy = LogInManager.LoggedInUserId;
+                                reservationRepository.UpdateReservation(reservation);
+
+                                #endregion
+
+                                //If full payment done.
+                                if (dblTotalAmount == totalPayableAmount)
+                                {
+                                    #region Update Room Occupied Flag
+
+
+                                    if (!string.IsNullOrWhiteSpace(roomIds))
+                                    {
+                                        var roomIdsArr = roomIds.Split(',');
+
+                                        if (roomIdsArr != null)
+                                        {
+                                            //Remove Duplication.
+                                            roomIdsArr = roomIdsArr.Distinct().ToArray();
+
+                                            foreach (var item in roomIdsArr)
+                                            {
+                                                ////Update Room Occupied Flag.
+                                                //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
+
+                                                ////Update Room Status DIRTY to CLEAN.
+                                                //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
+
+                                                #region Add Reservation Log
+
+                                                var lstReservationLog = reservationLogRepository.GetReservationLogDetails(reservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                                                if (lstReservationLog != null)
+                                                {
+                                                    lstReservationLog.ReservationId = reservationId;
+                                                    lstReservationLog.ProfileId = profileId;
+                                                    lstReservationLog.RoomId = Guid.Parse(item.Trim());
+                                                    lstReservationLog.CheckInDate = arrivalDate;
+                                                    lstReservationLog.CheckOutDate = departureDate;
+                                                    lstReservationLog.CheckOutTime = checkOutTime;
+                                                    lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                                    lstReservationLog.IsActive = true;
+                                                    lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                                    reservationLogRepository.UpdateReservationLog(lstReservationLog);
+                                                }
+                                                else
+                                                {
+                                                    ReservationLogVM reservationLog = new ReservationLogVM();
+                                                    reservationLog.ReservationId = reservationId;
+                                                    reservationLog.ProfileId = profileId;
+                                                    reservationLog.RoomId = Guid.Parse(item.Trim());
+                                                    reservationLog.CheckInDate = arrivalDate;
+                                                    reservationLog.CheckOutDate = departureDate;
+                                                    reservationLog.CheckOutTime = checkOutTime;
+                                                    reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                                    reservationLog.IsActive = true;
+                                                    reservationLog.CreatedBy = LogInManager.LoggedInUserId;
+
+                                                    reservationLogRepository.AddReservationLog(reservationLog);
+                                                }
+
+                                                #endregion
+                                            }
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region Update Check Out Details
+
+                                    checkOut.Id = checkInDetails.Id;
+                                    checkOut.ReservationId = reservationId;
+                                    checkOut.ProfileId = profileId;
+                                    checkOut.CheckOutDate = departureDate.Value;
+                                    checkOut.CheckOutTime = checkOutTime;
+                                    checkOut.CheckOutReference = string.Empty;
+                                    checkOut.IsActive = true;
+                                    checkOut.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                    checkOutId = checkInCheckOutRepository.UpdateCheckOutDetail(checkOut);
+
+                                    #endregion
+
+                                    #region Update Reservation Check Out Flag
+
+                                    reservationRepository.UpdateReservationCheckOutFlag(reservationId, true, LogInManager.LoggedInUserId);
+
+                                    #endregion
+
+                                    #region Update Reservation Status
+
+                                    reservationRepository.UpdateReservationStatus(reservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
+
+                                    #endregion
+                                }
+
+                                #region Record Activity Log
+                                RecordActivityLog.RecordActivity(Pages.SPLIT_PAYMENT, string.Format("Interim Bill Payment added and checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                                #endregion
+                            }
+                        }
+                    }
+
+                    InterimBillInfoVM interimBillInfo = new InterimBillInfoVM();
+
+                    interimBillInfo = this.GetInterimBillDetails(reservationId);
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = interimBillInfo
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { IsSuccess = false, errorMessage = "No payment data found." });
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "PayInterimBill");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,STUDENT")]
+        public ActionResult PreviewInterimBill(Guid? Id)
+        {
+            if (Id == null)
+            {
+                return HttpNotFound();
+            }
+
+            BillingTransactionReportVM model = new BillingTransactionReportVM();
+
+            var reservation = reservationRepository.GetReservationById(Id.Value, null).FirstOrDefault();
+
+            if (reservation != null)
+            {
+                #region Room Mapping
+
+                //Get Room Mapping
+                var selectedRooms = roomRepository.GetReservationRoomMapping(Id, null, null);
+                var roomIds = string.Empty;
+                var roomNumbers = string.Empty;
+
+                if (selectedRooms != null && selectedRooms.Count > 0)
+                {
+                    foreach (var room in selectedRooms)
+                    {
+                        roomIds += string.Format("{0},", room.RoomId);
+                        roomNumbers += string.Format("{0}, ", room.RoomNo);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(roomNumbers))
+                    {
+                        //Remove Last Comma.
+                        roomNumbers = Utility.Utility.RemoveLastCharcter(roomNumbers, ',');
+                    }
+                }
+                #endregion
+
+                #region Reservation Charges
+                
+                var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                #endregion
+
+                #region Profile
+
+                var profile = new IndividualProfileVM();
+
+                if (reservation.ProfileId.HasValue)
+                    profile = profileRepository.GetIndividualProfileById(reservation.ProfileId.Value, null).FirstOrDefault();
+
+                #endregion
+
+                #region Title 
+
+                var title = new TitleVM();
+                if (profile != null && profile.TitleId.HasValue)
+                    title = titleRepository.GetTitlebyId(profile.TitleId.Value).FirstOrDefault();
+
+                #endregion
+
+                double total = 0;
+                double roomRent = 0;
+                double totalBalance = 0;
+                double balanceDue = 0;
+
+                model.Id = reservation.Id;
+                model.ConfirmationNo = reservation.ConfirmationNumber;
+                model.ProfileId = reservation.ProfileId;
+                model.Title = title.Title;
+                model.Name = (profile.FirstName + ' ' + profile.LastName);
+
+                #region Fetch Address
+                var address = "";
+                if (!string.IsNullOrWhiteSpace(profile.Address))
+                {
+                    address = profile.Address.Replace(",", Delimeter.BREAKLINE);
+                }
+                else
+                {
+                    address = profile.HomeAddress.Replace(",", Delimeter.BREAKLINE);
+                }
+                
+                model.Address = address;
+
+                if (!string.IsNullOrWhiteSpace(profile.CityName))
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.CityName) : profile.CityName;                 
+                }
+
+                if (!string.IsNullOrWhiteSpace(profile.StateName))
+                {
+                    model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + profile.StateName) : profile.StateName;                    
+                }
+
+                if (profile.CountryId.HasValue)
+                {
+                    var country = countryRepository.GetCountryById(profile.CountryId.Value).FirstOrDefault();
+
+                    if (country != null)
+                    {
+                        model.Address += !string.IsNullOrWhiteSpace(model.Address) ? (Delimeter.SPACE + Delimeter.BREAKLINE + country.Name) : country.Name;
+                        //model.Country = country.Name;
+                    }
+                }
+                #endregion
+
+
+                model.RoomNumer = roomNumbers;
+                model.FolioNumber = Convert.ToString(reservation.FolioNumber);
+                model.CashierNumber = LogInManager.CashierNumber;
+                model.PageNumber = "1";
+                model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
+                model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
+                model.GSTRegistrationNumber = "";
+
+                model.VATTax = 9; //Default 9%.
+                model.VATTax2 = 23;
+
+                model.Transactions = transactions;
+
+                //Get Amount.
+
+                var checkoutAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault(); //Check out
+                var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault(); //Room Rent
+
+                double checkOutPaidPayment = 0;
+                double vat_9 = 0;
+                double vat_23 = 0;
+                foreach (var item in transactions)
+                {
+                    int qty = 1;
+
+                    if (item.Qty.HasValue)
+                        qty = item.Qty.Value;
+
+                    if (checkoutAdditionalCharge != null && checkoutAdditionalCharge.Id == item.AdditionalChargeId.Value)  //Check out
+                    {
+                        checkOutPaidPayment += item.Amount.HasValue ? item.Amount.Value : 0;
+                    }
+                    else
+                    {
+                        totalBalance += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+
+                    //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
+
+                    bool blnIsBreakFastCharge = false;
+
+                    if (item.AdditionalChargeId.HasValue && (item.Code != AdditionalChargeCode.ROOM_RENT && item.AdditionalChargeId.Value == checkoutAdditionalCharge.Id))
+                    {
+                        var breakfastChargeCategory = additionalChargeRepository.IsBrekFastCharges(item.AdditionalChargeId.Value).FirstOrDefault();
+
+                        if (breakfastChargeCategory != null)
+                        {
+                            blnIsBreakFastCharge = true;
+                        }
+                    }
+
+                    //Room Rent
+                    if (roomRentAdditionalCharge != null && roomRentAdditionalCharge.Id == item.AdditionalChargeId.Value)
+                        roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
+
+                    if (item.Code == AdditionalChargeCode.ROOM_RENT || blnIsBreakFastCharge == true)
+                    {
+                        vat_9 += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+                    else if ((item.Code != AdditionalChargeCode.ROOM_RENT || blnIsBreakFastCharge == false) && item.Amount > 0)
+                    {
+                        vat_23 += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+                }
+
+
+                //Balance Due
+                balanceDue = totalBalance - Math.Abs(checkOutPaidPayment);
+
+                model.FandB = 0;
+                model.Other = 0;
+                model.Total = total;
+                model.Room = roomRent;
+                model.TotalBalance = Math.Round(totalBalance, 2);
+                model.BalanceDue = Math.Round(balanceDue, 2);
+
+                model.CurrencySymbol = LogInManager.CurrencySymbol;
+
+                if (totalBalance > 0)
+                {
+                    double VAT_9_CALCULATION = 0;
+                    VAT_9_CALCULATION = Math.Round(((vat_9 * 100) / (100 + model.VATTax)), 2);
+                    double VAT_23_CALCULATION = 0;
+                    VAT_23_CALCULATION = Math.Round(((vat_23 * 100) / (100 + model.VATTax2)), 2);
+                                        
+                    model.VATAmount = Math.Round((vat_9 - VAT_9_CALCULATION), 2);
+                    model.VATAmount2 = Math.Round((vat_23 - VAT_23_CALCULATION), 2);
+
+                    model.NetAmount = VAT_9_CALCULATION + VAT_23_CALCULATION;
+                }
+
+                //Company Info
+                if (reservation.CompanyId != null && reservation.CompanyId.HasValue)
+                {
+                    model.CompanyId = reservation.CompanyId;
+
+                    var companyInfo = CompanyRepository.GetCompanyList().Where(m => m.Id == reservation.CompanyId.Value).FirstOrDefault();
+                    if (companyInfo != null)
+                    {
+                        model.CompanyName = companyInfo.CompanyName;
+                        model.CompanyAddress = companyInfo.CompanyAddress;
+                    }
+                }
+
+                #region Record Activity Log
+                RecordActivityLog.RecordActivity(Pages.CHECKOUT, "Generated folio report.");
+                #endregion
+
+                //HTML to PDF
+                string html = Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewInterimBill", model);
+                byte[] pdfBytes = Utility.Utility.GetPDF(html);
+                
+                return File(pdfBytes, "application/pdf");
+            }
+            else
+            {
+                return HttpNotFound();
+            }
+            //return View(model);
+        }
+
+
+        #endregion
     }
 }

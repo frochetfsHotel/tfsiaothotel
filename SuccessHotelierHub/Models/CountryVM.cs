@@ -18,6 +18,9 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please enter name.")]
         public string Name { get; set; }
 
+        [DisplayName("Sort Number")]
+        public int? SortOrder { get; set; }
+
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public int?  CreatedBy { get; set; }

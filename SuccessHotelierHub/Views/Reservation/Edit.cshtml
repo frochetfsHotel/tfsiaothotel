@@ -163,6 +163,23 @@
     var packageList = (List<PackageVM>)ViewBag.PackageList;
     var childrenCharge = CurrencyManager.ParseAmountToUserCurrency((double)Constants.CHILDREN_CHARGE, LogInManager.CurrencyCode);
 
+    #region Reservation Type
+    //Reservation Type List
+    var reservationTypeList = (List<SelectListItem>)ViewBag.ReservationTypeList;
+    var GuranteedReservationTypeId = "";
+    var NonGuranteedReservationTypeId = "";
+    if (reservationTypeList != null && reservationTypeList.Count > 0)
+    {
+        GuranteedReservationTypeId = reservationTypeList.Where(i => i.Text == "Guarantee Type").FirstOrDefault().Value;
+        NonGuranteedReservationTypeId = reservationTypeList.Where(i => i.Text == "Non-Guaranteed").FirstOrDefault().Value;
+
+        //Default Reservation Type = "Guarantee Type
+        if (Model.ReservationTypeId.HasValue == false && !string.IsNullOrWhiteSpace(GuranteedReservationTypeId))
+        {
+            Model.ReservationTypeId = Guid.Parse(GuranteedReservationTypeId);
+        }
+    }
+    #endregion
 
 }
 
@@ -601,7 +618,7 @@
 
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CreditCardNo)
-                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16", minlength = "16" })
+                        @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16" })
                         @Html.ValidationMessageFor(m => m.CreditCardNo, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields divCardExpiryDate">
@@ -610,7 +627,7 @@
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
-                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", minlength = "3", maxlength = "4" })
+                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "3" })
                         @Html.ValidationMessageFor(m => m.CVVNo, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -1267,7 +1284,7 @@
             }
 
             if ($("#frmPackageTransaction").valid() == false) {
-                showToaster("Please fill all the required field first", ToasterType.ERROR);
+                showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
                 return false;
             }
 
@@ -1459,7 +1476,7 @@
         }
 
         if ($("#frmReservation").valid() == false) {
-            showToaster("Please fill all the required field first", ToasterType.ERROR);
+            showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
             blnValid = false;
         }
 
@@ -2062,11 +2079,17 @@
                 $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
                 $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");
                 $('form#frmReservation label[for="CVVNo"]').removeClass("label-bold");
+
+                //Set Reservation Type = 'Non-Guaranteed'
+                $("form#frmReservation #ReservationTypeId").val('@NonGuranteedReservationTypeId');
             } else {
                 //Set Label Bold.
                 $('form#frmReservation label[for="CreditCardNo"]').addClass("label-bold");
                 $('form#frmReservation label[for="CardExpiryDate"]').addClass("label-bold");
                 $('form#frmReservation label[for="CVVNo"]').addClass("label-bold");
+
+                //Set Reservation Type = 'Guarantee Type'
+                $("form#frmReservation #ReservationTypeId").val('@GuranteedReservationTypeId');
             }
         }
 
