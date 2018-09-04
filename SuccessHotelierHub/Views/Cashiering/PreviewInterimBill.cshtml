@@ -1,0 +1,270 @@
+﻿@model SuccessHotelierHub.Models.BillingTransactionReportVM
+@using SuccessHotelierHub.Utility
+@{
+    Layout = null;
+
+    var currencySymbol = Model.CurrencySymbol;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        p {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        table, th, td {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 2px;
+        }
+
+        .text_bold {
+            font-weight: bold;
+        }
+
+        thead {
+            border: 1px solid #000;
+        }
+
+        table {
+            width: 96%;
+            font-size: 14px;
+            color: #333;
+            font-weight: 400;
+            text-align: left;
+            margin: auto;
+        }
+
+        .invoice_header {
+            background: #3c8dbc;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+        }
+
+        .border_bottom {
+            border-bottom: 1px solid #000;
+        }
+
+
+        tr.border_bottom td {
+            border-bottom: 1px solid black;
+        }
+
+        tr.border_top td {
+            border-top: 1px solid black;
+        }
+
+        .para {
+            width: 74%;
+            margin-left: 81px;
+            text-align: justify;
+            margin-top: 10px;
+        }
+
+        .img_margin {
+            margin: auto;
+            display: block;
+            width: 250%;
+            /*border-bottom: 1px solid #7c7c7c;*/
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .footer {
+            height: 75px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .padding-zero {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    </style>
+</head>
+
+<body class="gray-bg" style="width: 800px; margin-left: auto; margin-right: auto;">
+    <div class="row border-bottom white-bg dashboard-header">
+        <div style="border:1px solid #dedede; box-shadow: 0px 0px 5px #dddddd; padding:10px;">
+            <div style="font-size: 14px; color: #333; font-weight: 400; text-align: center; font-family: Calibri;  margin-top: 10px;margin-bottom: 20px;border:thick">
+                <table style="border:none">
+                    <tr>
+                        <td style="width:100%;text-align:center" align="center">
+                            <img src="http://www.tfshotelierhub.com/Content/img/invoice_logo.png" class="img_margin" />
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <div style="text-align:center">
+                    <table style="border:none">
+                        <tr>
+                            <td class="invoice_header" valign="middle" style="padding-top:10px;height:50px;">
+                                <label style="font-size:30px;" class="text_bold">INVOICE</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <table style="border:none">
+                        <tr>
+                            <td style="width:50%;text-align:left" valign="top">
+                                <label class="mb5"><b>@Model.Title @Model.Name</b></label>
+                                <br />
+                                <label class="mb5"><b>@Html.Raw(Model.Address)</b></label> <br />
+                                @{
+                                    if (!string.IsNullOrWhiteSpace(Model.CompanyName) || !string.IsNullOrWhiteSpace(Model.CompanyAddress))
+                                    {
+                                        <br />
+                                        <label class="mb5"><b><u>Company Details: </u></b></label> <br />
+                                        if (!string.IsNullOrWhiteSpace(Model.CompanyName))
+                                        {
+                                            <label class="mb5"><b>@Model.CompanyName</b></label><br />
+                                        }
+                                        if (!string.IsNullOrWhiteSpace(Model.CompanyAddress))
+                                        {
+                                            <label class="mb5"><b>@Model.CompanyAddress</b></label><br />
+                                        }
+                                    }
+                                }
+                            </td>
+                            <td style="width:50%;">
+                                <table>
+                                    <tr>
+                                        <td>Room Number</td>
+                                        <td>:</td>
+                                        <td>@Model.RoomNumer</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Folio Number</td>
+                                        <td>:</td>
+                                        <td>@Model.FolioNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cashier Number</td>
+                                        <td>:</td>
+                                        <td>@Model.CashierNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Page Number</td>
+                                        <td>:</td>
+                                        <td>@Model.PageNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Arrival Date</td>
+                                        <td>:</td>
+                                        <td>@Model.ArrivalDate</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Departure Date</td>
+                                        <td>:</td>
+                                        <td>@Model.DepartureDate</td>
+                                    </tr>
+                                </table>
+                                <br />
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <table class="table" style="border-bottom:1px solid #000;">
+                        <thead>
+                            <tr class="border_bottom border_top">
+                                <td class="text_bold" style="border-left:1px solid #000;">Date</td>
+                                <td class="text_bold">Description</td>
+                                <td class="text_bold">Additional Information</td>
+                                <td class="text_bold">Qty</td>
+                                <td class="text_bold">Charges</td>
+                                <td class="text_bold" style="border-right:1px solid #000;">Credit</td>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model.Transactions != null && Model.Transactions.Count > 0)
+                            {
+                                foreach (var transaction in Model.Transactions)
+                                {
+                                    <tr>
+                                        <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("MM-dd-yyyy") : "")</td>
+                                        <td>@transaction.Description</td>
+                                        <td>@transaction.Code</td>
+                                        <td>@(transaction.Qty.HasValue ? transaction.Qty.Value : 1)</td>
+                                        <td>@(Html.Raw(currencySymbol)) &nbsp;@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value > 0 ? transaction.Amount.Value : 0 : 0)</td>
+                                        <td>@Utility.FormatAmountWithTwoDecimal(transaction.Amount.HasValue ? transaction.Amount.Value < 0 ? transaction.Amount.Value : 0 : 0)</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <br />
+                    <table style="border:none">
+                        <tr>
+                            <td style="width:50%;">
+                                <br /><br />
+                                <label class="">Guest Signature: ______________________________</label>
+                                <br />
+                            </td>
+                            <td style="width:50%;">
+                                <table>
+                                    <tr class="">
+                                        <td class="">Net</td>
+                                        <td class="" style="padding-left:100px;">
+                                            @(Html.Raw(currencySymbol))&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.NetAmount)
+                                        </td>
+                                        <td class="">@(Html.Raw(currencySymbol))&nbsp;0.00</td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="">@(Model.VATTax)% VAT</td>
+                                        <td class="" style="padding-left:100px;">
+                                            @(Html.Raw(currencySymbol))&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.VATAmount)
+                                        </td>
+                                        <td class="">@(Html.Raw(currencySymbol))&nbsp;0.00</td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="">@(Model.VATTax2)% VAT</td>
+                                        <td class="" style="padding-left:100px;">
+                                            @(Html.Raw(currencySymbol))&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.VATAmount2)
+                                        </td>
+                                        <td class="">@(Html.Raw(currencySymbol))&nbsp;0.00</td>
+                                    </tr>
+                                    <tr class="border_bottom">
+                                        <td class="text_bold">Total</td>
+                                        <td class="text_bold" style="padding-left:100px;">
+                                            @(Html.Raw(currencySymbol))&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.TotalBalance)
+                                        </td>
+                                        <td class="text_bold">@(Html.Raw(currencySymbol))&nbsp;0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text_bold" width="20%">Balance Due</td>
+                                        <td class="text_bold" style="padding-left:100px;">@(Html.Raw(currencySymbol))&nbsp;@Utility.FormatAmountWithTwoDecimal(Model.BalanceDue)</td>
+                                        <td class="text_bold"></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <footer style="text-align:center;">        
+        <table style="border:5px solid #000;">
+            <tr style="">
+                <td style="text-align:center;padding-top:20px;"><p>We hope you enjoyed your stay with us and look forward to welcoming you back soon!</p></td>
+            </tr>
+            <tr>
+                <td style="text-align:center; padding-top:10px;">
+                    <p>You can book directly on line with us on <a href="http://www.rihs.com" target="_blank">www.rihs.com</a></p>
+                </td>
+            </tr>
+        </table>
+    </footer>
+</body>
+</html>
