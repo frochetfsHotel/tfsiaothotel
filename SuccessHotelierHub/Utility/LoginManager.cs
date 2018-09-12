@@ -32,6 +32,13 @@ namespace SuccessHotelierHub
             {
                 return LoginStatus.Failure;
             }
+            else
+            {
+                if(user.IsLoggedIn.HasValue && user.IsLoggedIn.Value == true)
+                {
+                    return LoginStatus.AlreadyLoggedIn;
+                }
+            }
 
             var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
 
@@ -58,13 +65,17 @@ namespace SuccessHotelierHub
             LogInManager.UserName = user.Name;
             LogInManager.CashierNumber = user.CashierNumber;
             LogInManager.LoggedInUserId = user.UserId;
+            LogInManager.LoggedInUserSessionId = System.Web.HttpContext.Current.Session.SessionID;
             LogInManager.LoggedInUser = user;
             LogInManager.UsersRoles = userRoles;
             LogInManager.UserPageAccessRights = userPageAccessRights;
-            LogInManager.UserRoleName = GetUserRoleName(userRoles);
+            LogInManager.UserRoleName = GetUserRoleName(userRoles);            
 
             //Update Last LoggedIn Date.
             userRepository.UpdateUsersLastLoginTime(user.Id);
+
+            //Update Flag IsLoggedIn = true 
+            userRepository.UpdateIsLoggedInFlag(user.Id, true);
 
             return LoginStatus.Success;
         }
@@ -199,6 +210,25 @@ namespace SuccessHotelierHub
             set
             {
                 HttpContext.Current.Session["UserRoleName"] = value;
+            }
+        }
+
+        public static string LoggedInUserSessionId
+        {
+            get
+            {
+                if (HttpContext.Current.Session["SessionId"] != null)
+                {
+                    return (string)HttpContext.Current.Session["SessionId"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["SessionId"] = value;
             }
         }
 
@@ -376,6 +406,10 @@ namespace SuccessHotelierHub
         /// Login failed
         /// </summary>
         Failure = 3,
+        /// <summary>
+        /// User is already logged in.
+        /// </summary>
+        AlreadyLoggedIn = 4,
     }
 
 }

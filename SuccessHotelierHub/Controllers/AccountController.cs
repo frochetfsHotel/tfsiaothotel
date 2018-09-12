@@ -33,10 +33,26 @@ namespace SuccessHotelierHub.Controllers
 
         public ActionResult SignOut()
         {
-            RecordActivityLog.RecordActivity(Pages.LOGOUT, "Loggedout successfully.");
-
-            System.Web.HttpContext.Current.Session.Abandon();
+            RecordActivityLog.RecordActivity(Pages.LOGOUT, "Loggedout successfully.");            
+                        
             System.Web.HttpContext.Current.Session.Clear();
+            System.Web.HttpContext.Current.Session.RemoveAll();
+            System.Web.HttpContext.Current.Session.Abandon();
+
+            //Here system going to call Session_End event from Global.asax file.
+
+            //Clear Session cookie from browser. So it will generate new session id after session expire.
+            if (Request.Cookies["ASP.NET_SessionId"] != null)
+            {
+                Response.Cookies["ASP.NET_SessionId"].Value = "";
+                Response.Cookies["ASP.NET_SessionId"].Expires = DateTime.Now.AddMonths(-20);
+            }
+
+            if (Request.Cookies["SFToken"] != null)
+            {
+                Response.Cookies["SFToken"].Value = "";
+                Response.Cookies["SFToken"].Expires = DateTime.Now.AddMonths(-20);
+            }
 
             return RedirectToAction("Login");
         }
@@ -74,7 +90,13 @@ namespace SuccessHotelierHub.Controllers
                                 UserId = LogInManager.LoggedInUserId
                             }
                         }, JsonRequestBehavior.AllowGet);
-                    case LoginStatus.Failure:
+                    case LoginStatus.AlreadyLoggedIn:
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = "User already logged in!"
+                        }, JsonRequestBehavior.AllowGet);
+                    case LoginStatus.Failure:                        
                     default:
                         RecordActivityLog.RecordActivity(Pages.LOGIN, "Login fail.");
                         return Json(new

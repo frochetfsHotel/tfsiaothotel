@@ -627,7 +627,7 @@
                     </div>
                     <div class="col-md-3 form-group divCreditCardFields">
                         @Html.LabelFor(m => m.CVVNo)
-                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "3" })
+                        @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "4" })
                         @Html.ValidationMessageFor(m => m.CVVNo, "", new { @class = "text-danger" })
                     </div>
                 </div>

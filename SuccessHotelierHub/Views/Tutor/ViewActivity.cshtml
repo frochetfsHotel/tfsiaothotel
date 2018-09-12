@@ -25,6 +25,9 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Search Activity Log</h3>
+            <div class="pull-right m-r-md">
+                <label class="label-bold">Name : @Model.UserName</label>
+            </div>
         </div>
         <form class="frmActivityLogList" enctype="multipart/form-data" method="post">
             <!--HIDDEN FIELD-->
@@ -59,15 +62,22 @@
                     </div>
                 </div>
 
+                <div class="row m-t-md">
+                    <div class="col-md-12">
+                        <label class="label-bold">Duration : </label> <code>h: hours; m: minutes; s: seconds</code>
+                    </div>
+                </div>
+
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblActivityLog">
                             <thead>
                                 <tr>
                                     <th class="width_15">Recorded On</th>
-                                    <th class="width_35">Url</th>
+                                    <th class="width_30">Url</th>
                                     <th class="width_10">Page Name</th>
-                                    <th class="width_40">Description</th>                                    
+                                    <th class="width_35">Description</th> 
+                                    <th class="width_10">Duration</th>                                   
                                 </tr>
                             </thead>
                         </table>
@@ -192,6 +202,19 @@
                 targets: 3,
                 data: "Description",
                 orderable: false
+            },
+            {
+                targets: 4,
+                data: "LoggedInDurationInSeconds",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var loggedInDurationInSeconds = full.LoggedInDurationInSeconds;
+                    if (!IsNullOrEmpty(loggedInDurationInSeconds) && loggedInDurationInSeconds != "0") {                        
+                        return secondsToString(loggedInDurationInSeconds);
+                    } else {
+                        return "";
+                    }
+                }
             }
             ],
             order: [[0, "desc"]],

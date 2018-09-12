@@ -121,6 +121,12 @@ namespace SuccessHotelierHub.Models
 
         public int NoOfAdult { get; set; }
 
+        [DisplayName("Children")]
+        public int? NoOfChildren { get; set; }
+
+        [DisplayName("Infant")]
+        public int? NoOfInfant { get; set; }
+
         public int DaysInWeek { get; set; }
     }
 
@@ -161,5 +167,11 @@ namespace SuccessHotelierHub.Models
         public DateTime? DepartureDate { get; set; }
 
         public int NoOfAdult { get; set; }
+
+        [DisplayName("Children")]
+        public int? NoOfChildren { get; set; }
+
+        [DisplayName("Infant")]
+        public int? NoOfInfant { get; set; }
     }
 }

@@ -114,14 +114,20 @@ namespace SuccessHotelierHub.Controllers
                      ), "Value", "Text").ToList();
 
 
+
+            //var paymentList = paymentMethodRepository.GetPaymentMethods();
+            //var maxCodeLength = paymentList.Max(m => m.Code.Length);
+            //System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
             var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
                     .Select(
                         m => new SelectListItem()
                         {
                             Value = m.Id.ToString(),
+                            //Text = (m.Code + " " + (sb.Clear().Append("".PadLeft((maxCodeLength - m.Code.Length) + 2, ' ').Replace(" ", "\xA0"))) + "-" + " " + (sb.Clear().Append("".PadLeft((maxCodeLength - m.Code.Length) + 2, ' ').Replace(" ", "\xA0"))) + m.Name)
                             Text = (m.Code + " - " + m.Name)
-                        }
+                        }   
                  ), "Value", "Text").ToList();
 
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();

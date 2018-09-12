@@ -174,7 +174,7 @@
     }
 
     .arrow-right {
-        color: #ff851b;
+        color: #00a65a;
         font-size: 16px;
     }
 
@@ -185,6 +185,9 @@
     .bg-sky {
         background-color: #1AAFFE;
     }
+    .text-sky{
+        color: #1AAFFE;
+    }
 </style>
 
 
@@ -192,6 +195,17 @@
 
 @if (roomDetail != null && roomDetail.Count > 0)
 {
+
+    <div class="col-xs-12 padding-zero m-t">
+        <div class="form-group">
+            <span>
+                <i class="fa fa-square text-green"></i> Checked In
+            </span>
+            <span class="m-l-md">
+                <i class="fa fa-square text-sky"></i> Pending Check In
+            </span>
+        </div>
+    </div>
 
     //tbl_max_height
     <div class="col-xs-12 padding-zero m-t">
@@ -233,18 +247,20 @@
                                     var reservationInfo = reservationDetail.Where(i => (i.CheckInDate.Value.Date <= dates[intI].Date.Value.Date) && (i.CheckOutDate.Value.Date >= dates[intI].Date.Value.Date)).FirstOrDefault();
                                     if (reservationInfo != null)
                                     {
+                                        string noOfPerson = "";
+                                        noOfPerson = reservationInfo.NoOfChildren > 0 ? string.Format("{0}/{1}", reservationInfo.NoOfAdult, reservationInfo.NoOfChildren) : string.Format("{0}",reservationInfo.NoOfAdult);
                                         if (blnFirst)
                                         {
                                             blnFirst = false;
 
                                             <td class="text-center cursor-move assigned" style="padding:5px; width:@(reservationInfo.CheckOutDate <= dates[dates.Count - 1].Date ? (reservationInfo.DaysInWeek == 1? reservationInfo.DaysInWeek :reservationInfo.DaysInWeek  - 1) * 10 : reservationInfo.DaysInWeek * 10)%;">
                                                 <span style="margin-right:-1px !important; text-align:center!important;font-size:10px;"
-                                                      class="btn btn-xs m-r-xs p-l-xs bg-orange  text-left-align  width-100 item first spnReservation"
+                                                      class="btn btn-xs m-r-xs p-l-xs bg-green  text-left-align  width-100 item first spnReservation"
                                                       id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                       data-reservationid="@(reservationInfo.ReservationId)"
                                                       ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
                                                       title="Double click here to view reservation detail.">
-                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, reservationInfo.NoOfNight))
+                                                    @(string.Format("{0} {1} ({2})", reservationInfo.LastName, reservationInfo.FirstName, noOfPerson))
                                                 </span>
                                             </td>
                                         }
@@ -252,7 +268,7 @@
                                         {
                                             if (reservationInfo.CheckOutDateString == dates[intI].DateString)
                                             {
-                                                <td class="text-center cursor-move assigned padding-zero border-none text-center-align" style="width:10%;padding:7px 0px !important; ">
+                                                <td class="cursor-move assigned padding-zero border-none" style="width:10%;padding:7px 0px !important; ">
                                                     <span class="btn btn-xs padding-zero fa fa-long-arrow-right arrow-right"
                                                           id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                           data-reservationid="@(reservationInfo.ReservationId)"
@@ -275,13 +291,16 @@
                                                 <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
                                                     @foreach (var item in allocationInfo)
                                                     {
+                                                        string noOfPerson = "";
+                                                        noOfPerson = item.NoOfChildren > 0 ? string.Format("{0}/{1}", item.NoOfAdult, item.NoOfChildren) : string.Format("{0}", item.NoOfAdult);
+
                                                         <span style="margin:3px -1px !important; text-align:center!important;font-size:10px;"
                                                               class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
                                                               id="@("spnReservation_" + item.ReservationId)"
                                                               data-reservationid="@(item.ReservationId)"
                                                               ondblclick="GotoReservationEdit('@(item.ReservationId)')"
                                                               title="Double click here to view reservation detail.">
-                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, item.NoOfNight))
+                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, noOfPerson))
                                                         </span>
                                                     }
                                                 </td>
@@ -319,13 +338,16 @@
                                                 <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
                                                     @foreach (var item in allocationInfo)
                                                     {
+                                                        string noOfPerson = "";
+                                                        noOfPerson = item.NoOfChildren > 0 ? string.Format("{0}/{1}", item.NoOfAdult, item.NoOfChildren) : string.Format("{0}", item.NoOfAdult);
+
                                                         <span style="margin:3px -1px !important; text-align:center!important; font-size:10px;"
                                                               class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
                                                               id="@("spnReservation_" + item.ReservationId)"
                                                               data-reservationid="@(item.ReservationId)"
                                                               ondblclick="GotoReservationEdit('@(item.ReservationId)')"
                                                               title="Double click here to view reservation detail.">
-                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, item.NoOfNight))
+                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, noOfPerson))
                                                         </span>
                                                     }
                                                 </td>

@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using SuccessHotelierHub.Models;
+using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 
 namespace SuccessHotelierHub
@@ -74,6 +75,28 @@ namespace SuccessHotelierHub
             Server.ClearError();
 
             //Response.Redirect("~/Home/Error");
+        }
+
+        protected void Session_Start(object sender, EventArgs e)
+        {
+                     
+        }
+        
+        protected void Session_End(object sender, EventArgs e)
+        {
+            Session.RemoveAll();
+            Session.Abandon();            
+
+            #region  Update Logout Time based on Session Id.
+
+            var sessionId = Session.SessionID;
+
+            if (!string.IsNullOrWhiteSpace(sessionId))
+            {
+                RecordActivityLog.UpdateLogOutTimeBySessionId(sessionId);
+            }
+
+            #endregion
         }
     }
 }

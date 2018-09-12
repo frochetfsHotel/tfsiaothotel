@@ -904,6 +904,77 @@ namespace SuccessHotelierHub.Utility
             return new string(chars);
         }
 
+        #region 'Manage Cookies'
+
+        public static void WriteCookie(string cookieName, string cookieValue)
+        {
+            //Create a Cookie with a suitable Key.
+            HttpCookie cookie = new HttpCookie(cookieName);
+
+            //Set the Cookie value.
+            cookie.Values[cookieName] = cookieValue;
+
+            //Set the Expiry date.
+            cookie.Expires = DateTime.Now.AddHours(2);
+
+            //Add the Cookie to Browser.
+            System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+        }
+
+        public static void RemoveCookie(string cookieName)
+        {
+            //Fetch the Cookie using its Key.
+            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[cookieName];
+
+            //Set the Expiry date to past date.
+            cookie.Expires = DateTime.Now.AddDays(-1);
+
+            //Update the Cookie in Browser.
+            System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+        }
+
+        public static string ReadCookie(string cookieName)
+        {
+            //Fetch the Cookie using its Key.
+            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[cookieName];
+
+            //If Cookie exists fetch its value.
+            string cookieValue = cookie != null ? cookie.Value.Split('=')[1] : "undefined";
+
+            return cookieValue;
+        }
+
+        #endregion 'Manage Cookies'
+
+        public static string GetConfigValue(string key)
+        {
+            if (!string.IsNullOrWhiteSpace(System.Configuration.ConfigurationManager.AppSettings.Get(key)))
+            {
+                return Convert.ToString(System.Configuration.ConfigurationManager.AppSettings.Get(key));
+            }
+            return "";
+        }
+
+        public static string GetSiteDomainURL(string environment)
+        {
+            if (!string.IsNullOrWhiteSpace(environment))
+            {
+                if(environment == "local")
+                {
+                    return Convert.ToString(System.Configuration.ConfigurationManager.AppSettings.Get("SiteLocalURL"));
+                }
+                else if (environment == "stage")
+                {
+                    return Convert.ToString(System.Configuration.ConfigurationManager.AppSettings.Get("SiteStageURL"));
+                }
+                else if (environment == "live")
+                {
+                    return Convert.ToString(System.Configuration.ConfigurationManager.AppSettings.Get("SiteLiveURL"));
+                }
+            }
+            return "";
+        }
+
     }
 
 

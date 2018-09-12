@@ -240,7 +240,15 @@ namespace SuccessHotelierHub.Controllers
             }
 
             SearchUsersActivityLogParametersVM model = new SearchUsersActivityLogParametersVM();
-            model.UserId = id;            
+            model.UserId = id;
+
+            var userDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+            if (userDetail != null)
+            {
+                model.UserName = userDetail.Name;
+                model.UserEmail = userDetail.Email;
+            }
 
             return View(model);
         }
@@ -302,7 +310,15 @@ namespace SuccessHotelierHub.Controllers
             }
 
             SearchUsersReservationLogParametersVM model = new SearchUsersReservationLogParametersVM();
-            model.UserGUID = id;            
+            model.UserGUID = id;
+
+            var userDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+            if (userDetail != null)
+            {
+                model.UserName = userDetail.Name;
+                model.UserEmail = userDetail.Email;
+            }
 
             return View(model);
         }
@@ -373,7 +389,15 @@ namespace SuccessHotelierHub.Controllers
             }
 
             SearchUsersReservationFolioLogParametersVM model = new SearchUsersReservationFolioLogParametersVM();
-            model.UserGUID = id;            
+            model.UserGUID = id;
+
+            var userDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+            if(userDetail != null)
+            {
+                model.UserName = userDetail.Name;
+                model.UserEmail = userDetail.Email;
+            }
 
             return View(model);
         }

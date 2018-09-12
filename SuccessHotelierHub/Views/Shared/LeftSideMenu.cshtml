@@ -8,8 +8,7 @@
             </div>
             <div class="pull-left info">
                 <p>@LogInManager.UserName</p>
-                <p class="font-weight-400">
-                    @*<i class="fa fa-user-secret m-r-xs"></i>*@
+                <p class="font-weight-400">                    
                     <small style="font-weight:400">@LogInManager.UserRoleName</small>
                 </p>
             </div>
@@ -47,22 +46,21 @@
                                 <a href="@Url.Action("IndividualProfileList","Profile")"><i class="fa fa-search"></i> Search </a>
                             </li>
                         </ul>
-                    </li>
-                    @*<li><a href="@Url.Action("Company","Profile")"><i class="fa fa-building"></i>Company (Design)</a></li>*@
+                    </li>                    
                 </ul>
             </li>
             <li>
                 <a href="@Url.Action("RoomPlan","Reservation")"><i class="fa fa-bed"></i>Room Plan</a>
             </li>
             <li><a href="@Url.Action("Index","PropertyCalendar")"><i class="fa fa-calendar"></i>Calendar</a></li>
-            <li><a href="#"><i class="fa fa-group"></i>Groups *</a></li>
+            <li style="display:none;"><a href="#"><i class="fa fa-group"></i>Groups *</a></li>
 
-            <li><a href="#"><i class="fa fa-building-o"></i>Floor Plan *</a></li>
+            <li style="display:none;"><a href="#"><i class="fa fa-building-o"></i>Floor Plan *</a></li>
             @*<li><a href="#"><i class="fa fa-bed"></i>Room Plan *</a></li>*@
 
-            <li><a href="#"><i class="fa fa-users"></i>Conference Allotments *</a></li>
-            <li><a href="#"><i class="fa fa-calendar"></i>Conference Plan *</a></li>
-            <li><a href="#"><i class="fa fa-user-md"></i>Guest History *</a></li>
+            <li style="display:none;"><a href="#"><i class="fa fa-users"></i>Conference Allotments *</a></li>
+            <li style="display:none;"><a href="#"><i class="fa fa-calendar"></i>Conference Plan *</a></li>
+            <li style="display:none;"><a href="#"><i class="fa fa-user-md"></i>Guest History *</a></li>
 
         </ul>
 

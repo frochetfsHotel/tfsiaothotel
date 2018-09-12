@@ -416,7 +416,7 @@
                                                     <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
                                                 </td>
                                                 <td>
-                                                    <input id="CardVerificationValue_1" name="CardVerificationValue_1" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_1" onkeydown="onlyDigits(event)" maxlength="3" />
+                                                    <input id="CardVerificationValue_1" name="CardVerificationValue_1" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_1" onkeydown="onlyDigits(event)" maxlength="4" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -533,7 +533,7 @@
                                                     <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
                                                 </td>
                                                 <td>
-                                                    <input id="CVV_1" name="CVV_1" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1" onkeydown="onlyDigits(event)" maxlength="3" />
+                                                    <input id="CVV_1" name="CVV_1" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1" onkeydown="onlyDigits(event)" maxlength="4" />
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -1484,7 +1484,7 @@
 
         //CVV
         html += '<td>'
-        html += '<input id="CVV_' + rowNumber + '" name="CVV_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" maxlength="3" />'
+        html += '<input id="CVV_' + rowNumber + '" name="CVV_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" maxlength="4" />'
         html += '</td>'
 
         html += '</tr>';

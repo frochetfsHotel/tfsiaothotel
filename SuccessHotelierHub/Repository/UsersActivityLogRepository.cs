@@ -21,7 +21,7 @@ namespace SuccessHotelierHub.Repository
             activities = DALHelper.CreateListFromTable<UsersActivityLogVM>(ds);
 
             return activities;
-        }        
+        }
 
         public string AddUsersActivityLog(UsersActivityLogVM usersActivityLog)
         {
@@ -35,6 +35,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Description", Value = usersActivityLog.Description },
                     new SqlParameter { ParameterName = "@IpAddress", Value = usersActivityLog.IpAddress },
                     new SqlParameter { ParameterName = "@RecordedOn", Value = usersActivityLog.RecordedOn },
+                    new SqlParameter { ParameterName = "@SessionId", Value = usersActivityLog.SessionId },
                     new SqlParameter { ParameterName = "@IsActive", Value = usersActivityLog.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = usersActivityLog.CreatedBy }
                 };
@@ -76,6 +77,38 @@ namespace SuccessHotelierHub.Repository
 
             var activities = new List<SearchUsersActivityLogResultVM>();
             activities = DALHelper.CreateListFromTable<SearchUsersActivityLogResultVM>(dt);
+
+            return activities;
+        }
+
+        public string UpdateLoggedInDurationInUsersActivity(Guid id, double? loggedInDurationInSeconds, int updatedBy)
+        {
+            string usersActivityId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@LoggedInDurationInSeconds", Value = loggedInDurationInSeconds },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            usersActivityId = Convert.ToString(DALHelper.ExecuteScalar("UpdateLoggedInDurationInUsersActivity", parameters));
+
+            return usersActivityId;
+        }
+
+        public List<UsersActivityLogVM> GetUsersActivityLogBySessionId(string sessionId)
+        {
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@SessionId", Value = sessionId }
+                };
+
+            var ds = DALHelper.GetDataTableWithExtendedTimeOut("GetUsersActivityLogBySessionId", parameters);
+
+            var activities = new List<UsersActivityLogVM>();
+            activities = DALHelper.CreateListFromTable<UsersActivityLogVM>(ds);
 
             return activities;
         }

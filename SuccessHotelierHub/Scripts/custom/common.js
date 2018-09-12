@@ -1,6 +1,14 @@
 ﻿//This is a global varibale - will be set once the form is dirty and reset when saved
 var data_needs_saving = false;
 
+//var validNavigation = false;
+
+//var clicked = false;
+
+//$(document).ready(function (e) {
+//    wireUpWindowUnloadEvents();
+//});
+
 $(function () {
 
     LoadLeftSideMenu();
@@ -621,7 +629,7 @@ function IsValidCreditCardNo(number) {
 
 function IsValidCVVNo(number) {
     if (!IsNullOrEmpty(number)) {
-        if (number.length == 3) {
+        if (number.length == 3 || number.length == 4) {
             return true;
         }
         return false;
@@ -632,3 +640,298 @@ function IsValidCVVNo(number) {
 function ConvertToNegative(num) {
     return -Math.abs(num);
 }
+
+//function AutoLogOut() {
+//    console.log('auto log out');
+//    debugger;
+//    //if (window.performance) {
+//    //    console.info("window.performance works fine on this browser");
+//    //}
+//    //if (window.performance.navigation.type == PerformanceNavigation.TYPE_RELOAD) {
+//    //    console.info("This page is reloaded.");
+//    //}
+//    //else if (window.performance.navigation.type == PerformanceNavigation.TYPE_NAVIGATE) {
+//    //    console.info("This page is navigated.");
+//    //}
+//    //else if (window.performance.navigation.type == PerformanceNavigation.TYPE_BACK_FORWARD) {
+//    //    console.info("This page is back forward with history.");
+//    //}
+//    //else if (window.performance.navigation.type == PerformanceNavigation.TYPE_RESERVED) {
+//    //    console.info("any other way.");
+//    //}
+//    //else {
+//    //    debugger;
+//    //    console.info("This page is not reloaded");
+//    //}
+
+//    if (!validNavigation) {
+//        callServerForBrowserCloseEvent();
+//    }
+
+//}
+
+//function callServerForBrowserCloseEvent() {
+//    //…...Do you operation here
+
+//    $.ajax({
+//        url: '/Account/SignOut',
+//        async: false,
+//        contentType: "application/json; charset=utf-8",
+//        type: "GET",
+//        success: function (data) {
+//            alert(data);
+//        },
+//        error: function (x, y, z) {
+//            alert(x.responseText + "  " + x.status);
+//        }
+//    });
+//}
+
+//function wireUpWindowUnloadEvents() {
+//    /*
+//    * List of events which are triggered onbeforeunload on IE
+//    * check http://msdn.microsoft.com/en-us/library/ms536907(VS.85).aspx
+//    */
+
+
+//    /**
+//  * For a list of events that triggers onbeforeunload on IE
+//  * check http://msdn.microsoft.com/en-us/library/ms536907(VS.85).aspx
+//  *
+//  * onbeforeunload for IE and chrome
+//  * check http://stackoverflow.com/questions/1802930/setting-onbeforeunload-on-body-element-in-chrome-and-ie-using-jquery
+//  */
+//    //var dont_confirm_leave = 0; //set dont_confirm_leave to 1 when you want the user to be able to leave without confirmation
+//    //var leave_message = 'You sure you want to leave?'
+//    //function goodbye(e) {
+//    //    debugger;
+//    //    if (!validNavigation) {
+//    //        if (dont_confirm_leave !== 1) {
+//    //            if (!e) e = window.event;
+//    //            //e.cancelBubble is supported by IE - this will kill the bubbling process.
+//    //            e.cancelBubble = true;
+//    //            e.returnValue = leave_message;
+//    //            //e.stopPropagation works in Firefox.
+//    //            if (e.stopPropagation) {
+//    //                e.stopPropagation();
+//    //                e.preventDefault();
+//    //            }
+//    //            //return works for Chrome and Safari
+//    //            return leave_message;
+//    //        }
+//    //    }
+//    //}
+//    //window.onbeforeunload = goodbye;
+
+
+//    //window.onbeforeunload = function (e) {
+
+//    //    // Get the first available attribute
+//    //    //evt = window.event || event;
+
+//    //    //var y = evt.clientY || evt.screenY || evt.pageY;
+//    //    debugger;
+
+//    //    var posx = 0;
+//    //    var posy = 0;
+//    //    if (!e) var e = window.event;
+//    //    if (e.pageX || e.pageY) {
+//    //        posx = e.pageX;
+//    //        posy = e.pageY;
+//    //    }
+//    //    else if (e.clientX || e.clientY) {
+//    //        posx = e.clientX + document.body.scrollLeft
+//    //            + document.documentElement.scrollLeft;
+//    //        posy = e.clientY + document.body.scrollTop
+//    //            + document.documentElement.scrollTop;
+//    //    }
+//    //    alert(posx + ", " + posy)
+
+//    //    //if (y < 0) {
+//    //    //    validNavigation = false;
+//    //    //    AutoLogOut();
+//    //    //}        
+//    //    return;
+//    //}
+
+//    //window.onload = function CallbackFunction(event) {
+//    //    debugger;
+//    //    if (window.event) {
+
+//    //        if (window.event.clientX < 40 && window.event.clientY < 0) {
+
+//    //            validNavigation = true;
+
+
+//    //        } else {
+
+//    //            validNavigation = true;
+//    //        }
+
+//    //    } else {
+
+//    //        if (event.currentTarget.performance.navigation.type == 2) {
+
+//    //            validNavigation = true;
+
+//    //        }
+//    //        if (event.currentTarget.performance.navigation.type == 1) {
+
+//    //            validNavigation = true;
+//    //        }
+//    //    }
+//    //}
+
+//    window.onbeforeunload = function (e) {
+//        debugger;
+//        if (validNavigation == false) {
+//            console.log("close event");
+//        }
+//    };
+
+//    //window.onload = function (e) {
+//    //    debugger;
+//    //    console.log("load event");
+//    //    if (window.event) {
+//    //        validNavigation = true;
+//    //    } else {
+//    //        if (event.currentTarget.performance.navigation.type == 2) {
+//    //            validNavigation = true;
+//    //        }
+//    //        if (event.currentTarget.performance.navigation.type == 1) {
+//    //            validNavigation = true;
+//    //        }
+//    //    }
+//    //};
+
+//    // Attach the event keypress to exclude the F5 refresh
+//    $(document).on('keypress', function (e) {
+//        debugger;
+//        if (e.keyCode == 116) {
+//            validNavigation = true;
+//        }
+//    });
+
+//    // Attach the event click for all links in the page
+//    $(document).on("click", "a", function () {
+//        debugger;
+//        validNavigation = true;
+//    });
+
+//    // Attach the event submit for all forms in the page
+//    $(document).on("submit", "form", function () {
+//        debugger;
+//        validNavigation = true;
+//    });
+
+//    // Attach the event click for all inputs in the page
+//    $(document).on("click", "input[type='submit']", function () {
+//        debugger;
+//        validNavigation = true;
+//    });
+
+//    $(document).on("click", "button[type='submit']", function () {
+//        debugger;
+//        validNavigation = true;
+//    });
+
+//}
+
+
+
+//function CheckBrowser() {
+//    if (clicked == false) {
+//        //Browser closed
+//    }
+//    else {
+//        //redirected 
+//        clicked = false;
+//    }
+//}
+
+//function bodyUnload() {
+    
+//    debugger;
+//    if (clicked == false)//browser is closed
+//    {
+//        var request = GetRequest();
+
+//        request.open("GET", "/Account/SignOut", false);
+//        request.send();
+//        alert('This is close event.');
+//    }
+//}
+//function GetRequest() {
+//    var xmlhttp;
+//    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+//        xmlhttp = new XMLHttpRequest();
+//    }
+//    else {// code for IE6, IE5
+//        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+//    }
+//    return xmlhttp;
+//}
+
+
+
+/*** Seconds to Time Duration *******/
+
+
+const intervalToLevels = (interval, levels) => {
+    const cbFun = (d, c) => {
+        let bb = d[1] % c[0],
+          aa = (d[1] - bb) / c[0];
+        aa = aa > 0 ? aa + c[1] : '';
+
+        return [d[0] + aa, bb];
+    };
+
+    let rslt = levels.scale.map((d, i, a) => a.slice(i).reduce((d, c) => d * c))
+      .map((d, i) => ([d, levels.units[i]]))
+      .reduce(cbFun, ['', interval]);
+    return rslt[0];
+};
+
+const TimeLevels = {
+    scale: [365, 30, 24, 60, 60, 1],
+    units: ['y ', 'M ', 'd ', 'h ', 'm ', 's ']
+};
+const secondsToString = interval => intervalToLevels(interval, TimeLevels);
+
+function secondsToDuration(seconds) {
+
+    seconds = parseInt(seconds, 10);
+
+    var years = Math.floor(seconds / (3600 * 24 * 30 * 365));
+    seconds -= years * 3600 * 24 * 30 * 365;
+
+    var months = Math.floor(seconds / (3600 * 24 * 30));
+    seconds -= months * 3600 * 24 * 30;
+
+    var days = Math.floor(seconds / (3600 * 24));
+    seconds -= days * 3600 * 24;
+
+    var hrs = Math.floor(seconds / 3600);
+    seconds -= hrs * 3600;
+
+    var mnts = Math.floor(seconds / 60);
+    seconds -= mnts * 60;
+    return (years + " yrs, " + months + " months, " + days + " days, " + hrs + " Hrs, " + mnts + " Minutes, " + seconds + " Seconds");
+}
+
+
+function SecondsToHHMMSS(totalSeconds) {
+    var hours = Math.floor(totalSeconds / 3600);
+    var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+    var seconds = totalSeconds - (hours * 3600) - (minutes * 60);
+
+    // round seconds
+    seconds = Math.round(seconds * 100) / 100
+
+    var result = (hours < 10 ? "0" + hours : hours);
+    result += ":" + (minutes < 10 ? "0" + minutes : minutes);
+    result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+    return result;
+}
+
+/*** Seconds to Time Duration *******/

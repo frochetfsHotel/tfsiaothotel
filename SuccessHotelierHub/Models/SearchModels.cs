@@ -1451,6 +1451,7 @@ namespace SuccessHotelierHub.Models
         public bool IsActive { get; set; }
         public bool IsRecordActivity { get; set; }
         public int TotalCount { get; set; }
+        public double? TotalLoggedInDurationInSeconds { get; set; }
     }
     #endregion
 
@@ -1562,6 +1563,12 @@ namespace SuccessHotelierHub.Models
         [DisplayName("User")]
         public Guid? UserId { get; set; }
 
+        [DisplayName("User Name")]
+        public string UserName { get; set; }
+
+        [DisplayName("User Email")]
+        public string UserEmail { get; set; }
+
         [DisplayName("Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
@@ -1586,6 +1593,7 @@ namespace SuccessHotelierHub.Models
         public string Description { get; set; }
         public string IpAddress { get; set; }
         public string RecordedOn { get; set; }
+        public double? LoggedInDurationInSeconds { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }
@@ -1794,6 +1802,12 @@ namespace SuccessHotelierHub.Models
 
         public int UserId { get; set; }
 
+        [DisplayName("User Name")]
+        public string UserName { get; set; }
+
+        [DisplayName("User Email")]
+        public string UserEmail { get; set; }
+
         [DisplayName("Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0 : dd/MM/yyyy}", ApplyFormatInEditMode = true)]
@@ -1898,6 +1912,12 @@ namespace SuccessHotelierHub.Models
         public Guid? UserGUID { get; set; }
 
         public int UserId { get; set; }
+
+        [DisplayName("User Name")]
+        public string UserName { get; set; }
+
+        [DisplayName("User Email")]
+        public string UserEmail { get; set; }
 
         [DisplayName("Start Date")]
         [DataType(DataType.Date)]

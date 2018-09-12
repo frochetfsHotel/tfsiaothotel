@@ -167,7 +167,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("CVV #")]
         //[StringLength(4, MinimumLength = 3, ErrorMessage = "CVV # must be only 3 or 4 digits.")]
-        [StringLength(3, ErrorMessage = "Please enter only 3 digits.")]
+        [StringLength(4, MinimumLength = 3, ErrorMessage = "Please enter only 3 or 4 digits.")]
         public string CVVNo { get; set; }
 
         [DisplayName("Pre-Authorised Approval Code")]

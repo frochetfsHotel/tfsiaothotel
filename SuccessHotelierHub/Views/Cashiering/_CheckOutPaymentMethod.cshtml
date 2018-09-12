@@ -84,7 +84,7 @@
         </div>
         <div class="col-md-4 divCreditCardInfo m-t-sm">
             @Html.LabelFor(m => m.CVVNo)
-            @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "3" })
+            @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "4" })
         </div>
     </div>
     <div class="row m-t-sm">
@@ -250,7 +250,7 @@
 
         //CVV
         html += '<td>'
-        html += '<input id="CardVerificationValue_' + rowNumber + '" name="CardVerificationValue_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" maxlength="3" />'
+        html += '<input id="CardVerificationValue_' + rowNumber + '" name="CardVerificationValue_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_' + rowNumber + '" maxlength="4" />'
         html += '</td>'
 
         html += '</tr>';
@@ -373,7 +373,7 @@
                 }
                 else {
                     if (!IsValidCVVNo(CVVNo)) {
-                        errorText += "Please enter valid CVV number." + Delimeter.BREAKLINE;
+                        errorText += "Please enter valid CVV number. Its must be only 3 or 4 digits." + Delimeter.BREAKLINE;
                         blnValid = false
                     }
                 }

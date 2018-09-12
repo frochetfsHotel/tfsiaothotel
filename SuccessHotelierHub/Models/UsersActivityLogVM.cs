@@ -33,5 +33,9 @@ namespace SuccessHotelierHub.Models
         public DateTime? UpdatedOn { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+
+        public double? LoggedInDurationInSeconds { get; set; }
+
+        public string SessionId { get; set; }
     }
 }

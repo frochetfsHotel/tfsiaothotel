@@ -214,6 +214,21 @@ namespace SuccessHotelierHub.Repository
             return userId;
         }
 
+        public string UpdateIsLoggedInFlag(Guid id, bool isLoggedIn = false)
+        {
+            string userId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@IsLoggedIn", Value = isLoggedIn },
+                };
+
+            userId = Convert.ToString(DALHelper.ExecuteScalar("UpdateIsLoggedInFlag", parameters));
+
+            return userId;
+        }
+
         #endregion
 
         #region User Role Mapping

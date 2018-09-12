@@ -45,19 +45,24 @@
                     </div>
                 </div>
 
-
+                <div class="row m-t-md">
+                    <div class="col-md-12">
+                        <label class="label-bold">Total Duration : </label> <code>y : years; M: months; d: days; h: hours; m: minutes; s: seconds</code>
+                    </div>
+                </div>
 
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblStudent">
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th class="">Name</th>
-                                    <th class="">Email</th>
-                                    <th class="width85">Status</th>
-                                    <th class="width85">Record Activity</th>
-                                    <th class="width230">Action</th>
+                                    <th class=""></th>
+                                    <th class="width_10">Name</th>
+                                    <th class="width_20">Email</th>
+                                    <th class="width_5">Status</th>
+                                    <th class="width_10">Record Activity</th>
+                                    <th class="width_15">Total Duration</th>
+                                    <th class="width_30">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -191,6 +196,19 @@
             },
             {
                 targets: 5,
+                data: "TotalLoggedInDurationInSeconds",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var totalLoggedInDurationInSeconds = full.TotalLoggedInDurationInSeconds;
+                    if (!IsNullOrEmpty(totalLoggedInDurationInSeconds) && totalLoggedInDurationInSeconds != "0") {
+                        return secondsToString(totalLoggedInDurationInSeconds);
+                    } else {
+                        return "";
+                    }
+                }
+            },
+            {
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
