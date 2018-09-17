@@ -105,7 +105,11 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Password", Value = user.Password },
                     new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
                     new SqlParameter { ParameterName = "@UserId", Value = user.UserId },
-                    new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },                    
+                    new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },
+                    new SqlParameter { ParameterName = "@Address", Value = user.Address },
+                    new SqlParameter { ParameterName = "@TelephoneNo", Value = user.TelephoneNo },
+                    new SqlParameter { ParameterName = "@IsFromRegistrationPage", Value = user.IsFromRegistrationPage },
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = user.CollegeGroupId },
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = user.CreatedBy }
                 };
@@ -127,6 +131,9 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
                     new SqlParameter { ParameterName = "@IsRecordActivity", Value = user.IsRecordActivity },
                     new SqlParameter { ParameterName = "@CashierNumber", Value = user.CashierNumber },
+                    new SqlParameter { ParameterName = "@Address", Value = user.Address },
+                    new SqlParameter { ParameterName = "@TelephoneNo", Value = user.TelephoneNo },
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = user.CollegeGroupId },
                     new SqlParameter { ParameterName = "@IsActive", Value = user.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = user.UpdatedBy }
                 };
@@ -159,6 +166,8 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@UserRoleId", Value = model.UserRoleId },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Email", Value = model.Email },
+                    new SqlParameter { ParameterName = "@IsFromRegistrationPage", Value = model.IsFromRegistrationPage },
+                    new SqlParameter { ParameterName = "@IsLoginCredentialSent", Value = model.IsLoginCredentialSent },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -225,6 +234,77 @@ namespace SuccessHotelierHub.Repository
                 };
 
             userId = Convert.ToString(DALHelper.ExecuteScalar("UpdateIsLoggedInFlag", parameters));
+
+            return userId;
+        }
+
+        public List<UserVM> GetTutorDetails()
+        {
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTutorDetails");
+
+            var user = new List<UserVM>();
+            user = DALHelper.CreateListFromTable<UserVM>(dt);
+
+            return user;
+        }
+
+        public List<UserVM> GetTutorDetailByCollegeGroupId(Guid? collegeGroupId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = collegeGroupId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetTutorDetailByCollegeGroupId", parameters);
+
+            var user = new List<UserVM>();
+            user = DALHelper.CreateListFromTable<UserVM>(dt);
+
+            return user;
+        }
+
+        public List<UserVM> GetUserDetailByRoleId(Guid userRoleId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@UserRoleId", Value = userRoleId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserDetailByRoleId", parameters);
+
+            var user = new List<UserVM>();
+            user = DALHelper.CreateListFromTable<UserVM>(dt);
+
+            return user;
+        }
+
+        public string UpdateUserStatus(Guid id, bool isActive = false)
+        {
+            string userId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@IsActive", Value = isActive },
+                };
+
+            userId = Convert.ToString(DALHelper.ExecuteScalar("UpdateUserStatus", parameters));
+
+            return userId;
+        }
+
+
+        public string UpdateLoginCredentialSentFlag(Guid id, bool isLoginCredentialSent = false)
+        {
+            string userId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@IsLoginCredentialSent", Value = isLoginCredentialSent },
+                };
+
+            userId = Convert.ToString(DALHelper.ExecuteScalar("UpdateLoginCredentialSentFlag", parameters));
 
             return userId;
         }
@@ -305,6 +385,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Email", Value = model.Email },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
@@ -426,7 +507,6 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
-
-       
+               
     }
 }

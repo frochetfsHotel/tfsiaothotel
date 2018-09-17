@@ -1334,6 +1334,12 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Email")]
         public string Email { get; set; }
 
+        [DisplayName("From Registration Page")]
+        public bool IsFromRegistrationPage { get; set; }
+
+        [DisplayName("Login Credential Sent")]
+        public bool IsLoginCredentialSent { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -1390,6 +1396,12 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Email")]
         public string Email { get; set; }
 
+        [DisplayName("College Group")]        
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("College Group Name")]
+        public string CollegeGroupName { get; set; }
+
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
     }
@@ -1404,6 +1416,12 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Email")]
         public string Email { get; set; }
+
+        [DisplayName("College Group")]        
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("College Group Name")]
+        public string CollegeGroupName { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
@@ -2478,9 +2496,7 @@ namespace SuccessHotelierHub.Models
         public int TotalCount { get; set; }
     }
     #endregion
-
-
-
+    
     #region Search User Group
 
     public class SearchUserGroupParametersVM
@@ -2570,6 +2586,44 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Currency Symbol")]
         public string CurrencySymbol { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+
+        public int TotalCount { get; set; }
+    }
+    #endregion
+
+    #region Search College Group
+
+    public class SearchCollegeGroupParametersVM
+    {
+        public SearchCollegeGroupParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }        
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchCollegeGroupResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Description")]
+        public string Description { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }

@@ -42,15 +42,15 @@
                             @Html.LabelFor(m => m.UserGroupId)
                             @Html.DropDownListFor(m => m.UserGroupId,
                                 (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- User Group --",
-                                htmlAttributes: new { @class = "form-control" })                            
+                                htmlAttributes: new { @class = "form-control" })
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.UserRoleId)
                             @Html.DropDownListFor(m => m.UserRoleId,
                                 (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- User Role --",
                                 htmlAttributes: new { @class = "form-control" })
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
@@ -58,29 +58,62 @@
                             @Html.LabelFor(m => m.Email)
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         </div>
-                        <div class="col-md-2 form-group mt_25">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 form-group m-t-sm">
+                            <label class="container1" for="IsFromRegistrationPage">
+                                From Registration Page
+                                @Html.CheckBoxFor(m => m.IsFromRegistrationPage)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-9 form-group text-right">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchUser()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearUser()">Clear</button>
                         </div>
+                        <div class="clearfix"></div>
                     </div>
                 </div>
 
-
+                <div class="col-xs-12 padding-zero m-t" id="divMultipleAction" style="display:none;">
+                    <div class="row text-left">
+                        <div class="col-md-2">
+                            <button type="button" id="btnSendEmail" class="btn bg-orange btn-sm" onclick="sendEmailToMultipleUser();">Send Credentials</button>
+                        </div>
+                        <div class="col-md-6 user-list-radio">
+                            <label class="container_radio" for="rbIsPending">
+                                <span>Pending</span>
+                                <input type="radio" class="cursor-P flat-red" id="rbIsPending" name="IsLoginCredentialSent" checked value="false">
+                                <span class="checkmark_radio"></span>
+                            </label>
+                            <label class="container_radio ml-35" for="rbIsSent">
+                                <span>Sent</span>
+                                <input type="radio" class="cursor-P flat-red" id="rbIsSent" name="IsLoginCredentialSent" value="true">
+                                <span class="checkmark_radio"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblUser">
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th class="">User Group</th>
-                                    <th class="">Name</th>
-                                    <th class="">Email</th>
-                                    <th class="">User Role</th>
-                                    <th class="">Status</th>
-                                    <th class="">Password</th>
-                                    <th class="">Record Activity</th>
-                                    <th class="width210">Action</th>
+                                    <th class="width_5">
+                                        <label class="container1" for="chkAllUser">
+                                            <input type="checkbox" class="chkAllUser" id="chkAllUser" name="chkAllUser" value="All">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </th>
+                                    <th class="width_10">User Group</th>
+                                    <th class="width_10">Name</th>
+                                    <th class="width_20">Email</th>
+                                    <th class="width_10">User Role</th>
+                                    <th class="width_5">Status</th>
+                                    <th class="width_10">Password</th>
+                                    <th class="width_5">Record Activity</th>
+                                    <th class="width_25">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -99,6 +132,7 @@
 <script type="text/javascript">
     var currentPage = 1;
     var grdUser;
+    var selectedUserIds = [];
 
     $(document).ready(function () {
         setTimeout(InitializeUserGrid, 200);
@@ -108,6 +142,21 @@
                 $("#btnSearch").click();
             }
         });
+
+        //Checkbox all change event.
+        $("#chkAllUser").change(function () {
+            if (this.checked) {
+                $('.chkUser').prop("checked", true).trigger("change");
+            } else {
+                //$('.chkUser').prop("checked", false).trigger("change");
+                ClearUserIdsArray();
+            }
+        });
+
+        //Email Pending / Sent Change event.
+        $("input[name=IsLoginCredentialSent]").change(function(e){
+            searchUser();
+        });
     });
 
 
@@ -116,12 +165,17 @@
         var email = $('#Email').val();
         var userRoleId = $('#UserRoleId').val();
         var userGroupId = $('#UserGroupId').val();
+        var isFromRegistrationPage = $('#IsFromRegistrationPage').prop('checked');
+        var emailStatus =  $('input[name=IsLoginCredentialSent]:checked').val();
+        var isLoginCredentialSent = parseBoolean(emailStatus);
 
         d.PageNum = currentPage;
         d.Name = name;
         d.Email = email;
         d.UserRoleId = userRoleId;
         d.UserGroupId = userGroupId;
+        d.IsFromRegistrationPage = isFromRegistrationPage;
+        d.IsLoginCredentialSent = isLoginCredentialSent;
     }
 
     function UserGridDataBound(response) {
@@ -157,6 +211,15 @@
                 },
                 complete: function () {
                     hideLoader();
+
+                    var isFromRegistrationPage = $('#IsFromRegistrationPage').prop('checked');
+                    if(isFromRegistrationPage){
+                        grdUser.column(0).visible(true); //Show check box.
+                        BindCheckBoxUserChangeEvent();
+                    }else{
+                        grdUser.column(0).visible(false); //Hide check box.
+                    }
+
                 },
                 url: '@Url.Content("~/User/Search")',
                 data: SearchUserParameters,
@@ -177,8 +240,22 @@
             {
                 targets: 0,
                 data: "CreatedOn",
-                orderable: true,
-                "visible": false
+                orderable: false,
+                //visible: $('#IsFromRegistrationPage').prop('checked') == true ? true : false,
+                render: function (data, type, full, meta) {
+                    var chkBox = "";
+                    var checked = "";
+                    if (selectedUserIds != null && selectedUserIds.length > 0) {
+                        if (arrayContains(full.Id, selectedUserIds) == true) {
+                            checked = "checked";
+                        }
+                    }
+
+                    chkBox += "<label class='container1' for='chkUser_" + full.Id + "'>";
+                    chkBox += "<input type='checkbox' class='chkUser' id='chkUser_" + full.Id + "' name='chkUser_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
+                    chkBox += "<span class='checkmark'></span> </label>";
+                    return chkBox;
+                }
             },
             {
                 targets: 1,
@@ -186,7 +263,7 @@
                 orderable: true,
                 render: function (data, type, full, meta) {
                     var userGroupName   = full.UserGroupName;
-                    var currencyCode    = full.CurrencyCode;                    
+                    var currencyCode    = full.CurrencyCode;
                     var userGroup       = "";
 
                     if(!IsNullOrEmpty(userGroupName)) {
@@ -310,6 +387,15 @@
 
     function searchUser() {
         currentPage = 1;
+        ClearUserIdsArray();
+
+        var isFromRegistrationPage = $('#IsFromRegistrationPage').prop('checked');
+        if(isFromRegistrationPage){
+            $('#divMultipleAction').show();
+        }else{
+            $('#divMultipleAction').hide();
+        }
+
         ReloadUserGrid();
     }
 
@@ -318,6 +404,11 @@
         $('#Name').val('');
         $('#Email').val('');
         $('#UserGroupId').val('');
+        $('#IsFromRegistrationPage').prop('checked', false);
+        $('#rbIsPending').prop('checked', true);
+
+        selectedUserIds = [];
+        $('#chkAllUser').prop("checked", false);
 
         searchUser();
     }
@@ -365,9 +456,78 @@
                 });
             }
         });
-
-
     }
+
+    /************** Send Credentials in Email : START *******************/
+
+    function BindCheckBoxUserChangeEvent() {
+        $(".chkUser").change(function () {
+            if (this.checked) {
+                AddUserIdIntoArray($(this).val());
+            } else {
+                RemoveUserIdFromArray($(this).val());
+            }
+        });
+    }
+
+    function AddUserIdIntoArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedUserIds.push(id);
+        }
+    }
+
+    function RemoveUserIdFromArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedUserIds = RemoveArrayItemByValue(id, selectedUserIds);
+        }
+    }
+
+    function ClearUserIdsArray() {
+        selectedUserIds = [];
+        $(".chkUser").prop("checked", false);
+        $("#chkAllUser").prop("checked", false);
+    }
+
+    function sendEmailToMultipleUser() {
+
+        if (selectedUserIds != null && selectedUserIds.length > 0) {
+            //Ajax request to send credentials in email.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                async:true,
+                url: '@Url.Content("~/User/SendLoginCredentials")',
+                type: 'POST',
+                data: { ids: selectedUserIds },
+                success: function (response) {
+                    if(!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == true) {
+
+                            //ClearUserIdsArray();
+                            clearUser();
+
+                            var msg = response.data;
+                            showToaster(msg, ToasterType.SUCCESS);
+                        }
+                        else {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                    }
+                }
+            });
+        } else {
+            showToaster("Please select at least one checkbox to send email.", ToasterType.ERROR);
+        }
+    }
+    /************** Send Credentials in Email : END *******************/
+
 </script>
 
 

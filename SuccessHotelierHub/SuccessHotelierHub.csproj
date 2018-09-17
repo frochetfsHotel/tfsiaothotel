@@ -272,6 +272,7 @@
     <Compile Include="Models\CheckInPaymentMethodVM.cs" />
     <Compile Include="Models\CheckOutPaymentMethodVM.cs" />
     <Compile Include="Models\CityVM.cs" />
+    <Compile Include="Models\CollegeGroupVM.cs" />
     <Compile Include="Models\CompanyVM.cs" />
     <Compile Include="Models\CountryVM.cs" />
     <Compile Include="Models\CurrencyVM.cs" />
@@ -358,6 +359,7 @@
     <Compile Include="Repository\CalendarNotesRepository.cs" />
     <Compile Include="Repository\CheckInCheckOutRepository.cs" />
     <Compile Include="Repository\CityRepository.cs" />
+    <Compile Include="Repository\CollegeGroupRepository.cs" />
     <Compile Include="Repository\CompanyRepository.cs" />
     <Compile Include="Repository\CountryRepository.cs" />
     <Compile Include="Repository\CurrencyRepository.cs" />

@@ -45,6 +45,8 @@ $.fn.serializeObject = function () {
     return o;
 };
 
+
+
 var StatusCode = {
     SUCCESS: 200,
     FAILURE: 400
@@ -138,6 +140,10 @@ function showAlert(message, className) {
 
 function hideAlert() {
     setTimeout(function () { $('#dvAlert').fadeOut('slow') }, 5000);
+}
+
+function hideAlert_V2(timeout) {
+    setTimeout(function () { $('#dvAlert').fadeOut('slow') }, timeout);
 }
 
 function closeAlert() {
@@ -610,7 +616,7 @@ function html_entity_decode(message) {
     });
 }
 function parseBoolean(value) {
-    if (value == 'True' || value == 'true') {
+    if (value == 'True' || value == 'true' || value == '1') {
         return true;
     } else {
         return false;

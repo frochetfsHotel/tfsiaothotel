@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
+using System.IO;
 
 namespace SuccessHotelierHub.Controllers
 {
@@ -18,6 +19,7 @@ namespace SuccessHotelierHub.Controllers
         private UserPageRepository userPageRepository = new UserPageRepository();
         private PageRepository pageRepository = new PageRepository();
         private UserGroupRepository userGroupRepository = new UserGroupRepository();
+        private CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
 
         #endregion
 
@@ -43,10 +45,13 @@ namespace SuccessHotelierHub.Controllers
                                     }
                                 ), "Value", "Text").ToList();
 
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+
             var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
 
             ViewBag.UserRoleList = userRoleList;
             ViewBag.UserGroupList = userGroupList;
+            ViewBag.CollegeGroupList = collegeGroupList;
 
             UserVM model = new UserVM();
             if (studentRoleId != null)
@@ -93,6 +98,8 @@ namespace SuccessHotelierHub.Controllers
                 model.CashierNumber = (firstTwoCharactersOfName + newUserId).ToUpper();
 
                 #endregion Generate Cashier Number
+
+                model.IsFromRegistrationPage = false;
 
                 userId = userRepository.AddUserDetail(model);
 
@@ -191,8 +198,11 @@ namespace SuccessHotelierHub.Controllers
                                     }
                                 ), "Value", "Text").ToList();
 
+                var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+
                 ViewBag.UserRoleList = userRoleList;
                 ViewBag.UserGroupList = userGroupList;
+                ViewBag.CollegeGroupList = collegeGroupList;
 
                 //Check Delete Access For Profile Page
                 var profilePageAccessRights = userPageRepository.GetUserPageAccessRights(id, "INDIVIDUALPROFILE").FirstOrDefault();
@@ -581,6 +591,89 @@ namespace SuccessHotelierHub.Controllers
             catch (Exception e)
             {
                 Utility.Utility.LogError(e, "CreateNewPassword");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+        
+        public ActionResult GetTutorDetailByCollegeGroupId(Guid collegeGroupId)
+        {
+            try
+            {
+                var tutorList = userRepository.GetTutorDetailByCollegeGroupId(collegeGroupId);
+
+                if (tutorList != null && tutorList.Count() > 0)
+                    return Json(new { IsSuccess = true, data = tutorList.ToList() }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { IsSuccess = false, data = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetTutorDetailByCollegeGroupId");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult SendLoginCredentials(List<Guid> ids)
+        {
+            try
+            {
+                if (ids != null)
+                {
+                    foreach(var id in ids)
+                    {
+                        var user = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+                        if(user != null)
+                        {
+                            string bodyMsg = "";
+                            string email = string.Empty;
+                            email = user.Email;
+
+                            using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/WelcomeUser.html")))
+                            {
+                                bodyMsg = sr.ReadToEnd();
+                                                                
+                                bodyMsg = bodyMsg.Replace("[@UserName]", user.Name);
+                                bodyMsg = bodyMsg.Replace("[@Email]", email);
+                                bodyMsg = bodyMsg.Replace("[@Password]", Utility.Utility.Decrypt(user.Password, Utility.Utility.EncryptionKey));
+                                bodyMsg = bodyMsg.Replace("[@CashierName]", LogInManager.UserName);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(email))
+                            {
+                                //Send Email.
+                                string EmailSubject = "Welcome to Hotelier Hub";
+
+                                bool blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg);
+
+                                if (blnMailSend)
+                                {
+                                    //Update flags : IsLoginCredentialSent = true, IsActive = true.
+                                    userRepository.UpdateLoginCredentialSentFlag(user.Id, true);
+                                }
+                            }
+                        }
+                    }
+
+                    return Json(new
+                    {
+                        IsSuccess = true,                        
+                        data = "Login credentials email send successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Please select at least one checkbox to send email."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SendLoginCredentials");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

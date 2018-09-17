@@ -60,5 +60,27 @@ namespace SuccessHotelierHub.Models
 
         public DateTime? LastLoggedOn { get; set; }
         public bool? IsLoggedIn { get; set; }
+
+        [Display(Name = "Address")]
+        public string Address { get; set; }
+
+        [Display(Name = "Telephone Number")]        
+        public string TelephoneNo { get; set; }
+
+        public bool? IsFromRegistrationPage { get; set; }
+
+        [DisplayName("College Group")]
+        [Required(ErrorMessage = "Please select college group.")]
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("College Group Name")]
+        public string CollegeGroupName { get; set; }
+
+        [DisplayName("Tutor")]
+        [Required(ErrorMessage = "Please select tutor.")]
+        public Guid? TutorId { get; set; }
+
+        public bool? IsLoginCredentialSent { get; set; }
+
     }
 }

@@ -18,6 +18,7 @@ namespace SuccessHotelierHub.Controllers
         private UserRepository userRepository = new UserRepository();
         private UsersActivityLogRepository usersActivityLogRepository = new UsersActivityLogRepository();
         private ReservationRepository reservationRepository = new ReservationRepository();
+        private CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
 
         #endregion
 
@@ -30,6 +31,9 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult List()
         {
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+            ViewBag.CollegeGroupList = collegeGroupList;
+
             return View();
         }
 
@@ -86,8 +90,11 @@ namespace SuccessHotelierHub.Controllers
 
             if (students != null && students.Count > 0)
             {
+                var tutorDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+
                 ViewBag.Students = students;
                 ViewBag.TutorId = id;
+                ViewBag.TutorName = tutorDetail.Name;
 
                 return View();
             }

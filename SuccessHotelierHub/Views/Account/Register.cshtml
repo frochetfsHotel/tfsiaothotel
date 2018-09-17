@@ -4,55 +4,91 @@
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
-<div class="register-box">
-    <div class="register-logo">
-        <a href="#"><b>Hotelier</b>Hub</a>
+<div id="image-head" class="image-head grandParentContaniner">
+    <div class="centering-hack parentContainer">
+
+        <div class="register-box register-box-margin">
+            <div class="register-logo">
+                <a href="#"><b>Hotelier </b>Hub</a>
+            </div>
+            <div class="register-box-body">
+                <p class="login-box-msg">Register with Hotelier Hub</p>
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "frmRegister", enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <div class="alert alert-success" id="dvAlert" role="alert" style="display: none">
+                            <button type="button" class="close" aria-label="Close" onclick="$('.alert').fadeOut('slow');"><span>&times;</span></button>
+                            <span id="spMessage"></span>
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" }) *
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name *" })
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.Address, new { @class = "required-label" })
+                        @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @rows = "3", placeholder = "Address" })
+                        <span class="fa fa-address-card form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.Email, new { @class = "required-label" }) *
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email *" })
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.TelephoneNo, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone Number" })
+                        <span class="fa fa-phone form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.CollegeGroupId, new { @class = "required-label" }) *
+                        @Html.DropDownListFor(m => m.CollegeGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group--",
+                                htmlAttributes: new { @class = "form-control", onchange = "loadTutorDetail();" })
+                        @Html.ValidationMessageFor(m => m.CollegeGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.TutorId, new { @class = "required-label" }) *
+                        @Html.DropDownList("TutorId", new List<SelectListItem>
+                {
+                        new SelectListItem{ Text="-- Select Tutor --", Value = "" }
+                },
+                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.TutorId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.LabelFor(m => m.UserGroupId, new { @class = "required-label" }) *
+                        @Html.DropDownListFor(m => m.UserGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- Select User Group --",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.UserGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-xs-12">
+                            <button type="button" class="btn btn-primary btn-block btn-flat" id="btnRegister" onclick="saveUserDetail();">Register</button>
+                        </div>
+                        @*<div class="col-xs-12 m-t-sm">
+                                <a href="@Url.Action("Login","Account")" class="text-center">I already have a login</a>
+                            </div>*@
+                    </div>
+                }
+
+            </div>
+            <!-- /.form-box -->
+        </div>
+        <!-- /.register-box -->
     </div>
-    <div class="register-box-body">
-        <p class="login-box-msg">Register with Hotelier Hub</p>
-        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id="frmRegister", enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            <div class="form-group has-feedback">
-                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
-                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group has-feedback">
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group has-feedback">
-                @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password", type = "password" })      
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group has-feedback">
-                @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm Password", type = "password" })
-                <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-            </div>
-            <div class="row text-center">
-                <!-- /.col -->
-                <div class="col-xs-12">
-                    <button type="button" class="btn btn-primary btn-block btn-flat" id="btnRegister" onclick="saveUserDetail();">Register</button>
-                </div>
-                <div class="col-xs-12 m-t-sm">
-                    <a href="@Url.Action("Login","Account")" class="text-center">I already have a login</a>
-                </div>
-                <!-- /.col -->
-            </div>
-        }
-        
-    </div>
-    <!-- /.form-box -->
 </div>
-<!-- /.register-box -->
-
-
-
 <script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
     function validateUserDetail() {
 
         var errorMessage = "";
@@ -64,6 +100,58 @@
         return blnValid;
     }
 
+    function clearUserDetail() {
+        $('form#frmRegister #Name').val('');
+        $('form#frmRegister #Address').val('');
+        $('form#frmRegister #Email').val('');
+        $('form#frmRegister #TelephoneNo').val('');
+        $('form#frmRegister #TutorId').val('');
+        $('form#frmRegister #UserGroupId').val('');
+
+        hideAlert_V2(30000);
+    }
+
+    function loadTutorDetail() {
+        var collegeGroupId = $('form#frmRegister #CollegeGroupId').val();
+
+        if (!IsNullOrEmpty(collegeGroupId)) {
+            //Call ajax to get tutor details by college group id.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/User/GetTutorDetailByCollegeGroupId")',
+                type: 'GET',
+                data: {
+                    collegeGroupId: collegeGroupId
+                },
+                success: function (result) {
+                    if (!IsNullOrEmpty(result)) {
+                        var optionHtml = "";
+                        optionHtml += "<option value=''>-- Select Tutor --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].Id + "'>" + result.data[i].Name + "</option>";
+                            }
+                        }
+                        $('form#frmRegister #TutorId').html(optionHtml);
+                    }
+                }
+            });
+        } else {
+            //Remove all <option> items from dropdown except first <option> item.
+            //$('form#frmRegister #TutorId').children('option:not(:first)').remove();
+
+            $('form#frmRegister #TutorId').html("");
+            $('form#frmRegister #TutorId').append($("<option></option>").val("").html("-- Select Tutor --"));
+        }
+    }
 
     function saveUserDetail() {
 
@@ -82,13 +170,19 @@
                 type: 'POST',
                 data: $('#frmRegister').serialize(),
                 success: function (response) {
-                    if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                    else {
-                        showToaster("You have registered successfully.", ToasterType.SUCCESS);
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var email = $('form#frmRegister #Email').val();
 
-                        redirectTo('@Url.Content("~/Account/Login")');                        
+                            var msg = "";
+                            msg = "You will get an invitation email shortly from the administration at your <a href='mailto:" + email + "'>" + email + " </a> mail account. Thanks!";
+                            showAlert(msg, Alert.SUCCESS);
+
+                            clearUserDetail();
+                        }
                     }
                 }
             });

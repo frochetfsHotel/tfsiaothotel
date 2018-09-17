@@ -717,6 +717,9 @@ label{
 .ml_25 {
     margin-left:25px !important;
 }
+.ml-35 {
+    margin-left: 35px;
+}
 
 .mr_5 {
     margin-right:5px !important;
@@ -841,10 +844,20 @@ label{
     margin-bottom: 12px;
     cursor: pointer;
     font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
+}
+
+
+.user-list-radio .checkmark_radio {
+    top: 6px;
+    left: -22px;
+}
+.user-list-radio .container_radio span {
+    font-size: 14px;
+    font-weight: 600;
+}
+.user-list-radio .container_radio {
+    display: inline;
 }
 
 /* Hide the browser's default radio button */
@@ -1156,4 +1169,8 @@ div.input-group-addon {
 }
 .table-responsive .table-bordered {
     border: 1px solid #f4f4f4;
+}
+
+.register-box-margin{
+    margin: 2% auto !important;
 }

@@ -30,16 +30,23 @@
         <form class="frmTutorList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
-                    <div class="row">                        
-                        <div class="col-md-4 form-group">
+                    <div class="row">      
+                        <div class="col-md-3 form-group">
+                            @Html.LabelFor(m => m.CollegeGroupId, new { @class = "required-label" })
+                            @Html.DropDownListFor(m => m.CollegeGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group--",
+                                htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.CollegeGroupId, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Email)
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         </div>
-                        <div class="col-md-4 form-group mt_25">
+                        <div class="col-md-3 form-group mt_25">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchTutor()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearTutor()">Clear</button>
                         </div>
@@ -90,11 +97,13 @@
 
     function SearchTutorParameters(d) {
         var name = $('#Name').val();
-        var email = $('#Email').val();        
+        var email = $('#Email').val();
+        var collegeGroupId = $('#CollegeGroupId').val();
 
         d.PageNum = currentPage;
         d.Name = name;
-        d.Email = email;        
+        d.Email = email;
+        d.CollegeGroupId = collegeGroupId;
     }
 
     function TutorGridDataBound(response) {
@@ -208,6 +217,7 @@
     function clearTutor() {        
         $('#Name').val('');
         $('#Email').val('');
+        $('#CollegeGroupId').val('');
 
         searchTutor();
     }

@@ -26,6 +26,13 @@
             <div class="box-body pt_10 pb-0">
                 <div class="row">
                     <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.CollegeGroupId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.CollegeGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group--",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CollegeGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.UserGroupId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.UserGroupId, (IEnumerable<SelectListItem>)ViewBag.UserGroupList, htmlAttributes: new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.UserGroupId, "", new { @class = "text-danger" })
@@ -41,11 +48,21 @@
                         @Html.LabelFor(m => m.Name, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
-                    </div>
+                    </div>                   
+                </div>
+                <div class="row">                    
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Email, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.TelephoneNo)
+                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone Number" })
+                    </div>
+                    <div class="col-md-6 form-group">
+                        @Html.LabelFor(m => m.Address)
+                        @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @rows = "3", placeholder = "Address" })
                     </div>
                 </div>
                 <div class="row">
