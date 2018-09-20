@@ -33,6 +33,7 @@ namespace SuccessHotelierHub.Controllers
         private UserGroupRepository userGroupRepository = new UserGroupRepository();
         private CurrencyRepository currencyRepository = new CurrencyRepository();
         private CompanyRepository CompanyRepository = new CompanyRepository();
+        private CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
 
         #endregion
 
@@ -1013,9 +1014,10 @@ namespace SuccessHotelierHub.Controllers
                     var user = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
                     if (user != null)
                     {
-                        if (user.UserGroupId.HasValue)
+                        var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
+                        if (collegeGroup != null)
                         {
-                            var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
+                            var userGroup = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
                             if (userGroup != null)
                             {
                                 var currency = currencyRepository.GetCurrencyInfoById(userGroup.CurrencyId).FirstOrDefault();
@@ -1244,9 +1246,11 @@ namespace SuccessHotelierHub.Controllers
                         var user = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
                         if (user != null)
                         {
-                            if (user.UserGroupId.HasValue)
+                            var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
+
+                            if (collegeGroup != null)
                             {
-                                var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
+                                var userGroup = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
                                 if (userGroup != null)
                                 {
                                     var currency = currencyRepository.GetCurrencyInfoById(userGroup.CurrencyId).FirstOrDefault();

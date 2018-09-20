@@ -8,6 +8,13 @@ namespace SuccessHotelierHub.Models
     {
         public Guid Id { get; set; }
 
+        [DisplayName("User Group")]
+        [Required(ErrorMessage = "Please select user group.")]
+        public Guid? UserGroupId { get; set; }
+
+        [DisplayName("User Group Name")]
+        public string UserGroupName { get; set; }
+
         [DisplayName("Name")]
         [Required(ErrorMessage = "Please enter name.")]
         public string Name { get; set; }

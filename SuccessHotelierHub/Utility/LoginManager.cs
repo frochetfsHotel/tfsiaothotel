@@ -19,7 +19,7 @@ namespace SuccessHotelierHub
             UserRoleRepository userRoleRepository = new UserRoleRepository();
             UserPageRepository userPageRepository = new UserPageRepository();
             UserGroupRepository userGroupRepository = new UserGroupRepository();
-            
+            CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
@@ -44,9 +44,12 @@ namespace SuccessHotelierHub
 
             var userPageAccessRights = userPageRepository.GetUserPageAccessRights(user.Id, string.Empty);
 
-            if(user.UserGroupId.HasValue)
+            var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
+
+            if(collegeGroup != null)
             {
-                var userGroup = userGroupRepository.GetUserGroupById(user.UserGroupId.Value);
+                var userGroup = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
+
                 if(userGroup != null)
                 {
                     LogInManager.UserGroup = userGroup;

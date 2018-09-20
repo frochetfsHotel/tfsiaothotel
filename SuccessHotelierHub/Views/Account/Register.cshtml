@@ -1,8 +1,16 @@
 ﻿@model SuccessHotelierHub.Models.UserVM
+@using SuccessHotelierHub.Models
 @{
     ViewBag.Title = "Register";
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
+<style>
+Html, body{
+	min-height:100% !important;
+    position: relative;
+    height: auto !important;
+}
+</style>
 
 <div id="image-head" class="image-head grandParentContaniner">
     <div class="centering-hack parentContainer">
@@ -47,25 +55,18 @@
                     <div class="form-group has-feedback">
                         @Html.LabelFor(m => m.CollegeGroupId, new { @class = "required-label" }) *
                         @Html.DropDownListFor(m => m.CollegeGroupId,
-                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group--",
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group --",
                                 htmlAttributes: new { @class = "form-control", onchange = "loadTutorDetail();" })
                         @Html.ValidationMessageFor(m => m.CollegeGroupId, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group has-feedback">
                         @Html.LabelFor(m => m.TutorId, new { @class = "required-label" }) *
                         @Html.DropDownList("TutorId", new List<SelectListItem>
-                {
-                        new SelectListItem{ Text="-- Select Tutor --", Value = "" }
-                },
-                htmlAttributes: new { @class = "form-control" })
+                        {
+                                new SelectListItem{ Text="-- Select Tutor --", Value = "" }
+                        },
+                        htmlAttributes: new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.TutorId, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group has-feedback">
-                        @Html.LabelFor(m => m.UserGroupId, new { @class = "required-label" }) *
-                        @Html.DropDownListFor(m => m.UserGroupId,
-                                (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- Select User Group --",
-                                htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.UserGroupId, "", new { @class = "text-danger" })
                     </div>
                     <div class="row text-center">
                         <div class="col-xs-12">
@@ -74,20 +75,30 @@
                         @*<div class="col-xs-12 m-t-sm">
                                 <a href="@Url.Action("Login","Account")" class="text-center">I already have a login</a>
                             </div>*@
-                    </div>
+                    </div>                   
                 }
 
             </div>
             <!-- /.form-box -->
         </div>
         <!-- /.register-box -->
+
+        <!-- TFS Footer Logo -->
+        <div class="visible-xs hidden-md hidden-sm row text-center">
+            <a href="https://www.trainingforsuccess.ie/" target="_blank">
+                <img src="https://tfshotelierhub.com/Content/img/tfs_logo.png" width="100" alt="Training For Success" title="Training For Success" />
+            </a>
+        </div>
+    </div>
+
+    <!-- TFS Footer Logo -->
+    <div class="hidden-xs visible-lg visible-md visible-sm">
+        <a href="https://www.trainingforsuccess.ie/" target="_blank">
+            <img src="https://tfshotelierhub.com/Content/img/tfs_logo.png" width="100" class="login-bottom-logo" alt="Training For Success" title="Training For Success" />
+        </a>
     </div>
 </div>
 <script type="text/javascript">
-
-    $(document).ready(function () {
-
-    });
 
     function validateUserDetail() {
 
@@ -105,8 +116,8 @@
         $('form#frmRegister #Address').val('');
         $('form#frmRegister #Email').val('');
         $('form#frmRegister #TelephoneNo').val('');
-        $('form#frmRegister #TutorId').val('');
-        $('form#frmRegister #UserGroupId').val('');
+        $('form#frmRegister #CollegeGroupId').val('');
+        $('form#frmRegister #TutorId').val('');        
 
         hideAlert_V2(30000);
     }
@@ -146,8 +157,6 @@
             });
         } else {
             //Remove all <option> items from dropdown except first <option> item.
-            //$('form#frmRegister #TutorId').children('option:not(:first)').remove();
-
             $('form#frmRegister #TutorId').html("");
             $('form#frmRegister #TutorId').append($("<option></option>").val("").html("-- Select Tutor --"));
         }

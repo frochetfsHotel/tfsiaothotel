@@ -46,11 +46,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Can Delete Profile")]
         public bool IsAllowToDeleteProfile { get; set; }
-
-        [DisplayName("User Group")]
-        [Required(ErrorMessage = "Please select user group.")]
-        public Guid? UserGroupId { get; set; }
-
+        
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

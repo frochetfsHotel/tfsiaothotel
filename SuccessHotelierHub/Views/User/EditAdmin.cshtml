@@ -1,0 +1,133 @@
+﻿@model SuccessHotelierHub.Models.UserVM
+@{
+    ViewBag.Title = "Edit Admin";
+}
+
+<section class="content-header">
+    <h1>
+        Admin <small>Edit</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">Admin</li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Admin Details</h3>
+        </div>
+        @using (Html.BeginForm("EditAdmin", "User", FormMethod.Post, new { id = "frmAdmin", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!--HIDDEN FIELD-->
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.UserId)
+            <!--HIDDEN FIELD-->
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.CollegeGroupId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.CollegeGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group --",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CollegeGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Email, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.CashierNumber, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.CashierNumber, new { @class = "form-control", placeholder = "Cashier #" })
+                        @Html.ValidationMessageFor(m => m.CashierNumber, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.TelephoneNo)
+                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone Number" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Address)
+                        @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @rows = "3", placeholder = "Address" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive)
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return updateAdmin();">Update</button>
+                <a href="@Url.Action("ListAdmin", "User")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+
+    function validateAdmin() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmAdmin").valid() == false) {
+            showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+    function updateAdmin() {
+
+        if (validateAdmin()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/User/EditAdmin")',
+                type: 'POST',
+                data: $('#frmAdmin').serialize(),
+                success: function (response) {
+                    if (response.IsSuccess == false) {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                    else {
+                        showToaster("Admin details updated successfully", ToasterType.SUCCESS);
+
+                        setTimeout(function () {
+                            redirectTo('@Url.Content("~/User/ListAdmin")');
+                        }, 1000);
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

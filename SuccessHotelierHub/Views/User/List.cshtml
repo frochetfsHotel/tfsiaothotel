@@ -1,6 +1,6 @@
 ﻿@model SuccessHotelierHub.Models.SearchUserDetailParametersVM
 @{
-    ViewBag.Title = "Search User";
+    ViewBag.Title = "Search Student";
 }
 @section styles{
     <!-- DataTables -->
@@ -13,11 +13,11 @@
 
 <section class="content-header">
     <h1>
-        User <small>List</small>
+        Student <small>List</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">User</li>
+        <li class="">Student</li>
         <li class="active">Search</li>
     </ol>
 </section>
@@ -25,30 +25,32 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search User</h3>
+            <h3 class="box-title">Search Student</h3>
             @if (LogInManager.HasRights("ADMIN"))
             {
                 <div class="pull-right box-tools">
                     <a href="@Url.Action("Create", "User")"
-                       class="btn btn-info btn-sm" style="color: #fff">Add User</a>
+                       class="btn btn-info btn-sm" style="color: #fff">Add Student</a>
                 </div>
             }
         </div>
-        <form class="frmUserList" enctype="multipart/form-data" method="post">
+        <form class="frmUserList" id="frmUserList" name="frmUserList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
                         <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.UserGroupId)
-                            @Html.DropDownListFor(m => m.UserGroupId,
-                                (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- User Group --",
-                                htmlAttributes: new { @class = "form-control" })
+                            @Html.LabelFor(m => m.CollegeGroupId)
+                            @Html.DropDownListFor(m => m.CollegeGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- College Group --",
+                                htmlAttributes: new { @class = "form-control", onchange = "loadTutorDetail();" })
                         </div>
                         <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.UserRoleId)
-                            @Html.DropDownListFor(m => m.UserRoleId,
-                                (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- User Role --",
-                                htmlAttributes: new { @class = "form-control" })
+                            @Html.LabelFor(m => m.TutorId)
+                            @Html.DropDownList("TutorId", new List<SelectListItem>
+                            {
+                                    new SelectListItem{ Text="-- Tutor --", Value = "" }
+                            },
+                            htmlAttributes: new { @class = "form-control" })
                         </div>
                         <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
@@ -67,7 +69,14 @@
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div class="col-md-9 form-group text-right">
+                        <div class="col-md-3 form-group m-t-sm">
+                            <label class="container1" for="IsViewAll">
+                                View All Students
+                                @Html.CheckBoxFor(m => m.IsViewAll)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="col-md-6 form-group text-right">
                             <button type="button" id="btnSearch" class="btn btn-success m-r-xs" onclick="searchUser()">Search</button>
                             <button type="button" id="btnClear" class="btn btn-danger" onclick="clearUser()">Clear</button>
                         </div>
@@ -106,20 +115,19 @@
                                             <span class="checkmark"></span>
                                         </label>
                                     </th>
-                                    <th class="width_10">User Group</th>
+                                    <th class="width_15">College Group</th>
+                                    <th class="width_10">Tutor</th>
                                     <th class="width_10">Name</th>
                                     <th class="width_20">Email</th>
-                                    <th class="width_10">User Role</th>
                                     <th class="width_5">Status</th>
                                     <th class="width_10">Password</th>
-                                    <th class="width_5">Record Activity</th>
                                     <th class="width_25">Action</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="text-left">
+                    <div class="text-left" id="divPaging">
                         @Html.Partial("_Pagination", new SuccessHotelierHub.Models.PaginationVM() { TokenForEnableDisableButtons = PagerName, PageChangeMethod = "UserGridPageChange" })
                     </div>
                 </div>
@@ -163,24 +171,34 @@
     function SearchUserParameters(d) {
         var name = $('#Name').val();
         var email = $('#Email').val();
-        var userRoleId = $('#UserRoleId').val();
-        var userGroupId = $('#UserGroupId').val();
+        var collegeGroupId = $('#CollegeGroupId').val();
+        var tutorId = $('#TutorId').val();
         var isFromRegistrationPage = $('#IsFromRegistrationPage').prop('checked');
+        var isViewAll = $('#IsViewAll').prop('checked');
         var emailStatus =  $('input[name=IsLoginCredentialSent]:checked').val();
         var isLoginCredentialSent = parseBoolean(emailStatus);
+
 
         d.PageNum = currentPage;
         d.Name = name;
         d.Email = email;
-        d.UserRoleId = userRoleId;
-        d.UserGroupId = userGroupId;
+        d.CollegeGroupId = collegeGroupId;
+        d.TutorId = tutorId;
         d.IsFromRegistrationPage = isFromRegistrationPage;
         d.IsLoginCredentialSent = isLoginCredentialSent;
+        d.IsViewAll = isViewAll;
     }
 
     function UserGridDataBound(response) {
         if (response.IsSuccess == true) {
-            @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            var isViewAll = $('#IsViewAll').prop('checked');
+            if(isViewAll == false){
+                $('#divPaging').show();
+                @("PagerDataBound" + PagerName)(response.CurrentPage, response.PageSize, response.TotalRecords);
+            }else{
+                $('#divPaging').hide();
+            }
+
             return response.data;
         }
         else {
@@ -259,36 +277,22 @@
             },
             {
                 targets: 1,
-                data: "UserGroupName",
-                orderable: true,
-                render: function (data, type, full, meta) {
-                    var userGroupName   = full.UserGroupName;
-                    var currencyCode    = full.CurrencyCode;
-                    var userGroup       = "";
-
-                    if(!IsNullOrEmpty(userGroupName)) {
-                        userGroup = userGroupName;
-
-                        if(!IsNullOrEmpty(currencyCode)) {
-                            userGroup = userGroup + " - " + currencyCode;
-                        }
-                    }
-                    return userGroup;
-                }
+                data: "CollegeGroupName",
+                orderable: true
             },
             {
                 targets: 2,
-                data: "Name",
+                data: "TutorName",
                 orderable: true
             },
             {
                 targets: 3,
-                data: "Email",
+                data: "Name",
                 orderable: true
             },
             {
                 targets: 4,
-                data: "UserRoleName",
+                data: "Email",
                 orderable: true
             },
             {
@@ -311,19 +315,6 @@
             },
             {
                 targets: 7,
-                data: "IsRecordActivity",
-                orderable: false,
-                render: function (data, type, full, meta) {
-                    var isRecordActivity = full.IsRecordActivity;
-                    if (isRecordActivity == true) {
-                        return "Yes";
-                    } else {
-                        return "No";
-                    }
-                }
-            },
-            {
-                targets: 8,
                 data: "Id",
                 orderable: false,
                 className: "text-left-align",
@@ -338,7 +329,7 @@
                 }
             }
             ],
-            order: [[2, "asc"]],
+            order: [[3, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
@@ -400,16 +391,17 @@
     }
 
     function clearUser() {
-        $('#UserRoleId').val('');
+        $('#CollegeGroupId').val('');
         $('#Name').val('');
         $('#Email').val('');
-        $('#UserGroupId').val('');
+        $('#TutorId').val('');
         $('#IsFromRegistrationPage').prop('checked', false);
         $('#rbIsPending').prop('checked', true);
 
         selectedUserIds = [];
         $('#chkAllUser').prop("checked", false);
 
+        $('#IsViewAll').prop('checked', false);
         searchUser();
     }
 
@@ -527,6 +519,46 @@
         }
     }
     /************** Send Credentials in Email : END *******************/
+
+    function loadTutorDetail() {
+        var collegeGroupId = $('form#frmUserList #CollegeGroupId').val();
+
+        if (!IsNullOrEmpty(collegeGroupId)) {
+            //Call ajax to get tutor details by college group id.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/User/GetTutorDetailByCollegeGroupId")',
+                type: 'GET',
+                data: {
+                    collegeGroupId: collegeGroupId
+                },
+                success: function (result) {
+                    if (!IsNullOrEmpty(result)) {
+                        var optionHtml = "";
+                        optionHtml += "<option value=''>-- Tutor --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].Id + "'>" + result.data[i].Name + "</option>";
+                            }
+                        }
+                        $('form#frmUserList #TutorId').html(optionHtml);
+                    }
+                }
+            });
+        } else {
+            //Remove all <option> items from dropdown except first <option> item.
+            $('form#frmUserList #TutorId').html("");
+            $('form#frmUserList #TutorId').append($("<option></option>").val("").html("-- Tutor --"));
+        }
+    }
 
 </script>
 

@@ -29,37 +29,17 @@ namespace SuccessHotelierHub.Controllers
             return View();
         }
 
+        #region Student CRUD
+
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
-            var userRoles = userRoleRepository.GetUserRoles();
-
-            var userRoleList = new SelectList(userRoles, "Id", "Name").ToList();
-
-            var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
-                                .Select(
-                                    m => new SelectListItem()
-                                    {
-                                        Value = m.Id.ToString(),
-                                        Text = (m.Name + " - " + m.CurrencyCode)
-                                    }
-                                ), "Value", "Text").ToList();
-
             var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
-
-            var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
-
-            ViewBag.UserRoleList = userRoleList;
-            ViewBag.UserGroupList = userGroupList;
             ViewBag.CollegeGroupList = collegeGroupList;
 
             UserVM model = new UserVM();
-            if (studentRoleId != null)
-            {
-                model.UserRoleId = studentRoleId;
-                model.Password = Utility.Utility.GenerateRandomPassword(8);
-            }
-            model.UserGroupId = userGroupRepository.GetUserGroupByName().FirstOrDefault().ID;
+            model.Password = Utility.Utility.GenerateRandomPassword(8);
+
             return View(model);
         }
 
@@ -87,10 +67,21 @@ namespace SuccessHotelierHub.Controllers
 
                 #endregion
 
+                #region Get Max. User Id
 
                 //Get Max. User Id.
                 var newUserId = (userRepository.GetMaxUserId()) + 1;
                 model.UserId = newUserId;
+
+                #endregion
+
+                #region Get Student Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
+                model.UserRoleId = studentRoleId;
+
+                #endregion
 
                 #region Generate Cashier Number
 
@@ -148,6 +139,20 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Add Tutor Student Mapping
+
+                    TutorStudentMappingVM tutorStudentMapping = new TutorStudentMappingVM();
+                    tutorStudentMapping.TutorId = model.TutorId.Value;
+                    tutorStudentMapping.StudentId = Guid.Parse(userId);
+                    tutorStudentMapping.UserId = newUserId;
+                    tutorStudentMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    tutorStudentMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                    tutorStudentMapping.IsActive = true;
+
+                    userRepository.AddUpdateTutorStudentMapping(tutorStudentMapping);
+
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -162,7 +167,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "User details not saved successfully."
+                        errorMessage = "Student details not saved successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -188,21 +193,19 @@ namespace SuccessHotelierHub.Controllers
             {
                 model = user[0];
 
-                var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
-                var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
-                                .Select(
-                                    m => new SelectListItem()
-                                    {
-                                        Value = m.Id.ToString(),
-                                        Text = (m.Name + " - " + m.CurrencyCode)
-                                    }
-                                ), "Value", "Text").ToList();
-
                 var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
-
-                ViewBag.UserRoleList = userRoleList;
-                ViewBag.UserGroupList = userGroupList;
                 ViewBag.CollegeGroupList = collegeGroupList;
+
+                var tutorList = new SelectList(userRepository.GetTutorDetailByCollegeGroupId(model.CollegeGroupId.Value), "Id", "Name");
+                ViewBag.TutorList = tutorList;
+
+                //Get existing tutor student mapping.
+                var tutorStudentMappings = userRepository.GetTutorStudentMappingByTutor(null, model.Id).FirstOrDefault();
+
+                if (tutorStudentMappings != null)
+                {
+                    model.TutorId = tutorStudentMappings.TutorId;
+                }
 
                 //Check Delete Access For Profile Page
                 var profilePageAccessRights = userPageRepository.GetUserPageAccessRights(id, "INDIVIDUALPROFILE").FirstOrDefault();
@@ -258,6 +261,14 @@ namespace SuccessHotelierHub.Controllers
                         }, JsonRequestBehavior.AllowGet);
                     }
                 }
+
+                #endregion
+
+                #region Get Student Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
+                model.UserRoleId = studentRoleId;
 
                 #endregion
 
@@ -319,6 +330,20 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Add/Update Tutor Student Mapping
+
+                    TutorStudentMappingVM tutorStudentMapping = new TutorStudentMappingVM();
+                    tutorStudentMapping.TutorId = model.TutorId.Value;
+                    tutorStudentMapping.StudentId = Guid.Parse(userId);
+                    tutorStudentMapping.UserId = model.UserId;
+                    tutorStudentMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    tutorStudentMapping.UpdatedBy = LogInManager.LoggedInUserId;
+                    tutorStudentMapping.IsActive = true;
+
+                    userRepository.AddUpdateTutorStudentMapping(tutorStudentMapping);
+
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -333,7 +358,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "User details not updated successfully."
+                        errorMessage = "Student details not updated successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -380,7 +405,7 @@ namespace SuccessHotelierHub.Controllers
                     return Json(new
                     {
                         IsSuccess = false,
-                        errorMessage = "User details not deleted successfully."
+                        errorMessage = "Student details not deleted successfully."
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -394,8 +419,6 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
         public ActionResult List()
         {
-            var userRoleList = new SelectList(userRoleRepository.GetUserRoles(), "Id", "Name").ToList();
-
             var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
                                 .Select(
                                     m => new SelectListItem()
@@ -405,8 +428,10 @@ namespace SuccessHotelierHub.Controllers
                                     }
                                 ), "Value", "Text").ToList();
 
-            ViewBag.UserRoleList = userRoleList;
             ViewBag.UserGroupList = userGroupList;
+
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+            ViewBag.CollegeGroupList = collegeGroupList;
 
             return View();
         }
@@ -465,6 +490,10 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+
+        #endregion
+        
+        #region Change Password
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult ChangePassword(Guid id)
@@ -550,6 +579,10 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        #endregion
+
+        #region Generate New Password
+
         [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
         public ActionResult CreateNewPassword(Guid id)
@@ -594,7 +627,11 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
-        
+
+        #endregion
+
+        #region Get Tutor Info By College Group
+
         public ActionResult GetTutorDetailByCollegeGroupId(Guid collegeGroupId)
         {
             try
@@ -613,6 +650,10 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
+        #endregion
+
+        #region Send Login Credentials to Users
+
         [HttpPost]
         public ActionResult SendLoginCredentials(List<Guid> ids)
         {
@@ -620,7 +661,8 @@ namespace SuccessHotelierHub.Controllers
             {
                 if (ids != null)
                 {
-                    foreach(var id in ids)
+                    bool blnMailSend = false;
+                    foreach (var id in ids)
                     {
                         var user = userRepository.GetUserDetailById(id).FirstOrDefault();
 
@@ -643,24 +685,39 @@ namespace SuccessHotelierHub.Controllers
                             if (!string.IsNullOrWhiteSpace(email))
                             {
                                 //Send Email.
-                                string EmailSubject = "Welcome to Hotelier Hub";
+                                string EmailSubject = string.Format("Welcome to Hotelier Hub - {0}", user.Name);
 
-                                bool blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg);
+                                blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg);
 
                                 if (blnMailSend)
                                 {
                                     //Update flags : IsLoginCredentialSent = true, IsActive = true.
                                     userRepository.UpdateLoginCredentialSentFlag(user.Id, true);
                                 }
+                                else
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
 
-                    return Json(new
+                    if (blnMailSend)
                     {
-                        IsSuccess = true,                        
-                        data = "Login credentials email send successfully."
-                    }, JsonRequestBehavior.AllowGet);
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            data = "Login credentials email send successfully."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = "Oops! Something went wrong. Email not send."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 else
                 {
@@ -677,6 +734,342 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+
+        #endregion
+        
+        #region Admin CRUD
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult CreateAdmin()
+        {
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+            ViewBag.CollegeGroupList = collegeGroupList;
+
+            UserVM model = new UserVM();
+            model.Password = Utility.Utility.GenerateRandomPassword(8);
+
+            return View(model);
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateAdmin(UserVM model)
+        {
+            try
+            {
+                string userId = string.Empty;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.Password = Utility.Utility.Encrypt(model.Password, Utility.Utility.EncryptionKey);
+
+                #region Check User Email Exist.
+
+                if (this.CheckUserEmailExist(model.Id, model.Email) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Email : {0} already exist.", model.Email)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                #region Get Max. User Id
+
+                //Get Max. User Id.
+                var newUserId = (userRepository.GetMaxUserId()) + 1;
+                model.UserId = newUserId;
+
+                #endregion
+
+                #region Get Admin Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var adminRoleId = userRoles.Where(m => m.Code == "ADMIN").FirstOrDefault().Id;
+                model.UserRoleId = adminRoleId;
+
+                #endregion
+
+                #region Generate Cashier Number
+
+                var firstTwoCharactersOfName = !string.IsNullOrWhiteSpace(model.Name) ? model.Name.Substring(0, 2) : "";
+                model.CashierNumber = (firstTwoCharactersOfName + newUserId).ToUpper();
+
+                #endregion Generate Cashier Number
+
+                model.IsFromRegistrationPage = false;
+                model.IsRecordActivity = true;
+
+                userId = userRepository.AddUserDetail(model);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    #region Add User Role Mapping 
+
+                    UserRoleMappingVM userRoleMapping = new UserRoleMappingVM();
+                    userRoleMapping.UserId = Guid.Parse(userId);
+                    userRoleMapping.UserRoleId = model.UserRoleId;
+                    userRoleMapping.IsActive = true;
+                    userRoleMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+
+                    userRepository.AddUpdateUserRoleMapping(userRoleMapping);
+
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Admin details not saved successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "CreateAdmin");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult EditAdmin(Guid id)
+        {
+            var user = userRepository.GetUserDetailById(id);
+
+            UserVM model = new UserVM();
+
+            if (user != null && user.Count > 0)
+            {
+                model = user[0];
+
+                var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+                ViewBag.CollegeGroupList = collegeGroupList;
+
+                return View(model);
+            }
+
+            return RedirectToAction("List");
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditAdmin(UserVM model)
+        {
+            try
+            {
+                string userId = string.Empty;
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+                model.IsRecordActivity = true;
+
+                #region Check User Email Exist.
+
+                if (this.CheckUserEmailExist(model.Id, model.Email) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Email : {0} already exist.", model.Email)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                #region Check Cashier Number Exist.
+
+                if (!string.IsNullOrWhiteSpace(model.CashierNumber))
+                {
+                    if (this.CheckCashierNumberExist(model.Id, model.CashierNumber) == false)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = string.Format("Cashier Number : {0} already exist.", model.Email)
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
+                #endregion
+
+                #region Get Admin Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var adminRoleId = userRoles.Where(m => m.Code == "ADMIN").FirstOrDefault().Id;
+                model.UserRoleId = adminRoleId;
+
+                #endregion
+
+                userId = userRepository.UpdateUserDetail(model);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    #region Add / Update User Role Mapping 
+
+                    UserRoleMappingVM userRoleMapping = new UserRoleMappingVM();
+                    userRoleMapping.UserId = Guid.Parse(userId);
+                    userRoleMapping.UserRoleId = model.UserRoleId;
+                    userRoleMapping.IsActive = true;
+                    userRoleMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                    userRepository.AddUpdateUserRoleMapping(userRoleMapping);
+
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Admin details not updated successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "EditAdmin");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult ListAdmin()
+        {
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+            ViewBag.CollegeGroupList = collegeGroupList;
+
+            return View();
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult SearchAdmin(SearchAdminDetailParametersVM model)
+        {
+            try
+            {
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "CreatedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+                var admins = userRepository.SearchAdminDetail(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+
+                int totalRecords = 0;
+                var dbRecords = admins.Select(m => m.TotalCount).FirstOrDefault();
+
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                if (admins != null && admins.Count > 0)
+                {
+                    foreach (var admin in admins)
+                    {
+                        if (!string.IsNullOrWhiteSpace(admin.Password))
+                            admin.Password = Utility.Utility.Decrypt(admin.Password, Utility.Utility.EncryptionKey);
+                    }
+                }
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    data = admins
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SearchAdmin");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult DeleteAdmin(Guid id)
+        {
+            try
+            {
+                string userId = string.Empty;                
+
+                userId = userRepository.DeleteUserDetail(id, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    #region Delete User Role Mapping
+
+                    userRepository.DeleteUserRoleMappingByUserId(id, LogInManager.LoggedInUserId);
+
+                    #endregion
+                    
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Admin details not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "Delete");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        #endregion
 
         public bool CheckUserEmailExist(Guid? userId, string email)
         {

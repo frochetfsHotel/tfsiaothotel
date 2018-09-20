@@ -217,6 +217,7 @@
     <Compile Include="Controllers\AddOnsController.cs" />
     <Compile Include="Controllers\CashieringController.cs" />
     <Compile Include="Controllers\CityController.cs" />
+    <Compile Include="Controllers\CollegeGroupController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\CountryController.cs" />
@@ -418,10 +419,13 @@
     <Content Include="Content\img\banner_1.jpg" />
     <Content Include="Content\img\banner_2.jpg" />
     <Content Include="Content\img\banner_3.jpg" />
+    <Content Include="Content\img\iaot_logo.png" />
     <Content Include="Content\img\invoice_logo.png" />
+    <Content Include="Content\img\tfs_logo.png" />
     <Content Include="Content\img\user-profile.png" />
     <Content Include="HtmlTemplates\ReservationConfirmationEmail.html" />
     <Content Include="HtmlTemplates\SendFolioReport.html" />
+    <Content Include="HtmlTemplates\WelcomeUser.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Views\Report\PreviewDailyCashReport.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
@@ -2181,6 +2185,14 @@
     <Content Include="Views\Company\List.cshtml" />
     <Content Include="Views\Report\DailyCashSheet.cshtml" />
     <Content Include="Views\Cashiering\PreviewInterimBill.cshtml" />
+    <Content Include="Views\CollegeGroup\List.cshtml" />
+    <Content Include="Views\CollegeGroup\Edit.cshtml" />
+    <Content Include="Views\CollegeGroup\Create.cshtml" />
+    <Content Include="Views\Tutor\Create.cshtml" />
+    <Content Include="Views\Tutor\StudentMapping.cshtml" />
+    <Content Include="Views\User\CreateAdmin.cshtml" />
+    <Content Include="Views\User\EditAdmin.cshtml" />
+    <Content Include="Views\User\ListAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

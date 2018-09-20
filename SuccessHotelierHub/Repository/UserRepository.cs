@@ -93,13 +93,27 @@ namespace SuccessHotelierHub.Repository
             return user;
         }
 
+        public List<UserVM> GetUserDetailByCollegeGroupId(Guid collegeGroupId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = collegeGroupId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserDetailByCollegeGroupId", parameters);
+
+            var user = new List<UserVM>();
+            user = DALHelper.CreateListFromTable<UserVM>(dt);
+
+            return user;
+        }
+
         public string AddUserDetail(UserVM user)
         {
             string userId = string.Empty;
 
             SqlParameter[] parameters =
-                {
-                    new SqlParameter { ParameterName = "@UserGroupId", Value = user.UserGroupId },
+                {                    
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
                     new SqlParameter { ParameterName = "@Password", Value = user.Password },
@@ -124,8 +138,7 @@ namespace SuccessHotelierHub.Repository
             string userId = string.Empty;
 
             SqlParameter[] parameters =
-                {
-                    new SqlParameter { ParameterName = "@UserGroupId", Value = user.UserGroupId },
+                {   
                     new SqlParameter { ParameterName = "@Id", Value = user.Id },
                     new SqlParameter { ParameterName = "@Name", Value = user.Name },
                     new SqlParameter { ParameterName = "@Email", Value = user.Email },
@@ -162,12 +175,13 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UserGroupId", Value = model.UserGroupId },
-                    new SqlParameter { ParameterName = "@UserRoleId", Value = model.UserRoleId },
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },                    
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Email", Value = model.Email },
                     new SqlParameter { ParameterName = "@IsFromRegistrationPage", Value = model.IsFromRegistrationPage },
                     new SqlParameter { ParameterName = "@IsLoginCredentialSent", Value = model.IsLoginCredentialSent },
+                    new SqlParameter { ParameterName = "@IsViewAll", Value = model.IsViewAll },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
@@ -309,6 +323,48 @@ namespace SuccessHotelierHub.Repository
             return userId;
         }
 
+        public List<SearchTutorDetailResultVM> SearchTutorDetail(SearchTutorDetailParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchTutorDetail", parameters);
+
+            var tutors = new List<SearchTutorDetailResultVM>();
+            tutors = DALHelper.CreateListFromTable<SearchTutorDetailResultVM>(dt);
+
+            return tutors;
+        }
+
+        public List<SearchAdminDetailResultVM> SearchAdminDetail(SearchAdminDetailParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchAdminDetail", parameters);
+
+            var admins = new List<SearchAdminDetailResultVM>();
+            admins = DALHelper.CreateListFromTable<SearchAdminDetailResultVM>(dt);
+
+            return admins;
+        }
+
         #endregion
 
         #region User Role Mapping
@@ -380,28 +436,7 @@ namespace SuccessHotelierHub.Repository
         #endregion
 
         #region Tutor Student Mapping
-
-        public List<SearchTutorDetailResultVM> SearchTutorDetail(SearchTutorDetailParametersVM model, string sortColumn, string sortDirection)
-        {
-            SqlParameter[] parameters =
-                {
-                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
-                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
-                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
-                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
-                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
-                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
-                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
-                };
-
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchTutorDetail", parameters);
-
-            var tutors = new List<SearchTutorDetailResultVM>();
-            tutors = DALHelper.CreateListFromTable<SearchTutorDetailResultVM>(dt);
-
-            return tutors;
-        }
-
+        
         public List<SearchStudentDetailResultVM> SearchStudentDetail(SearchStudentDetailParametersVM model, string sortColumn, string sortDirection)
         {
             SqlParameter[] parameters =
@@ -491,11 +526,12 @@ namespace SuccessHotelierHub.Repository
         }
 
 
-        public List<StudentDetailsForTutorMappingResultVM> GetStudentDetailsForTutorMapping(Guid? tutorId)
+        public List<StudentDetailsForTutorMappingResultVM> GetStudentDetailsForTutorMapping(Guid? tutorId, Guid? collegeGroupId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId }
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId },
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = collegeGroupId }
                 };
 
             var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetStudentDetailsForTutorMapping", parameters);

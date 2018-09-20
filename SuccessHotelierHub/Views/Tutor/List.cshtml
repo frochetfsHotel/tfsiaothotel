@@ -25,9 +25,16 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Search Tutor</h3>            
+            <h3 class="box-title">Search Tutor</h3>   
+            @if (LogInManager.HasRights("ADMIN"))
+            {
+                <div class="pull-right box-tools">
+                    <a href="@Url.Action("Create", "Tutor")"
+                       class="btn btn-info btn-sm" style="color: #fff">Add Tutor</a>
+                </div>
+            }         
         </div>
-        <form class="frmTutorList" enctype="multipart/form-data" method="post">
+        <form class="frmTutorList" id="frmTutorList" name="frmTutorList" enctype="multipart/form-data" method="post">
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">      
@@ -61,10 +68,12 @@
                             <thead>
                                 <tr>
                                     <th class=""></th>
-                                    <th class="">Name</th>
-                                    <th class="">Email</th>                                    
-                                    <th class="">Status</th>
-                                    <th class="width85">Action</th>
+                                    <th class="width_20">College Group</th>
+                                    <th class="width_15">Name</th>
+                                    <th class="width_20">Email</th>                                    
+                                    <th class="width_5">Status</th>
+                                    <th class="width_10">Password</th>   
+                                    <th class="width_30">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -164,16 +173,21 @@
             },
             {
                 targets: 1,
-                data: "Name",
+                data: "CollegeGroupName",
                 orderable: true
             },
             {
                 targets: 2,
-                data: "Email",
+                data: "Name",
                 orderable: true
             },
             {
                 targets: 3,
+                data: "Email",
+                orderable: true
+            },
+            {
+                targets: 4,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -186,41 +200,135 @@
                 }
             },
             {
-                targets: 4,
+                targets: 5,
+                data: "Password",
+                orderable: false
+            },
+            {
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, full, meta) {
-                    return '<a href="javascript:void(0);" onclick="GotoTutorStudentMapping(\'' + full.Id + '\')" '
-                        + ' class="btn btn-success btn-xs m-r-xs">Mapping</a> ';
+
+                    return '<a href="javascript:void(0);" onclick="GotoTutorEdit(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs font_11">Edit</a> '
+                        + '<a href="javascript:void(0);" onclick="CreateNewPassword(\'' + full.Id + '\')" '
+                        + ' class="btn btn-primary btn-xs font_11">Generate Password</a> '
+                        + ' <button type="button" class="btn btn-danger btn-xs font_11  m-r-xs"'
+                        + ' onclick="deleteTutor(this,event,\'' + full.Id + '\')">Delete</button>';
+
+                        //+ '<a href="javascript:void(0);" onclick="GotoTutorStudentMapping(\'' + full.Id + '\')" '
+                        //+ ' class="btn btn-primary btn-xs m-r-xs">Mapping</a> ';
+
                 }
             }
             ],
-            order: [[1, "asc"]],
+            order: [[2, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
         })
     }
 
-    function GotoTutorStudentMapping(Id) {
-        var url = '@Url.Content("~/Tutor/Edit/")' + Id;
-        redirectTo(url);
-    }
-
-
     function searchTutor() {
         currentPage = 1;
         ReloadTutorGrid();
     }
 
-    function clearTutor() {        
+    function clearTutor() {
         $('#Name').val('');
         $('#Email').val('');
         $('#CollegeGroupId').val('');
 
         searchTutor();
     }
+
+    function GotoTutorEdit(Id) {
+        var url = '@Url.Content("~/Tutor/Edit/")' + Id;
+        redirectTo(url);
+    }
+
+    function GotoTutorStudentMapping(Id) {
+        var url = '@Url.Content("~/Tutor/StudentMapping/")' + Id;
+        redirectTo(url);
+    }
+
+    function deleteTutor(item, e, id) {
+
+        swal({
+            title: 'Are you sure you want to delete?',
+            type: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/Tutor/Delete")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.IsSuccess == true) {
+
+                            var tr = $('#tblTutor  tbody tr#' + id)
+                            var row = grdTutor.row(tr);
+                            var rowNode = row.node();
+                            row.remove();
+                            grdTutor.draw();
+
+                            showToaster("Record deleted successfully", ToasterType.SUCCESS);
+                        }
+                        else {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function CreateNewPassword(Id) {
+        //Ajax request to  create new password.
+        $.ajax({
+            beforeSend: function (xhr) {
+                showLoader();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ShowErrorMessage(jqXHR.status, errorThrown);
+            },
+            complete: function () {
+                hideLoader();
+            },
+            url: '@Url.Content("~/User/CreateNewPassword")',
+            type: 'POST',
+            data: { id: Id },
+            success: function (response) {
+                if (response != null) {
+                    if (response.IsSuccess == true) {
+                        showToaster("New password created successfully.", ToasterType.SUCCESS);                        
+                        ReloadTutorGrid();
+                    }
+                    else {
+                        showToaster(response.errorMessage, ToasterType.ERROR);
+                    }
+                }
+            }
+        });
+    }
+
+    
 </script>
 
 

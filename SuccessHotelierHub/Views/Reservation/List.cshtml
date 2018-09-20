@@ -216,8 +216,8 @@
                                     <th>Rooms</th>
                                     <th>Room Type</th>
                                     <th>Rate Type</th>
-                                    <th class="width85">Status</th>
-                                    <th class="width150">Action</th>
+                                    <th>Status</th>
+                                    <th class="width_30">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -401,7 +401,7 @@
         if (response.IsSuccess == true) {
             var confirmationNo = $('#ConfirmationNo').val();
             //If search by confirmation no. then redirect to edit page.
-            if (!IsNullOrEmpty(confirmationNo) && (!IsNullOrEmpty(response.data) && response.data.length > 0)) {
+            if (!IsNullOrEmpty(confirmationNo) && (!IsNullOrEmpty(response.data) && response.data.length == 1)) {
                 var id = response.data[0].Id;
                 GotoReservationEdit(id);
             }

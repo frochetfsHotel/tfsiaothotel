@@ -1174,3 +1174,12 @@ div.input-group-addon {
 .register-box-margin{
     margin: 2% auto !important;
 }
+
+label.error{
+    color: #FF0000 !important;
+}
+.login-bottom-logo {
+    right: 10px;
+    position: fixed;
+    bottom: 10px;
+}

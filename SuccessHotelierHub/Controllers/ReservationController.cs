@@ -50,6 +50,8 @@ namespace SuccessHotelierHub.Controllers
         private UserGroupRepository userGroupRepository = new UserGroupRepository();
         private CurrencyRepository currencyRepository = new CurrencyRepository();
         private CompanyRepository CompanyRepository = new CompanyRepository();
+        private CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
+
         #endregion
 
         #region Reservation 
@@ -1723,7 +1725,12 @@ namespace SuccessHotelierHub.Controllers
 
                         if (userDetail != null)
                         {
-                            userGroupDetail = userGroupRepository.GetUserGroupById(userDetail.UserGroupId);
+                            var collegeGroup = collegeGroupRepository.GetCollegeGroupById(userDetail.CollegeGroupId.Value);
+
+                            if (collegeGroup != null)
+                            {
+                                userGroupDetail = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
+                            }
                             cashierNumber = userDetail.CashierNumber;
                         }
 

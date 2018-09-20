@@ -1,0 +1,111 @@
+﻿@model SuccessHotelierHub.Models.CollegeGroupVM
+@{
+    ViewBag.Title = "Create College Group";
+}
+
+<section class="content-header">
+    <h1>
+        College Group <small>Create</small>
+    </h1>
+    <ol class="breadcrumb m-r-xs">
+        <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="">College Group</li>
+        <li class="active">Create</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">College Group Details</h3>
+        </div>
+        @using (Html.BeginForm("Create", "CollegeGroup", FormMethod.Post, new { id = "frmCollegeGroup", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="box-body pt_10 pb-0">
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.UserGroupId, new { @class = "required-label" })
+                        @Html.DropDownListFor(m => m.UserGroupId,
+                                (IEnumerable<SelectListItem>)ViewBag.UserGroupList, "-- Select User Group --",
+                                htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.UserGroupId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Name, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Description)
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
+                    </div>
+                    <div class="col-md-3 form-group m-t-lg">
+                        <label class="container1" for="IsActive">
+                            Is Active
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer text-right">
+                <button type="button" class="btn btn-success m-r-xs" onclick="return saveCollegeGroup();">Save</button>
+                <a href="@Url.Action("List", "CollegeGroup")" class="btn btn-danger">Cancel</a>
+            </div>
+        }
+    </div>
+</section>
+
+<script type="text/javascript">
+    function validateCollegeGroup() {
+
+        var errorMessage = "";
+        var blnValid = true;
+
+
+        if ($("#frmCollegeGroup").valid() == false) {
+            showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
+            blnValid = false;
+        }
+
+        return blnValid;
+    }
+
+
+    function saveCollegeGroup() {
+
+        if (validateCollegeGroup()) {
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/CollegeGroup/Create")',
+                type: 'POST',
+                data: $('#frmCollegeGroup').serialize(),
+                success: function (response) {
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            showToaster("College Group details saved successfully", ToasterType.SUCCESS);
+
+                            setTimeout(function () {
+                                redirectTo('@Url.Content("~/CollegeGroup/List")');
+                            }, 1000);
+                        }
+                    }
+                }
+            });
+            return false;
+        }
+    }
+</script>

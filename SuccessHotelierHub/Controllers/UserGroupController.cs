@@ -16,6 +16,7 @@ namespace SuccessHotelierHub.Controllers
         
         private UserGroupRepository userGroupRepository = new UserGroupRepository();
         private CurrencyRepository currencyRepository = new CurrencyRepository();
+        private CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
 
         #endregion
 
@@ -184,6 +185,20 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 string userGroupId = string.Empty;
+
+                #region Check College Group Mapping Exist
+
+                var collegeGroups = collegeGroupRepository.GetCollegeGroupByUserGroupId(id);
+
+                if (collegeGroups != null && collegeGroups.Count > 0)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "You can not delete this user group because there are one or more colleges assigned with this user group."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
 
                 userGroupId = userGroupRepository.DeleteUserGroup(id, LogInManager.LoggedInUserId);
 

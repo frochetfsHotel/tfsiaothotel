@@ -378,66 +378,67 @@
                 <div class="row">
                     @using (Html.BeginForm("SplitPayment", "ReservationCharge", FormMethod.Post, new { id = "frmSplitPayment", enctype = "multipart/form-data" }))
                     {
-                        <input type="hidden" value="test" id="hdnSaveReservationId" />
-                        <input type="hidden" value="test" id="hdnCheckOutDate" />
-                        <input type="hidden" id="hdnTotalAmount" name="hdnTotalAmount" value="" />
-                        <input type="hidden" id="hdnTotalSplitPayment" name="hdnTotalSplitPayment" value="1" />
-                        <div class="box-body pt_10 pb-0">
-                            <div class="tbl_max_height">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped" id="tblSplitPayment">
-                                        <thead>
-                                            <tr>
-                                                <th class=""></th>
-                                                <th class="">Method Of Payment</th>
-                                                <th class="">Amount (@Html.Raw(LogInManager.CurrencySymbol))</th>
-                                                <th class="">Credit Card #</th>
-                                                <th class="width150">Expiration Date</th>
-                                                <th class="width150">CVV #</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr data-rownumber="1">
-                                                <td>
-                                                    @*<span class="text-red font_20 cursor-P" onclick="removeSplitPaymentRow(this);"><i class="fa fa-remove text"></i></span>*@
-                                                </td>
-                                                <td>
-                                                    <select class="form-control" id="SplitPaymentId_1" name="SplitPaymentId_1" onchange="SelectSplitPaymentMethod(1)">
-                                                        <option value="">-- Select Payment Method--</option>                                                        
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange="calculatTotalAmount(this)" value="0.00" maxlength="12" />
-                                                </td>
-                                                <td>
-                                                    <input class="form-control HideWhenCashIsSelected_1" id="CreditCardNo_1" maxlength="16" name="CreditCardNo_1" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="">
-                                                </td>
-                                                <td>
-                                                    <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
-                                                </td>
-                                                <td>
-                                                    <input id="CardVerificationValue_1" name="CardVerificationValue_1" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_1" onkeydown="onlyDigits(event)" maxlength="4" />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td></td>
-                                                <td>Total Amount</td>
-                                                <td> <label id="lblFinalAmount"></label>&nbsp;<label>-</label>&nbsp;  <label id="lblDiductAmount"></label>&nbsp; = &nbsp;<label id="lblpayableAmount"></label></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
+                    <input type="hidden" value="test" id="hdnSaveReservationId" />
+                    <input type="hidden" value="test" id="hdnCheckOutDate" />
+                    <input type="hidden" id="hdnTotalAmount" name="hdnTotalAmount" value="" />
+                    <input type="hidden" id="hdnTotalSplitPayment" name="hdnTotalSplitPayment" value="1" />
+                    <div class="box-body pt_10 pb-0">
+                        <div class="tbl_max_height">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped" id="tblSplitPayment">
+                                    <thead>
+                                        <tr>
+                                            <th class=""></th>
+                                            <th class="">Method Of Payment</th>
+                                            <th class="">Amount (@Html.Raw(LogInManager.CurrencySymbol))</th>
+                                            <th class="">Credit Card #</th>
+                                            <th class="width150">Expiration Date</th>
+                                            <th class="width150">CVV #</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr data-rownumber="1">
+                                            <td>
+                                                @*<span class="text-red font_20 cursor-P" onclick="removeSplitPaymentRow(this);"><i class="fa fa-remove text"></i></span>*@
+                                            </td>
+                                            <td>
+                                                <select class="form-control" id="SplitPaymentId_1" name="SplitPaymentId_1" onchange="SelectSplitPaymentMethod(1)">
+                                                    <option value="">-- Select Payment Method--</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange="calculatTotalAmount(this)" value="0.00" maxlength="12" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control HideWhenCashIsSelected_1" id="CreditCardNo_1" maxlength="16" name="CreditCardNo_1" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="">
+                                            </td>
+                                            <td>
+                                                <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenCashIsSelected_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
+                                            </td>
+                                            <td>
+                                                <input id="CardVerificationValue_1" name="CardVerificationValue_1" type="text" placeholder="CVV" class="masked form-control HideWhenCashIsSelected_1" onkeydown="onlyDigits(event)" maxlength="4" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td></td>
+                                            <td>Total Amount</td>
+                                            <td> <label id="lblFinalAmount"></label>&nbsp;<label>-</label>&nbsp;  <label id="lblDiductAmount"></label>&nbsp; = &nbsp;<label id="lblpayableAmount"></label></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="box-footer text-right">
-                            <button type="button" class="btn btn-success m-r-xs" onclick="return saveSplitPayment();">Ok</button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                        </div>
+                    <div class="box-footer text-right">
+                        <button type="button" class="btn btn-success m-r-xs" onclick="return saveSplitPayment();">Ok</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
                     }
                 </div>
             </div>
@@ -447,24 +448,22 @@
     </div>
 </div>
 <!-- Split Payment Modal End -->
-
 <!-- Interim Bill Payment modal START -->
-
 <div id="InterimBillPaymentModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg" style="width:60%">
+    <div class="modal-dialog modal-xl">
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Interim Bill</h4>                
+                <h4 class="modal-title">Interim Bill</h4>
             </div>
             <div class="modal-body modal-body_padding" id="divInterimBillPaymentMethod">
-                @using (Html.BeginForm("InterimBill", "Cashiering", FormMethod.Post, new { id = "frmInterimBill", enctype = "multipart/form-data" }))
+                @using (Html.BeginForm("InterimBill", "Cashiering", FormMethod.Post, new { id = "frmInterimBill", @class = "form", enctype = "multipart/form-data", novalidate = "novalidate" }))
                 {
                     <!-- Hidden Field -->
                     <input type="hidden" value="" id="hdnReservationId" name="hdnReservationId" />
                     <input type="hidden" value="" id="hdnProfileId" name="hdnProfileId" />
-                    <input type="hidden" value="" id="hdnRoomIds" name="hdnRoomIds" />          
+                    <input type="hidden" value="" id="hdnRoomIds" name="hdnRoomIds" />
                     <input type="hidden" value="" id="hdnTotalAmount" name="hdnTotalAmount" />
                     <input type="hidden" id="hdnTotalInterimBillPayment" name="hdnTotalInterimBillPayment" value="1" />
                     <!-- Hidden Field -->
@@ -494,11 +493,12 @@
                             </div>
                             <div class="pull-right">
                                 <button type="button" onclick="AddNewInterimBillPayment();" class="btn btn-info btn-sm m-r-md">Add New Payment</button>
-                            </div>                            
+                            </div>
                             <div class="clearfix"></div>
                         </div>
-                    </div>                    
-                    <div class="row m-t-md">                        
+                    </div>
+
+                    <div class="row m-t-md">
                         <div class="box-body pt_10 pb-0">
                             <div class="tbl_max_height">
                                 <div class="table-responsive">
@@ -506,11 +506,11 @@
                                         <thead>
                                             <tr>
                                                 <th class=""></th>
-                                                <th class="">Method Of Payment</th>
-                                                <th class="">Amount (@Html.Raw(LogInManager.CurrencySymbol))</th>
-                                                <th class="">Credit Card #</th>
-                                                <th class="width150">Expiration Date</th>
-                                                <th class="width150">CVV #</th>
+                                                <th class="width_20">Method Of Payment</th>
+                                                <th class="width_20">Amount (@Html.Raw(LogInManager.CurrencySymbol))</th>
+                                                <th class="width_20">Credit Card #</th>
+                                                <th class="width_20">Expiration Date</th>
+                                                <th class="width_20">CVV #</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -519,21 +519,35 @@
                                                     @*<span class="text-red font_20 cursor-P" onclick="removeInterimBillPaymentRow(this);"><i class="fa fa-remove text"></i></span>*@
                                                 </td>
                                                 <td>
-                                                    <select class="form-control" id="PaymentMethodId_1" name="PaymentMethodId_1" onchange="SelectInterimBillPaymentMethod(1)">
-                                                        <option value="">-- Select Payment Method--</option>
-                                                    </select>
+                                                    <div class="row col-md-12">
+                                                        <select class="form-control" id="PaymentMethodId_1" name="PaymentMethodId_1" onchange="SelectInterimBillPaymentMethod(1)">
+                                                            <option value="">-- Select Payment Method--</option>
+                                                        </select>                                                        
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange="calculateInterimBillPayableAmount()" value="" maxlength="12"/>
+                                                    <div class="row col-md-12">
+                                                        <input type="text" id="txtAmount_1" name="txtAmount_1" class="form-control" placeholder="Amount" onkeydown="return checkValueIsNumericOrNot(event)" onchange="calculateInterimBillPayableAmount()"
+                                                               value="" maxlength="12" />                                                        
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <input class="form-control HideWhenInterimBillPaymentMethodIsCash_1" id="CreditCardNo_1" maxlength="16" name="CreditCardNo_1" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="">
+                                                    <div class="row col-md-12">
+                                                        <input class="form-control HideWhenInterimBillPaymentMethodIsCash_1" id="CreditCardNo_1" maxlength="16" name="CreditCardNo_1" onkeydown="onlyDigits(event)" placeholder="Credit Card #"
+                                                               type="text" value="" />
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />
+                                                    <div class="row col-md-12">
+                                                        <input id="CardExpiryDate_1" name="CardExpiryDate_1" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1"
+                                                               pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />                                                        
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <input id="CVV_1" name="CVV_1" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1" onkeydown="onlyDigits(event)" maxlength="4" />
+                                                    <div class="row col-md-12">
+                                                        <input id="CVV_1" name="CVV_1" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_1"
+                                                               onkeydown="onlyDigits(event)" maxlength="4" />
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -544,6 +558,7 @@
                                                 <td><label id="lblTotalAmount"></label></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -552,9 +567,9 @@
                         </div>
 
                         <div class="box-footer text-right">
-                            <button type="button" class="btn btn-success m-r-xs" onclick="return PayInterimBillPayment();">Pay</button>
+                            <button type="button" id="btnPayInterimBill" class="btn btn-success m-r-xs" onclick="return PayInterimBillPayment();">Pay</button>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                        </div> 
+                        </div>
                     </div>
                 }
             </div>
@@ -681,6 +696,9 @@
 
         //Bind Payment Method Dropdown for Split Payment Popup.
         bindSplitPaymentMethodDropdown(1);
+
+        //Interim Bill Form Validate.
+        $("form#frmInterimBill").validate();
 
         //Bind Payment Method Dropdown for Interim Bill Popup.
         bindInterimBillPaymentMethodDropdown(1);
@@ -1084,7 +1102,7 @@
 
     function bindBillingTransactionGrid(data, payableAmount) {
         if (!IsNullOrEmpty(data) && data.length > 0) {
-            
+
             var html = "";
             for (i = 0; i < data.length; i++) {
                 var amount = 0;
@@ -1372,6 +1390,60 @@
         }
     }
 
+    function AddInterimBillValidationRule(rowNumber) {
+
+        //First assign .validate() method in form at document.ready // $("form#frmInterimBill").validate();
+
+        setTimeout(function () {
+            $('form#frmInterimBill #PaymentMethodId_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please select payment method.'
+                }
+            });
+
+            $('form#frmInterimBill #txtAmount_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter amount.'
+                }
+            });
+
+            $('form#frmInterimBill #CreditCardNo_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter credit card no.'
+                }
+            });
+
+            $('form#frmInterimBill #CardExpiryDate_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter card expiry date.'
+                }
+            });
+
+            $('form#frmInterimBill #CVV_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter CVV.'
+                }
+            });
+
+        }, 0);
+    }
+
+
+    function RemoveInterimBillValidationRule(rowNumber) {
+        setTimeout(function () {
+            $('form#frmInterimBill #PaymentMethodId_' + rowNumber).rules("remove");
+            $('form#frmInterimBill #txtAmount_' + rowNumber).rules("remove");
+            $('form#frmInterimBill #CreditCardNo_' + rowNumber).rules("remove");
+            $('form#frmInterimBill #CardExpiryDate_' + rowNumber).rules("remove");
+            $('form#frmInterimBill #CVV_' + rowNumber).rules("remove");
+        }, 0);
+    }
+
     function clearInterimBillPaymentData() {
         $('form#frmInterimBill #PaymentMethodId_1').val('');
         $('form#frmInterimBill #txtAmount_1').val('');
@@ -1379,7 +1451,16 @@
         $('form#frmInterimBill #CVV_1').val('');
         $('form#frmInterimBill #lblTotalAmount').text('');
 
-        $('form#frmInterimBill .HideWhenInterimBillPaymentMethodIsCash').show();
+        //Remove error messages.
+        //$('label[for=PaymentMethodId_1]').html('');
+        //$('label[for=txtAmount_1]').html('');
+        //$('label[for=CreditCardNo_1]').html('');
+        //$('label[for=CardExpiryDate_1]').html('');
+        //$('label[for=CVV_1]').html('');
+        $('form#frmInterimBill').validate().resetForm();        
+
+
+        $('form#frmInterimBill .HideWhenInterimBillPaymentMethodIsCash_1').show();
         $('form#frmInterimBill #hdnTotalInterimBillPayment').val(1);
         $('form#frmInterimBill #hdnTotalAmount').val(0);
 
@@ -1399,6 +1480,7 @@
         var id = $('form#frmInterimBill #hdnReservationId').val();
 
         if (!IsNullOrEmpty(id)) {
+
             //Ajax Request to get interim bill information.
             $.ajax({
                 beforeSend: function (xhr) {
@@ -1414,24 +1496,29 @@
                 type: 'POST',
                 data: { reservationId: id },
                 success: function (response) {
-                    if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
-                    }
-                    else {
-                        var result = response.data;
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == false) {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                        else {
+                            var result = response.data;
 
-                        clearInterimBillPaymentData();
+                            clearInterimBillPaymentData();
 
-                        $("form#frmInterimBill #TotalAmount").val(FormatNumberWithTwoDecimal(result.TotalAmount));
-                        $("form#frmInterimBill #TotalPaidAmount").val(FormatNumberWithTwoDecimal(result.TotalPaidAmount));
-                        $("form#frmInterimBill #TotalPayableAmount").val(FormatNumberWithTwoDecimal(result.TotalPayableAmount));
+                            $("form#frmInterimBill #TotalAmount").val(FormatNumberWithTwoDecimal(result.TotalAmount));
+                            $("form#frmInterimBill #TotalPaidAmount").val(FormatNumberWithTwoDecimal(result.TotalPaidAmount));
+                            $("form#frmInterimBill #TotalPayableAmount").val(FormatNumberWithTwoDecimal(result.TotalPayableAmount));
 
-                        $("form#frmInterimBill #hdnProfileId").val(result.ProfileId);
-                        $("form#frmInterimBill #hdnRoomIds").val(result.RoomIds);
+                            $("form#frmInterimBill #hdnProfileId").val(result.ProfileId);
+                            $("form#frmInterimBill #hdnRoomIds").val(result.RoomIds);
 
-                        $('form#frmInterimBill #lnkInterimBillPreview').attr("href", '@Url.Content("~/Cashiering/PreviewInterimBill")' + '?Id=' + result.ReservationId);
+                            $('form#frmInterimBill #lnkInterimBillPreview').attr("href", '@Url.Content("~/Cashiering/PreviewInterimBill")' + '?Id=' + result.ReservationId);
 
-                        OpenModal('InterimBillPaymentModal', false);
+                            OpenModal('InterimBillPaymentModal', false);
+
+
+                            AddInterimBillValidationRule(1);
+                        }
                     }
                 }
             });
@@ -1464,27 +1551,37 @@
 
         //Payment method
         html += '<td>';
-        html += '<select class="form-control" id="PaymentMethodId_' + rowNumber + '" name="PaymentMethodId_' + rowNumber + '" onchange="SelectInterimBillPaymentMethod(' + rowNumber + ')"><option value="">-- Select Payment Method--</option></select>'
+        html += '<div class="row col-md-12">';
+        html += '<select class="form-control" id="PaymentMethodId_' + rowNumber + '" name="PaymentMethodId_' + rowNumber + '" onchange="SelectInterimBillPaymentMethod(' + rowNumber + ')"><option value="">-- Select Payment Method--</option></select>';
+        html += '</div>';
         html += '</td>';
 
         //Amount
-        html += "<td>";
-        html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculateInterimBillPayableAmount(this)' value='' maxlength='12' />";
-        html += "</td>";
+        html += '<td>';
+        html += '<div class="row col-md-12">';
+        html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculateInterimBillPayableAmount(this)' value='' maxlength='12' />"; 
+        html += '</div>';
+        html += '</td>';
 
         //Credit Card Number
         html += '<td>';
-        html += '<input class="form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16"  name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="" />';
+        html += '<div class="row col-md-12">';
+        html += '<input class="form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16"  name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="" />';        
+        html += '</div>';
         html += '</td>';
 
         //Card ExpiryDate
         html += '<td>';
-        html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'
+        html += '<div class="row col-md-12">';
+        html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'        
+        html += '</div>';
         html += '</td>';
 
         //CVV
         html += '<td>'
-        html += '<input id="CVV_' + rowNumber + '" name="CVV_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" maxlength="4" />'
+        html += '<div class="row col-md-12">';
+        html += '<input id="CVV_' + rowNumber + '" name="CVV_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" maxlength="4" />'        
+        html += '</div>';
         html += '</td>'
 
         html += '</tr>';
@@ -1496,6 +1593,9 @@
 
         //Bind Payment Method Dropdown for Interim Bill Popup.
         bindInterimBillPaymentMethodDropdown(rowNumber);
+
+        //Add validation rule.
+        AddInterimBillValidationRule(rowNumber);
     }
 
     //Interim bill payment cash is selected then hide the credit card number and Expiry date field
@@ -1513,6 +1613,12 @@
 
             if (trim(paymentMethodName) == 'Cash') {
                 $('form#frmInterimBill .HideWhenInterimBillPaymentMethodIsCash_' + rowNumber).hide();
+
+                //Remove error messages.
+                $('label[for=CreditCardNo_' + rowNumber + ']').html('');
+                $('label[for=CardExpiryDate_' + rowNumber + ']').html('');
+                $('label[for=CVV_' + rowNumber + ']').html('');
+
             } else {
                 $('form#frmInterimBill .HideWhenInterimBillPaymentMethodIsCash_' + rowNumber).show();
             }
@@ -1556,6 +1662,7 @@
 
     function PayInterimBillPayment() {
 
+        
         var totalPayableAmount = $('form#frmInterimBill #TotalPayableAmount').val();
         totalPayableAmount = IsNullOrEmpty(totalPayableAmount) ? 0 : parseFloat(FormatNumberWithTwoDecimal(totalPayableAmount));
 
@@ -1569,8 +1676,13 @@
         }
 
         //Ajax request to pay bill amount (partial amount) interim bill.
+                
+        var blnValid = true;
+        blnValid = $('#frmInterimBill').valid();
 
-        var IsValidOrNot = true;
+        if (!blnValid) {
+            return false;
+        }
 
         var listOfInterimBillPayment = [];
 
@@ -1601,31 +1713,26 @@
                 listOfInterimBillPayment.push(modelBillPayment);
             }
         })
-                
+
         if (listOfInterimBillPayment != null && listOfInterimBillPayment.length > 0) {
             var totalAmountOfInterimBillPayment = 0;
             var TotalPaybleAmount = $('form#frmInterimBill #hdnTotalAmount').val();
 
-            $.each(listOfInterimBillPayment, function (index, data) {
+            //$.each(listOfInterimBillPayment, function (index, data) {
 
-                totalAmountOfInterimBillPayment = parseFloat(totalAmountOfInterimBillPayment) + parseFloat(data.Amount);
+            //    totalAmountOfInterimBillPayment = parseFloat(totalAmountOfInterimBillPayment) + parseFloat(data.Amount);
 
-                if (trim(data.PaymentMethodName) == "CS - Cash") {
-                    if ((IsNullOrEmpty(data.PaymentMethodId) || IsNullOrEmpty(data.Amount) || data.Amount <= 0)) {
-                        IsValidOrNot = false;
-                    }
-                }
-                else {
-                    if (IsNullOrEmpty(data.PaymentMethodId) || IsNullOrEmpty(data.Amount) || data.Amount <= 0 || (IsNullOrEmpty(data.CreditCardNo) || !IsValidCreditCardNo(data.CreditCardNo)) || IsNullOrEmpty(data.CardExpiryDate) || (IsNullOrEmpty(data.CVVNo) || !IsValidCVVNo(data.CVVNo))) {
-                        IsValidOrNot = false;
-                    }
-                }
-            })
-
-            if (!IsValidOrNot) {
-                showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
-                return false;
-            }
+            //    if (trim(data.PaymentMethodName) == "CS - Cash") {
+            //        if ((IsNullOrEmpty(data.PaymentMethodId) || IsNullOrEmpty(data.Amount) || data.Amount <= 0)) {
+            //            IsValidOrNot = false;
+            //        }
+            //    }
+            //    else {
+            //        if (IsNullOrEmpty(data.PaymentMethodId) || IsNullOrEmpty(data.Amount) || data.Amount <= 0 || (IsNullOrEmpty(data.CreditCardNo) || !IsValidCreditCardNo(data.CreditCardNo)) || IsNullOrEmpty(data.CardExpiryDate) || (IsNullOrEmpty(data.CVVNo) || !IsValidCVVNo(data.CVVNo))) {
+            //            IsValidOrNot = false;
+            //        }
+            //    }
+            //})
 
             $.ajax({
                 beforeSend: function (xhr) {
@@ -1644,7 +1751,7 @@
                     if (response.IsSuccess == false) {
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     } else {
-                        
+
                         var result = response.data;
 
                         var url = '@Url.Content("~/Cashiering/PreviewInterimBill")' + '?Id=' + result.ReservationId;
@@ -1673,7 +1780,7 @@
                             confirmButtonText: 'Yes',
                             cancelButtonText: 'No'
                         }).then((result) => {
-                            if (result.value) {                                
+                            if (result.value) {
 
                                 //Open pdf.
                                 $('form#frmInterimBill #lnkInterimBillPreview')[0].click();
@@ -1693,5 +1800,5 @@
 
 @section scripts {
     <script src="~/Scripts/AdminLTE/jquery.dataTables.min.js"></script>
-    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/AdminLTE/dataTables.bootstrap.min.js"></script> 
 }

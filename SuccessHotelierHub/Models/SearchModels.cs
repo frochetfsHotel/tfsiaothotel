@@ -1322,11 +1322,11 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
-        [DisplayName("User Group")]
-        public Guid? UserGroupId { get; set; }
+        [DisplayName("College Group")]
+        public Guid? CollegeGroupId { get; set; }
 
-        [DisplayName("User Role")]
-        public Guid? UserRoleId { get; set; }
+        [DisplayName("Tutor")]
+        public Guid? TutorId { get; set; }      
 
         [DisplayName("Name")]
         public string Name { get; set; }
@@ -1339,6 +1339,9 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Login Credential Sent")]
         public bool IsLoginCredentialSent { get; set; }
+
+        [DisplayName("View All Users")]
+        public bool IsViewAll { get; set; }
 
         public List<ColumnName> columns { get; set; }
         public List<ColumnOrderInfo> order { get; set; }
@@ -1356,19 +1359,18 @@ namespace SuccessHotelierHub.Models
         public string Email { get; set; }
 
         [DisplayName("Password")]
-        public string Password { get; set; }
+        public string Password { get; set; }        
 
-        [DisplayName("User Role")]
-        public Guid? UserRoleId { get; set; }
+        [DisplayName("College Group")]
+        public Guid? CollegeGroupId { get; set; }
 
-        public string UserRoleName { get; set; }
-        public string UserRoleCode { get; set; }
+        public string CollegeGroupName { get; set; }
 
-        [DisplayName("User Group")]
-        public Guid? UserGroupId { get; set; }
+        [DisplayName("Tutor")]
+        public Guid? TutorId { get; set; }
 
-        public string UserGroupName { get; set; }
-        public string CurrencyCode { get; set; }
+        [DisplayName("Tutor Name")]
+        public string TutorName { get; set; }        
 
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
@@ -1416,6 +1418,9 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Email")]
         public string Email { get; set; }
+
+        [DisplayName("Password")]
+        public string Password { get; set; }        
 
         [DisplayName("College Group")]        
         public Guid? CollegeGroupId { get; set; }
@@ -1470,6 +1475,61 @@ namespace SuccessHotelierHub.Models
         public bool IsRecordActivity { get; set; }
         public int TotalCount { get; set; }
         public double? TotalLoggedInDurationInSeconds { get; set; }
+    }
+    #endregion
+
+    #region Search Admin Detail
+
+    public class SearchAdminDetailParametersVM
+    {
+        public SearchAdminDetailParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        [DisplayName("College Group")]
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("College Group Name")]
+        public string CollegeGroupName { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchAdminDetailResultVM
+    {
+        public int RowNum { get; set; }
+        public Guid Id { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        [DisplayName("Password")]
+        public string Password { get; set; }
+
+        [DisplayName("College Group")]
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("College Group Name")]
+        public string CollegeGroupName { get; set; }
+
+        public DateTime? CreatedOn { get; set; }
+        public bool IsActive { get; set; }
+        public int TotalCount { get; set; }
     }
     #endregion
 
@@ -2607,6 +2667,9 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
+        [DisplayName("User Group")]
+        public Guid? UserGroupId { get; set; }
+
         [DisplayName("Name")]
         public string Name { get; set; }        
 
@@ -2618,6 +2681,12 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+
+        [DisplayName("User Group")]
+        public Guid? UserGroupId { get; set; }
+
+        [DisplayName("User Group Name")]
+        public string UserGroupName { get; set; }
 
         [DisplayName("Name")]
         public string Name { get; set; }

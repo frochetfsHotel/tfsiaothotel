@@ -137,13 +137,11 @@ namespace SuccessHotelierHub.Controllers
                                     }
                                 ), "Value", "Text").ToList();
             ViewBag.UserGroupList = userGroupList;
-          
+
             var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
             ViewBag.CollegeGroupList = collegeGroupList;
 
             UserVM model = new UserVM();
-
-            model.UserGroupId = userGroupRepository.GetUserGroupByName().FirstOrDefault().ID;
 
             return View(model);
         }
@@ -213,8 +211,8 @@ namespace SuccessHotelierHub.Controllers
                     createdBy = adminUser.UserId;
                 }
 
-                #endregion                
-
+                #endregion
+                
                 string userId = string.Empty;
                 model.CreatedBy = createdBy;
 

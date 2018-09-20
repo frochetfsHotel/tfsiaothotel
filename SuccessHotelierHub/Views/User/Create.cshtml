@@ -1,15 +1,15 @@
 ﻿@model SuccessHotelierHub.Models.UserVM
 @{
-    ViewBag.Title = "Create User";
+    ViewBag.Title = "Create Student";
 }
 
 <section class="content-header">
     <h1>
-        User <small>Create</small>
+        Student <small>Create</small>
     </h1>
     <ol class="breadcrumb m-r-xs">
         <li><a href="javascript:void(0);" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="">User</li>
+        <li class="">Student</li>
         <li class="active">Create</li>
     </ol>
 </section>
@@ -17,7 +17,7 @@
 <section class="content">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">User Details</h3>
+            <h3 class="box-title">Student Details</h3>
         </div>
         @using (Html.BeginForm("Create", "User", FormMethod.Post, new { id = "frmUser", enctype = "multipart/form-data" }))
         {
@@ -28,33 +28,35 @@
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.CollegeGroupId, new { @class = "required-label" })
                         @Html.DropDownListFor(m => m.CollegeGroupId,
-                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group--",
-                                htmlAttributes: new { @class = "form-control" })
+                                (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- Select College Group --",
+                                htmlAttributes: new { @class = "form-control", onchange = "loadTutorDetail();" })
                         @Html.ValidationMessageFor(m => m.CollegeGroupId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.UserGroupId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.UserGroupId, (IEnumerable<SelectListItem>)ViewBag.UserGroupList, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.UserGroupId, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.UserRoleId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.UserRoleId,
-                                (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- Select User Role --",
-                                htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.UserRoleId, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.TutorId, new { @class = "required-label" })
+                        @Html.DropDownList("TutorId", new List<SelectListItem>
+                        {
+                                new SelectListItem{ Text="-- Select Tutor --", Value = "" }
+                        },
+                        htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.TutorId, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Name, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
-                    </div>                   
-                </div>
-                <div class="row">                    
+                    </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.Email, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
                         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "required-label" })
+                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.TelephoneNo)
@@ -66,16 +68,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.Password, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    </div>
-                    @*<div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "required-label" })
-                            @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", type= "password", placeholder = "Confirm Password" })
-                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-                        </div>*@
                     <div class="col-md-2 form-group m-t-lg">
                         <label class="container1" for="IsActive">
                             Is Active
@@ -128,6 +120,46 @@
         return blnValid;
     }
 
+    function loadTutorDetail() {
+        var collegeGroupId = $('form#frmUser #CollegeGroupId').val();
+
+        if (!IsNullOrEmpty(collegeGroupId)) {
+            //Call ajax to get tutor details by college group id.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                url: '@Url.Content("~/User/GetTutorDetailByCollegeGroupId")',
+                type: 'GET',
+                data: {
+                    collegeGroupId: collegeGroupId
+                },
+                success: function (result) {
+                    if (!IsNullOrEmpty(result)) {
+                        var optionHtml = "";
+                        optionHtml += "<option value=''>-- Select Tutor --</option>";
+                        if (result.IsSuccess == true) {
+                            for (i = 0; i < result.data.length; i++) {
+                                optionHtml += "<option value='" + result.data[i].Id + "'>" + result.data[i].Name + "</option>";
+                            }
+                        }
+                        $('form#frmUser #TutorId').html(optionHtml);
+                    }
+                }
+            });
+        } else {
+            //Remove all <option> items from dropdown except first <option> item.            
+            $('form#frmUser #TutorId').html("");
+            $('form#frmUser #TutorId').append($("<option></option>").val("").html("-- Select Tutor --"));
+        }
+    }
+
 
     function saveUser() {
 
@@ -150,7 +182,7 @@
                         showToaster(response.errorMessage, ToasterType.ERROR);
                     }
                     else {
-                        showToaster("User details saved successfully", ToasterType.SUCCESS);
+                        showToaster("Student details saved successfully", ToasterType.SUCCESS);
 
                         setTimeout(function () {
                             redirectTo('@Url.Content("~/User/List")');

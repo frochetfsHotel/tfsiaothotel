@@ -426,7 +426,19 @@
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
-                    <ul class="treeview-menu">
+                    <ul class="treeview-menu">  
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-cogs" aria-hidden="true"></i> User Role
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "UserRole")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "UserRole")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>                      
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-users" aria-hidden="true"></i> User Group
@@ -441,19 +453,43 @@
                         </li>
                         <li class="treeview">
                             <a href="#">
-                                <i class="fa fa-cogs" aria-hidden="true"></i> User Role
+                                <i class="fa fa-university" aria-hidden="true"></i> College Group
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("Create", "UserRole")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
-                                <li><a href="@Url.Action("List", "UserRole")"><i class="fa fa-search"></i> Search </a></li>
+                                <li><a href="@Url.Action("Create", "CollegeGroup")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "CollegeGroup")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>  
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-user-secret" aria-hidden="true"></i> Admin
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("CreateAdmin", "User")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("ListAdmin", "User")"><i class="fa fa-search"></i> Search </a></li>
+                            </ul>
+                        </li>                     
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-graduation-cap" aria-hidden="true"></i> Tutor
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Create", "Tutor")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
+                                <li><a href="@Url.Action("List", "Tutor")"><i class="fa fa-search"></i> Search </a></li>
                             </ul>
                         </li>
                         <li class="treeview">
                             <a href="#">
-                                <i class="fa fa-user-o" aria-hidden="true"></i> User
+                                <i class="fa fa-user-o" aria-hidden="true"></i> Student
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
@@ -462,12 +498,7 @@
                                 <li><a href="@Url.Action("Create", "User")"><i class="fa fa-pencil-square-o"></i> Create </a></li>
                                 <li><a href="@Url.Action("List", "User")"><i class="fa fa-search"></i> Search </a></li>
                             </ul>
-                        </li>
-                        <li>
-                            <a href="@Url.Action("List", "Tutor")">
-                                <i class="fa fa-graduation-cap" aria-hidden="true"></i> Tutor
-                            </a>
-                        </li>
+                        </li>                        
                     </ul>
                 </li>
 

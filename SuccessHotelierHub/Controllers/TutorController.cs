@@ -66,6 +66,15 @@ namespace SuccessHotelierHub.Controllers
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
 
+                if (tutors != null && tutors.Count > 0)
+                {
+                    foreach (var tutor in tutors)
+                    {
+                        if (!string.IsNullOrWhiteSpace(tutor.Password))
+                            tutor.Password = Utility.Utility.Decrypt(tutor.Password, Utility.Utility.EncryptionKey);
+                    }
+                }
+
                 return Json(new
                 {
                     IsSuccess = true,
@@ -82,28 +91,322 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
+        
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult Create()
+        {
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+            ViewBag.CollegeGroupList = collegeGroupList;
+
+            UserVM model = new UserVM();
+            model.Password = Utility.Utility.GenerateRandomPassword(8);
+
+            return View(model);
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(UserVM model)
+        {
+            try
+            {
+                string userId = string.Empty;
+                model.CreatedBy = LogInManager.LoggedInUserId;
+                model.Password = Utility.Utility.Encrypt(model.Password, Utility.Utility.EncryptionKey);
+
+                #region Check User Email Exist.
+
+                if (this.CheckUserEmailExist(model.Id, model.Email) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Email : {0} already exist.", model.Email)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                #region Get Max. User Id
+
+                //Get Max. User Id.
+                var newUserId = (userRepository.GetMaxUserId()) + 1;
+                model.UserId = newUserId;
+
+                #endregion
+
+                #region Get Tutor Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var tutorRoleId = userRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Id;
+                model.UserRoleId = tutorRoleId;
+
+                #endregion
+                
+                #region Generate Cashier Number
+
+                var firstTwoCharactersOfName = !string.IsNullOrWhiteSpace(model.Name) ? model.Name.Substring(0, 2) : "";
+                model.CashierNumber = (firstTwoCharactersOfName + newUserId).ToUpper();
+
+                #endregion Generate Cashier Number
+
+                model.IsFromRegistrationPage = false;
+                model.IsRecordActivity = true;
+
+                userId = userRepository.AddUserDetail(model);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    #region Add User Role Mapping 
+
+                    UserRoleMappingVM userRoleMapping = new UserRoleMappingVM();
+                    userRoleMapping.UserId = Guid.Parse(userId);
+                    userRoleMapping.UserRoleId = model.UserRoleId;
+                    userRoleMapping.IsActive = true;
+                    userRoleMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+
+                    userRepository.AddUpdateUserRoleMapping(userRoleMapping);
+
+                    #endregion
+                    
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Tutor details not saved successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "Create");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Edit(Guid id)
         {
-            var students = userRepository.GetStudentDetailsForTutorMapping(id);
+            var user = userRepository.GetUserDetailById(id);
 
-            if (students != null && students.Count > 0)
+            UserVM model = new UserVM();
+
+            if (user != null && user.Count > 0)
             {
-                var tutorDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+                model = user[0];
 
-                ViewBag.Students = students;
-                ViewBag.TutorId = id;
-                ViewBag.TutorName = tutorDetail.Name;
+                var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+                ViewBag.CollegeGroupList = collegeGroupList;                
 
-                return View();
+                return View(model);
             }
+
             return RedirectToAction("List");
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN")]
         [HttpPost]
-        public ActionResult Edit(Guid tutorId, List<TutorStudentMappingVM> models)
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(UserVM model)
+        {
+            try
+            {
+                string userId = string.Empty;
+                model.UpdatedBy = LogInManager.LoggedInUserId;
+                model.IsRecordActivity = true;
+
+                #region Check User Email Exist.
+
+                if (this.CheckUserEmailExist(model.Id, model.Email) == false)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = string.Format("Email : {0} already exist.", model.Email)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                #region Check Cashier Number Exist.
+
+                if (!string.IsNullOrWhiteSpace(model.CashierNumber))
+                {
+                    if (this.CheckCashierNumberExist(model.Id, model.CashierNumber) == false)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = string.Format("Cashier Number : {0} already exist.", model.Email)
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
+                #endregion
+
+                #region Get Tutor Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var tutorRoleId = userRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Id;
+                model.UserRoleId = tutorRoleId;
+
+                #endregion
+                
+                userId = userRepository.UpdateUserDetail(model);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    #region Add / Update User Role Mapping 
+
+                    UserRoleMappingVM userRoleMapping = new UserRoleMappingVM();
+                    userRoleMapping.UserId = Guid.Parse(userId);
+                    userRoleMapping.UserRoleId = model.UserRoleId;
+                    userRoleMapping.IsActive = true;
+                    userRoleMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    userRoleMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                    userRepository.AddUpdateUserRoleMapping(userRoleMapping);
+
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Tutor details not updated successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "Edit");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult Delete(Guid id)
+        {
+            try
+            {
+                string userId = string.Empty;
+
+                #region Check Student Mapping Exist
+
+                var students = userRepository.GetTutorStudentMappingByTutor(id, null);
+
+                if (students != null && students.Count > 0)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "You can not delete this tutor because there are one or more students assigned with this tutors."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
+
+                userId = userRepository.DeleteUserDetail(id, LogInManager.LoggedInUserId);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    #region Delete User Role Mapping
+
+                    userRepository.DeleteUserRoleMappingByUserId(id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    #region Delete Tutor Student Mapping
+
+                    userRepository.DeleteTutorStudentMappingByTutor(id, LogInManager.LoggedInUserId);
+
+                    #endregion
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Tutor details not deleted successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "Delete");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult StudentMapping(Guid id)
+        {
+
+            var tutor = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+            if(tutor != null)
+            {
+                var students = userRepository.GetStudentDetailsForTutorMapping(id, tutor.CollegeGroupId);
+
+                if (students != null && students.Count > 0)
+                {
+                    var tutorDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+                    ViewBag.Students = students;
+                    ViewBag.TutorId = id;
+                    ViewBag.TutorName = tutorDetail.Name;
+
+                    return View();
+                }
+            }
+            
+            return RedirectToAction("List");
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult StudentMapping(Guid tutorId, List<TutorStudentMappingVM> models)
         {
             try
             {
@@ -174,7 +477,7 @@ namespace SuccessHotelierHub.Controllers
             }
             catch (Exception e)
             {
-                Utility.Utility.LogError(e, "Edit");
+                Utility.Utility.LogError(e, "StudentMapping");
                 return Json(new
                 {
                     IsSuccess = false,
@@ -463,6 +766,34 @@ namespace SuccessHotelierHub.Controllers
                 Utility.Utility.LogError(e, "SearchFolioLog");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
+        }
+
+        public bool CheckUserEmailExist(Guid? userId, string email)
+        {
+            bool blnAvailable = true;
+
+            var user = userRepository.CheckUserEmailExist(userId, email);
+
+            if (user.Any())
+            {
+                blnAvailable = false;
+            }
+
+            return blnAvailable;
+        }
+
+        public bool CheckCashierNumberExist(Guid? userId, string cashierNumber)
+        {
+            bool blnAvailable = true;
+
+            var user = userRepository.CheckCashierNumberExist(userId, cashierNumber);
+
+            if (user.Any())
+            {
+                blnAvailable = false;
+            }
+
+            return blnAvailable;
         }
 
     }

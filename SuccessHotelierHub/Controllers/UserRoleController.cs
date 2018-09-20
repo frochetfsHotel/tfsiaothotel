@@ -15,6 +15,7 @@ namespace SuccessHotelierHub.Controllers
         #region Declaration
 
         private UserRoleRepository userRoleRepository = new UserRoleRepository();
+        private UserRepository userRepository = new UserRepository();
 
         #endregion
 
@@ -162,6 +163,19 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 string userRoleId = string.Empty;
+
+                #region Check User Role Mapping Exist
+                var userRoleMapping = userRepository.GetUserRoleByUserId(null, id);
+
+                if(userRoleMapping != null && userRoleMapping.Count > 0)
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "You can not delete this user role because there are one or more users assigned with this user role."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
 
                 userRoleId = userRoleRepository.DeleteUserRole(id, LogInManager.LoggedInUserId);
 

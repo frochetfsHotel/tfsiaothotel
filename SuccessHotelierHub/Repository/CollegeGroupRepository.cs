@@ -36,12 +36,28 @@ namespace SuccessHotelierHub.Repository
             return collegeGroup;
         }
 
+        public List<CollegeGroupVM> GetCollegeGroupByUserGroupId(Guid? userGroupId)
+        {
+            SqlParameter[] parameters =
+            {
+                new SqlParameter { ParameterName = "@UserGroupId", Value = userGroupId }
+            };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetCollegeGroupByUserGroupId", parameters);
+
+            var collegeGroups = new List<CollegeGroupVM>();
+            collegeGroups = DALHelper.CreateListFromTable<CollegeGroupVM>(dt);
+
+            return collegeGroups;
+        }
+
         public string AddCollegeGroup(CollegeGroupVM collegeGroup)
         {
             string collegeGroupId = string.Empty;
 
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserGroupId", Value = collegeGroup.UserGroupId },
                     new SqlParameter { ParameterName = "@Name", Value = collegeGroup.Name },
                     new SqlParameter { ParameterName = "@Description", Value = collegeGroup.Description },                    
                     new SqlParameter { ParameterName = "@IsActive", Value = collegeGroup.IsActive },
@@ -60,6 +76,7 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = collegeGroup.Id },
+                    new SqlParameter { ParameterName = "@UserGroupId", Value = collegeGroup.UserGroupId },
                     new SqlParameter { ParameterName = "@Name", Value = collegeGroup.Name },
                     new SqlParameter { ParameterName = "@Description", Value = collegeGroup.Description },                    
                     new SqlParameter { ParameterName = "@IsActive", Value = collegeGroup.IsActive },
@@ -90,6 +107,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserGroupId", Value = model.UserGroupId },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },                    
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
