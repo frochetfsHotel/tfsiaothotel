@@ -5,9 +5,9 @@ var data_needs_saving = false;
 
 //var clicked = false;
 
-//$(document).ready(function (e) {
-//    wireUpWindowUnloadEvents();
-//});
+$(document).ready(function (e) {
+    setNavigation();
+});
 
 $(function () {
 
@@ -413,6 +413,15 @@ function ParseJsonDate(date) {
     return "";
 }
 
+function ParseJsonDateTime(date) {
+    if (!IsNullOrEmpty(date)) {
+        var dt = new Date(parseInt(date.substr(6)));
+
+        return dt.format("dd/mm/yyyy HH:MM:ss");
+    }
+    return "";
+}
+
 function GetTime(dateObject) {
     if (IsNullOrEmpty(dateObject)) {
         dateObject = new Date();
@@ -514,6 +523,10 @@ function LoadLeftSideMenu() {
         else if (menu == "ReportsScreen") {
             $('#MenusReportsScreen').show();
             $('#menuReportsScreen').addClass('active');
+        }
+        else if (menu == "LoggedInUserScreen") {
+            $('#MenusLoggedInUserScreen').show();
+            $('#menuLoggedInUserScreen').addClass('active');
         }
     }
 }
@@ -941,3 +954,19 @@ function SecondsToHHMMSS(totalSeconds) {
 }
 
 /*** Seconds to Time Duration *******/
+
+
+function setNavigation() {
+    var path = window.location.pathname;
+    path = path.replace(/\/$/, "");
+    path = decodeURIComponent(path);
+
+    $(".sidebar-menu a").each(function () {
+        var href = $(this).attr('href');
+        if (path.substring(0, href.length) === href) {
+            $(this).closest('li').addClass('active');
+            $(this).parents('li.treeview').addClass('menu-open');
+            $(this).parents('ul.treeview-menu').css({ display: 'block' });
+        }
+    });
+}

@@ -70,6 +70,14 @@
                     </a>
                 </li>
             }
+            @if (LogInManager.HasRights("ADMIN"))
+            {
+                <li class="text-center topMenu" id="menuLoggedInUserScreen">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('LoggedInUserScreen','@Url.Content("~/Home/Default")');" title="LoggedIn Users">
+                        <i class="fa fa-sign-in font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">LoggedIn Users</span>
+                    </a>
+                </li>
+            }
             @if (LogInManager.HasRights("TUTOR"))
             {
                 <li class="text-center topMenu" id="menuManageStudents">
@@ -86,7 +94,7 @@
                 <!-- User Account: style can be found in dropdown.less -->
                 <li class="dropdown user user-menu">
                     <a href="@Url.Action("SignOut","Account")" class="dropdown-toggle p-22" title="Logout">
-                        <i class="fa fa-sign-out"></i>
+                        <i class="fa fa-sign-out font_15"></i>
                         <span class="hidden_xs">Logout</span>
                     </a>
                 </li>

@@ -419,17 +419,6 @@ namespace SuccessHotelierHub.Controllers
         [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
         public ActionResult List()
         {
-            var userGroupList = new SelectList(userGroupRepository.GetUserGroupsWithCurrencyInfo()
-                                .Select(
-                                    m => new SelectListItem()
-                                    {
-                                        Value = m.Id.ToString(),
-                                        Text = (m.Name + " - " + m.CurrencyCode)
-                                    }
-                                ), "Value", "Text").ToList();
-
-            ViewBag.UserGroupList = userGroupList;
-
             var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
             ViewBag.CollegeGroupList = collegeGroupList;
 
@@ -1065,6 +1054,73 @@ namespace SuccessHotelierHub.Controllers
             catch (Exception e)
             {
                 Utility.Utility.LogError(e, "Delete");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        #endregion
+
+        #region Logged In User Info
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult LoggedInUserInfo()
+        {
+            var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
+            ViewBag.CollegeGroupList = collegeGroupList;
+
+            return View();
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HttpPost]
+        public ActionResult LoggedInUserInfo(SearchLoggedInUserInfoParametersVM model)
+        {
+            try
+            {
+                object sortColumn = "";
+                object sortDirection = "";
+
+                if (model.order.Count == 0)
+                {
+                    sortColumn = "LastLoggedOn";
+                    sortDirection = "desc";
+                }
+                else
+                {
+                    sortColumn = model.columns[Convert.ToInt32(model.order[0].column)].data ?? (object)DBNull.Value;
+                    sortDirection = model.order[0].dir ?? (object)DBNull.Value;
+                }
+
+                model.PageSize = Constants.PAGESIZE;
+                var users = userRepository.SearchLoggedInUserInfo(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                
+                int totalRecords = 0;
+                var dbRecords = users.Select(m => m.TotalCount).FirstOrDefault();
+                if (dbRecords != 0)
+                    totalRecords = Convert.ToInt32(dbRecords);
+
+                //Get Total Users (student)
+                var loggedInUsers = userRepository.GetLoggedInUserInfo(model);
+
+                int totalUsers = 0;
+                var dbTotalUsers = loggedInUsers.Count;
+                if (dbTotalUsers != 0)
+                    totalUsers = Convert.ToInt32(dbTotalUsers);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    CurrentPage = model.PageNum,
+                    PageSize = Constants.PAGESIZE,
+                    TotalRecords = totalRecords,
+                    TotalUsers = totalUsers,
+                    data = users
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "LoggedInUserInfo");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }

@@ -59124,7 +59124,225 @@ EXEC [LoadDefaultIndividualProfile] @UserId = 1
 EXEC [LoadTempBulkReservationMaster] @UserId = 1
 
 
+/*******************************************************************************************************************************
 
+Name : Nilesh
+Date : 21-SEP-2018
+
+**********************************************************************************************************************************/
+
+/***********************************************************************************************************************************
+	SP Name : SearchLoggedInUserInfo
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchLoggedInUserInfo]    Script Date: 9/21/2018 3:03:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchLoggedInUserInfo] NULL, NULL, '', '', 1, 1, 10
+*/
+
+CREATE PROCEDURE [dbo].[SearchLoggedInUserInfo]
+	@CollegeGroupId				UNIQUEIDENTIFIER	=	NULL	,
+	@TutorId					UNIQUEIDENTIFIER	=	NULL	,		
+	@Name						NVARCHAR(500)		=	NULL	,	
+	@Email						NVARCHAR(500)		=	NULL	,	
+	@IsViewAll					BIT					=	NULL	,
+	@PageNum					INT					=	1		,
+	@PageSize					INT					=	10		,
+	@SortColumn					NVARCHAR(255)		=	NULL	,
+	@SortDirection				NVARCHAR(20)		=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT		
+
+	CREATE TABLE #tempUserDetail
+	(
+			[RowNum]				INT					NOT NULL
+		,	[Id]					UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]					NVARCHAR(500)		NULL	
+		,   [Email]					NVARCHAR(500)		NULL		
+		,	[TutorId]				UNIQUEIDENTIFIER	NULL		
+		,	[TutorName]				NVARCHAR(500)		NULL		
+		,	[CollegeGroupId]		UNIQUEIDENTIFIER	NULL		
+		,   [CollegeGroupName]		NVARCHAR(500)		NULL					
+		,	[LastLoggedOn]			DATETIME			NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+							FROM [dbo].[UserDetail] UD 
+									INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+										AND ISNULL(URM.IsDeleted,0) = 0		
+									INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+										AND ISNULL(UR.IsDeleted,0) = 0
+									LEFT JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+										AND ISNULL(TSM.IsDeleted,0) = 0				
+									LEFT JOIN [UserDetail] T ON T.Id = TSM.TutorId 
+										AND ISNULL(T.IsDeleted,0) = 0 
+									INNER JOIN [CollegeGroup] CG ON CG.Id = UD.[CollegeGroupId]
+										AND ISNULL(CG.IsDeleted,0) = 0 
+							WHERE	ISNULL(UD.IsDeleted,0) = 0		
+									AND ISNULL(UD.IsLoggedIn, 0) = 1
+									AND ISNULL(UR.Code,'') = 'STUDENT'																				
+									AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+									AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 								
+									AND (@TutorId IS NULL OR TSM.TutorId = @TutorId)			
+									AND (@CollegeGroupId IS NULL OR UD.[CollegeGroupId] = @CollegeGroupId)			
+								
+						)
+
+		
+		INSERT INTO #tempUserDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 			
+			[TutorId],
+			[TutorName],			
+			[CollegeGroupId],
+			[CollegeGroupName],			
+			[LastLoggedOn] 						
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'LastLoggedOn' and @SortDirection = 'asc'
+							THEN UD.[LastLoggedOn] END ASC,
+						CASE WHEN @SortColumn = 'LastLoggedOn' and @SortDirection = 'desc'
+							THEN UD.[LastLoggedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN @SortColumn = 'TutorName' and @SortDirection = 'asc'
+							THEN T.[Name] END ASC,
+						CASE WHEN @SortColumn = 'TutorName' and @SortDirection = 'desc'
+							THEN T.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'CollegeGroupName' and @SortDirection = 'asc'
+							THEN CG.[Name] END ASC,
+						CASE WHEN @SortColumn = 'CollegeGroupName' and @SortDirection = 'desc'
+							THEN CG.[Name] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],
+				T.[Id] AS TutorId,
+				T.[Name] AS TutorName,																							
+				UD.CollegeGroupId,
+				ISNULL(CG.[Name],'') AS [CollegeGroupName],				
+				UD.[LastLoggedOn]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0		
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+				LEFT JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+					AND ISNULL(TSM.IsDeleted,0) = 0				
+				LEFT JOIN [UserDetail] T ON T.Id = TSM.TutorId 
+					AND ISNULL(T.IsDeleted,0) = 0 
+				INNER JOIN [CollegeGroup] CG ON CG.Id = UD.[CollegeGroupId]
+					AND ISNULL(CG.IsDeleted,0) = 0 
+		WHERE	ISNULL(UD.IsDeleted,0) = 0		
+				AND ISNULL(UD.IsLoggedIn, 0) = 1
+				AND ISNULL(UR.Code,'') = 'STUDENT'
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%') 								
+				AND (@TutorId IS NULL OR TSM.TutorId = @TutorId)			
+				AND (@CollegeGroupId IS NULL OR UD.[CollegeGroupId] = @CollegeGroupId)
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],
+			temp.[TutorId],
+			temp.[TutorName],
+			temp.[CollegeGroupId],
+			temp.[CollegeGroupName],			
+			temp.[LastLoggedOn],
+			@TotalCount AS TotalCount			
+	FROM	
+		#tempUserDetail AS temp
+	WHERE (ISNULL(@IsViewAll,0) = 1 OR temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize))
+		
+	-- PAGING COMPLETED
+
+END
+
+
+/***********************************************************************************************************************************
+	SP Name : GetLoggedInUserInfo
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+
+/****** Object:  StoredProcedure [dbo].[GetLoggedInUserInfo]    Script Date: 9/21/2018 7:23:20 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetLoggedInUserInfo]
+	@CollegeGroupId				UNIQUEIDENTIFIER	=	NULL	,
+	@TutorId					UNIQUEIDENTIFIER	=	NULL	,		
+	@Name						NVARCHAR(500)		=	NULL	,	
+	@Email						NVARCHAR(500)		=	NULL			
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	SELECT UD.[Id],		
+			UD.[Name],
+			UD.[Email],
+			T.[Id] AS TutorId,
+			T.[Name] AS TutorName,																							
+			UD.CollegeGroupId,
+			ISNULL(CG.[Name],'') AS [CollegeGroupName],				
+			UD.[LastLoggedOn]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0		
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+				LEFT JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+					AND ISNULL(TSM.IsDeleted,0) = 0				
+				LEFT JOIN [UserDetail] T ON T.Id = TSM.TutorId 
+					AND ISNULL(T.IsDeleted,0) = 0 
+				INNER JOIN [CollegeGroup] CG ON CG.Id = UD.[CollegeGroupId]
+					AND ISNULL(CG.IsDeleted,0) = 0 
+		WHERE	ISNULL(UD.IsDeleted,0) = 0											
+				AND ISNULL(UR.Code,'') = 'STUDENT'																				
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')
+				AND (@TutorId IS NULL OR TSM.TutorId = @TutorId)			
+				AND (@CollegeGroupId IS NULL OR UD.[CollegeGroupId] = @CollegeGroupId)
+END
 
 
 

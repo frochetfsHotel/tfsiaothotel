@@ -427,6 +427,7 @@
     <Content Include="HtmlTemplates\SendFolioReport.html" />
     <Content Include="HtmlTemplates\WelcomeUser.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
+    <Content Include="Scripts\custom\date.format.js" />
     <Content Include="Views\Report\PreviewDailyCashReport.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>
@@ -2193,6 +2194,7 @@
     <Content Include="Views\User\CreateAdmin.cshtml" />
     <Content Include="Views\User\EditAdmin.cshtml" />
     <Content Include="Views\User\ListAdmin.cshtml" />
+    <Content Include="Views\User\LoggedInUserInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

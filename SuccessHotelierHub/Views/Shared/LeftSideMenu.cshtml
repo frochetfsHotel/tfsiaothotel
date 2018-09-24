@@ -556,6 +556,16 @@
 
             </ul>
         }
+        @if (LogInManager.HasRights("ADMIN"))
+        {
+            <ul class="sidebar-menu tree leftsidemenu" id="MenusLoggedInUserScreen" data-widget="tree" style="display:none;">
+                <li>
+                    <a href="@Url.Action("LoggedInUserInfo", "User")">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i> LoggedIn Users
+                    </a>
+                </li>
+            </ul>
+        }
         @if (LogInManager.HasRights("TUTOR"))
         {
             <ul class="sidebar-menu tree leftsidemenu" id="MenusManageStudents" data-widget="tree" style="display:none;">

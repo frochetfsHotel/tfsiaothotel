@@ -365,6 +365,47 @@ namespace SuccessHotelierHub.Repository
             return admins;
         }
 
+        public List<SearchLoggedInUserInfoResultVM> GetLoggedInUserInfo(SearchLoggedInUserInfoParametersVM model)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetLoggedInUserInfo", parameters);
+
+            var users = new List<SearchLoggedInUserInfoResultVM>();
+            users = DALHelper.CreateListFromTable<SearchLoggedInUserInfoResultVM>(dt);
+
+            return users;
+        }
+
+        public List<SearchLoggedInUserInfoResultVM> SearchLoggedInUserInfo(SearchLoggedInUserInfoParametersVM model, string sortColumn, string sortDirection)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@Name", Value = model.Name },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
+                    new SqlParameter { ParameterName = "@IsViewAll", Value = model.IsViewAll },
+                    new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
+                    new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
+                    new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },
+                    new SqlParameter { ParameterName = "@SortDirection", Value = sortDirection }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("SearchLoggedInUserInfo", parameters);
+
+            var users = new List<SearchLoggedInUserInfoResultVM>();
+            users = DALHelper.CreateListFromTable<SearchLoggedInUserInfoResultVM>(dt);
+
+            return users;
+        }
+
         #endregion
 
         #region User Role Mapping

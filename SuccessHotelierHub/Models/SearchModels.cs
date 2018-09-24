@@ -2701,6 +2701,69 @@ namespace SuccessHotelierHub.Models
     }
     #endregion
 
+    #region Search User Detail
+
+    public class SearchLoggedInUserInfoParametersVM
+    {
+        public SearchLoggedInUserInfoParametersVM()
+        {
+            columns = new List<ColumnName>();
+            order = new List<ColumnOrderInfo>();
+        }
+
+        public int PageNum { get; set; }
+        public int PageSize { get; set; }
+
+        [DisplayName("College Group")]
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("Tutor")]
+        public Guid? TutorId { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        [DisplayName("View All Users")]
+        public bool IsViewAll { get; set; }
+
+        public List<ColumnName> columns { get; set; }
+        public List<ColumnOrderInfo> order { get; set; }
+    }
+
+    public class SearchLoggedInUserInfoResultVM
+    {
+        public int RowNum { get; set; }
+                
+        public Guid Id { get; set; }
+
+        [DisplayName("Name")]
+        public string Name { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        [DisplayName("Tutor")]
+        public Guid? TutorId { get; set; }
+
+        [DisplayName("Tutor Name")]
+        public string TutorName { get; set; }
+                
+        public Guid? CollegeGroupId { get; set; }
+
+        [DisplayName("College Group")]
+        public string CollegeGroupName { get; set; }        
+
+        public DateTime? LastLoggedOn { get; set; }
+        
+        public int TotalCount { get; set; }
+
+        public int TotalUsers { get; set; }
+    }
+    #endregion
+
     #region DataTable Column Info
     public class ColumnName
     {
