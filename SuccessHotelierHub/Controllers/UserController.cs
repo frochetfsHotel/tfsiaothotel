@@ -661,11 +661,17 @@ namespace SuccessHotelierHub.Controllers
                             string email = string.Empty;
                             email = user.Email;
 
+                            var firstName = string.Empty;
+
                             using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/WelcomeUser.html")))
                             {
                                 bodyMsg = sr.ReadToEnd();
-                                                                
-                                bodyMsg = bodyMsg.Replace("[@UserName]", user.Name);
+                                
+                                if(!string.IsNullOrWhiteSpace(user.Name))
+                                {
+                                    firstName = user.Name.Split(' ')[0];
+                                }
+                                bodyMsg = bodyMsg.Replace("[@UserName]", firstName);
                                 bodyMsg = bodyMsg.Replace("[@Email]", email);
                                 bodyMsg = bodyMsg.Replace("[@Password]", Utility.Utility.Decrypt(user.Password, Utility.Utility.EncryptionKey));
                                 bodyMsg = bodyMsg.Replace("[@CashierName]", LogInManager.UserName);
@@ -674,7 +680,7 @@ namespace SuccessHotelierHub.Controllers
                             if (!string.IsNullOrWhiteSpace(email))
                             {
                                 //Send Email.
-                                string EmailSubject = string.Format("Welcome to Hotelier Hub - {0}", user.Name);
+                                string EmailSubject = string.Format("Welcome to Hotelier Hub - {0}", firstName);
 
                                 blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg);
 

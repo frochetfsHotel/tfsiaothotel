@@ -83,17 +83,17 @@ Html, body{
         <!-- /.register-box -->
 
         <!-- TFS Footer Logo -->
-        <div class="visible-xs hidden-md hidden-sm row text-center">
-            <a href="https://www.trainingforsuccess.ie/" target="_blank">
-                <img src="https://tfshotelierhub.com/Content/img/tfs_logo.png" width="100" alt="Training For Success" title="Training For Success" />
+        <div class="visible-xs hidden-md hidden-sm row text-center m-b-sm m-t-sm">
+            <a href="https://www.iaot.net/" target="_blank">
+                <img src="https://tfshotelierhub.com/Content/img/iaot_logo.png" width="200" alt="International Academy of Travel" title="International Academy of Travel" />
             </a>
         </div>
     </div>
 
     <!-- TFS Footer Logo -->
     <div class="hidden-xs visible-lg visible-md visible-sm">
-        <a href="https://www.trainingforsuccess.ie/" target="_blank">
-            <img src="https://tfshotelierhub.com/Content/img/tfs_logo.png" width="100" class="login-bottom-logo" alt="Training For Success" title="Training For Success" />
+        <a href="https://www.iaot.net/" target="_blank">
+            <img src="https://tfshotelierhub.com/Content/img/iaot_logo.png" width="200" class="login-bottom-logo" alt="International Academy of Travel" title="International Academy of Travel" />
         </a>
     </div>
 </div>
@@ -186,7 +186,9 @@ Html, body{
                             var email = $('form#frmRegister #Email').val();
 
                             var msg = "";
-                            msg = "You will get an invitation email shortly from the administration at your <a href='mailto:" + email + "'>" + email + " </a> mail account. Thanks!";
+                            msg += "<span>Thank you for registering on TFS Hotelier Hub.</span><br/><br/>";
+                            msg += "<span>The administrator will email you a password within one working day.</span>"
+                            //msg = "You will get an invitation email shortly from the administration at your <a href='mailto:" + email + "'>" + email + " </a> mail account. Thanks!";
                             showAlert(msg, Alert.SUCCESS);
 
                             clearUserDetail();
