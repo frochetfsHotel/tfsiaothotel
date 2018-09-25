@@ -115,9 +115,17 @@ namespace SuccessHotelierHub.Controllers
                 model.CreatedBy = LogInManager.LoggedInUserId;
                 model.Password = Utility.Utility.Encrypt(model.Password, Utility.Utility.EncryptionKey);
 
+                #region Get Tutor Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var tutorRoleId = userRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Id;
+                model.UserRoleId = tutorRoleId;
+
+                #endregion
+
                 #region Check User Email Exist.
 
-                if (this.CheckUserEmailExist(model.Id, model.Email) == false)
+                if (this.CheckUserEmailExist(model.Id, model.UserRoleId, model.Email) == false)
                 {
                     return Json(new
                     {
@@ -133,14 +141,6 @@ namespace SuccessHotelierHub.Controllers
                 //Get Max. User Id.
                 var newUserId = (userRepository.GetMaxUserId()) + 1;
                 model.UserId = newUserId;
-
-                #endregion
-
-                #region Get Tutor Role Id
-
-                var userRoles = userRoleRepository.GetUserRoles();
-                var tutorRoleId = userRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Id;
-                model.UserRoleId = tutorRoleId;
 
                 #endregion
                 
@@ -232,9 +232,17 @@ namespace SuccessHotelierHub.Controllers
                 model.UpdatedBy = LogInManager.LoggedInUserId;
                 model.IsRecordActivity = true;
 
+                #region Get Tutor Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var tutorRoleId = userRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Id;
+                model.UserRoleId = tutorRoleId;
+
+                #endregion
+
                 #region Check User Email Exist.
 
-                if (this.CheckUserEmailExist(model.Id, model.Email) == false)
+                if (this.CheckUserEmailExist(model.Id, model.UserRoleId, model.Email) == false)
                 {
                     return Json(new
                     {
@@ -260,15 +268,7 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 #endregion
-
-                #region Get Tutor Role Id
-
-                var userRoles = userRoleRepository.GetUserRoles();
-                var tutorRoleId = userRoles.Where(m => m.Code == "TUTOR").FirstOrDefault().Id;
-                model.UserRoleId = tutorRoleId;
-
-                #endregion
-                
+                                
                 userId = userRepository.UpdateUserDetail(model);
 
                 if (!string.IsNullOrWhiteSpace(userId))
@@ -768,11 +768,11 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckUserEmailExist(Guid? userId, string email)
+        public bool CheckUserEmailExist(Guid? userId, Guid? userRoleId, string email)
         {
             bool blnAvailable = true;
 
-            var user = userRepository.CheckUserEmailExist(userId, email);
+            var user = userRepository.CheckUserEmailExist(userId, userRoleId, email);
 
             if (user.Any())
             {

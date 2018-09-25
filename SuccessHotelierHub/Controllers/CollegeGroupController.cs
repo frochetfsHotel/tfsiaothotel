@@ -37,7 +37,10 @@ namespace SuccessHotelierHub.Controllers
 
             ViewBag.UserGroupList = userGroupList;
 
-            return View();
+            CollegeGroupVM model = new CollegeGroupVM();
+            model.UserGroupId = userGroupRepository.GetUserGroupByName().FirstOrDefault().ID;
+
+            return View(model);
         }
 
         [HttpPost]

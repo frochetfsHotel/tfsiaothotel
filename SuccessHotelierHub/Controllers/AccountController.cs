@@ -209,10 +209,17 @@ namespace SuccessHotelierHub.Controllers
         {
             try
             {
+                #region Get Student Role Id
+
+                var userRoles = userRoleRepository.GetUserRoles();
+                var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
+
+                #endregion
+
                 //Check Email Exist.
                 #region Check User Email Exist
 
-                if (this.CheckUserEmailExist(model.Id, model.Email) == true)
+                if (this.CheckUserEmailExist(model.Id, studentRoleId, model.Email) == true)
                 {
                     return Json(new
                     {
@@ -243,13 +250,6 @@ namespace SuccessHotelierHub.Controllers
                 //Generate new password.
                 string newPassword = Utility.Utility.GenerateRandomPassword(8);
                 model.Password = Utility.Utility.Encrypt(newPassword, Utility.Utility.EncryptionKey);
-
-                #endregion
-
-                #region Get Student Role Id
-
-                var userRoles = userRoleRepository.GetUserRoles();
-                var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
 
                 #endregion
 
@@ -363,11 +363,11 @@ namespace SuccessHotelierHub.Controllers
             }
         }
 
-        public bool CheckUserEmailExist(Guid? id, string email)
+        public bool CheckUserEmailExist(Guid? id, Guid? userRoleId, string email)
         {
             bool blnExist = false;
 
-            var user = userRepository.CheckUserEmailExist(id, email);
+            var user = userRepository.CheckUserEmailExist(id, userRoleId, email);
 
             if (user.Any())
             {

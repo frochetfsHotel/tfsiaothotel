@@ -59439,3 +59439,119 @@ BEGIN
     
 END
 
+
+
+
+/********************************************************************************************************************************
+Name : Nilesh
+Date : 25-SEP-2018
+**********************************************************************************************************************************/
+
+/***********************************************************************************************************************************
+	SP Name : CheckUserEmailExist
+	Comment : Add UserRoleId Parameter
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[CheckUserEmailExist]    Script Date: 9/25/2018 6:36:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [CheckUserEmailExist] 
+		@Id = NULL,
+		@UserRoleId = '36C62668-97B6-4B98-867F-B9C153363FC0',
+		@Email = 'nilesh.sonkusare@techavidus.com'
+*/
+
+ALTER PROCEDURE [dbo].[CheckUserEmailExist]
+	@Id				UNIQUEIDENTIFIER	=	NULL,
+	@UserRoleId		UNIQUEIDENTIFIER	=	NULL,
+	@Email			NVARCHAR(500)				
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	SELECT UD.* 
+		FROM [dbo].[UserDetail] UD 
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+				AND ISNULL(URM.IsDeleted,0) = 0
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 				
+				AND (@Id IS NULL OR UD.[Id] != @Id)
+				AND (@UserRoleId IS NULL OR URM.[UserRoleId] = @UserRoleId)
+				AND Email = @Email
+		ORDER BY [Name]
+END
+
+
+/***********************************************************************************************************************************
+	SP Name : GetUserLogin
+	Comment : Add sorting order
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserLogin]    Script Date: 9/25/2018 6:59:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/***
+	EXEC [GetUserLogin]
+		@Email = 'nilesh.sonkusare@techavidus.com', 
+		@Password = 'yKixruUsa1YLxOwixbCq/20ZPgPuiyM79cMnr9IJWuY='
+**/
+
+ALTER PROCEDURE [dbo].[GetUserLogin]		
+	@Email			NVARCHAR(500)		,		
+	@Password		NVARCHAR(2000)					
+	
+AS
+BEGIN
+	SELECT UD.*,UR.Code AS UserRoleCode, UR.[Name] AS UserRoleName
+		 FROM [dbo].[UserDetail] UD	
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+			INNER JOIN [UserRole] UR ON UR.Id = URM.UserRoleId
+				AND ISNULL(UR.IsDeleted,0) = 0 AND ISNULL(UR.IsActive,0) = 1
+		WHERE ISNULL(UD.IsDeleted,0) = 0 AND ISNULL(UD.IsActive,0) = 1
+			AND ISNULL(UD.Email,'') = @Email
+			AND ISNULL(UD.[Password],'') = @Password
+	ORDER BY UD.CreatedOn ASC
+END
+
+
+
+/***********************************************************************************************************************************
+	SP Name : GetUserLoginByEmail
+	Comment : Add sorting order
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserLoginByEmail]    Script Date: 9/25/2018 6:59:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/***
+	EXEC [GetUserLoginByEmail]
+		@Email = 'nilesh.sonkusare@techavidus.com'
+**/
+
+ALTER PROCEDURE [dbo].[GetUserLoginByEmail]		
+	@Email			NVARCHAR(500)		
+	
+AS
+BEGIN
+	SELECT UD.*,UR.Code AS UserRoleCode, UR.[Name] AS UserRoleName
+		 FROM [dbo].[UserDetail] UD	
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+			INNER JOIN [UserRole] UR ON UR.Id = URM.UserRoleId
+				AND ISNULL(UR.IsDeleted,0) = 0 AND ISNULL(UR.IsActive,0) = 1
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 AND ISNULL(UD.IsActive,0) = 1				
+				AND ISNULL(UD.Email,'') = @Email
+	ORDER BY UD.CreatedOn ASC			
+END
+
+

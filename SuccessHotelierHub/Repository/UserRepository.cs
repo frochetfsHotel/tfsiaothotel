@@ -46,11 +46,12 @@ namespace SuccessHotelierHub.Repository
             return user;
         }
 
-        public List<UserVM> CheckUserEmailExist(Guid? id, string email)
+        public List<UserVM> CheckUserEmailExist(Guid? id, Guid? userRoleId, string email)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UserRoleId", Value = userRoleId },
                     new SqlParameter { ParameterName = "@Email", Value = email }
                 };
 
