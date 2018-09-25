@@ -79,7 +79,9 @@ namespace SuccessHotelierHub
 
         protected void Session_Start(object sender, EventArgs e)
         {
-                     
+            ////Set NoCache.
+            //Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            //Response.Cache.SetNoStore();
         }
         
         protected void Session_End(object sender, EventArgs e)

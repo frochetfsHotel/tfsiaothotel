@@ -33,7 +33,42 @@ namespace SuccessHotelierHub
 
             }
             else
+            {
+                var cookieEmail = httpContext.Request.Cookies["HotelierHubUserEmail"];
+
+                if (cookieEmail != null && !string.IsNullOrWhiteSpace(cookieEmail.Value))
+                {
+                    var result = LogInManager.LoginWithCookie(cookieEmail.Value);
+
+                    if (result == LoginStatus.Failure)
+                    {
+                        return false;
+                    }
+
+                    if (LogInManager.HasRights("STUDENT"))
+                    {
+                        //Create Dummy Reservation.
+                        Utility.TempReservation.CreateDummyReservation();
+                    }
+
+                    var trackActivityStatus = Utility.RecordActivityLog.TrackUsersActivityByUserId(LogInManager.LoggedInUser.Id);
+
+                    if (trackActivityStatus != Utility.TrackActivityStatus.Success)
+                    {
+                        //Remove Cookie
+                        Utility.Utility.RemoveCookie("HotelierHubUserEmail");
+
+                        //Remove current sessions.
+                        System.Web.HttpContext.Current.Session.RemoveAll();
+
+                        return false;
+                    }
+
+                    return true;
+                }
+
                 return false;
+            }
         }
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

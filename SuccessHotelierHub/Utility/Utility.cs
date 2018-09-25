@@ -906,16 +906,27 @@ namespace SuccessHotelierHub.Utility
 
         #region 'Manage Cookies'
 
-        public static void WriteCookie(string cookieName, string cookieValue)
+        public static void WriteCookie(string cookieName, string cookieValue, int expireHours = 120)
         {
+            string strApplicationPath = System.Web.HttpContext.Current.Request.Url.LocalPath;
+
             //Create a Cookie with a suitable Key.
             HttpCookie cookie = new HttpCookie(cookieName);
 
-            //Set the Cookie value.
-            cookie.Values[cookieName] = cookieValue;
+            //Set the Cookie value.            
+            cookie.Value = cookieValue;
 
             //Set the Expiry date.
-            cookie.Expires = DateTime.Now.AddHours(2);
+            cookie.Expires = DateTime.Now.AddHours(expireHours);
+
+            string domainName = string.Empty;            
+            domainName = HttpContext.Current.Request.Url.Host;
+
+            HttpContext.Current.Trace.Warn("Domain Name : " + domainName);
+
+            cookie.Domain = domainName;
+            //cookie.Path = strApplicationPath;
+            cookie.Path = "/";
 
             //Add the Cookie to Browser.
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
@@ -924,22 +935,38 @@ namespace SuccessHotelierHub.Utility
         public static void RemoveCookie(string cookieName)
         {
             //Fetch the Cookie using its Key.
-            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[cookieName];
+            var cookie = System.Web.HttpContext.Current.Request.Cookies[cookieName];
 
-            //Set the Expiry date to past date.
-            cookie.Expires = DateTime.Now.AddDays(-1);
+            if (cookie != null)
+            {
+                //Set the Expiry date to past date.
+                cookie.Expires = DateTime.Now.AddMonths(-20);
 
-            //Update the Cookie in Browser.
-            System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+                string domainName = string.Empty;
+                domainName = HttpContext.Current.Request.Url.Host;
+
+                HttpContext.Current.Trace.Warn("Domain Name : " + domainName);
+
+                cookie.Domain = domainName;                
+                cookie.Path = "/";
+
+                //Update the Cookie in Browser.
+                System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+            }
         }
 
         public static string ReadCookie(string cookieName)
         {
             //Fetch the Cookie using its Key.
-            HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[cookieName];
+            var cookie = System.Web.HttpContext.Current.Request.Cookies[cookieName];
 
-            //If Cookie exists fetch its value.
-            string cookieValue = cookie != null ? cookie.Value.Split('=')[1] : "undefined";
+            string cookieValue = null;
+
+            if (cookie != null)
+            {
+                //If Cookie exists fetch its value.
+                cookieValue = cookie != null ? cookie.Value : null;                
+            }
 
             return cookieValue;
         }

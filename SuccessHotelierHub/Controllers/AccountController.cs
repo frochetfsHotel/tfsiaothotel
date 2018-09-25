@@ -33,18 +33,66 @@ namespace SuccessHotelierHub.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
+            var cookieEmail = Utility.Utility.ReadCookie("HotelierHubUserEmail");
+
+            try
+            {
+                if (cookieEmail != null)
+                {
+                    var result = LogInManager.LoginWithCookie(cookieEmail);
+
+                    switch (result)
+                    {
+                        case LoginStatus.Success:
+
+                            if (LogInManager.HasRights("STUDENT"))
+                            {
+                                //Create Dummy Reservation.
+                                TempReservation.CreateDummyReservation();
+                            }
+
+                            var trackActivityStatus = RecordActivityLog.TrackUsersActivityByUserId(LogInManager.LoggedInUser.Id);
+
+                            if(trackActivityStatus == TrackActivityStatus.Success)
+                            {
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else
+                            {
+                                //Remove Cookie
+                                Utility.Utility.RemoveCookie("HotelierHubUserEmail");
+
+                                return RedirectToAction("Login", "Account");
+                            }
+                        case LoginStatus.Failure:
+                        default:
+                            return RedirectToAction("Login", "Account");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "Login");
+
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
+            }
             return View();
         }
 
         public ActionResult SignOut()
         {
-            RecordActivityLog.RecordActivity(Pages.LOGOUT, "Loggedout successfully.");            
-                        
-            System.Web.HttpContext.Current.Session.Clear();
-            System.Web.HttpContext.Current.Session.RemoveAll();
-            System.Web.HttpContext.Current.Session.Abandon();
+            RecordActivityLog.RecordActivity(Pages.LOGOUT, "Loggedout successfully.");
 
             //Here system going to call Session_End event from Global.asax file.
+            System.Web.HttpContext.Current.Session.Clear();
+            System.Web.HttpContext.Current.Session.RemoveAll();
+            System.Web.HttpContext.Current.Session.Abandon();            
+
+            Utility.Utility.RemoveCookie("HotelierHubUserEmail");
 
             //Clear Session cookie from browser. So it will generate new session id after session expire.
             if (Request.Cookies["ASP.NET_SessionId"] != null)
@@ -85,6 +133,12 @@ namespace SuccessHotelierHub.Controllers
                         {
                             //Create Dummy Reservation.
                             TempReservation.CreateDummyReservation();
+                        }
+
+                        if (model.RememberMe)
+                        {
+                            // Create a new cookie,
+                            Utility.Utility.WriteCookie("HotelierHubUserEmail", model.Email, 24); //24 Hours expiration time. 
                         }
 
                         return Json(new

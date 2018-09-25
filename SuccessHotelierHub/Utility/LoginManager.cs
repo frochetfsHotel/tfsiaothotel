@@ -83,6 +83,66 @@ namespace SuccessHotelierHub
             return LoginStatus.Success;
         }
 
+        public static LoginStatus LoginWithCookie(string email)
+        {
+            UserRepository userRepository = new UserRepository();
+            UserRoleRepository userRoleRepository = new UserRoleRepository();
+            UserPageRepository userPageRepository = new UserPageRepository();
+            UserGroupRepository userGroupRepository = new UserGroupRepository();
+            CollegeGroupRepository collegeGroupRepository = new CollegeGroupRepository();
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return LoginStatus.Failure;
+            }
+
+            var user = userRepository.GetUserLoginByEmail(email);
+
+            if (user == null)
+            {
+                return LoginStatus.Failure;
+            }
+
+            var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
+
+            var userPageAccessRights = userPageRepository.GetUserPageAccessRights(user.Id, string.Empty);
+
+            var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
+
+            if (collegeGroup != null)
+            {
+                var userGroup = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
+
+                if (userGroup != null)
+                {
+                    LogInManager.UserGroup = userGroup;
+                    LogInManager.CurrencyId = userGroup.CurrencyId;
+
+                    var currencyInfo = CurrencyManager.GetCurrencyInfoById(userGroup.CurrencyId);
+                    if (currencyInfo != null)
+                    {
+                        LogInManager.CurrencyCode = currencyInfo.Code;
+                        LogInManager.CurrencyConversionRate = currencyInfo.ConversionRate;
+                        LogInManager.CurrencySymbol = currencyInfo.CurrencySymbol;
+                    }
+                }
+            }
+
+            LogInManager.UserName = user.Name;
+            LogInManager.CashierNumber = user.CashierNumber;
+            LogInManager.LoggedInUserId = user.UserId;
+            LogInManager.LoggedInUserSessionId = System.Web.HttpContext.Current.Session.SessionID;
+            LogInManager.LoggedInUser = user;
+            LogInManager.UsersRoles = userRoles;
+            LogInManager.UserPageAccessRights = userPageAccessRights;
+            LogInManager.UserRoleName = GetUserRoleName(userRoles);
+            
+            //Update Flag IsLoggedIn = true 
+            userRepository.UpdateIsLoggedInFlag(user.Id, true);
+
+            return LoginStatus.Success;
+        }
+
         public static int LoggedInUserId
         {
             get

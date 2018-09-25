@@ -113,6 +113,38 @@ namespace SuccessHotelierHub.Repository
             return activities;
         }
 
+        public List<UsersActivityLogVM> GetUsersActivityLogByUserId(Guid userId)
+        {
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var ds = DALHelper.GetDataTableWithExtendedTimeOut("GetUsersActivityLogByUserId", parameters);
+
+            var activities = new List<UsersActivityLogVM>();
+            activities = DALHelper.CreateListFromTable<UsersActivityLogVM>(ds);
+
+            return activities;
+        }
+
+        public string UpdateSessionIdInUsersActivity(Guid id, string sessionId, int updatedBy)
+        {
+            string usersActivityId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@SessionId", Value = sessionId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            usersActivityId = Convert.ToString(DALHelper.ExecuteScalar("UpdateSessionIdInUsersActivity", parameters));
+
+            return usersActivityId;
+        }
         #endregion
     }
 }
+

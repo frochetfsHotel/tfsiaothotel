@@ -59,10 +59,8 @@ namespace SuccessHotelierHub.Utility
                             //Update logged in duration in seconds.
                             usersActivityLogRepository.UpdateLoggedInDurationInUsersActivity(Guid.Parse(newGUID), loggedInDurationInSeconds, LogInManager.LoggedInUserId);
                         }
-                    }
-                    
+                    }                    
                 }
-
             }
         }
 
@@ -105,7 +103,7 @@ namespace SuccessHotelierHub.Utility
                             usersActivityLogRepository.UpdateLoggedInDurationInUsersActivity(logoutActivity.Id, loggedInDurationInSeconds, userId);
 
                             //Update Flag IsLoggedIn = false.
-                            userRepository.UpdateIsLoggedInFlag(userGUID, false);
+                            userRepository.UpdateIsLoggedInFlag(userGUID, false);                            
                         }   
                     }
                     else
@@ -151,5 +149,83 @@ namespace SuccessHotelierHub.Utility
                 }
             }
         }
+
+        public static TrackActivityStatus TrackUsersActivityByUserId(Guid userGuid)
+        {
+            UsersActivityLogRepository usersActivityLogRepository = new UsersActivityLogRepository();
+            UserRepository userRepository = new UserRepository();
+
+            var activities = usersActivityLogRepository.GetUsersActivityLogByUserId(userGuid);
+
+            if (activities != null && activities.Count > 0)
+            {
+                //Get Login Activity.
+                var loginActivity = activities.Where(m => m.PageName == Pages.LOGIN).FirstOrDefault();
+
+                //Check Login Activity Exist.
+                if (loginActivity != null)
+                {
+                    var userId = LogInManager.LoggedInUserId;
+
+                    //Get Logout Activity which tracked after current login.
+                    var logoutActivity = activities.Where(m => m.PageName == Pages.LOGOUT 
+                                            && m.SessionId == loginActivity.SessionId 
+                                            && (m.RecordedOn.Value > loginActivity.RecordedOn.Value)
+                                        ).FirstOrDefault();
+
+                    //Check Logout Activity Exist then update logged in duration.
+                    if (logoutActivity != null)
+                    {
+                        //Check Logout Activity already updated with logged in duration. If No then update logged in duration.
+                        if (logoutActivity.LoggedInDurationInSeconds.HasValue == false)
+                        {
+                            DateTime logoutTime = logoutActivity.RecordedOn.Value;
+
+                            var loginTime = loginActivity.RecordedOn.HasValue ? loginActivity.RecordedOn.Value : logoutTime.AddMinutes(-1);
+
+                            //Calculate logged in duration seconds.
+                            TimeSpan span = logoutTime.Subtract(loginTime);
+                            double? loggedInDurationInSeconds = Math.Abs(Math.Round(span.TotalSeconds, 0));
+
+                            //Update logged in duration in seconds.
+                            usersActivityLogRepository.UpdateLoggedInDurationInUsersActivity(logoutActivity.Id, loggedInDurationInSeconds, userId);
+                        }
+
+                        //Update Flag IsLoggedIn = false.
+                        userRepository.UpdateIsLoggedInFlag(userGuid, false);
+
+                        return TrackActivityStatus.RedirectLogin;
+                    }
+                    else
+                    {
+                        //Update current session id to login activity.
+                        usersActivityLogRepository.UpdateSessionIdInUsersActivity(loginActivity.Id, LogInManager.LoggedInUserSessionId, userId);
+
+                        return TrackActivityStatus.Success;
+                    }
+                }
+            }
+
+            //Update Flag IsLoggedIn = false.
+            userRepository.UpdateIsLoggedInFlag(userGuid, false);
+
+            return TrackActivityStatus.RedirectLogin;
+        }
+    }
+
+    public enum TrackActivityStatus
+    {
+        /// <summary>
+        /// Activity tracked successfully
+        /// </summary>
+        Success = 0,        
+        /// <summary>
+        /// Track activity failed
+        /// </summary>
+        Failure = 1,
+        /// <summary>
+        /// Redirect to login logout successful
+        /// </summary>
+        RedirectLogin = 2,
     }
 }

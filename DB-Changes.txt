@@ -59346,3 +59346,96 @@ END
 
 
 
+
+/********************************************************************************************************************************
+Name : Nilesh
+Date : 24-SEP-2018
+**********************************************************************************************************************************/
+
+
+/***********************************************************************************************************************************
+	SP Name : GetUserLoginByEmail
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserLoginByEmail]    Script Date: 9/24/2018 1:03:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/***
+	EXEC [GetUserLoginByEmail]
+		@Email = 'nilesh.sonkusare@techavidus.com'
+**/
+
+CREATE PROCEDURE [dbo].[GetUserLoginByEmail]		
+	@Email			NVARCHAR(500)		
+	
+AS
+BEGIN
+	SELECT UD.*,UR.Code AS UserRoleCode, UR.[Name] AS UserRoleName
+		 FROM [dbo].[UserDetail] UD	
+			INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0
+			INNER JOIN [UserRole] UR ON UR.Id = URM.UserRoleId
+				AND ISNULL(UR.IsDeleted,0) = 0 AND ISNULL(UR.IsActive,0) = 1
+		WHERE	ISNULL(UD.IsDeleted,0) = 0 AND ISNULL(UD.IsActive,0) = 1				
+				AND ISNULL(UD.Email,'') = @Email			
+END
+
+
+
+/***********************************************************************************************************************************
+	SP Name : GetUsersActivityLogByUserId
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUsersActivityLogByUserId]    Script Date: 9/24/2018 5:45:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUsersActivityLogByUserId]
+	@UserId		UNIQUEIDENTIFIER
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT * FROM [dbo].[UsersActivityLog]
+		WHERE ISNULL(IsActive,0)  = 1 AND ISNULL(IsDeleted,0) = 0 
+			  AND [UserId] = @UserId
+		ORDER BY RecordedOn DESC
+END
+
+/***********************************************************************************************************************************
+	SP Name : UpdateSessionIdInUsersActivity
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdateSessionIdInUsersActivity]    Script Date: 9/24/2018 6:57:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateSessionIdInUsersActivity]
+	@Id				UNIQUEIDENTIFIER	,	
+	@SessionId		NVARCHAR(2000)		,
+	@UpdatedBy		INT
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UsersActivityLog] 
+		SET	[SessionId] = @SessionId
+			,[UpdatedBy] = @UpdatedBy					   
+			,[UpdatedOn] = GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND Id = @Id
+
+	SELECT @Id AS Id
+    
+END
+

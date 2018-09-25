@@ -31,6 +31,21 @@ namespace SuccessHotelierHub.Repository
             return user;
         }
 
+        public UserVM GetUserLoginByEmail(string email)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Email", Value = email }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserLoginByEmail", parameters);
+
+            var user = new UserVM();
+            user = DALHelper.CreateListFromTable<UserVM>(dt).FirstOrDefault();
+
+            return user;
+        }
+
         public List<UserVM> CheckUserEmailExist(Guid? id, string email)
         {
             SqlParameter[] parameters =
@@ -306,7 +321,6 @@ namespace SuccessHotelierHub.Repository
 
             return userId;
         }
-
 
         public string UpdateLoginCredentialSentFlag(Guid id, bool isLoginCredentialSent = false)
         {
