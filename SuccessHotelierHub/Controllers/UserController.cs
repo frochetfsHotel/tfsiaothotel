@@ -153,6 +153,41 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Add User Login Time
+
+                    UserLoginTimeVM userLoginTime = new UserLoginTimeVM();
+
+                    userLoginTime.UserId = Guid.Parse(userId);
+                    userLoginTime.UserName = model.Name;
+                    userLoginTime.IsActive = true;
+                    userLoginTime.CreatedBy = LogInManager.LoggedInUserId;
+                    userLoginTime.UpdatedBy = LogInManager.LoggedInUserId;
+
+                    userLoginTime.LoginStartTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_START_TIME;
+                    userLoginTime.LoginEndTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_END_TIME;
+
+                    if (!string.IsNullOrWhiteSpace(userLoginTime.LoginStartTimeText))
+                    {
+                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                        string date = (todayDate + " " + userLoginTime.LoginStartTimeText);
+                        DateTime time = Convert.ToDateTime(date);
+
+                        userLoginTime.LoginStartTime = time.TimeOfDay;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(userLoginTime.LoginEndTimeText))
+                    {
+                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                        string date = (todayDate + " " + userLoginTime.LoginEndTimeText);
+                        DateTime time = Convert.ToDateTime(date);
+
+                        userLoginTime.LoginEndTime = time.TimeOfDay;
+                    }
+
+                    userRepository.AddUpdateUserLoginTime(userLoginTime);
+
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,

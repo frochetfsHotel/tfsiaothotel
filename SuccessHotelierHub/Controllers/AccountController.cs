@@ -66,6 +66,12 @@ namespace SuccessHotelierHub.Controllers
                             }
                         case LoginStatus.Failure:
                         default:
+                            //Remove Cookie
+                            Utility.Utility.RemoveCookie("HotelierHubUserEmail");
+
+                            //Abandon current sessions.
+                            System.Web.HttpContext.Current.Session.Abandon();
+
                             return RedirectToAction("Login", "Account");
                     }
                 }
@@ -154,6 +160,12 @@ namespace SuccessHotelierHub.Controllers
                         {
                             IsSuccess = false,
                             errorMessage = "User already logged in!"
+                        }, JsonRequestBehavior.AllowGet);
+                    case LoginStatus.InvalidLoginTime:
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = "Invalid login access. You can only do login between time-frame assigned by your Tutor."
                         }, JsonRequestBehavior.AllowGet);
                     case LoginStatus.Failure:                        
                     default:
@@ -330,6 +342,41 @@ namespace SuccessHotelierHub.Controllers
                     tutorStudentMapping.IsActive = true;
 
                     userRepository.AddUpdateTutorStudentMapping(tutorStudentMapping);
+
+                    #endregion
+
+                    #region Add User Login Time
+
+                    UserLoginTimeVM userLoginTime = new UserLoginTimeVM();
+
+                    userLoginTime.UserId = Guid.Parse(userId);
+                    userLoginTime.UserName = model.Name;
+                    userLoginTime.IsActive = true;
+                    userLoginTime.CreatedBy = createdBy;
+                    userLoginTime.UpdatedBy = createdBy;
+
+                    userLoginTime.LoginStartTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_START_TIME;
+                    userLoginTime.LoginEndTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_END_TIME;
+
+                    if (!string.IsNullOrWhiteSpace(userLoginTime.LoginStartTimeText))
+                    {
+                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                        string date = (todayDate + " " + userLoginTime.LoginStartTimeText);
+                        DateTime time = Convert.ToDateTime(date);
+
+                        userLoginTime.LoginStartTime = time.TimeOfDay;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(userLoginTime.LoginEndTimeText))
+                    {
+                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                        string date = (todayDate + " " + userLoginTime.LoginEndTimeText);
+                        DateTime time = Convert.ToDateTime(date);
+
+                        userLoginTime.LoginEndTime = time.TimeOfDay;
+                    }
+
+                    userRepository.AddUpdateUserLoginTime(userLoginTime);
 
                     #endregion
 

@@ -348,6 +348,7 @@
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
     <Compile Include="Models\UserGroupVM.cs" />
+    <Compile Include="Models\UserLoginTimeVM.cs" />
     <Compile Include="Models\UserPagesVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
     <Compile Include="Models\UserRoleVM.cs" />
@@ -2195,6 +2196,7 @@
     <Content Include="Views\User\EditAdmin.cshtml" />
     <Content Include="Views\User\ListAdmin.cshtml" />
     <Content Include="Views\User\LoggedInUserInfo.cshtml" />
+    <Content Include="Views\Tutor\UserLoginTime.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

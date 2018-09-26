@@ -41,6 +41,39 @@ namespace SuccessHotelierHub
             }
 
             var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
+            var userRoleName = GetUserRoleName(userRoles);
+
+            #region Check Student Login Time
+
+            if (userRoles != null && userRoles.Count > 0)
+            {
+                if (userRoles[0].Code == "STUDENT")
+                {
+                    var userLoginTime = userRepository.GetUserLoginTimeByUser(user.Id).FirstOrDefault();
+
+                    if (userLoginTime != null)
+                    {
+                        var loginStartTime = userLoginTime.LoginStartTime;
+                        var loginEndTime = userLoginTime.LoginEndTime;
+
+                        var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
+                        var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+
+                        var currentDateTime = DateTime.Now;
+
+                        if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                        {
+                            return LoginStatus.InvalidLoginTime;
+                        }
+                        else
+                        {
+                            LogInManager.LoginStartTime = loginStartTime;
+                            LogInManager.LoginEndTime = loginEndTime;
+                        }
+                    }
+                }
+            }
+            #endregion
 
             var userPageAccessRights = userPageRepository.GetUserPageAccessRights(user.Id, string.Empty);
 
@@ -72,7 +105,8 @@ namespace SuccessHotelierHub
             LogInManager.LoggedInUser = user;
             LogInManager.UsersRoles = userRoles;
             LogInManager.UserPageAccessRights = userPageAccessRights;
-            LogInManager.UserRoleName = GetUserRoleName(userRoles);            
+            LogInManager.UserRoleName = userRoleName;
+            LogInManager.UserRoleCode = GetUserRoleCode(userRoles);      
 
             //Update Last LoggedIn Date.
             userRepository.UpdateUsersLastLoginTime(user.Id);
@@ -105,6 +139,40 @@ namespace SuccessHotelierHub
 
             var userRoles = userRepository.GetUserRoleByUserId(user.Id, null);
 
+            var userRoleName = GetUserRoleName(userRoles);
+
+            #region Check Student Login Time
+
+            if (userRoles != null && userRoles.Count > 0 )
+            {
+                if (userRoles[0].Code == "STUDENT")
+                {
+                    var userLoginTime = userRepository.GetUserLoginTimeByUser(user.Id).FirstOrDefault();
+
+                    if (userLoginTime != null)
+                    {
+                        var loginStartTime = userLoginTime.LoginStartTime;
+                        var loginEndTime = userLoginTime.LoginEndTime;
+
+                        var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);                        
+                        var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);                        
+
+                        var currentDateTime = DateTime.Now;
+
+                        if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                        {
+                            return LoginStatus.InvalidLoginTime;
+                        }
+                        else
+                        {
+                            LogInManager.LoginStartTime = loginStartTime;
+                            LogInManager.LoginEndTime = loginEndTime;
+                        }
+                    }
+                }
+            }
+            #endregion
+
             var userPageAccessRights = userPageRepository.GetUserPageAccessRights(user.Id, string.Empty);
 
             var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
@@ -135,8 +203,9 @@ namespace SuccessHotelierHub
             LogInManager.LoggedInUser = user;
             LogInManager.UsersRoles = userRoles;
             LogInManager.UserPageAccessRights = userPageAccessRights;
-            LogInManager.UserRoleName = GetUserRoleName(userRoles);
-            
+            LogInManager.UserRoleName = userRoleName;
+            LogInManager.UserRoleCode = GetUserRoleCode(userRoles);
+
             //Update Flag IsLoggedIn = true 
             userRepository.UpdateIsLoggedInFlag(user.Id, true);
 
@@ -276,6 +345,25 @@ namespace SuccessHotelierHub
             }
         }
 
+        public static string UserRoleCode
+        {
+            get
+            {
+                if (HttpContext.Current.Session["UserRoleCode"] != null)
+                {
+                    return (string)HttpContext.Current.Session["UserRoleCode"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["UserRoleCode"] = value;
+            }
+        }
+
         public static string LoggedInUserSessionId
         {
             get
@@ -352,6 +440,18 @@ namespace SuccessHotelierHub
             }
 
             return userRoleName;
+        }
+
+        public static string GetUserRoleCode(List<CurrentUserRoleVM> currentUserRoles)
+        {
+            string userRoleCode = string.Empty;
+
+            if (currentUserRoles != null && currentUserRoles.Count > 0)
+            {
+                userRoleCode = currentUserRoles.FirstOrDefault().Code;
+            }
+
+            return userRoleCode;
         }
 
         public static UserGroupVM UserGroup
@@ -449,6 +549,43 @@ namespace SuccessHotelierHub
             }
         }
 
+        public static TimeSpan? LoginStartTime
+        {
+            get
+            {
+                if (HttpContext.Current.Session["LoginStartTime"] != null)
+                {
+                    return (TimeSpan?)HttpContext.Current.Session["LoginStartTime"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["LoginStartTime"] = value;
+            }
+        }
+
+        public static TimeSpan? LoginEndTime
+        {
+            get
+            {
+                if (HttpContext.Current.Session["LoginEndTime"] != null)
+                {
+                    return (TimeSpan?)HttpContext.Current.Session["LoginEndTime"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                HttpContext.Current.Session["LoginEndTime"] = value;
+            }
+        }
     }
 
     public enum LoginStatus
@@ -473,6 +610,10 @@ namespace SuccessHotelierHub
         /// User is already logged in.
         /// </summary>
         AlreadyLoggedIn = 4,
+        /// <summary>
+        /// User trying to do login at invalid login time.
+        /// </summary>
+        InvalidLoginTime = 5,
     }
 
 }

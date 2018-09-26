@@ -599,6 +599,73 @@ namespace SuccessHotelierHub.Repository
         }
 
         #endregion
-               
+
+        #region User Login Time
+
+        public string AddUpdateUserLoginTime(UserLoginTimeVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
+                    new SqlParameter { ParameterName = "@LoginStartTime", Value = model.LoginStartTime } ,
+                    new SqlParameter { ParameterName = "@LoginEndTime", Value = model.LoginEndTime } ,                    
+                    new SqlParameter { ParameterName = "@IsActive", Value = model.IsActive } ,
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUpdateUserLoginTime", parameters));
+
+            return id;
+        }
+
+        public string DeleteUserLoginTimeByUser(Guid userId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteUserLoginTimeByUser", parameters));
+
+            return id;
+        }
+
+        public string DeleteUserLoginTime(Guid id, int updatedBy)
+        {
+            string loginTimeId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = id },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            loginTimeId = Convert.ToString(DALHelper.ExecuteScalar("DeleteUserLoginTime", parameters));
+
+            return loginTimeId;
+        }
+
+        public List<UserLoginTimeVM> GetUserLoginTimeByUser(Guid userId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }                    
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserLoginTimeByUser", parameters);
+
+            var results = new List<UserLoginTimeVM>();
+            results = DALHelper.CreateListFromTable<UserLoginTimeVM>(dt);
+
+            return results;
+        }
+
+        #endregion
     }
 }

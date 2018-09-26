@@ -60,9 +60,9 @@
                                     <th class="width_10">Name</th>
                                     <th class="width_20">Email</th>
                                     <th class="width_5">Status</th>
-                                    <th class="width_10">Record Activity</th>
-                                    <th class="width_15">Total Duration</th>
-                                    <th class="width_30">Action</th>
+                                    <th class="width_5">Record Activity</th>
+                                    <th class="width_10">Total Duration</th>
+                                    <th class="width_40">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -227,6 +227,10 @@
                     buttons += '<a href="javascript:void(0);" onclick="GotoFolioLog(\'' + full.Id + '\')" '
                         + ' class="btn btn-info btn-xs m-r-xs">Folio</a> ';
 
+                    //Configure Student Login Time
+                    buttons += '<a href="javascript:void(0);" onclick="GotoUserLoginTime(\'' + full.Id + '\')" '
+                    + ' class="btn btn-primary btn-xs m-r-xs">Configure Time</a> ';
+
                     return buttons;
                 }
             }
@@ -253,6 +257,10 @@
         redirectTo(url);
     }
 
+    function GotoUserLoginTime(Id) {
+        var url = '@Url.Content("~/Tutor/UserLoginTime/")' + Id;
+        redirectTo(url);
+    }
 
     function searchStudent() {
         currentPage = 1;

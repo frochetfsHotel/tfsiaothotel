@@ -15,6 +15,33 @@ namespace SuccessHotelierHub
         {
             if (LogInManager.LoggedInUser != null)
             {
+
+                #region Check Login Time
+
+                if(LogInManager.UserRoleCode == "STUDENT")
+                {
+                    var loginStartTime = LogInManager.LoginStartTime.Value;
+                    var loginEndTime = LogInManager.LoginEndTime.Value;
+
+                    var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
+                    var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+
+                    var currentDateTime = DateTime.Now;
+
+                    if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                    {
+                        //Remove Cookie
+                        Utility.Utility.RemoveCookie("HotelierHubUserEmail");
+
+                        //Remove current sessions.
+                        System.Web.HttpContext.Current.Session.Abandon();
+
+                        return false;
+                    }
+                }
+
+                #endregion
+
                 if (string.IsNullOrEmpty(Roles))
                 {
                     return true;
@@ -42,6 +69,12 @@ namespace SuccessHotelierHub
 
                     if (result == LoginStatus.Failure)
                     {
+                        //Remove Cookie
+                        Utility.Utility.RemoveCookie("HotelierHubUserEmail");
+
+                        //Remove current sessions.
+                        System.Web.HttpContext.Current.Session.Abandon();
+
                         return false;
                     }
 

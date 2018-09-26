@@ -1263,4 +1263,10 @@ namespace SuccessHotelierHub.Utility
             }
         }
     }
-}
+
+    public static class UserLoginTimeInfo
+    {
+        public const string DEFAULT_LOGIN_START_TIME = "11:00:00"; //11:00 AM
+        public const string DEFAULT_LOGIN_END_TIME = "17:00:00"; //05:00 PM
+    }
+} 

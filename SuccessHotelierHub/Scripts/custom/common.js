@@ -434,6 +434,25 @@ function GetTime(dateObject) {
     return datetext;
 }
 
+function GetDateObjectFromTime(time) {
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = today.getMonth();
+    var day = today.getDate();
+
+    var hour = 0, minute = 0;
+
+    if(!IsNullOrEmpty(time)){
+        var timeArr = time.split(':');
+
+        hour = parseInt(timeArr[0]);
+        minute = parseInt(timeArr[1]);
+    }
+    var dtObj = new Date(year, month, day, hour, minute, 0, 0);
+
+    return dtObj;
+}
+
 /*** Date Utility Functions END ****/
 
 function trim(item) {
@@ -970,3 +989,4 @@ function setNavigation() {
         }
     });
 }
+
