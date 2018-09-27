@@ -161,11 +161,20 @@ namespace SuccessHotelierHub.Controllers
                             IsSuccess = false,
                             errorMessage = "User already logged in!"
                         }, JsonRequestBehavior.AllowGet);
-                    case LoginStatus.InvalidLoginTime:
+                    case LoginStatus.InvalidLoginTime:         
+                                       
+                        var msg = Convert.ToString(Session["InvalidLoginTimeMessage"]);
+                        if (string.IsNullOrWhiteSpace(msg))
+                        {
+                            msg = "Invalid login access.You can only do login between time-frame assigned by your Tutor.";
+                        }
+
+                        Session.Remove("InvalidLoginTimeMessage");
+
                         return Json(new
                         {
                             IsSuccess = false,
-                            errorMessage = "Invalid login access. You can only do login between time-frame assigned by your Tutor."
+                            errorMessage = msg
                         }, JsonRequestBehavior.AllowGet);
                     case LoginStatus.Failure:                        
                     default:
@@ -343,42 +352,7 @@ namespace SuccessHotelierHub.Controllers
 
                     userRepository.AddUpdateTutorStudentMapping(tutorStudentMapping);
 
-                    #endregion
-
-                    #region Add User Login Time
-
-                    UserLoginTimeVM userLoginTime = new UserLoginTimeVM();
-
-                    userLoginTime.UserId = Guid.Parse(userId);
-                    userLoginTime.UserName = model.Name;
-                    userLoginTime.IsActive = true;
-                    userLoginTime.CreatedBy = createdBy;
-                    userLoginTime.UpdatedBy = createdBy;
-
-                    userLoginTime.LoginStartTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_START_TIME;
-                    userLoginTime.LoginEndTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_END_TIME;
-
-                    if (!string.IsNullOrWhiteSpace(userLoginTime.LoginStartTimeText))
-                    {
-                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                        string date = (todayDate + " " + userLoginTime.LoginStartTimeText);
-                        DateTime time = Convert.ToDateTime(date);
-
-                        userLoginTime.LoginStartTime = time.TimeOfDay;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(userLoginTime.LoginEndTimeText))
-                    {
-                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                        string date = (todayDate + " " + userLoginTime.LoginEndTimeText);
-                        DateTime time = Convert.ToDateTime(date);
-
-                        userLoginTime.LoginEndTime = time.TimeOfDay;
-                    }
-
-                    userRepository.AddUpdateUserLoginTime(userLoginTime);
-
-                    #endregion
+                    #endregion                    
 
                     return Json(new
                     {

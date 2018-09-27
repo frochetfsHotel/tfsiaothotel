@@ -608,7 +608,8 @@ namespace SuccessHotelierHub.Repository
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UserId", Value = model.UserId },
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@ConfigurationType", Value = model.ConfigurationType },
                     new SqlParameter { ParameterName = "@LoginStartTime", Value = model.LoginStartTime } ,
                     new SqlParameter { ParameterName = "@LoginEndTime", Value = model.LoginEndTime } ,                    
                     new SqlParameter { ParameterName = "@IsActive", Value = model.IsActive } ,
@@ -621,17 +622,17 @@ namespace SuccessHotelierHub.Repository
             return id;
         }
 
-        public string DeleteUserLoginTimeByUser(Guid userId, int updatedBy)
+        public string DeleteUserLoginTimeByTutor(Guid tutorId, int updatedBy)
         {
             string id = string.Empty;
 
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UserId", Value = userId },
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
                 };
 
-            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteUserLoginTimeByUser", parameters));
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteUserLoginTimeByTutor", parameters));
 
             return id;
         }
@@ -650,15 +651,15 @@ namespace SuccessHotelierHub.Repository
 
             return loginTimeId;
         }
-
-        public List<UserLoginTimeVM> GetUserLoginTimeByUser(Guid userId)
+        
+        public List<UserLoginTimeVM> GetUserLoginTimeByTutor(Guid tutorId)
         {
             SqlParameter[] parameters =
                 {
-                    new SqlParameter { ParameterName = "@UserId", Value = userId }                    
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId }
                 };
 
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserLoginTimeByUser", parameters);
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserLoginTimeByTutor", parameters);
 
             var results = new List<UserLoginTimeVM>();
             results = DALHelper.CreateListFromTable<UserLoginTimeVM>(dt);

@@ -792,71 +792,40 @@ namespace SuccessHotelierHub.Controllers
 
         #endregion
 
-        #region User Login Time
+        #region User Login Time        
 
         [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
-        public ActionResult UserLoginTime(Guid id)
+        public ActionResult UserLoginTime()
         {
-            var userLoginDetails = userRepository.GetUserLoginTimeByUser(id);
+            var userLoginDetails = userRepository.GetUserLoginTimeByTutor(LogInManager.LoggedInUser.Id);
 
             UserLoginTimeVM model = new UserLoginTimeVM();
+
+            model.TutorId = LogInManager.LoggedInUser.Id;   
+            model.ConfigurationType = UserLoginConfigurationType.ALWAYS;
 
             if (userLoginDetails != null && userLoginDetails.Count > 0)
             {
                 var userLoginDetail = userLoginDetails[0];
-                
-                model.UserId = userLoginDetail.UserId;
+
+                model.ConfigurationType = userLoginDetail.ConfigurationType;
                 model.LoginStartTime = userLoginDetail.LoginStartTime;
-                model.LoginEndTime = userLoginDetail.LoginEndTime;
+                model.LoginEndTime = userLoginDetail.LoginEndTime;                                
                 model.UserName = userLoginDetail.UserName;
-                
-                if (model.LoginStartTime != null)
+
+                if (model.LoginStartTime != null && model.LoginStartTime.HasValue)
                 {
-                    DateTime startTime = DateTime.Today.Add(model.LoginStartTime);
+                    DateTime startTime = DateTime.Today.Add(model.LoginStartTime.Value);
                     model.LoginStartTimeText = startTime.ToString("HH:mm");
                 }
-                
-                if (model.LoginEndTime != null)
+
+                if (model.LoginEndTime != null && model.LoginEndTime.HasValue)
                 {
-                    DateTime endTime = DateTime.Today.Add(model.LoginEndTime);
+                    DateTime endTime = DateTime.Today.Add(model.LoginEndTime.Value);
                     model.LoginEndTimeText = endTime.ToString("HH:mm");
                 }
-
-                return View(model);
             }
-            else
-            {
-                var user = userRepository.GetUserDetailById(id).FirstOrDefault();
-
-                if(user != null)
-                {
-                    model.UserId = user.Id;
-                    model.UserName = user.Name;
-                }
-
-                model.LoginStartTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_START_TIME;
-                model.LoginEndTimeText = UserLoginTimeInfo.DEFAULT_LOGIN_END_TIME;
-                
-                if (!string.IsNullOrWhiteSpace(model.LoginStartTimeText))
-                {
-                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                    string date = (todayDate + " " + model.LoginStartTimeText);
-                    DateTime time = Convert.ToDateTime(date);
-
-                    model.LoginStartTime = time.TimeOfDay;
-                }
-
-                if (!string.IsNullOrWhiteSpace(model.LoginEndTimeText))
-                {
-                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                    string date = (todayDate + " " + model.LoginEndTimeText);
-                    DateTime time = Convert.ToDateTime(date);
-
-                    model.LoginEndTime = time.TimeOfDay;
-                }
-
-                return View(model);
-            }
+            return View(model);
         }
 
         [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
@@ -865,39 +834,48 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult UserLoginTime(UserLoginTimeVM model)
         {
             try
-            {
-                DateTime startTime = DateTime.Now;
-                DateTime endTime = DateTime.Now;
-
-                if (!string.IsNullOrWhiteSpace(model.LoginStartTimeText))
+            {                
+                if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT) 
                 {
-                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                    string date = (todayDate + " " + model.LoginStartTimeText);
-                    startTime = Convert.ToDateTime(date);
+                    DateTime startTime = DateTime.Now;
+                    DateTime endTime = DateTime.Now;
 
-                    model.LoginStartTime = startTime.TimeOfDay;
-                }
-
-                if (!string.IsNullOrWhiteSpace(model.LoginEndTimeText))
-                {
-                    string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                    string date = (todayDate + " " + model.LoginEndTimeText);
-                    endTime = Convert.ToDateTime(date);
-
-                    model.LoginEndTime = endTime.TimeOfDay;
-                }
-
-                if(endTime < startTime)
-                {
-                    return Json(new
+                    if (!string.IsNullOrWhiteSpace(model.LoginStartTimeText))
                     {
-                        IsSuccess = false,
-                        errorMessage = "Login start time must be less than login end time."
-                    });
+                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                        string date = (todayDate + " " + model.LoginStartTimeText);
+                        startTime = Convert.ToDateTime(date);
+
+                        model.LoginStartTime = startTime.TimeOfDay;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(model.LoginEndTimeText))
+                    {
+                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+                        string date = (todayDate + " " + model.LoginEndTimeText);
+                        endTime = Convert.ToDateTime(date);
+
+                        model.LoginEndTime = endTime.TimeOfDay;
+                    }
+
+                    if (endTime < startTime)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = "Login start time must be less than login end time."
+                        });
+                    }
+                }
+                else
+                {
+                    model.LoginStartTime = null;
+                    model.LoginEndTime = null;
                 }
 
                 #region Add / Update User Login Time
 
+                model.TutorId = LogInManager.LoggedInUser.Id;
                 model.CreatedBy = LogInManager.LoggedInUserId;
                 model.UpdatedBy = LogInManager.LoggedInUserId;
                 model.IsActive = true;

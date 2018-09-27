@@ -227,10 +227,6 @@
                     buttons += '<a href="javascript:void(0);" onclick="GotoFolioLog(\'' + full.Id + '\')" '
                         + ' class="btn btn-info btn-xs m-r-xs">Folio</a> ';
 
-                    //Configure Student Login Time
-                    buttons += '<a href="javascript:void(0);" onclick="GotoUserLoginTime(\'' + full.Id + '\')" '
-                    + ' class="btn btn-primary btn-xs m-r-xs">Configure Time</a> ';
-
                     return buttons;
                 }
             }
@@ -257,10 +253,6 @@
         redirectTo(url);
     }
 
-    function GotoUserLoginTime(Id) {
-        var url = '@Url.Content("~/Tutor/UserLoginTime/")' + Id;
-        redirectTo(url);
-    }
 
     function searchStudent() {
         currentPage = 1;

@@ -8,16 +8,16 @@ namespace SuccessHotelierHub.Models
     {
         public Guid Id { get; set; }
 
-        [DisplayName("User")]
-        [Required(ErrorMessage = "Please select user id.")]
-        public Guid UserId { get; set; }
+        public Guid TutorId { get; set; }        
+        
+        public string ConfigurationType { get; set; }
 
         [DisplayName("User Name")]
         public string UserName { get; set; }
 
         [DisplayName("Login Start Time")]
         [Required(ErrorMessage = "Please select login start time.")]
-        public TimeSpan LoginStartTime { get; set; }
+        public TimeSpan? LoginStartTime { get; set; }
 
         [DisplayName("Login Start Time")]
         [Required(ErrorMessage = "Please select login start time.")]
@@ -25,7 +25,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Login End Time")]
         [Required(ErrorMessage = "Please select login end time.")]
-        public TimeSpan LoginEndTime { get; set; }
+        public TimeSpan? LoginEndTime { get; set; }
 
         [DisplayName("Login End Time")]
         [Required(ErrorMessage = "Please select login end time.")]

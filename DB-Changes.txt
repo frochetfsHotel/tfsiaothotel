@@ -59738,3 +59738,177 @@ BEGIN
 END
 
 
+
+/********************************************************************************************************************************
+Name : Nilesh
+Date : 26-SEP-2018 - V2
+**********************************************************************************************************************************/
+
+/***** Drop Table UserLoginTime ********/
+
+DROP TABLE UserLoginTime
+
+
+/***************************** ReCreate Table : UserLoginTime *******************************/
+
+/****** Object:  Table [dbo].[UserLoginTime]    Script Date: 9/13/2018 1:52:44 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserLoginTime](
+	[Id] [uniqueidentifier] NOT NULL,
+	[TutorId] [uniqueidentifier] NOT NULL,
+	[LoginStartTime] TIME(7) NULL,
+	[LoginEndTime] TIME(7) NULL,
+	[ConfigurationType] [char](2) NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_UserLoginTime] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] 
+GO
+
+
+
+
+
+/***********************************************************************************************************************************
+	SP Name : AddUpdateUserLoginTime
+	Comment : Add TutorId Parameter
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddUpdateUserLoginTime]    Script Date: 9/26/2018 11:49:29 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddUpdateUserLoginTime]		
+	@TutorId			UNIQUEIDENTIFIER				,	
+	@ConfigurationType	NVARCHAR(10)		=	NULL	,
+	@LoginStartTime		TIME(7)				=	NULL	,
+	@LoginEndTime		TIME(7)				=	NULL	,
+	@IsActive			BIT					=	NULL	,
+	@CreatedBy			INT					=	NULL	,
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	IF NOT EXISTS (SELECT * FROM [UserLoginTime]
+						WHERE	ISNULL(IsDeleted,0) = 0 
+								AND [TutorId] = @TutorId)
+	BEGIN		
+		INSERT INTO [dbo].[UserLoginTime]
+			   ([Id]			   
+			   ,[TutorId]				   
+			   ,[ConfigurationType]
+			   ,[LoginStartTime]
+			   ,[LoginEndTime]			   
+			   ,[IsActive]
+			   ,[CreatedBy]
+			   ,[CreatedOn])
+		 VALUES
+				(
+					@Id					
+					,@TutorId
+					,@ConfigurationType
+					,@LoginStartTime
+					,@LoginEndTime					
+					,@IsActive
+					,@CreatedBy
+					,GETDATE()
+				)
+	END
+	ELSE
+	BEGIN
+		UPDATE [dbo].[UserLoginTime]
+			SET		[LoginStartTime]		=	@LoginStartTime
+					,[LoginEndTime]			=	@LoginEndTime
+					,[ConfigurationType]	=	@ConfigurationType
+					,[UpdatedBy]			=	@UpdatedBy
+					,[UpdatedOn]			=	GETDATE()
+			WHERE	ISNULL(IsDeleted,0) = 0 							
+					AND [TutorId] 	= 	@TutorId			
+	END
+			
+	SELECT @Id AS Id
+    
+END
+
+
+/***********************************************************************************************************************************
+	SP Name : DeleteUserLoginTimeByTutor
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[DeleteUserLoginTimeByTutor]    Script Date: 9/26/2018 11:56:20 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteUserLoginTimeByTutor]	
+	@TutorId		UNIQUEIDENTIFIER				,
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserLoginTime] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND [TutorId] = @TutorId
+	
+
+	SELECT @TutorId AS Id
+    
+END
+
+/***********************************************************************************************************************************
+	SP Name : GetUserLoginTimeByTutor
+	Comment : Create New SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetUserLoginTimeByTutor]    Script Date: 9/26/2018 11:57:55 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetUserLoginTimeByTutor]	
+	@TutorId		UNIQUEIDENTIFIER 
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    SELECT ULT.*, UD.[Name] AS UserName
+		FROM [dbo].[UserLoginTime] ULT
+				INNER JOIN [dbo].[UserDetail] UD ON UD.Id = ULT.TutorId
+				AND ISNULL(UD.IsDeleted,0) = 0  
+		WHERE	ISNULL(ULT.IsDeleted,0) = 0 
+				AND ULT.[TutorId] = @TutorId
+END
+
+
+/********************************* DROP SP GetUserLoginTimeByUser & DeleteUserLoginTimeByUser ****/
+
+DROP PROCEDURE GetUserLoginTimeByUser
+
+DROP PROCEDURE DeleteUserLoginTimeByUser
+
+
+ 

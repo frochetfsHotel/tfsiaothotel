@@ -34,7 +34,7 @@ namespace SuccessHotelierHub
             }
             else
             {
-                if(user.IsLoggedIn.HasValue && user.IsLoggedIn.Value == true)
+                if (user.IsLoggedIn.HasValue && user.IsLoggedIn.Value == true)
                 {
                     return LoginStatus.AlreadyLoggedIn;
                 }
@@ -49,26 +49,39 @@ namespace SuccessHotelierHub
             {
                 if (userRoles[0].Code == "STUDENT")
                 {
-                    var userLoginTime = userRepository.GetUserLoginTimeByUser(user.Id).FirstOrDefault();
-
-                    if (userLoginTime != null)
+                    var tutorDetails = userRepository.GetTutorStudentMappingByTutor(null, user.Id);
+                    if (tutorDetails != null && tutorDetails.Count > 0)
                     {
-                        var loginStartTime = userLoginTime.LoginStartTime;
-                        var loginEndTime = userLoginTime.LoginEndTime;
+                        var userLoginTime = userRepository.GetUserLoginTimeByTutor(tutorDetails[0].TutorId).FirstOrDefault();
 
-                        var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
-                        var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
-
-                        var currentDateTime = DateTime.Now;
-
-                        if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                        //If time limt set then compare current time and time limit
+                        if (userLoginTime != null && userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.SET_LIMIT)
                         {
-                            return LoginStatus.InvalidLoginTime;
-                        }
-                        else
-                        {
-                            LogInManager.LoginStartTime = loginStartTime;
-                            LogInManager.LoginEndTime = loginEndTime;
+                            var loginStartTime = userLoginTime.LoginStartTime.Value;
+                            var loginEndTime = userLoginTime.LoginEndTime.Value;
+
+                            var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
+                            var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+
+                            var currentDateTime = DateTime.Now;
+
+                            if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                            {
+                                DateTime startTime = DateTime.Today.Add(loginStartTime);
+                                var loginStartTimeText = startTime.ToString("HH:mm");
+
+                                DateTime endTime = DateTime.Today.Add(loginEndTime);
+                                var loginEndTimeText = endTime.ToString("HH:mm");
+
+                                System.Web.HttpContext.Current.Session["InvalidLoginTimeMessage"] = string.Format("Invalid login access.You can only do login between {0} - {1} time-frame assigned by your Tutor.", loginStartTimeText, loginEndTimeText);
+
+                                return LoginStatus.InvalidLoginTime;
+                            }
+                            else
+                            {
+                                LogInManager.LoginStartTime = loginStartTime;
+                                LogInManager.LoginEndTime = loginEndTime;
+                            }
                         }
                     }
                 }
@@ -79,17 +92,17 @@ namespace SuccessHotelierHub
 
             var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
 
-            if(collegeGroup != null)
+            if (collegeGroup != null)
             {
                 var userGroup = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
 
-                if(userGroup != null)
+                if (userGroup != null)
                 {
                     LogInManager.UserGroup = userGroup;
                     LogInManager.CurrencyId = userGroup.CurrencyId;
 
                     var currencyInfo = CurrencyManager.GetCurrencyInfoById(userGroup.CurrencyId);
-                    if(currencyInfo != null)
+                    if (currencyInfo != null)
                     {
                         LogInManager.CurrencyCode = currencyInfo.Code;
                         LogInManager.CurrencyConversionRate = currencyInfo.ConversionRate;
@@ -106,7 +119,7 @@ namespace SuccessHotelierHub
             LogInManager.UsersRoles = userRoles;
             LogInManager.UserPageAccessRights = userPageAccessRights;
             LogInManager.UserRoleName = userRoleName;
-            LogInManager.UserRoleCode = GetUserRoleCode(userRoles);      
+            LogInManager.UserRoleCode = GetUserRoleCode(userRoles);
 
             //Update Last LoggedIn Date.
             userRepository.UpdateUsersLastLoginTime(user.Id);
@@ -143,30 +156,44 @@ namespace SuccessHotelierHub
 
             #region Check Student Login Time
 
-            if (userRoles != null && userRoles.Count > 0 )
+            if (userRoles != null && userRoles.Count > 0)
             {
                 if (userRoles[0].Code == "STUDENT")
                 {
-                    var userLoginTime = userRepository.GetUserLoginTimeByUser(user.Id).FirstOrDefault();
+                    var tutorDetails = userRepository.GetTutorStudentMappingByTutor(null, user.Id);
 
-                    if (userLoginTime != null)
+                    if (tutorDetails != null && tutorDetails.Count > 0)
                     {
-                        var loginStartTime = userLoginTime.LoginStartTime;
-                        var loginEndTime = userLoginTime.LoginEndTime;
+                        var userLoginTime = userRepository.GetUserLoginTimeByTutor(tutorDetails[0].TutorId).FirstOrDefault();
 
-                        var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);                        
-                        var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);                        
-
-                        var currentDateTime = DateTime.Now;
-
-                        if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                        //If time limt set then compare current time and time limit
+                        if (userLoginTime != null && userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.SET_LIMIT)
                         {
-                            return LoginStatus.InvalidLoginTime;
-                        }
-                        else
-                        {
-                            LogInManager.LoginStartTime = loginStartTime;
-                            LogInManager.LoginEndTime = loginEndTime;
+                            var loginStartTime = userLoginTime.LoginStartTime.Value;
+                            var loginEndTime = userLoginTime.LoginEndTime.Value;
+
+                            var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
+                            var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+
+                            var currentDateTime = DateTime.Now;
+
+                            if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                            {
+                                DateTime startTime = DateTime.Today.Add(loginStartTime);
+                                var loginStartTimeText = startTime.ToString("HH:mm");
+
+                                DateTime endTime = DateTime.Today.Add(loginEndTime);
+                                var loginEndTimeText = endTime.ToString("HH:mm");
+
+                                System.Web.HttpContext.Current.Session["InvalidLoginTimeMessage"] = string.Format("Invalid login access.You can only do login between {0} - {1} time-frame assigned by your Tutor.", loginStartTimeText, loginEndTimeText);
+
+                                return LoginStatus.InvalidLoginTime;
+                            }
+                            else
+                            {
+                                LogInManager.LoginStartTime = loginStartTime;
+                                LogInManager.LoginEndTime = loginEndTime;
+                            }
                         }
                     }
                 }
@@ -423,7 +450,7 @@ namespace SuccessHotelierHub
         {
             string userRoleName = string.Empty;
 
-            if(currentUserRoles != null && currentUserRoles.Count > 0 )
+            if (currentUserRoles != null && currentUserRoles.Count > 0)
             {
                 if (currentUserRoles.Where(m => m.Code == "ADMIN").FirstOrDefault() != null)
                 {
