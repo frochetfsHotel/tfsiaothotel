@@ -60,7 +60,7 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult Create()
         {
             var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
-            //var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+            
             var titleList = new SelectList(titleRepository.GetTitle()
                 .Select(
                     m => new SelectListItem()
@@ -85,15 +85,6 @@ namespace SuccessHotelierHub.Controllers
             var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
             var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
             var packageList = packageRepository.GetPackages();
-            //var packageList = new SelectList(
-            //    packageRepository.GetPackages()
-            //    .Select(
-            //        m => new SelectListItem()
-            //        {
-            //            Value = m.Id.ToString(),
-            //            Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-            //        }
-            //    ), "Value", "Text").ToList();
 
             var marketList = new SelectList(
                               marketRepository.GetMarkets()
@@ -115,12 +106,7 @@ namespace SuccessHotelierHub.Controllers
                                  }
                      ), "Value", "Text").ToList();
 
-
-
-            //var paymentList = paymentMethodRepository.GetPaymentMethods();
-            //var maxCodeLength = paymentList.Max(m => m.Code.Length);
-            //System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
+            
             var paymentMethodList = new SelectList(
                     paymentMethodRepository.GetPaymentMethods()
                     .Select(
@@ -458,11 +444,15 @@ namespace SuccessHotelierHub.Controllers
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
-                {
-                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
-                }
+                
+                //Decrypt Credit Card#
+                model.CreditCardNo = Utility.Utility.Decrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
 
+                //Original Credit Card#
+                ViewBag.OriginalCreditCardNo = model.CreditCardNo;
+
+                //Mast Credit Card#
+                model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
 
                 #region Room Type
                 //Get Room Type Details.
@@ -564,7 +554,7 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 var countryList = new SelectList(countryRepository.GetCountries(), "Id", "Name").ToList();
-                //var titleList = new SelectList(titleRepository.GetTitle(), "Id", "Title").ToList();
+                
                 var titleList = new SelectList(titleRepository.GetTitle()
                             .Select(
                                 m => new SelectListItem()
@@ -586,15 +576,6 @@ namespace SuccessHotelierHub.Controllers
                 var preferenceGroupList = new SelectList(preferenceGroupRepository.GetPreferenceGroup(), "Id", "Name").ToList();
                 var reservationTypeList = new SelectList(reservationTypeRepository.GetReservationTypes(), "Id", "Name").ToList();
                 var packageList = packageRepository.GetPackages();
-                //var packageList = new SelectList(
-                //        packageRepository.GetPackages()
-                //        .Select(
-                //            m => new SelectListItem()
-                //            {
-                //                Value = m.Id.ToString(),
-                //                Text = (m.Name + (!string.IsNullOrWhiteSpace(m.Description) ? " - " + m.Description : ""))
-                //            }
-                //        ), "Value", "Text").ToList();
 
                 var marketList = new SelectList(
                               marketRepository.GetMarkets()
@@ -811,8 +792,8 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
 
-                //Credit Card No.
-                model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
+                //Encrypt Credit Card#.
+                model.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
 
                 reservationId = reservationRepository.UpdateReservation(model);
 
@@ -1492,8 +1473,8 @@ namespace SuccessHotelierHub.Controllers
 
             #endregion
 
-            //Credit Card No.
-            model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
+            //Encrypt Credit Card #.
+            model.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
 
             reservationId = reservationRepository.AddReservation(model);
 
@@ -1592,19 +1573,7 @@ namespace SuccessHotelierHub.Controllers
                 #endregion
 
                 #region Save Reservation Package Mapping               
-
-                //if (model.PackageId.HasValue)
-                //{
-                //    //Save Reservation Package Mapping.
-                //    ReservationPackageMappingVM reservationPackageMapping = new ReservationPackageMappingVM();
-                //    reservationPackageMapping.PackageId = model.PackageId;
-                //    reservationPackageMapping.ReservationId = model.Id;
-                //    reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                //    reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
-
-                //    reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
-                //}
-
+                
                 if (model.PackageMappingList != null && model.PackageMappingList.Count > 0)
                 {
                     var packageMapping = model.PackageMappingList[0];

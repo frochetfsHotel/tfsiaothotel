@@ -166,6 +166,25 @@ namespace SuccessHotelierHub.Controllers
 
                 var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
+                if (transactions != null && transactions.Count > 0)
+                {
+                    foreach (var transaction in transactions)
+                    {
+                        if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
+                        {
+                            if (!transaction.Description.Contains("Cash"))
+                            {
+                                //Decrypt Credit Card#
+                                var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                                //Mask Credit Card No.
+                                transaction.CreditCardNo = Utility.Utility.MaskCreditCardNo(originalCreditCardNo);
+                                transaction.Code = transaction.CreditCardNo;
+                            }
+                        }
+                    }
+                }
+
                 #endregion
 
                 #region Rate Type
@@ -363,11 +382,16 @@ namespace SuccessHotelierHub.Controllers
                 model.NoOfRoom = reservation.NoOfRoom.HasValue ? reservation.NoOfRoom.Value : 1;
                 model.Name = Convert.ToString(reservation.LastName + " " + reservation.FirstName).Trim();
                 model.PaymentMethodId = reservation.PaymentMethodId;
-                //model.CreditCardNo = reservation.CreditCardNo;
-                if (!string.IsNullOrWhiteSpace(reservation.CreditCardNo))
-                {
-                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(reservation.CreditCardNo);
-                }
+
+                //Decrypt Credit Card#.
+                model.CreditCardNo = Utility.Utility.Decrypt(reservation.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                //Original Credit Card#
+                ViewData["OriginalCreditCardNo"] = model.CreditCardNo;
+
+                //Mask Credit Card#.
+                model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
+
                 model.CardExpiryDate = reservation.CardExpiryDate;
                 model.CVVNo = reservation.CVVNo;
                 model.RoomNumbers = roomNumbers;
@@ -435,7 +459,10 @@ namespace SuccessHotelierHub.Controllers
                         reservationCharge.TransactionDate = model.CheckOutDate.Value;
                         reservationCharge.Amount = -(totalAmount);
                         reservationCharge.Qty = 1;
-                        reservationCharge.CreditCardNo = reservation.CreditCardNo;
+                        
+                        //Encrypt Credit Card#.
+                        reservationCharge.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
+
                         reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
                         reservationCharge.IsActive = true;
                         reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
@@ -458,12 +485,6 @@ namespace SuccessHotelierHub.Controllers
 
                                 foreach (var item in roomIdsArr)
                                 {
-                                    ////Update Room Occupied Flag.
-                                    //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
-
-                                    ////Update Room Status DIRTY to CLEAN.
-                                    //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
-
                                     #region Add Reservation Log
 
                                     var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
@@ -522,12 +543,11 @@ namespace SuccessHotelierHub.Controllers
 
                         #region Update Reservation
 
-                        reservation.PaymentMethodId = model.PaymentMethodId;
-                        //reservation.CreditCardNo = model.CreditCardNo;
-                        if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
-                        {
-                            reservation.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
-                        }
+                        reservation.PaymentMethodId = model.PaymentMethodId;                        
+
+                        //Encrypt Credit Card#.
+                        reservation.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
+
                         reservation.CardExpiryDate = model.CardExpiryDate;
 
                         //Replace Departure date with  check out date.
@@ -639,6 +659,25 @@ namespace SuccessHotelierHub.Controllers
                 #region Reservation Charges
                 
                 var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                if(transactions != null && transactions.Count > 0)
+                {
+                    foreach(var transaction in transactions)
+                    {
+                        if(transaction.Code == AdditionalChargeCode.CHECK_OUT)
+                        {
+                            if(!transaction.Description.Contains("Cash"))
+                            {
+                                //Decrypt Credit Card#
+                                var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                                //Mask Credit Card No.
+                                transaction.CreditCardNo = Utility.Utility.MaskCreditCardNo(originalCreditCardNo);
+                                transaction.Code = transaction.CreditCardNo;
+                            }
+                        }
+                    }
+                }
 
                 #endregion
 
@@ -886,6 +925,25 @@ namespace SuccessHotelierHub.Controllers
 
                 var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, reservation.CreatedBy);
 
+                if (transactions != null && transactions.Count > 0)
+                {
+                    foreach (var transaction in transactions)
+                    {
+                        if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
+                        {
+                            if (!transaction.Description.Contains("Cash"))
+                            {
+                                //Decrypt Credit Card#
+                                var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                                //Mask Credit Card No.
+                                transaction.CreditCardNo = Utility.Utility.MaskCreditCardNo(originalCreditCardNo);
+                                transaction.Code = transaction.CreditCardNo;
+                            }
+                        }
+                    }
+                }
+
                 #endregion
 
                 #region Profile
@@ -1108,6 +1166,25 @@ namespace SuccessHotelierHub.Controllers
                     #region Reservation Charges
 
                     var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, reservation.CreatedBy);
+
+                    if (transactions != null && transactions.Count > 0)
+                    {
+                        foreach (var transaction in transactions)
+                        {
+                            if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
+                            {
+                                if (!transaction.Description.Contains("Cash"))
+                                {
+                                    //Decrypt Credit Card#
+                                    var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                                    //Mask Credit Card No.
+                                    transaction.CreditCardNo = Utility.Utility.MaskCreditCardNo(originalCreditCardNo);
+                                    transaction.Code = transaction.CreditCardNo;
+                                }
+                            }
+                        }
+                    }
 
                     #endregion
 
@@ -1489,8 +1566,8 @@ namespace SuccessHotelierHub.Controllers
                             reservationCharge.IsActive = true;
                             reservationCharge.CardExpiryDate = item.CardExpiryDate;
 
-                            //Credit Card No.
-                            reservationCharge.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(item.CreditCardNo);
+                            //Credit Card No.                            
+                            reservationCharge.CreditCardNo = Utility.Utility.Encrypt(item.CreditCardNo, Utility.Utility.EncryptionKey);
 
                             reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
                             reservationChargeRepository.AddReservationCharges(reservationCharge);
@@ -1655,6 +1732,25 @@ namespace SuccessHotelierHub.Controllers
 
             var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
+            if (transactions != null && transactions.Count > 0)
+            {
+                foreach (var transaction in transactions)
+                {
+                    if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
+                    {
+                        if (!transaction.Description.Contains("Cash"))
+                        {
+                            //Decrypt Credit Card#
+                            var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                            //Mask Credit Card No.
+                            transaction.CreditCardNo = Utility.Utility.MaskCreditCardNo(originalCreditCardNo);
+                            transaction.Code = transaction.CreditCardNo;
+                        }
+                    }
+                }
+            }
+
             #endregion
 
             #region Room Mapping
@@ -1806,8 +1902,8 @@ namespace SuccessHotelierHub.Controllers
                                     reservationCharge.IsActive = true;
                                     reservationCharge.CardExpiryDate = item.CardExpiryDate;
 
-                                    //Credit Card No.
-                                    reservationCharge.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(item.CreditCardNo);
+                                    //Credit Card No.                                    
+                                    reservationCharge.CreditCardNo = Utility.Utility.Encrypt(item.CreditCardNo, Utility.Utility.EncryptionKey);
 
                                     reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
                                     reservationChargeRepository.AddReservationCharges(reservationCharge);
@@ -1996,6 +2092,25 @@ namespace SuccessHotelierHub.Controllers
                 #region Reservation Charges
                 
                 var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
+
+                if (transactions != null && transactions.Count > 0)
+                {
+                    foreach (var transaction in transactions)
+                    {
+                        if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
+                        {
+                            if (!transaction.Description.Contains("Cash"))
+                            {
+                                //Decrypt Credit Card#
+                                var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                                //Mask Credit Card No.
+                                transaction.CreditCardNo = Utility.Utility.MaskCreditCardNo(originalCreditCardNo);
+                                transaction.Code = transaction.CreditCardNo;
+                            }
+                        }
+                    }
+                }
 
                 #endregion
 

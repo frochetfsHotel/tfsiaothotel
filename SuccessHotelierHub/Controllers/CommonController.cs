@@ -266,12 +266,6 @@ namespace SuccessHotelierHub.Controllers
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
-                {
-                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
-                }
-
-
                 #region Room Type
                 //Get Room Type Details.
                 if (model.RoomTypeId.HasValue)
@@ -363,10 +357,14 @@ namespace SuccessHotelierHub.Controllers
 
                 ViewBag.WeekEndPrice = dblWeekEndPrice;
 
-                if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
-                {
-                    model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
-                }
+                //Decrypt Credit Card#
+                model.CreditCardNo = Utility.Utility.Decrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                //Original Credit Card#
+                ViewBag.OriginalCreditCardNo = model.CreditCardNo;
+
+                //Mask Credit Card#
+                model.CreditCardNo = Utility.Utility.MaskCreditCardNo(model.CreditCardNo);
 
                 return View(model);
             }
@@ -420,8 +418,8 @@ namespace SuccessHotelierHub.Controllers
                 //model.GuestBalance = totalBalance;                
                 model.TotalPrice = totalPrice;
 
-                //Credit Card No.
-                model.CreditCardNo = Utility.Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);                
+                //Encrypt Credit Card#
+                model.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
 
                 reservationId = reservationRepository.UpdateTempBulkReservationMaster(model);
 

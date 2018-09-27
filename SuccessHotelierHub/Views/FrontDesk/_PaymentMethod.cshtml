@@ -8,6 +8,8 @@
 
     var arrivalDate = (string)ViewData["ArrivalDate"];
     var departureDate = (string)ViewData["DepartureDate"];
+
+    var originalCreditCardNo = (string)ViewData["OriginalCreditCardNo"];
 }
 
 <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
@@ -22,7 +24,9 @@
     @Html.HiddenFor(m => m.RoomTypeId)
     <input type="hidden" id="hdnArrivalDate" name="hdnArrivalDate" value="@arrivalDate" />
     <input type="hidden" id="hdnDepartureDate" name="hdnDepartureDate" value="@departureDate" />
+    <input type="hidden" id="hdnOriginalCreditCardNo" name="hdnOriginalCreditCardNo" value="@(originalCreditCardNo)" />
     <!-- HIDDEN FIELD -->
+
     @*<div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">*@
     <div class="row">
         <div class="col-md-6 col-sm-3 col-xs-12 form-group">
@@ -76,6 +80,7 @@
         </div>
         <div class="col-md-5 divCreditCardInfo">
             @Html.LabelFor(m => m.CreditCardNo)
+            <i class="fa fa-edit m-l-sm text-success cursor-P" id="btnEditCreditCardNo" style="display:none;" onclick="editCreditCardNo();" title="Edit Credit Card #"> </i>
             @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16" })
         </div>
         <div class="col-md-3 divCreditCardInfo divCardExpiryDate">
@@ -96,11 +101,19 @@
 
 
 <script type="text/javascript">
+    var isCreditCardEdit = false;
+
     $(document).ready(function () {
 
         SelectPaymentMethod();
 
         $('form#frmCheckInPayment #CardExpiryDate').attr("placeholder", "MM/YY");
+
+        //Credit Card#.
+        if (!IsNullOrEmpty('@Model.CreditCardNo')) {
+            $('form#frmCheckInPayment #CreditCardNo').attr("readonly", true);
+            $('form#frmCheckInPayment #btnEditCreditCardNo').show();
+        }
 
         //Timepicker
         $('form#frmCheckInPayment #CheckInTimeText').timepicker({
@@ -119,6 +132,11 @@
         //CheckIn
         $('form#frmCheckInPayment .btnCheckInOk').click(function (e) {
             if (validateCheckIn()) {
+
+                //Credit Card#.
+                if (isCreditCardEdit == false) {
+                    $('form#frmCheckInPayment #CreditCardNo').val($('form#frmCheckInPayment #hdnOriginalCreditCardNo').val());
+                }
 
                 //Ajax request to check in.
                 $.ajax({
@@ -244,7 +262,16 @@
                 $('.divCreditCardInfo').show();
             }
         }
+    }
 
+    function editCreditCardNo() {
+        var creditCardNo = '';
+        creditCardNo = $('form#frmCheckInPayment #hdnOriginalCreditCardNo').val();
+
+        $('form#frmCheckInPayment #CreditCardNo').attr("readonly", false);
+        $('form#frmCheckInPayment #CreditCardNo').val(creditCardNo);
+
+        isCreditCardEdit = true;
     }
 
 </script>

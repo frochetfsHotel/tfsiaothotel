@@ -54,11 +54,7 @@ namespace SuccessHotelierHub.Utility
                 {
                     //Delete existing reservation by user.
                     reservationRepository.DeleteReservationByUserId(LogInManager.LoggedInUserId, LogInManager.LoggedInUserId, true);
-
-                    //ReservationController reservationController = new ReservationController();
-                    //FrontDeskController frontDeskController = new FrontDeskController();
-                    //CashieringController cashieringController = new CashieringController();
-
+                    
                     tempReservations = reservationRepository.GetTempBulkReservationByDate(DateTime.Now, LogInManager.LoggedInUserId);
 
                     if (tempReservations != null && tempReservations.Count > 0)
@@ -97,7 +93,7 @@ namespace SuccessHotelierHub.Utility
                             reservation.RateCodeId = tempReservation.RateCodeId;
                             reservation.IsFixedRate = tempReservation.IsFixedRate;
                             reservation.Rate = tempReservation.Rate;
-                            //reservation.CurrencyId = tempReservation.CurrencyId;
+                            
                             reservation.CurrencyId = LogInManager.CurrencyId;
                             reservation.BlockCodeId = tempReservation.BlockCodeId;
                             reservation.ETA = tempReservation.ETA;
@@ -106,7 +102,10 @@ namespace SuccessHotelierHub.Utility
                             reservation.ReservationSourceId = tempReservation.ReservationSourceId;
                             reservation.OriginId = tempReservation.OriginId;
                             reservation.PaymentMethodId = tempReservation.PaymentMethodId;
-                            reservation.CreditCardNo = tempReservation.CreditCardNo;
+
+                            //Decrypt Credit Card #
+                            reservation.CreditCardNo = Utility.Decrypt(tempReservation.CreditCardNo, Utility.EncryptionKey);                            
+                            
                             reservation.CardExpiryDate = tempReservation.CardExpiryDate;
                             reservation.CVVNo = tempReservation.CVVNo;
                             reservation.ApprovalCode = tempReservation.ApprovalCode;
@@ -150,7 +149,6 @@ namespace SuccessHotelierHub.Utility
                             }
 
                             //Create Reservation.
-                            //reservationController.CreateReservation(reservation);
                             CreateReservation(reservation);
                         }
 
@@ -214,7 +212,10 @@ namespace SuccessHotelierHub.Utility
                                     modelCheckInPaymentMethod.CheckInTime = result.ETA;
                                     modelCheckInPaymentMethod.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
                                     modelCheckInPaymentMethod.PaymentMethodId = result.PaymentMethodId;
-                                    modelCheckInPaymentMethod.CreditCardNo = result.CreditCardNo;
+
+                                    //Decrypt Credit Card #
+                                    modelCheckInPaymentMethod.CreditCardNo = Utility.Decrypt(result.CreditCardNo, Utility.EncryptionKey);
+
                                     modelCheckInPaymentMethod.CardExpiryDate = result.CardExpiryDate;
                                     modelCheckInPaymentMethod.RoomNumbers = roomNumbers;
                                     modelCheckInPaymentMethod.RoomIds = roomIds;
@@ -274,7 +275,10 @@ namespace SuccessHotelierHub.Utility
                                     modelCheckInPaymentMethod.CheckInTime = result.ETA;
                                     modelCheckInPaymentMethod.CheckInTimeText = string.Format("{0:hh\\:mm\\:ss}", result.ETA.Value);
                                     modelCheckInPaymentMethod.PaymentMethodId = result.PaymentMethodId;
-                                    modelCheckInPaymentMethod.CreditCardNo = result.CreditCardNo;
+
+                                    //Decrypt Credit Card #
+                                    modelCheckInPaymentMethod.CreditCardNo = Utility.Decrypt(result.CreditCardNo, Utility.EncryptionKey);
+                                    
                                     modelCheckInPaymentMethod.CardExpiryDate = result.CardExpiryDate;
                                     modelCheckInPaymentMethod.RoomNumbers = roomNumbers;
                                     modelCheckInPaymentMethod.RoomIds = roomIds;
@@ -301,7 +305,9 @@ namespace SuccessHotelierHub.Utility
                                         modelCheckOutPaymentMethod.PaymentMethod = (paymentMethod.Code + " - " + paymentMethod.Name);
                                     }
 
-                                    modelCheckOutPaymentMethod.CreditCardNo = result.CreditCardNo;
+                                    //Decrypt Credit Card #
+                                    modelCheckOutPaymentMethod.CreditCardNo = Utility.Decrypt(result.CreditCardNo, Utility.EncryptionKey);
+                                    
                                     modelCheckOutPaymentMethod.CardExpiryDate = result.CardExpiryDate;
                                     modelCheckOutPaymentMethod.Reference = string.Empty;
 
@@ -416,8 +422,8 @@ namespace SuccessHotelierHub.Utility
             model.GuestBalance = totalBalance;
             model.TotalPrice = totalPrice;
 
-            //Credit Card No.
-            model.CreditCardNo = Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
+            //Encrypt Credit Card#
+            model.CreditCardNo = Utility.Encrypt(model.CreditCardNo, Utility.EncryptionKey);
 
             reservationId = reservationRepository.AddReservation(model);
 
@@ -770,10 +776,10 @@ namespace SuccessHotelierHub.Utility
                 if (reservation != null)
                 {
                     reservation.PaymentMethodId = model.PaymentMethodId;
-                    if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
-                    {
-                        reservation.CreditCardNo = Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
-                    }
+
+                    //Encrypt Credit Card #
+                    reservation.CreditCardNo = Utility.Encrypt(model.CreditCardNo, Utility.EncryptionKey);
+                    
                     reservation.CardExpiryDate = model.CardExpiryDate;
                     reservation.ArrivalDate = model.CheckInDate;
                     if (model.RoomTypeId.HasValue)
@@ -1028,7 +1034,10 @@ namespace SuccessHotelierHub.Utility
                         reservationCharge.TransactionDate = model.CheckOutDate.Value;
                         reservationCharge.Amount = -(totalAmount);
                         reservationCharge.Qty = 1;
-                        reservationCharge.CreditCardNo = reservation.CreditCardNo;
+                        
+                        //Encrypt Credit Card #
+                        reservationCharge.CreditCardNo = Utility.Encrypt(model.CreditCardNo, Utility.EncryptionKey);
+
                         reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
                         reservationCharge.IsActive = true;
                         reservationCharge.IsDummyReservationPayment = true;
@@ -1111,11 +1120,10 @@ namespace SuccessHotelierHub.Utility
                         #region Update Reservation
 
                         reservation.PaymentMethodId = model.PaymentMethodId;
-                        //reservation.CreditCardNo = model.CreditCardNo;
-                        if (!string.IsNullOrWhiteSpace(model.CreditCardNo))
-                        {
-                            reservation.CreditCardNo = Utility.ExtractCreditCardNoLastFourDigits(model.CreditCardNo);
-                        }
+
+                        //Encrypt Credit Card #
+                        reservation.CreditCardNo = Utility.Encrypt(model.CreditCardNo, Utility.EncryptionKey);
+
                         reservation.CardExpiryDate = model.CardExpiryDate;
 
                         //Update Total Balance.

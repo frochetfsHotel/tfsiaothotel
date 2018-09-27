@@ -335,6 +335,6 @@ D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Microsoft.Owin.
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Microsoft.Owin.Security.Google.xml
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Microsoft.Owin.Security.Twitter.xml
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
-D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.csprojResolveAssemblyReference.cache
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.dll
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.pdb
+D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.csprojResolveAssemblyReference.cache

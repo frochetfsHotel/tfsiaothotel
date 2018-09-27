@@ -5,6 +5,8 @@
 @{
     var sourceRedirectionParam = "";
     sourceRedirectionParam = (string)ViewData["Source"];
+
+    var originalCreditCardNo = (string)ViewData["OriginalCreditCardNo"];
 }
 
 <link rel="stylesheet" href="~/Content/css/AdminLTE/input-mask/masking-input.css" type="text/css" />
@@ -19,7 +21,9 @@
     @Html.HiddenFor(m => m.NoOfRoom)
     @Html.HiddenFor(m => m.RoomTypeId)
     @Html.HiddenFor(m => m.PaymentMethod)
+    <input type="hidden" id="hdnOriginalCreditCardNo" name="hdnOriginalCreditCardNo" value="@(originalCreditCardNo)" />
     <!-- HIDDEN FIELD -->
+
     @*<div class="pt_10 pl_10 pb_10 pr_10 searchBox_Border">*@
     <div class="row">
         <div class="col-md-6 col-sm-3 col-xs-12 form-group">
@@ -76,6 +80,7 @@
         </div>
         <div class="col-md-5 divCreditCardInfo">
             @Html.LabelFor(m => m.CreditCardNo)
+            <i class="fa fa-edit m-l-sm text-success cursor-P" id="btnEditCreditCardNo" style="display:none;" onclick="editCreditCardNo();" title="Edit Credit Card #"> </i>
             @Html.TextBoxFor(m => m.CreditCardNo, new { @class = "form-control", placeholder = "Credit Card #", onkeydown = "onlyDigits(event)", maxlength = "16" })
         </div>
         <div class="col-md-3 divCreditCardInfo divCardExpiryDate">
@@ -113,9 +118,17 @@
 <div class="clearfix"></div>
 
 <script type="text/javascript">
+    var isCreditCardEdit = false;
+
     $(document).ready(function () {
 
         $('form#frmCheckOutPayment #CardExpiryDate').attr("placeholder", "MM/YY");
+
+        //Credit Card#.
+        if (!IsNullOrEmpty('@Model.CreditCardNo')) {
+            $('form#frmCheckOutPayment #CreditCardNo').attr("readonly", true);
+            $('form#frmCheckOutPayment #btnEditCreditCardNo').show();
+        }
 
         SelectPaymentMethod();
 
@@ -135,6 +148,11 @@
         //CheckOut
         $('form#frmCheckOutPayment .btnCheckOutOk').click(function (e) {
             if (validateCheckOut()) {
+
+                //Credit Card#.
+                if (isCreditCardEdit == false) {
+                    $('form#frmCheckOutPayment #CreditCardNo').val($('form#frmCheckOutPayment #hdnOriginalCreditCardNo').val());
+                }
 
                 //Ajax request to check out.
                 $.ajax({
@@ -225,7 +243,7 @@
         html += "<td>";
         html += "<span class='text-red font_20 cursor-P' onclick='removeSplitPaymentRow(this);'>";
         html += "<i class='fa fa-remove'></i>";
-        html += " </span>";        
+        html += " </span>";
         html += "</td>";
 
         //Payment method
@@ -422,6 +440,17 @@
         $('form#frmSplitPayment #hdnTotalSplitPayment').val(1);
         //Remove all the rows except first one.
         $("form#frmSplitPayment  #tblSplitPayment tbody").find("tr:gt(0)").remove();
+    }
+
+
+    function editCreditCardNo() {
+        var creditCardNo = '';
+        creditCardNo = $('form#frmCheckOutPayment #hdnOriginalCreditCardNo').val();
+
+        $('form#frmCheckOutPayment #CreditCardNo').attr("readonly", false);
+        $('form#frmCheckOutPayment #CreditCardNo').val(creditCardNo);
+
+        isCreditCardEdit = true;
     }
 
 </script>

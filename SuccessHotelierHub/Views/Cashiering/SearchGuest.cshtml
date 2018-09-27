@@ -1718,22 +1718,6 @@
             var totalAmountOfInterimBillPayment = 0;
             var TotalPaybleAmount = $('form#frmInterimBill #hdnTotalAmount').val();
 
-            //$.each(listOfInterimBillPayment, function (index, data) {
-
-            //    totalAmountOfInterimBillPayment = parseFloat(totalAmountOfInterimBillPayment) + parseFloat(data.Amount);
-
-            //    if (trim(data.PaymentMethodName) == "CS - Cash") {
-            //        if ((IsNullOrEmpty(data.PaymentMethodId) || IsNullOrEmpty(data.Amount) || data.Amount <= 0)) {
-            //            IsValidOrNot = false;
-            //        }
-            //    }
-            //    else {
-            //        if (IsNullOrEmpty(data.PaymentMethodId) || IsNullOrEmpty(data.Amount) || data.Amount <= 0 || (IsNullOrEmpty(data.CreditCardNo) || !IsValidCreditCardNo(data.CreditCardNo)) || IsNullOrEmpty(data.CardExpiryDate) || (IsNullOrEmpty(data.CVVNo) || !IsValidCVVNo(data.CVVNo))) {
-            //            IsValidOrNot = false;
-            //        }
-            //    }
-            //})
-
             $.ajax({
                 beforeSend: function (xhr) {
                     showLoader();
