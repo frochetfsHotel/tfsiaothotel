@@ -173,5 +173,7 @@ namespace SuccessHotelierHub.Models
 
         [DisplayName("Infant")]
         public int? NoOfInfant { get; set; }
+
+        public int DaysInWeek { get; set; }
     }
 }

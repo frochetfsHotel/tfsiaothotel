@@ -173,8 +173,13 @@
         border-bottom: none;
     }
 
-    .arrow-right {
+    .arrow-right-green {
         color: #00a65a;
+        font-size: 16px;
+    }
+
+    .arrow-right-blue-sky {
+        color: #1AAFFE;
         font-size: 16px;
     }
 
@@ -185,7 +190,8 @@
     .bg-sky {
         background-color: #1AAFFE;
     }
-    .text-sky{
+
+    .text-sky {
         color: #1AAFFE;
     }
 </style>
@@ -241,19 +247,45 @@
 
                             @if (reservationDetail != null && reservationDetail.Count > 0)
                             {
+                                List<Guid> allocatedReservationIds = new List<Guid>();
                                 bool blnFirst = true;
                                 for (int intI = 0; intI < dates.Count;)
                                 {
+                                    var currentDateIterator = dates[intI].Date;
+
                                     var reservationInfo = reservationDetail.Where(i => (i.CheckInDate.Value.Date <= dates[intI].Date.Value.Date) && (i.CheckOutDate.Value.Date >= dates[intI].Date.Value.Date)).FirstOrDefault();
                                     if (reservationInfo != null)
                                     {
                                         string noOfPerson = "";
-                                        noOfPerson = reservationInfo.NoOfChildren > 0 ? string.Format("{0}/{1}", reservationInfo.NoOfAdult, reservationInfo.NoOfChildren) : string.Format("{0}",reservationInfo.NoOfAdult);
+                                        noOfPerson = reservationInfo.NoOfChildren > 0 ? string.Format("{0}/{1}", reservationInfo.NoOfAdult, reservationInfo.NoOfChildren) : string.Format("{0}", reservationInfo.NoOfAdult);
+
+                                        if (reservationInfo.CheckOutDateString == dates[intI].DateString)
+                                        {
+                                            blnFirst = false;
+                                        }
+
                                         if (blnFirst)
                                         {
                                             blnFirst = false;
 
-                                            <td class="text-center cursor-move assigned" style="padding:5px; width:@(reservationInfo.CheckOutDate <= dates[dates.Count - 1].Date ? (reservationInfo.DaysInWeek == 1? reservationInfo.DaysInWeek :reservationInfo.DaysInWeek  - 1) * 10 : reservationInfo.DaysInWeek * 10)%;">
+                                            var spanBoxWidth = 10;
+                                            if (reservationInfo.CheckOutDate.Value.Date <= dates[dates.Count - 1].Date.Value)
+                                            {
+                                                if (reservationInfo.DaysInWeek == 1)
+                                                {
+                                                    spanBoxWidth = reservationInfo.DaysInWeek * 10;
+                                                }
+                                                else
+                                                {
+                                                    spanBoxWidth = (reservationInfo.DaysInWeek - 1) * 10;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                spanBoxWidth = reservationInfo.DaysInWeek * 10;
+                                            }
+
+                                            <td class="text-center cursor-move assigned" style="padding:5px; width:@(spanBoxWidth)%;">
                                                 <span style="margin-right:-1px !important; text-align:center!important;font-size:10px;"
                                                       class="btn btn-xs m-r-xs p-l-xs bg-green  text-left-align  width-100 item first spnReservation"
                                                       id="@("spnReservation_" + reservationInfo.ReservationId)"
@@ -269,7 +301,7 @@
                                             if (reservationInfo.CheckOutDateString == dates[intI].DateString)
                                             {
                                                 <td class="cursor-move assigned padding-zero border-none" style="width:10%;padding:7px 0px !important;">
-                                                    <span class="btn btn-xs padding-zero fa fa-caret-right arrow-right"
+                                                    <span class="btn btn-xs padding-zero fa fa-caret-right arrow-right-green"
                                                           id="@("spnReservation_" + reservationInfo.ReservationId)"
                                                           data-reservationid="@(reservationInfo.ReservationId)"
                                                           ondblclick="GotoReservationEdit('@(reservationInfo.ReservationId)')"
@@ -283,87 +315,278 @@
                                     }
                                     else
                                     {
-                                        var allocationInfo = AllocationDetail.Where(i => (i.ArrivalDate.Value.Date <= dates[intI].Date.Value.Date) && (i.DepartureDate.Value.Date >= dates[intI].Date.Value.Date)).ToList();
-                                        if (allocationInfo.Count > 0)
+                                        blnFirst = true;
+                                        if (AllocationDetail != null && AllocationDetail.Count > 0)
                                         {
-                                            if (blnFirst)
-                                            {
-                                                <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
-                                                    @foreach (var item in allocationInfo)
-                                                    {
-                                                        string noOfPerson = "";
-                                                        noOfPerson = item.NoOfChildren > 0 ? string.Format("{0}/{1}", item.NoOfAdult, item.NoOfChildren) : string.Format("{0}", item.NoOfAdult);
+                                            bool isTDAllocated = false;
 
-                                                        <span style="margin:3px -1px !important; text-align:center!important;font-size:10px;"
-                                                              class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
-                                                              id="@("spnReservation_" + item.ReservationId)"
-                                                              data-reservationid="@(item.ReservationId)"
-                                                              ondblclick="GotoReservationEdit('@(item.ReservationId)')"
-                                                              title="Double click here to view reservation detail.">
-                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, noOfPerson))
-                                                        </span>
+                                            var minArrivalDate = AllocationDetail.Min(m => m.ArrivalDate);
+                                            var maxDepartureDate = AllocationDetail.Max(m => m.DepartureDate);
+
+                                            var startDateObj = dates[0].Date.Value;
+                                            var endDateObj = dates[dates.Count - 1].Date.Value;
+
+                                            var minArrivalDate_V2 = minArrivalDate;
+                                            var maxDepartureDate_V2 = maxDepartureDate;
+
+                                            if (minArrivalDate_V2.Value < startDateObj)
+                                            {
+                                                minArrivalDate_V2 = startDateObj;
+                                            }
+
+                                            if (maxDepartureDate_V2.Value > endDateObj)
+                                            {
+                                                maxDepartureDate_V2 = endDateObj;
+                                            }
+
+                                            var maxDays = 0;
+                                            maxDays = (int)((maxDepartureDate_V2.Value - minArrivalDate_V2.Value).TotalDays + 1);
+
+                                            var spanBoxWidth = 25;
+                                            if (maxDays > 0)
+                                            {
+                                                double result = 0;
+                                                result = Convert.ToDouble(((double)100 / (double)maxDays));
+                                                spanBoxWidth = (int)Math.Round(result, 0);
+                                            }
+
+                                            var allocationInfo = AllocationDetail.Where(i => (i.ArrivalDate.Value.Date <= dates[intI].Date.Value.Date) && (i.DepartureDate.Value.Date >= dates[intI].Date.Value.Date) && (!allocatedReservationIds.Contains(i.ReservationId))).ToList();
+
+                                            if (allocationInfo != null && allocationInfo.Count > 0)
+                                            {
+                                                if (minArrivalDate.Value.Date <= dates[intI].Date.Value.Date && maxDepartureDate.Value.Date >= dates[intI].Date.Value.Date)
+                                                {
+                                                    if (!isTDAllocated)
+                                                    {
+                                                        var tdHtml = string.Format("<td class='text-center cursor-move assigned {0}' style='padding: 5px; width:{1}%;' height='{2} px!important;'>",
+                                                                               ("td_" + room.Id), (maxDays * 10), (AllocationDetail.Count * 35));
+                                                        @Html.Raw(tdHtml)
+                                                        isTDAllocated = true;
                                                     }
-                                                </td>
+                                                }
+                                                else
+                                                {
+                                                    <td width='10%' class="drop @("td_" + room.Id)" data-date="@(currentDateIterator)"></td>
+                                                }
+
+                                                if (blnFirst)
+                                                {
+                                                    foreach (var reservation in allocationInfo)
+                                                    {
+
+                                                        if (dates[intI].DateString == reservation.ArrivalDateString || reservation.DepartureDate.Value <= dates[dates.Count - 1].Date.Value)
+                                                        {
+                                                            allocatedReservationIds.Add(reservation.ReservationId);
+
+                                                            blnFirst = true;
+                                                            string noOfPerson = "";
+                                                            noOfPerson = reservation.NoOfChildren > 0 ? string.Format("{0}/{1}", reservation.NoOfAdult, reservation.NoOfChildren) : string.Format("{0}", reservation.NoOfAdult);
+
+                                                            var reservationDays = (reservation.DaysInWeek - 1);
+                                                            var checkoutDateExist = dates.Where(i => i.DateString == reservation.DepartureDateString).FirstOrDefault();
+
+                                                            if (checkoutDateExist == null)
+                                                            {
+                                                                reservationDays = reservation.DaysInWeek;
+                                                            }
+
+                                                            if (reservationDays == 0) { reservationDays = 1; }
+
+                                                            if (dates[intI].DateString != reservation.DepartureDateString)
+                                                            {
+                                                                var dateDiff = (dates[intI].Date.Value - minArrivalDate_V2.Value).TotalDays;
+                                                                if (dateDiff > 0)
+                                                                {
+                                                                    <span style="margin-left:@((dateDiff) * spanBoxWidth)%;"></span>
+                                                                }
+
+                                                                <span style="margin-right:-1px !important; text-align:center!important;font-size:10px; width:@((reservationDays) * spanBoxWidth)%;"
+                                                                      class="btn btn-xs m-t-xs m-r-xs p-l-xs bg-sky text-left-align  width-100 item first spnReservation"
+                                                                      id="@("spnReservation_" + reservation.ReservationId)"
+                                                                      data-reservationid="@(reservation.ReservationId)"
+                                                                      ondblclick="GotoReservationEdit('@(reservation.ReservationId)')"
+                                                                      title="Double click here to view reservation detail.">
+                                                                    @(string.Format("{0} {1} ({2})", reservation.LastName, reservation.FirstName, noOfPerson))
+                                                                </span>
+                                                            }
+
+                                                            if (checkoutDateExist != null)
+                                                            {
+                                                                <span class="btn btn-xs m-t-xs padding-zero fa fa-caret-right arrow-right-blue-sky"
+                                                                      id="@("spnReservation_" + reservation.ReservationId)"
+                                                                      data-reservationid="@(reservation.ReservationId)"
+                                                                      ondblclick="GotoReservationEdit('@(reservation.ReservationId)')"
+                                                                      title="Double click here to view reservation detail.">
+                                                                </span>
+                                                                <br />
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @*var dateDiff = (dates[intI].Date.Value - minArrivalDate_V2.Value).TotalDays;
+                                                    //if(dateDiff == 0) { dateDiff = 1; }
+                                                    <span style="margin-left:@((dateDiff + 1) * spanBoxWidth)%;"></span>*@
+                                                }
+                                                else
+                                                {
+                                                    <td width='10%' class="@("td_" + room.Id)" height="@(allocationInfo.Count * 35)px!important"></td>
+                                                }
+
+                                                if (isTDAllocated)
+                                                {
+                                                    @Html.Raw("</td>")
+                                                }
+
+                                                intI = intI + maxDays;
                                             }
                                             else
                                             {
-                                                <td width='10%' class="@("td_" + room.Id)" height="@(allocationInfo.Count * 35)px!important"></td>
+                                                intI++;
+                                                blnFirst = true;
+                                                <td class="drop" width="10%" data-date="@(currentDateIterator)"></td>
                                             }
                                         }
                                         else
                                         {
+                                            intI++;
                                             blnFirst = true;
-
-                                            <td class="drop" width="10%"></td>
+                                            <td class="drop" width="10%" data-date="@(currentDateIterator)"></td>
                                         }
-                                        intI++;
-
                                     }
                                 }
                             }
                             else
                             {
-                                if (AllocationDetail != null)
+                                if (AllocationDetail != null && AllocationDetail.Count > 0)
                                 {
-                                    bool allocateFirst = true;
+                                    bool allocateFirst = false;
+                                    bool isTDAllocated = false;
+
+                                    var minArrivalDate = AllocationDetail.Min(m => m.ArrivalDate);
+                                    var maxDepartureDate = AllocationDetail.Max(m => m.DepartureDate);
+
+                                    var startDateObj = dates[0].Date.Value;
+                                    var endDateObj = dates[dates.Count - 1].Date.Value;
+
+                                    var minArrivalDate_V2 = minArrivalDate;
+                                    var maxDepartureDate_V2 = maxDepartureDate;
+
+                                    if (minArrivalDate_V2.Value < startDateObj)
+                                    {
+                                        minArrivalDate_V2 = startDateObj;
+                                    }
+
+                                    if (maxDepartureDate_V2.Value > endDateObj)
+                                    {
+                                        maxDepartureDate_V2 = endDateObj;
+                                    }
+
+                                    var maxDays = 0;
+                                    maxDays = (int)((maxDepartureDate_V2.Value - minArrivalDate_V2.Value).TotalDays + 1);
+
+                                    var spanBoxWidth = 25;
+                                    List<Guid> allocatedReservationIds = new List<Guid>();
+                                    if (maxDays > 0)
+                                    {
+                                        double result = 0;
+                                        result = Convert.ToDouble(((double)100 / (double)maxDays));
+                                        spanBoxWidth = (int)Math.Round(result, 0);
+                                    }
+
                                     for (int intK = 0; intK < dates.Count;)
                                     {
-                                        var allocationInfo = AllocationDetail.Where(i => (i.ArrivalDate.Value.Date <= dates[intK].Date.Value.Date) && (i.DepartureDate.Value.Date >= dates[intK].Date.Value.Date)).ToList();
-                                        if (allocationInfo.Count > 0)
-                                        {
-                                            allocateFirst = true;
-                                            if (allocateFirst)
-                                            {
-                                                allocateFirst = false;
-                                                <td width='10%' class="text-center cursor-move assigned @("td_" + room.Id)" style="padding:5px;" height="@(allocationInfo.Count * 35)px!important;">
-                                                    @foreach (var item in allocationInfo)
-                                                    {
-                                                        string noOfPerson = "";
-                                                        noOfPerson = item.NoOfChildren > 0 ? string.Format("{0}/{1}", item.NoOfAdult, item.NoOfChildren) : string.Format("{0}", item.NoOfAdult);
+                                        var currentDateIterator = dates[intK].Date;
+                                        allocateFirst = false;
+                                        var allocationInfo = AllocationDetail.Where(i => (i.ArrivalDate.Value.Date <= dates[intK].Date.Value.Date) && (i.DepartureDate.Value.Date >= dates[intK].Date.Value.Date) && (!allocatedReservationIds.Contains(i.ReservationId))).ToList();
 
-                                                        <span style="margin:3px -1px !important; text-align:center!important; font-size:10px;"
-                                                              class="width-100 first btn item btn-xs bg-sky m-r-xs text-left-align p-l-xs spnReservation"
-                                                              id="@("spnReservation_" + item.ReservationId)"
-                                                              data-reservationid="@(item.ReservationId)"
-                                                              ondblclick="GotoReservationEdit('@(item.ReservationId)')"
-                                                              title="Double click here to view reservation detail.">
-                                                            @(string.Format("{0} {1} ({2})", item.LastName, item.FirstName, noOfPerson))
-                                                        </span>
-                                                    }
-                                                </td>
-                                            }
-                                            else
+                                        if (minArrivalDate.Value.Date <= dates[intK].Date.Value.Date && maxDepartureDate.Value.Date >= dates[intK].Date.Value.Date)
+                                        {
+                                            if (!isTDAllocated)
                                             {
-                                                <td width='10%' class="@("td_" + room.Id)" height="@(allocationInfo.Count * 35)px!important"></td>
+                                                var tdHtml = string.Format("<td class='text-center cursor-move assigned {0}' style='padding: 5px; width:{1}%;' height='{2} px!important;'>",
+                                                                       ("td_" + room.Id), (maxDays * 10), (AllocationDetail.Count * 35));
+                                                @Html.Raw(tdHtml)
+                                                isTDAllocated = true;
                                             }
-                                            intK = intK + 1;
                                         }
                                         else
                                         {
-                                            allocateFirst = true;
-                                            intK++;
-                                            <td width='10%' class="drop @("td_" + room.Id)"></td>
+                                            <td width='10%' class="drop @("td_" + room.Id)" data-date="@(currentDateIterator)"></td>
                                         }
+
+
+
+                                        if (!allocateFirst)
+                                        {
+                                            if (allocationInfo != null && allocationInfo.Count > 0)
+                                            {
+                                                foreach (var reservation in allocationInfo)
+                                                {
+
+                                                    if (dates[intK].DateString == reservation.ArrivalDateString || reservation.DepartureDate.Value <= dates[dates.Count - 1].Date.Value)
+                                                    {
+                                                        allocatedReservationIds.Add(reservation.ReservationId);
+
+                                                        allocateFirst = true;
+                                                        string noOfPerson = "";
+                                                        noOfPerson = reservation.NoOfChildren > 0 ? string.Format("{0}/{1}", reservation.NoOfAdult, reservation.NoOfChildren) : string.Format("{0}", reservation.NoOfAdult);
+
+                                                        var reservationDays = (reservation.DaysInWeek - 1);
+                                                        var checkoutDateExist = dates.Where(i => i.DateString == reservation.DepartureDateString).FirstOrDefault();
+
+                                                        if (checkoutDateExist == null)
+                                                        {
+                                                            reservationDays = reservation.DaysInWeek;
+                                                        }
+
+                                                        if (reservationDays == 0) { reservationDays = 1; }
+
+                                                        if (dates[intK].DateString != reservation.DepartureDateString)
+                                                        {
+                                                            var dateDiff = (dates[intK].Date.Value - minArrivalDate_V2.Value).TotalDays;
+                                                            if (dateDiff > 0)
+                                                            {
+                                                                <span style="margin-left:@((dateDiff) * spanBoxWidth)%;"></span>
+                                                            }
+
+                                                            <span style="margin-right:-1px !important; text-align:center!important;font-size:10px; width:@((reservationDays) * spanBoxWidth)%;"
+                                                                  class="btn btn-xs m-t-xs m-r-xs p-l-xs bg-sky text-left-align  width-100 item first spnReservation"
+                                                                  id="@("spnReservation_" + reservation.ReservationId)"
+                                                                  data-reservationid="@(reservation.ReservationId)"
+                                                                  ondblclick="GotoReservationEdit('@(reservation.ReservationId)')"
+                                                                  title="Double click here to view reservation detail.">
+                                                                @(string.Format("{0} {1} ({2})", reservation.LastName, reservation.FirstName, noOfPerson))
+                                                            </span>
+                                                        }
+
+                                                        if (checkoutDateExist != null)
+                                                        {
+                                                            <span class="btn btn-xs m-t-xs padding-zero fa fa-caret-right arrow-right-blue-sky"
+                                                                  id="@("spnReservation_" + reservation.ReservationId)"
+                                                                  data-reservationid="@(reservation.ReservationId)"
+                                                                  ondblclick="GotoReservationEdit('@(reservation.ReservationId)')"
+                                                                  title="Double click here to view reservation detail.">
+                                                            </span>
+                                                            <br />
+                                                        }
+                                                    }
+                                                }
+
+                                                @*var dateDiff = (dates[intK].Date.Value - minArrivalDate_V2.Value).TotalDays;
+                                                //if (dateDiff == 0) { dateDiff = 1; }
+                                                <span style="margin-left:@((dateDiff + 1) * spanBoxWidth)%;"></span>*@
+                                            }
+                                        }
+
+                                        if (dates[intK].Date.Value.Date == maxDepartureDate.Value.Date)
+                                        {
+                                            if (isTDAllocated)
+                                            {
+                                                @Html.Raw("</td>")
+                                            }
+                                        }
+
+                                        intK = intK + 1;
                                     }
                                 }
                                 else
@@ -437,14 +660,22 @@ else
             },
             onDrop: function (e, source) {
                 $(this).removeClass('over');
-
+                
                 //Get current row <tr>.
                 var $row = $(this).closest("td").closest("tr");
                 var $sourceRow = $(source).closest("td").closest("tr");
 
                 //Get date of dropped td element by index (NOTE : find('thead tr').eq(1) => select second header from the table.
-                var $th = $(this).closest('table').find('thead tr').eq(1).find('th').eq($(this).index());
-                var date = $($th).attr("data-date");
+
+                var date = "";
+                date = $(this).closest("td").attr("data-date");
+
+                if(IsNullOrEmpty(date)){
+                    var $th = $(this).closest('table').find('thead tr').eq(1).find('th').eq($(this).index());
+
+                    date = $($th).attr("data-date");
+                }
+                
 
                 var currentDraggableElement = $(source);
 
@@ -476,7 +707,7 @@ else
                     var trIdToScroll = $row.attr("data-tr-id");
 
                     $('#hdnRoomTableRowIdToScroll').val(trIdToScroll);
-
+                    
                     ChangeRoomAndReservationMapping(reservationId, roomId, roomTypeId, date, $sourceRow, $row);
                 }
 
@@ -496,14 +727,20 @@ else
             },
             onDrop: function (e, source) {
                 $(this).removeClass('over');
-
+                
                 //Get current row <tr>.
                 var $row = $(this).closest("td").closest("tr");
                 var $sourceRow = $(source).closest("td").closest("tr");
 
                 //Get date of dropped td element by index (NOTE : find('thead tr').eq(1) => select second header from the table.
-                var $th = $(this).closest('table').find('thead tr').eq(1).find('th').eq($(this).index());
-                var date = $($th).attr("data-date");
+                var date = "";
+                date = $(this).closest("td").attr("data-date");
+
+                if(IsNullOrEmpty(date)){
+                    var $th = $(this).closest('table').find('thead tr').eq(1).find('th').eq($(this).index());
+
+                    date = $($th).attr("data-date");
+                }
 
                 var currentDraggableElement = $(source);
 
@@ -533,7 +770,7 @@ else
                     var trIdToScroll = $row.attr("data-tr-id");
 
                     $('#hdnRoomTableRowIdToScroll').val(trIdToScroll);
-
+                    
                     ChangeRoomAndReservationMapping(reservationId, roomId, roomTypeId, date, $sourceRow, $row);
                 }
             }
@@ -543,6 +780,7 @@ else
     function ChangeRoomAndReservationMapping(reservationId, roomId, roomTypeId, date, sourceRow, destinationRow) {
 
         if (!IsNullOrEmpty(reservationId) && !IsNullOrEmpty(roomId) && !IsNullOrEmpty(roomTypeId)) {
+            
             //Ajax request to change room mapping.
             $.ajax({
                 beforeSend: function (xhr) {

@@ -333,6 +333,25 @@ namespace SuccessHotelierHub.Repository
             return reservationRoomMapping;
         }
 
+        public List<ReservationRoomMappingVM> GetReservationRoomMappingByRoom(Guid? roomId, Guid? reservationId, DateTime? arrivaldate, DateTime? departureDate, int userId)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = (object) reservationId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@RoomId", Value = (object) roomId ?? DBNull.Value },
+                    new SqlParameter { ParameterName = "@Arrivaldate", Value = arrivaldate },
+                    new SqlParameter { ParameterName = "@DepartureDate", Value = departureDate },
+                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetReservationRoomMappingByRoom", parameters);
+
+            var reservationRoomMapping = new List<ReservationRoomMappingVM>();
+            reservationRoomMapping = DALHelper.CreateListFromTable<ReservationRoomMappingVM>(dt);
+
+            return reservationRoomMapping;
+        }
+
         #endregion
 
         #region Room Features Mapping

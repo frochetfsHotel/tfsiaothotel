@@ -170,7 +170,7 @@
                     $('#divRoomPlanView').html('');
                     $('#divRoomPlanView').html(response);
                     AjaxRequestFinish()
-                    if (!IsNullOrEmpty($('#hdnRoomTableRowIdToScroll').val())) {
+                    if (!IsNullOrEmpty($('#hdnRoomTableRowIdToScroll').val())) {                        
                         goToSpecificRoomDetail($('#hdnRoomTableRowIdToScroll').val());
                     }
                 }
@@ -198,14 +198,13 @@
     }
 
     function goToSpecificRoomDetail(id) {
-        //var tblRoomPlan = document.getElementById(id);
-        //var topPos = tblRoomPlan.offsetTop;
+        
+        //$('html, body').animate({        
+        //    scrollTop: ($('#' + id).first().offset().top)
+        //}, 500);
 
-        //document.getElementById('tblRoomPlan').scrollTop = topPos - 10;
-
-        $('html, body').animate({
-            scrollTop: ($('#' + id).first().offset().top)
-        }, 500);
+        var row = document.getElementById(id);
+        row.scrollIntoView(true, { behavior: "smooth", block: "end", inline: "nearest" });
     }
 </script>
 

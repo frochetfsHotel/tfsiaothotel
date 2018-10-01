@@ -895,9 +895,30 @@ namespace SuccessHotelierHub.Utility
 
 
 
-                            #region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
+                            //#region Remove Existing Reservation & Room Mapping (Who selected this Room# but not checked in yet.)
 
-                            reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                            //reservationRepository.DeleteReservationAndRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+
+                            //#endregion
+
+                            #region Remove Existing Reservation who did just booking but not checked-in yet.
+
+                            var reservationRoomMappingDetails = roomRepository.GetReservationRoomMappingByRoom(Guid.Parse(item.Trim()), reservation.Id, reservation.ArrivalDate, reservation.DepartureDate, LogInManager.LoggedInUserId);
+
+                            if (reservationRoomMappingDetails != null && reservationRoomMappingDetails.Count > 0)
+                            {
+                                foreach (var reservationRoomMappingDetail in reservationRoomMappingDetails)
+                                {
+                                    //Delete Reservation.
+                                    reservationRepository.DeleteReservation(reservationRoomMappingDetail.ReservationId.Value, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+
+                                    //Delete Reservation Room Mapping.
+                                    roomRepository.DeleteReservationRoomMappingByReservation(reservationRoomMappingDetail.ReservationId.Value, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+
+                                    //Delete Reservation Log.
+                                    reservationLogRepository.DeleteReservationLog(reservationRoomMappingDetail.Id, LogInManager.LoggedInUserId, LogInManager.LoggedInUserId);
+                                }
+                            }
 
                             #endregion
 
