@@ -481,24 +481,19 @@ namespace SuccessHotelierHub.Controllers
         }
 
         #endregion
-        
+
         #region Change Password
 
-        [HotelierHubAuthorize(Roles = "ADMIN")]
-        public ActionResult ChangePassword(Guid id)
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR,STUDENT")]
+        public ActionResult ChangePassword()
         {
-            if (id == null)
-            {
-                return HttpNotFound();
-            }
-
             ChangePasswordVM model = new ChangePasswordVM();
-            model.UserId = id;
+            model.UserId = LogInManager.LoggedInUser.Id;
 
             return View(model);
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR,STUDENT")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(ChangePasswordVM model)

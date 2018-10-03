@@ -62,6 +62,14 @@
                     </a>
                 </li>
             }
+            @if (LogInManager.HasRights("STUDENT"))
+            {
+                <li class="text-center topMenu" id="menuChangePasswordScreen">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('ChangePassword','@Url.Content("~/User/ChangePassword")');" title="Change Password">
+                        <i class="fa fa-key font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Change Password</span>
+                    </a>
+                </li>
+            }
             @if (LogInManager.HasRights("ADMIN"))
             {
                 <li class="text-center topMenu" id="menuMasterScreen">
@@ -83,6 +91,11 @@
                 <li class="text-center topMenu" id="menuManageStudents">
                     <a href="javascript:void(0);" onclick="setCurrentMenu('ManageStudents','@Url.Content("~/Home/Default")');" title="Manage Students">
                         <i class="fa fa-address-book font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Manage Students</span>
+                    </a>
+                </li>
+                <li class="text-center topMenu" id="menuChangePasswordScreen">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('ChangePassword','@Url.Content("~/User/ChangePassword")');" title="Change Password">
+                        <i class="fa fa-key font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Change Password</span>
                     </a>
                 </li>
             }

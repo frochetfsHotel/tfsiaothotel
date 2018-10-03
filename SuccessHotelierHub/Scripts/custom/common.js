@@ -547,6 +547,10 @@ function LoadLeftSideMenu() {
             $('#MenusLoggedInUserScreen').show();
             $('#menuLoggedInUserScreen').addClass('active');
         }
+        else if (menu == "ChangePassword") {
+            $('#MenusChangePasswordScreen').show();
+            $('#menuChangePasswordScreen').addClass('active');
+        }
     }
 }
 
