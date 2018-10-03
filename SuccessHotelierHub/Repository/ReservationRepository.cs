@@ -487,6 +487,36 @@ namespace SuccessHotelierHub.Repository
             return reservations;
         }
 
+        public string UpdateTrackFolioLogStatusByReservationId(Guid id, bool isTrackFolioLog)
+        {
+            string reservationId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = id },
+                    new SqlParameter { ParameterName = "@IsTrackFolioLog", Value = isTrackFolioLog }
+                };
+
+            reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateTrackFolioLogStatusByReservationId", parameters));
+
+            return reservationId;
+        }
+
+        public string UpdateTrackReservationLogStatusByReservationId(Guid id, bool isTrackReservationLog)
+        {
+            string reservationId = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@ReservationId", Value = id },
+                    new SqlParameter { ParameterName = "@IsTrackReservationLog", Value = isTrackReservationLog }
+                };
+
+            reservationId = Convert.ToString(DALHelper.ExecuteScalar("UpdateTrackReservationLogStatusByReservationId", parameters));
+
+            return reservationId;
+        }
+
         #endregion
 
         #region Room Plan

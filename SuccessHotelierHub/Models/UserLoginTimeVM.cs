@@ -19,7 +19,7 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please select login start time.")]
         public TimeSpan? LoginStartTime { get; set; }
 
-        [DisplayName("Login Start Time")]
+        [DisplayName("Login Start Time (24 hours format)")]
         [Required(ErrorMessage = "Please select login start time.")]
         public string LoginStartTimeText { get; set; }
 
@@ -27,7 +27,7 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please select login end time.")]
         public TimeSpan? LoginEndTime { get; set; }
 
-        [DisplayName("Login End Time")]
+        [DisplayName("Login End Time (24 hours format)")]
         [Required(ErrorMessage = "Please select login end time.")]
         public string LoginEndTimeText { get; set; }
 

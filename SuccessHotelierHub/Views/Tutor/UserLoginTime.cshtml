@@ -57,7 +57,7 @@
                             <div class="bootstrap-timepicker" data-date-format="HH:mm">
                                 @Html.LabelFor(m => m.LoginStartTimeText, new { @class = "required-label" })
                                 <div class="input-group">
-                                    @Html.TextBoxFor(m => m.LoginStartTimeText, new { @class = "form-control mytimepicker", placeholder = "HH:mm", @readonly= "readonly" })
+                                    @Html.TextBoxFor(m => m.LoginStartTimeText, new { @class = "form-control mytimepicker", placeholder = "hh:mm"})
                                     <label class="input-group-addon cursor-P" for="LoginStartTimeText">
                                         <i class="fa fa-clock-o"></i>
                                     </label>
@@ -69,7 +69,7 @@
                             <div class="bootstrap-timepicker" data-date-format="HH:mm">
                                 @Html.LabelFor(m => m.LoginEndTimeText, new { @class = "required-label" })
                                 <div class="input-group">
-                                    @Html.TextBoxFor(m => m.LoginEndTimeText, new { @class = "form-control mytimepicker", placeholder = "HH:mm", @readonly = "readonly" })
+                                    @Html.TextBoxFor(m => m.LoginEndTimeText, new { @class = "form-control mytimepicker", placeholder = "hh:mm" })
                                     <label class="input-group-addon cursor-P" for="LoginEndTimeText">
                                         <i class="fa fa-clock-o"></i>
                                     </label>
@@ -107,9 +107,8 @@
         //Timepicker
         $('#LoginStartTimeText').timepicker({
             showInputs: false,
-            showMeridian: false,
-            minuteStep: 1
-            //timeFormat: 'HH:mm'
+            showMeridian: false,            
+            minuteStep: 1        
         });
 
         if (IsNullOrEmpty('@loginStartTimeText')) {
@@ -119,9 +118,25 @@
         $('#LoginEndTimeText').timepicker({
             showInputs: false,
             showMeridian: false,
-            minuteStep: 1
-            //timeFormat: 'HH:mm'
+            minuteStep: 1            
         });
+
+        //Input Mask
+        $('#LoginStartTimeText').inputmask(
+            "hh:mm", {
+                placeholder: "hh:mm",
+                insertMode: false,
+                showMaskOnHover: true
+            }
+        );
+
+        $('#LoginEndTimeText').inputmask(
+           "hh:mm", {
+               placeholder: "hh:mm",
+               insertMode: false,
+               showMaskOnHover: true
+           }
+       );
 
         if (IsNullOrEmpty('@loginEndTimeText')) {
             $('#LoginEndTimeText').val('');
@@ -209,3 +224,9 @@
     }
 
 </script>
+
+
+
+@section scripts {
+    <script src="~/Scripts/custom/jquery.inputmask.bundle.js"></script>    
+}

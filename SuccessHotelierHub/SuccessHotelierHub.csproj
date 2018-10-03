@@ -429,6 +429,7 @@
     <Content Include="HtmlTemplates\WelcomeUser.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Scripts\custom\date.format.js" />
+    <Content Include="Scripts\custom\jquery.inputmask.bundle.js" />
     <Content Include="Views\Report\PreviewDailyCashReport.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
   </ItemGroup>

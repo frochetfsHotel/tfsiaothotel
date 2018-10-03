@@ -1138,6 +1138,12 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Update TrackReservationLog Status
+
+                    reservationRepository.UpdateTrackReservationLogStatusByReservationId(Guid.Parse(reservationId), true);
+
+                    #endregion
+
                     #region Record Activity Log
                     RecordActivityLog.RecordActivity(Pages.RESERVATION, string.Format("Updated reservation, Confirmation# : {0}", model.ConfirmationNumber));
                     #endregion
@@ -1631,6 +1637,12 @@ namespace SuccessHotelierHub.Controllers
 
                 //Update Total Balance.
                 reservationRepository.UpdateReservationTotalBalance(model.Id, totalGuestBalance, LogInManager.LoggedInUserId);
+
+                #endregion
+
+                #region Update TrackReservationLog Status
+
+                reservationRepository.UpdateTrackReservationLogStatusByReservationId(model.Id, true);
 
                 #endregion
 

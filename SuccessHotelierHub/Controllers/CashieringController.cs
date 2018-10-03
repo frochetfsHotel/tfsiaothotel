@@ -580,6 +580,12 @@ namespace SuccessHotelierHub.Controllers
 
                         #endregion
 
+                        #region Update TrackFolioLog Status
+
+                        reservationRepository.UpdateTrackFolioLogStatusByReservationId(model.ReservationId, true);
+
+                        #endregion
+
                         #region Record Activity Log
                         RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
                         #endregion
@@ -1016,13 +1022,14 @@ namespace SuccessHotelierHub.Controllers
 
                 model.RoomNumer = roomNumbers;
                 model.FolioNumber = Convert.ToString(reservation.FolioNumber);
-                model.CashierNumber = LogInManager.CashierNumber;
+                //model.CashierNumber = LogInManager.CashierNumber;
                 model.PageNumber = "1";
                 model.ArrivalDate = reservation.ArrivalDate.HasValue ? reservation.ArrivalDate.Value.ToString("dd-MMM-yyyy") : "";
                 model.DepartureDate = reservation.DepartureDate.HasValue ? reservation.DepartureDate.Value.ToString("dd-MMM-yyyy") : "";
                 model.GSTRegistrationNumber = "";
 
-                model.VATTax = 9; //Default 9%.
+                model.VATTax = 9; //Default 9%.                
+                model.VATTax2 = 23;
 
                 model.Transactions = transactions;
 
@@ -1032,6 +1039,8 @@ namespace SuccessHotelierHub.Controllers
                 var roomRentAdditionalCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.ROOM_RENT).FirstOrDefault(); //Room Rent
 
                 double checkOutPaidPayment = 0;
+                double vat_9 = 0;
+                double vat_23 = 0;
                 foreach (var item in transactions)
                 {
                     int qty = 1;
@@ -1050,9 +1059,30 @@ namespace SuccessHotelierHub.Controllers
 
                     //totalBalance += item.Amount.HasValue ? item.Amount.Value  : 0;
 
+                    bool blnIsBreakFastCharge = false;
+
+                    if (item.AdditionalChargeId.HasValue && (item.Code != AdditionalChargeCode.ROOM_RENT && item.AdditionalChargeId.Value == checkoutAdditionalCharge.Id))
+                    {
+                        var breakfastChargeCategory = additionalChargeRepository.IsBrekFastCharges(item.AdditionalChargeId.Value).FirstOrDefault();
+
+                        if (breakfastChargeCategory != null)
+                        {
+                            blnIsBreakFastCharge = true;
+                        }
+                    }
+
                     //Room Rent
                     if (roomRentAdditionalCharge != null && roomRentAdditionalCharge.Id == item.AdditionalChargeId.Value)
                         roomRent = item.Amount.HasValue ? item.Amount.Value : 0;
+
+                    if (item.Code == AdditionalChargeCode.ROOM_RENT || blnIsBreakFastCharge == true)
+                    {
+                        vat_9 += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
+                    else if ((item.Code != AdditionalChargeCode.ROOM_RENT || blnIsBreakFastCharge == false) && item.Amount > 0)
+                    {
+                        vat_23 += (item.Amount.HasValue ? (item.Amount.Value * qty) : 0);
+                    }
 
                 }
 
@@ -1065,13 +1095,14 @@ namespace SuccessHotelierHub.Controllers
                 model.Total = total;
                 model.Room = roomRent;
                 model.TotalBalance = Math.Round(totalBalance, 2);
-                model.BalanceDue = Math.Round(balanceDue, 2);
+                model.BalanceDue = Math.Round(balanceDue, 2);                
 
                 if (reservation.CreatedBy.HasValue)
                 {
                     var user = userRepository.GetUserDetailByUserId(reservation.CreatedBy.Value).FirstOrDefault();
                     if (user != null)
                     {
+                        model.CashierNumber = user.CashierNumber;
                         var collegeGroup = collegeGroupRepository.GetCollegeGroupById(user.CollegeGroupId.Value);
                         if (collegeGroup != null)
                         {
@@ -1090,11 +1121,35 @@ namespace SuccessHotelierHub.Controllers
 
                 if (totalBalance > 0)
                 {
-                    double netAmount = 0;
-                    netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
+                    //double netAmount = 0;
+                    //netAmount = Math.Round(((totalBalance * 100) / (100 + model.VATTax)), 2);
 
-                    model.VATAmount = Math.Round((totalBalance - netAmount), 2);
-                    model.NetAmount = netAmount;
+                    //model.VATAmount = Math.Round((totalBalance - netAmount), 2);
+                    //model.NetAmount = netAmount;
+
+                    double VAT_9_CALCULATION = 0;
+                    VAT_9_CALCULATION = Math.Round(((vat_9 * 100) / (100 + model.VATTax)), 2);
+                    double VAT_23_CALCULATION = 0;
+                    VAT_23_CALCULATION = Math.Round(((vat_23 * 100) / (100 + model.VATTax2)), 2);
+
+                    //model.VATAmount = Math.Round((totalBalance - netAmount), 2);
+                    model.VATAmount = Math.Round((vat_9 - VAT_9_CALCULATION), 2);
+                    model.VATAmount2 = Math.Round((vat_23 - VAT_23_CALCULATION), 2);
+
+                    model.NetAmount = VAT_9_CALCULATION + VAT_23_CALCULATION;
+                }
+
+                //Company Info
+                if (reservation.CompanyId != null && reservation.CompanyId.HasValue)
+                {
+                    model.CompanyId = reservation.CompanyId;
+
+                    var companyInfo = CompanyRepository.GetCompanyList().Where(m => m.Id == reservation.CompanyId.Value).FirstOrDefault();
+                    if (companyInfo != null)
+                    {
+                        model.CompanyName = companyInfo.CompanyName;
+                        model.CompanyAddress = companyInfo.CompanyAddress;
+                    }
                 }
 
                 #region Record Activity Log
@@ -1484,6 +1539,12 @@ namespace SuccessHotelierHub.Controllers
 
                     #endregion
 
+                    #region Update TrackFolioLog Status = False
+
+                    reservationRepository.UpdateTrackFolioLogStatusByReservationId(reservation.Id, false);
+
+                    #endregion
+
                     #region Record Activity Log
 
                     RecordActivityLog.RecordActivity(Pages.CHECKIN, string.Format("Reverse Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
@@ -1680,6 +1741,12 @@ namespace SuccessHotelierHub.Controllers
                         #region Update Reservation Status
 
                         reservationRepository.UpdateReservationStatus(Checkoutmodel.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
+
+                        #endregion
+
+                        #region Update TrackFolioLog Status
+
+                        reservationRepository.UpdateTrackFolioLogStatusByReservationId(Checkoutmodel.ReservationId, true);
 
                         #endregion
 
@@ -2019,6 +2086,12 @@ namespace SuccessHotelierHub.Controllers
                                     #region Update Reservation Status
 
                                     reservationRepository.UpdateReservationStatus(reservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
+
+                                    #endregion
+
+                                    #region Update TrackFolioLog Status
+
+                                    reservationRepository.UpdateTrackFolioLogStatusByReservationId(reservationId, true);
 
                                     #endregion
                                 }
