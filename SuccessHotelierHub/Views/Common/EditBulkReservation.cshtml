@@ -205,7 +205,7 @@
                             @Html.LabelFor(m => m.ETAText)
                             <div class="input-group">
                                 <input type="text" id="ETAText" name="ETAText" value="@ETAText" class="form-control"
-                                       placeholder="HH:mm" />
+                                       placeholder="hh:mm" />
                                 <div class="input-group-addon">
                                     <i class="fa fa-clock-o"></i>
                                 </div>
@@ -409,9 +409,18 @@
         $('#ETAText').timepicker({
             showInputs: false,
             showMeridian: false,
-            minuteStep: 5
+            minuteStep: 1
             //timeFormat: 'HH:mm'
         });
+
+        //Input Mask
+        $('#ETAText').inputmask(
+            "hh:mm", {
+                placeholder: "hh:mm",
+                insertMode: false,
+                showMaskOnHover: true
+            }
+        );
 
 
         $('form#frmBulkReservation #Rate').val('@strRate');
@@ -700,7 +709,7 @@
 
             if (rateCode == 'CORPBB' || rateCode == 'CORPDBB' || rateCode == 'CORPRO') {
                 selectMarket("Corporate");
-                //selectReservationSource("Corporate");
+                selectReservationSource("Corporate");
                 $("form#frmBulkReservation #ReservationSourceId").val('');
             }
 
@@ -1103,5 +1112,6 @@
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
+    <script type="text/javascript" src="~/Scripts/custom/jquery.inputmask.bundle.js"></script>    
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
 }

@@ -189,7 +189,7 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
-                var Companies = companyRepository.SearchHoliday(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
+                var Companies = companyRepository.SearchCompany(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
                 int totalRecords = 0;
                 var dbRecords = Companies.Select(m => m.TotalCount).FirstOrDefault();

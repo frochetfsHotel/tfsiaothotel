@@ -16,15 +16,15 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please enter old password.")]
         public string OldPassword { get; set; }
 
-        [DisplayName("Password")]
+        [DisplayName("New Password")]
         [DataType(DataType.Password)]
-        [Required(ErrorMessage = "Please enter password.")]
+        [Required(ErrorMessage = "Please enter new password.")]
         public string Password { get; set; }
 
-        [DisplayName("Confirm Password")]
+        [DisplayName("Confirm New Password")]
         [DataType(DataType.Password)]
-        [Required(ErrorMessage = "Please enter confirm password.")]
-        [Compare("Password", ErrorMessage = "Confirm password and password must be same. ")]
+        [Required(ErrorMessage = "Please confirm new password.")]
+        [Compare("Password", ErrorMessage = "Confirm password and new password must be same. ")]
         public string ConfirmPassword { get; set; }
 
         public int? CreatedBy { get; set; }

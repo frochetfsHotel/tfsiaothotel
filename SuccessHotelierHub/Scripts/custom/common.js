@@ -984,9 +984,34 @@ function setNavigation() {
     path = path.replace(/\/$/, "");
     path = decodeURIComponent(path);
 
-    $(".sidebar-menu a").each(function () {
+    if (Contains(path, '/EditIndividualProfile/')) {
+        path = path.replace("/EditIndividualProfile/", "/IndividualProfileList");
+    }
+    else if (Contains(path, '/EditBulkReservation/')) {
+        path = path.replace("/EditBulkReservation/", "/BulkReservation");
+    }
+    else if (Contains(path, '/EditAdmin/')) {
+        path = path.replace("/EditAdmin/", "/ListAdmin");
+    }
+    else if (Contains(path, '/Rate/Edit/')) {
+        path = path.replace("/Rate/Edit/", "/Rate/ManagePrice");
+    }
+    else if (Contains(path, '/Tutor/ViewActivity/')) {
+        path = path.replace("/Tutor/ViewActivity/", "/Tutor/ViewStudent");
+    }
+    else if (Contains(path, '/Tutor/ReservationLog/')) {
+        path = path.replace("/Tutor/ReservationLog/", "/Tutor/ViewStudent");
+    }
+    else if (Contains(path, '/Tutor/FolioLog/')) {
+        path = path.replace("/Tutor/FolioLog/", "/Tutor/ViewStudent");
+    }
+    else if(Contains(path, '/Edit/')) {
+        path = path.replace("/Edit/", "/List");
+    }
+
+    $(".sidebar-menu a").each(function () {        
         var href = $(this).attr('href');
-        if (path.substring(0, href.length) === href) {
+        if (path.substring(0, href.length) === href) {            
             $(this).closest('li').addClass('active');
             $(this).parents('li.treeview').addClass('menu-open');
             $(this).parents('ul.treeview-menu').css({ display: 'block' });

@@ -392,7 +392,7 @@
                         <div class="bootstrap-timepicker" data-date-format="HH:mm">
                             @Html.LabelFor(m => m.ETAText)
                             <div class="input-group">
-                                @Html.TextBoxFor(m => m.ETAText, new { @class = "form-control", placeholder = "HH:mm" })
+                                @Html.TextBoxFor(m => m.ETAText, new { @class = "form-control", placeholder = "hh:mm" })
                                 <div class="input-group-addon">
                                     <i class="fa fa-clock-o"></i>
                                 </div>
@@ -801,10 +801,19 @@
         $('#ETAText').timepicker({
             showInputs: false,
             showMeridian: false,
-            minuteStep: 5
+            minuteStep: 1
             //timeFormat: 'HH:mm'
 
         });
+
+        //Input Mask
+        $('#ETAText').inputmask(
+            "hh:mm", {
+                placeholder: "hh:mm",
+                insertMode: false,
+                showMaskOnHover: true
+            }
+        );
 
         $('#ETAText').val('');
 
@@ -901,7 +910,7 @@
             var selectedNoOfRooms = $("form#frmAdvanceRoomSearch input:checkbox[name='chkRoom']:checked").length;
             var noOfRoom = $('form#frmReservation #NoOfRoom').val();
 
-            if (!IsNullOrEmpty(selectedNoOfRooms)) {
+            if (!IsNullOrEmpty(selectedNoOfRooms) || selectedNoOfRooms != "0") {
 
                 if (noOfRoom != selectedNoOfRooms) {
                     showToaster("Please select only " + noOfRoom + " room details.", ToasterType.ERROR);
@@ -926,6 +935,12 @@
                     $('#roomModal').modal('toggle');
 
                 }
+            }else{
+                $('form#frmReservation #RoomNumbers').val('');
+                $('form#frmReservation #RoomIds').val('');
+
+                //Close Room Search Modal.
+                $('#roomModal').modal('toggle');
             }
         });
 
@@ -1608,6 +1623,7 @@
 
         clearRoomSearch();
 
+        $("form#frmAdvanceRoomSearch #ReservationId").val('');
         $("form#frmAdvanceRoomSearch #RoomTypeId").val($('form#frmReservation #RoomTypeId').val());
         $("form#frmAdvanceRoomSearch #ArrivalDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
         $("form#frmAdvanceRoomSearch #DepartureDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
@@ -1666,8 +1682,7 @@
 
             if (rateCode == 'CORPBB' || rateCode == 'CORPDBB' || rateCode == 'CORPRO') {
                 selectMarket("Corporate");
-                //selectReservationSource("Corporate");
-                $("form#frmReservation #ReservationSourceId").val('');
+                selectReservationSource("Corporate");                
             }
 
             getPriceDetails(); //Get Week Day & Week End Price.
@@ -2360,6 +2375,7 @@
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.date.extensions.js"></script>
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/jquery.inputmask.extensions.js"></script>
+    <script type="text/javascript" src="~/Scripts/custom/jquery.inputmask.bundle.js"></script>    
     <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
 }
 

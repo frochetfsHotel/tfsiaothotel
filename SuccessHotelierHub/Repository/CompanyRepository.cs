@@ -32,7 +32,11 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@CompanyName", Value = company.CompanyName },
-                    new SqlParameter { ParameterName = "@CompanyAddress", Value = company.CompanyAddress},
+                    new SqlParameter { ParameterName = "@CompanyAddress", Value = company.CompanyAddress },
+                    new SqlParameter { ParameterName = "@AccountNumber", Value = company.AccountNumber },
+                    new SqlParameter { ParameterName = "@ContactPerson", Value = company.ContactPerson },
+                    new SqlParameter { ParameterName = "@TelephoneNo", Value = company.TelephoneNo },
+                    new SqlParameter { ParameterName = "@Email", Value = company.Email },
                     new SqlParameter { ParameterName = "@IsActive", Value = company.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = company.CreatedBy }
                 };
@@ -49,9 +53,13 @@ namespace SuccessHotelierHub.Repository
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@Id", Value = company.Id },
-                    new SqlParameter { ParameterName = "@CompanyName", Value = company.CompanyName},
-                    new SqlParameter { ParameterName = "@CompanyAddress", Value = company.CompanyAddress},
-                    new SqlParameter { ParameterName = "@IsActive", Value = company.IsActive},
+                    new SqlParameter { ParameterName = "@CompanyName", Value = company.CompanyName },
+                    new SqlParameter { ParameterName = "@CompanyAddress", Value = company.CompanyAddress },
+                    new SqlParameter { ParameterName = "@AccountNumber", Value = company.AccountNumber },
+                    new SqlParameter { ParameterName = "@ContactPerson", Value = company.ContactPerson },
+                    new SqlParameter { ParameterName = "@TelephoneNo", Value = company.TelephoneNo },
+                    new SqlParameter { ParameterName = "@Email", Value = company.Email },
+                    new SqlParameter { ParameterName = "@IsActive", Value = company.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = company.UpdatedBy }
                 };
 
@@ -75,12 +83,14 @@ namespace SuccessHotelierHub.Repository
             return companyId;
         }
 
-        public List<SearchCompanyResultVM> SearchHoliday(SearchCompanyParametersVM model, string sortColumn, string sortDirection)
+        public List<SearchCompanyResultVM> SearchCompany(SearchCompanyParametersVM model, string sortColumn, string sortDirection)
         {
             SqlParameter[] parameters =
                 {
                     new SqlParameter { ParameterName = "@CompanyName", Value = model.CompanyName },
-                    new SqlParameter { ParameterName = "@CompanyAddress", Value = model.CompanyAddress },
+                    new SqlParameter { ParameterName = "@AccountNumber", Value = model.AccountNumber },
+                    new SqlParameter { ParameterName = "@ContactPerson", Value = model.ContactPerson },
+                    new SqlParameter { ParameterName = "@Email", Value = model.Email },
                     new SqlParameter { ParameterName = "@PageNum", Value = model.PageNum },
                     new SqlParameter { ParameterName = "@PageSize", Value = model.PageSize },
                     new SqlParameter { ParameterName = "@SortColumn", Value = sortColumn },

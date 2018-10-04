@@ -133,6 +133,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@IsClean", Value = model.IsClean },
                     new SqlParameter { ParameterName = "@IsDirty", Value = model.IsDirty },
                     new SqlParameter { ParameterName = "@IsInspected", Value = model.IsInspected },
+                    new SqlParameter { ParameterName = "@ReservationId", Value = model.ReservationId },
                     new SqlParameter { ParameterName = "@UserId", Value = model.UserId }
 
                 };

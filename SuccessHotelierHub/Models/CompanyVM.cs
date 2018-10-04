@@ -19,6 +19,19 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please enter company address.")]
         public string CompanyAddress { get; set; }
 
+        [DisplayName("Account Number")]
+        public string AccountNumber { get; set; }
+
+        [DisplayName("Contact Person")]
+        public string ContactPerson { get; set; }
+
+        [DisplayName("Telephone No")]
+        public string TelephoneNo { get; set; }
+
+        [DisplayName("Email")]
+        [RegularExpression("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$", ErrorMessage = "Please enter valid email address")]
+        public string Email { get; set; }
+
         public Boolean IsActive { get; set; }
 
         public Boolean IsDeleted { get; set; }

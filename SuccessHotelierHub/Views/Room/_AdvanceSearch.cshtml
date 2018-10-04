@@ -21,6 +21,7 @@
     <input type="hidden" id="hdnSelectedRoomIds" name="hdnSelectedRoomIds" value="" />
     <input type="hidden" id="hdnSelectedRoomNumbers" name="hdnSelectedRoomNumbers" value="" />
     <input type="hidden" id="hdnRowNumber" name="hdnRowNumber" value="" />
+    <input type="hidden" id="ReservationId" name="ReservationId" value="" />
     <!-- Hidden Field-->
 
 
@@ -245,8 +246,7 @@
 
                     if (result.length > 0) {
                         //Add the data rows.
-                        for (var i = 0; i < result.length; i++) {
-                            markup += "<tr>";
+                        for (var i = 0; i < result.length; i++) {                            
 
                             var checked = "";
                             var statusColor = "#079438"
@@ -268,9 +268,23 @@
                             }
 
                             reservationId = result[i].ReservationId;
+
+                            var isRoomAllocated = parseBoolean(result[i].IsRoomAllocated);
+
+                            var description = result[i].Description;
                             
-                            markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " data-roomstatus=\'" + statusName + "\' data-reservationid=\'" + reservationId + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/> <span class=\'checkmark\'></span></label></td>";
-                            
+                            if (!isRoomAllocated) {
+                                markup += "<tr>";
+                            } else {
+                                markup += "<tr class=\'bg-red\'>";
+                            }
+
+                            if (!isRoomAllocated) {
+                                markup += "<td class=\'text-center\'><label class=\'container1\'><input type=\'checkbox\' class=\'chkRoom cursor-P\' id=\'chkRoom_" + result[i].RoomId + "\' name=\'chkRoom\' value=\'" + result[i].RoomId + "\'  data-roomno=\'" + result[i].RoomNo + "\'  data-roomid=\'" + result[i].RoomId + "\' " + checked + " data-roomstatus=\'" + statusName + "\' data-reservationid=\'" + reservationId + "\'  data-roomtypeid=\'" + result[i].RoomTypeId + "\'/> <span class=\'checkmark\'></span></label></td>";
+                            } else {
+                                markup += "<td class=\'text-center\'></td>";
+                                description = description + " <span class=\'text-black text-bold pull-right m-r-xs\'>Room Already Allocated</span>";
+                            }
 
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomNo + "</td>";
                             markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].RoomTypeCode + "</td>";
@@ -282,7 +296,7 @@
                                 markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\"><span>" + result[i].RoomStatusName + "<i class=\'m-l-sm fa fa-circle\' style=\'color:" + statusColor + "\'></i> <i class=\'fa fa-info-circle\' title=\'If you select dirty room then existing allocation will be removed.\' data-toggle=\'tooltip\' data-original-title=\'If you select dirty room then existing allocation will be removed.\'></i></span></td>";
                             }
 
-                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + result[i].Description + "</td>";
+                            markup += "<td onclick=\"onSelectRoom('chkRoom_" + result[i].RoomId + "');\">" + description + "</td>";
 
                             markup += "</tr>";
                         }

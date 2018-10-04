@@ -480,6 +480,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Inspected")]
         public bool IsInspected { get; set; }
 
+        [DisplayName("Reservation Id")]
+        public Guid? ReservationId { get; set; }
+
         public int UserId { get; set; }
 
         public List<ColumnName> columns { get; set; }
@@ -507,6 +510,8 @@ namespace SuccessHotelierHub.Models
         public string RoomTypeDescription { get; set; }
 
         public string RoomFeatures { get; set; }
+
+        public bool IsRoomAllocated { get; set; }
 
         public Guid? ReservationId { get; set; }
 
@@ -1831,11 +1836,20 @@ namespace SuccessHotelierHub.Models
         public int PageNum { get; set; }
         public int PageSize { get; set; }
 
-        [DisplayName("Title")]
+        [DisplayName("Company Name")]
         public string CompanyName { get; set; }
 
-        [DisplayName("Description")]
+        [DisplayName("Company Address")]
         public string CompanyAddress { get; set; }
+
+        [DisplayName("Account Number")]
+        public string AccountNumber { get; set; }
+
+        [DisplayName("Contact Person")]
+        public string ContactPerson { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
 
         public Boolean IsActive { get; set; }
 
@@ -1848,14 +1862,25 @@ namespace SuccessHotelierHub.Models
         public int RowNum { get; set; }
         public Guid Id { get; set; }
 
-        [DisplayName("CompanyName")]
+        [DisplayName("Company Name")]
         public string CompanyName { get; set; }
 
-        [DisplayName("CompanyAddress")]
+        [DisplayName("Company Address")]
         public string CompanyAddress { get; set; }
 
-        public Boolean IsActive { get; set; }
+        [DisplayName("Account Number")]
+        public string AccountNumber { get; set; }
 
+        [DisplayName("Contact Person")]
+        public string ContactPerson { get; set; }
+
+        [DisplayName("Telephone No")]
+        public string TelephoneNo { get; set; }
+
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
+        public bool IsActive { get; set; }
 
         public DateTime? CreatedOn { get; set; }
         public int TotalCount { get; set; }

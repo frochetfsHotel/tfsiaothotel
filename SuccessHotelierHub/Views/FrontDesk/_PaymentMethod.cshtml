@@ -63,7 +63,7 @@
             <div class="bootstrap-timepicker">
                 @Html.LabelFor(m => m.CheckInTimeText)
                 <div class="input-group">
-                    @Html.TextBoxFor(m => m.CheckInTimeText, new { @class = "form-control", placeholder = "hh:mm tt" })
+                    @Html.TextBoxFor(m => m.CheckInTimeText, new { @class = "form-control", placeholder = "hh:mm" })
                     <div class="input-group-addon">
                         <i class="fa fa-clock-o"></i>
                     </div>
@@ -119,8 +119,17 @@
         $('form#frmCheckInPayment #CheckInTimeText').timepicker({
             showInputs: false,
             showMeridian: false,
-            minuteStep: 5
+            minuteStep: 1
         });
+
+        //Input Mask
+        $('form#frmCheckInPayment #CheckInTimeText').inputmask(
+            "hh:mm", {
+                placeholder: "hh:mm",
+                insertMode: false,
+                showMaskOnHover: true
+            }
+        );
 
         //Date picker
         $('#CheckInDate').datepicker({
@@ -275,6 +284,5 @@
     }
 
 </script>
-
 
 <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>

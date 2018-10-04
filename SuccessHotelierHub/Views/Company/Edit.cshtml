@@ -20,7 +20,7 @@
             <h3 class="box-title">Company Details</h3>
         </div>
         @using (Html.BeginForm("Edit", "Company", FormMethod.Post, new { id = "frmCompany", enctype = "multipart/form-data" }))
-            {
+        {
             @Html.AntiForgeryToken()
 
             <!--HIDDEN FIELD-->
@@ -29,20 +29,41 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.CompanyName, new { @class = "required-label" })
-                        @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", placeholder = "Company Name", @onkeypress = "stopformSubmitOnEnter()" })
+                        @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", placeholder = "Company Name", onkeypress = "stopformSubmitOnEnter()" })
                         @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.AccountNumber)
+                        @Html.TextBoxFor(m => m.AccountNumber, new { @class = "form-control", placeholder = "Account Number", onkeypress = "stopformSubmitOnEnter()" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.ContactPerson)
+                        @Html.TextBoxFor(m => m.ContactPerson, new { @class = "form-control", placeholder = "Contact Person", onkeypress = "stopformSubmitOnEnter()" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.CompanyAddress, new { @class = "required-label" })
                         @Html.TextAreaFor(m => m.CompanyAddress, new { @class = "form-control", placeholder = "Company Address", rows = "3" })
                         @Html.ValidationMessageFor(m => m.CompanyAddress, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.TelephoneNo)
+                        @Html.TextBoxFor(m => m.TelephoneNo, new { @class = "form-control", placeholder = "Telephone No", onkeypress = "stopformSubmitOnEnter()" })
+                    </div>
+                    <div class="col-md-4 form-group">
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email", onkeypress = "stopformSubmitOnEnter()" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group m-t-md">
                         <label class="container1" for="IsActive">
                             Is Active
-                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
+                            @Html.CheckBoxFor(m => m.IsActive)
                             <span class="checkmark"></span>
                         </label>
                     </div>
@@ -66,9 +87,7 @@
 
     function validateCompany() {
 
-        var errorMessage = "";
         var blnValid = true;
-
 
         if ($("#frmCompany").valid() == false) {
             showToaster("Please fill all the Required Fields first", ToasterType.ERROR);

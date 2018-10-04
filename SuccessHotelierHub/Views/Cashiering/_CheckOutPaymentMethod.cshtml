@@ -55,7 +55,7 @@
             <div class="bootstrap-timepicker">
                 @Html.LabelFor(m => m.CheckOutTimeText, new { @class = "required-label" })
                 <div class="input-group">
-                    @Html.TextBoxFor(m => m.CheckOutTimeText, new { @class = "form-control", placeholder = "hh:mm tt" })
+                    @Html.TextBoxFor(m => m.CheckOutTimeText, new { @class = "form-control", placeholder = "hh:mm" })
                     <div class="input-group-addon">
                         <i class="fa fa-clock-o"></i>
                     </div>
@@ -138,6 +138,15 @@
             showMeridian: false,
             minuteStep: 5
         });
+
+        //Input Mask
+        $('form#frmCheckOutPayment #CheckOutTimeText').inputmask(
+            "hh:mm", {
+                placeholder: "hh:mm",
+                insertMode: false,
+                showMaskOnHover: true
+            }
+        );
 
         //Date picker
         $('#CheckOutDate').datepicker({
@@ -454,6 +463,5 @@
     }
 
 </script>
-
 
 <script type="text/javascript" src="~/Scripts/AdminLTE/input-mask/masking-input.js" data-autoinit="true"></script>
