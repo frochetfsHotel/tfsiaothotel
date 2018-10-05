@@ -1269,6 +1269,10 @@ namespace SuccessHotelierHub.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        [DisplayName("Is Credit Card Pay")]
+        public bool IsCreditCardPay { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public int TotalCount { get; set; }

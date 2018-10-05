@@ -46,6 +46,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Code", Value = paymentMethod.Code },
                     new SqlParameter { ParameterName = "@Name", Value = paymentMethod.Name },
                     new SqlParameter { ParameterName = "@Description", Value = paymentMethod.Description },
+                    new SqlParameter { ParameterName = "@IsCreditCardPay", Value = paymentMethod.IsCreditCardPay },
                     new SqlParameter { ParameterName = "@IsActive", Value = paymentMethod.IsActive },
                     new SqlParameter { ParameterName = "@CreatedBy", Value = paymentMethod.CreatedBy }
                 };
@@ -65,6 +66,7 @@ namespace SuccessHotelierHub.Repository
                     new SqlParameter { ParameterName = "@Code", Value = paymentMethod.Code },
                     new SqlParameter { ParameterName = "@Name", Value = paymentMethod.Name },
                     new SqlParameter { ParameterName = "@Description", Value = paymentMethod.Description },
+                    new SqlParameter { ParameterName = "@IsCreditCardPay", Value = paymentMethod.IsCreditCardPay },
                     new SqlParameter { ParameterName = "@IsActive", Value = paymentMethod.IsActive },
                     new SqlParameter { ParameterName = "@UpdatedBy", Value = paymentMethod.UpdatedBy }
                 };

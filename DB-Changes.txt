@@ -63572,3 +63572,371 @@ BEGIN
 	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
 	-- PAGING COMPLETED							
 END
+
+
+
+/********************************************************************************************************************************
+Name : Nilesh
+Date : 05-OCT-2018
+**********************************************************************************************************************************/
+
+/************* Add IsCreditCardPay column to PaymentMethod table *****************/
+
+ALTER TABLE PaymentMethod ADD IsCreditCardPay BIT NULL 
+GO
+
+
+/***********************************************************************************************************************************
+	SP Name : AddPaymentMethod
+	Comment : Add Parameter IsCreditCardPay
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[AddPaymentMethod]    Script Date: 10/5/2018 11:08:16 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddPaymentMethod]	
+	@Code				NVARCHAR(25)	=	NULL	,
+	@Name				NVARCHAR(500)				,
+	@Description		NVARCHAR(MAX)	=	NULL	,
+	@IsCreditCardPay	BIT				=	NULL	,
+	@IsActive			BIT				=	NULL	,	
+	@CreatedBy			INT				=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[PaymentMethod]
+           ([Id]           
+		   ,[Code]
+           ,[Name]		   		
+		   ,[Description]   
+		   ,[IsCreditCardPay]
+		   ,[CreatedBy]
+		   ,[CreatedOn]
+           ,[IsActive])
+     VALUES
+           (
+			   @Id	
+			   ,@Code		   
+			   ,@Name	
+			   ,@Description	
+			   ,@IsCreditCardPay	   
+			   ,@CreatedBy
+			   ,GETDATE()			   
+			   ,@IsActive
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+
+/***********************************************************************************************************************************
+	SP Name : UpdatePaymentMethod
+	Comment : Add Parameter IsCreditCardPay
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[UpdatePaymentMethod]    Script Date: 10/5/2018 11:09:30 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdatePaymentMethod]
+	@Id					UNIQUEIDENTIFIER				,	
+	@Code				NVARCHAR(25)		=	NULL	,
+	@Name				NVARCHAR(500)					,	
+	@Description		NVARCHAR(MAX)		=	NULL	,
+	@IsCreditCardPay	BIT					=	NULL	,
+	@IsActive			BIT					=	NULL	,	
+	@UpdatedBy			INT					=	NULL
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[PaymentMethod]
+		SET	[Name]				=	@Name		
+		   ,[Code]				=	@Code
+		   ,[Description]		=	@Description  
+		   ,[IsCreditCardPay]	=	@IsCreditCardPay 		   
+		   ,[UpdatedBy]			=	@UpdatedBy
+		   ,[UpdatedOn]			=	GETDATE()
+		   ,[IsActive]			=	@IsActive		   
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND Id = @Id
+
+    SELECT @Id AS Id    
+END
+
+
+
+/***********************************************************************************************************************************
+	SP Name : SearchPaymentMethod
+	Comment : Add Parameter IsCreditCardPay
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchPaymentMethod]    Script Date: 10/5/2018 11:10:57 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchPaymentMethod] '', '', '',  1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchPaymentMethod]					
+	@Code			NVARCHAR(25)	=	NULL	,
+	@Name			NVARCHAR(500)	=	NULL	,
+	@Description	NVARCHAR(MAX)	=	NULL	,		
+	@PageNum		INT				=	1		,
+	@PageSize		INT				=	10		,
+	@SortColumn		NVARCHAR(255)	=	NULL	,
+	@SortDirection	NVARCHAR(20)	=	NULL
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempPaymentMethod
+	(
+			[RowNum]			INT					NOT NULL
+		,	[Id]				UNIQUEIDENTIFIER	NOT NULL		
+		,	[Code]				NVARCHAR(255)		NULL
+		,   [Name]				NVARCHAR(255)		NOT NULL
+		,	[Description]		NVARCHAR(MAX)		NULL
+		,	[IsCreditCardPay]	BIT					NULL
+		,	[CreatedOn]			DATETIME			NULL
+		,   [IsActive]			BIT					NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(*) 
+						FROM [dbo].[PaymentMethod]
+						WHERE	ISNULL(IsDeleted,0) = 0								
+								AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  
+								AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  
+								AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 								
+						)
+
+
+		INSERT INTO #tempPaymentMethod 
+		(
+			[RowNum]			, 
+			[Id]				,	 
+			[Code]				,
+			[Name]				, 
+			[Description]		, 
+			[IsCreditCardPay]	,
+			[CreatedOn]			, 
+			[IsActive]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN [CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN [CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN [Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN [Name] END DESC,
+						
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'asc'
+							THEN [Code] END ASC,
+						CASE WHEN @SortColumn = 'Code' and @SortDirection = 'desc'
+							THEN [Code] END DESC,
+						
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN [Name] END ASC
+
+				) AS RowNum,
+				[ID],	
+				ISNULL([Code],'') AS [Code],					
+				ISNULL([Name],'') AS [Name],
+				ISNULL([Description],'') AS [Description],
+				ISNULL([IsCreditCardPay],0) AS [IsCreditCardPay],
+				[CreatedOn],
+				[IsActive]
+		FROM [dbo].[PaymentMethod]
+			WHERE	ISNULL(IsDeleted,0) = 0			
+					AND (ISNULL(@Code,'') = '' OR [Code] LIKE '%'+ @Code +'%')  					
+					AND (ISNULL(@Name,'') = '' OR [Name] LIKE '%'+ @Name +'%')  					 
+					AND (ISNULL(@Description,'') = '' OR [Description] LIKE '%'+ @Description +'%') 
+
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],							
+			temp.[Code],
+			temp.[Name],	
+			temp.[Description],	
+			temp.[IsCreditCardPay],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			@TotalCount AS TotalCount
+	FROM	
+		#tempPaymentMethod AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END
+
+
+/***********************************************************************************************************************************
+	SP Name : GetReservationCharges
+	Comment : Add IsCreditCardPay 
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetReservationCharges]    Script Date: 10/5/2018 4:22:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [GetReservationCharges]
+		@ReservationId			=	'68386856-EA23-439C-A75E-002983ABE7A3'	,
+		@AdditionalChargeId		=	NULL									,
+		@UserId					=	4
+*/
+
+ALTER PROCEDURE [dbo].[GetReservationCharges]	
+	@ReservationId			UNIQUEIDENTIFIER	=	NULL	,
+	@AdditionalChargeId		UNIQUEIDENTIFIER	=	NULL	,
+	@UserId					INT					=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS	
+	DECLARE @CurrencyConversionRate AS NUMERIC(18,2) =	NULL
+
+	-- GET CURRENCY CONVERSION RATE : START
+	SET @CurrencyConversionRate = (SELECT TOP 1 ISNULL(C.ConversionRate,0) AS ConversionRate
+										FROM [dbo].[Currency] C 
+												INNER JOIN [dbo].[UserGroup] UG ON UG.CurrencyId = C.Id
+													AND ISNULL(UG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[CollegeGroup] CG ON CG.UserGroupId = UG.Id
+													AND ISNULL(CG.IsDeleted,0) = 0
+												INNER JOIN [dbo].[UserDetail] UD ON UD.CollegeGroupId = CG.Id	
+													AND ISNULL(UD.IsDeleted,0) = 0
+													AND UD.UserId = @UserId
+										WHERE	ISNULL(C.IsDeleted,0) = 0
+									)
+	-- GET CURRENCY CONVERSION RATE : END
+
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId
+		,ISNULL(PM.IsCreditCardPay,0) AS IsCreditCardPay
+		, 1 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC	
+				LEFT JOIN [dbo].[PaymentMethod] PM ON RC.PaymentMethodId = PM.Id
+					AND ISNULL(PM.IsDeleted,0) = 0		
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeSource = 'AC' -- Additional  Charge				
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	
+    SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId
+		,ISNULL(PM.IsCreditCardPay,0) AS IsCreditCardPay
+		, 2 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC	
+				LEFT JOIN [dbo].[PaymentMethod] PM ON RC.PaymentMethodId = PM.Id
+					AND ISNULL(PM.IsDeleted,0) = 0					
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeSource = 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+	UNION
+
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId
+		,ISNULL(PM.IsCreditCardPay,0) AS IsCreditCardPay
+		, 3 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC	
+				LEFT JOIN [dbo].[PaymentMethod] PM ON RC.PaymentMethodId = PM.Id
+					AND ISNULL(PM.IsDeleted,0) = 0					
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '1000') -- Room Rent
+				AND RC.AdditionalChargeId <> (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND RC.AdditionalChargeSource <> 'PKM' -- Package
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+	UNION
+	SELECT RC.Id,RC.ReservationId,RC.AdditionalChargeId,ISNULL(RC.AdditionalChargeSource,'') AS AdditionalChargeSource ,
+		RC.TransactionDate,
+		ISNULL([dbo].[fnParseAmountByCurrency] (RC.[Amount], @CurrencyConversionRate),0) AS Amount,
+		RC.Qty,RC.Supplement,RC.Reference,
+		RC.IsActive,RC.IsDeleted,RC.CreatedBy,RC.CreatedOn,RC.UpdatedBy,RC.UpdatedOn,
+		--(CASE WHEN CHARINDEX('Cash',RC.Description) > 0 THEN RC.Code ELSE CONCAT('XXXXXXXXXXXX',RIGHT(RC.CreditCardNo, 4)) END )AS Code,
+		RC.Code,RC.Description, RC.CreditCardNo, RC.CardExpiryDate, RC.CVVNo, RC.IsDummyReservationPayment, RC.PaymentMethodId
+		,ISNULL(PM.IsCreditCardPay,0) AS IsCreditCardPay
+		, 4 AS SortOrder
+			FROM [dbo].[ReservationCharges] RC				
+				INNER JOIN Reservation RE ON RC.ReservationId = RE.Id
+					AND ISNULL(RE.IsDeleted,0) = 0					
+					AND (ISNULL(@UserId,0) = 0 OR RE.[CreatedBy] = @UserId)
+				LEFT JOIN [dbo].[PaymentMethod] PM ON RC.PaymentMethodId = PM.Id
+					AND ISNULL(PM.IsDeleted,0) = 0		
+		WHERE	ISNULL(RC.IsDeleted,0) = 0 	
+				AND (@ReservationId IS NULL OR RC.ReservationId = @ReservationId)			
+				AND (@AdditionalChargeId IS NULL OR RC.AdditionalChargeId = @AdditionalChargeId)
+				AND RC.AdditionalChargeId = (SELECT TOP 1 Id 
+								FROM AdditionalCharges WHERE ISNULL(IsDeleted,0) = 0 
+								AND [Code] = '9004') -- Check Out (Payment)
+				AND (ISNULL(@UserId,0) = 0 OR RC.[CreatedBy] = @UserId)
+
+
+	ORDER BY SortOrder
+END
+
+
+

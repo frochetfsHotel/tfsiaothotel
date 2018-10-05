@@ -312,15 +312,8 @@ namespace SuccessHotelierHub.Controllers
                       ), "Value", "Text").ToList();
 
 
-                var paymentMethodList = new SelectList(
-                    paymentMethodRepository.GetPaymentMethods()
-                    .Select(
-                        m => new SelectListItem()
-                        {
-                            Value = m.Id.ToString(),
-                            Text = (m.Code + " - " + m.Name)
-                        }
-                    ), "Value", "Text").ToList();
+                var paymentMethodList = paymentMethodRepository.GetPaymentMethods();
+                    
                 var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
 

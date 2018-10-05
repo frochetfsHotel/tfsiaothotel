@@ -326,14 +326,16 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F945">Agent 2</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B7F937">Agent 3</option>
                         </select>
-                    </div>
+                    </div>               
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.CompanyId)
-                        @Html.DropDownListFor(m => m.CompanyId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.CompanyList, "Value", "Text"),
-                                "--Select Company--",
-                                new { @class = "form-control" })
-                    </div>
+                        @Html.LabelFor(m => m.ContactId)
+                        <select class="form-control" id="ContactId" name="ContactId">
+                            <option value="">--Select Contact--</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Contact 1</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Contact 2</option>
+                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Contact 3</option>
+                        </select>
+                    </div>     
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.GroupId)
                         <select class="form-control" id="GroupId" name="GroupId">
@@ -346,7 +348,6 @@
                 </div>
 
                 <div class="row">
-
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.SourceId)
                         <select class="form-control" id="SourceId" name="SourceId">
@@ -355,15 +356,35 @@
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Source 2</option>
                             <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Source 3</option>
                         </select>
-                    </div>
+                    </div>                    
                     <div class="col-md-3 form-group">
-                        @Html.LabelFor(m => m.ContactId)
-                        <select class="form-control" id="ContactId" name="ContactId">
-                            <option value="">--Select Contact--</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B8F944">Contact 1</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B9F945">Contact 2</option>
-                            <option value="F15C97B6-4FC0-4AB7-A32D-C95261B0F937">Contact 3</option>
-                        </select>
+                        @Html.LabelFor(m => m.CompanyId)
+                        @Html.DropDownList("CompanyId", new List<SelectListItem>
+                        {
+                            new SelectListItem{ Text="--Select Company--", Value = "" }
+                        },
+                        htmlAttributes: new { @class = "form-control", onchange = "ShowCompanyDetails();" })
+                    </div>
+                    <div class="col-md-6 form-group m-t-sm" id="divCompanyDetails" style="display:none;">
+                        <table class="table table-bordered table-striped" style="margin-bottom:0px;">
+                            <tbody>
+                                <tr>
+                                    <th class="width_35" id="thCompanyName">Company Name</th>
+                                    <th class="width_5">:</th>
+                                    <td class="width_60" id="tdCompanyName"></td>
+                                </tr>
+                                <tr>
+                                    <th class="width_35" id="thCompanyAccountNo">Account No</th>
+                                    <th class="width_5">:</th>
+                                    <td class="width_60" id="tdCompanyAccountNo"></td>
+                                </tr>
+                                <tr>
+                                    <th class="width_35" id="thCompanyTelephoneNo">Telephone No</th>
+                                    <th class="width_5">:</th>
+                                    <td class="width_60" id="tdCompanyTelephoneNo"></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -599,22 +620,16 @@
 
                         @Html.ValidationMessageFor(m => m.ReservationSourceId, "", new { @class = "text-danger" })
                     </div>
-                    @*<div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.OriginId)
-                            @Html.DropDownListFor(m => m.OriginId,
-                                    new SelectList((IEnumerable<SelectListItem>)ViewBag.OriginList, "Value", "Text"),
-                                    "--Select Origin--",
-                                    new { @class = "form-control" })
-                        </div>*@
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.PaymentMethodId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
-                                "--Select Payment Method--",
-                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
+                        @Html.DropDownList("PaymentMethodId", new List<SelectListItem>
+                        {
+                            new SelectListItem{ Text="--Select Payment Method--", Value = "" }
+                        },
+                        htmlAttributes: new { @class = "form-control", onchange = "SelectPaymentMethod();" })
 
                         @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
                     </div>
@@ -933,6 +948,12 @@
     var isCreditCardEdit = false;
 
     $(document).ready(function () {
+
+        //Load Payment Methods.
+        LoadPaymentMethod();
+
+        //Load Companies
+        LoadCompanyDetails();
 
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
@@ -1466,14 +1487,12 @@
         }
 
         if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected').text();
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected');
 
-            if (trim(paymentMethodName) != 'Cash') {
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
+            if (isCreditCardPay) {
                 var creditCardNo = $('form#frmReservation #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmReservation #CardExpiryDate').val();
                 var cvvNo = $('form#frmReservation #CVVNo').val();
@@ -1502,6 +1521,23 @@
                 if (blnValid == false) {
                     showToaster(errorText, ToasterType.ERROR);
                     return false;
+                }
+            }else{
+                var arrivalTime = $('#ETAText').val();
+                if (IsNullOrEmpty(arrivalTime)) {
+                    blnValid = false;
+                    swal({
+                        title: '<span>Reservation type Non Guranteed requires an arrival time.</span>',
+                        type: 'warning',
+                        showCloseButton: true,
+                        showCancelButton: false,
+                        focusConfirm: false,
+                        confirmButtonText: 'OK',
+                    }).then((result) => {
+                        goToSpecificElement("divArrivalTime");
+                        $('#ETAText').focus();
+                        blnValid = false;
+                    });
                 }
             }
         }
@@ -1556,7 +1592,6 @@
                 packageMappingList.push(modelPackageMapping);
             }
 
-
             //Enable all select box before form submit.
             $('form#frmReservation #RateCodeId').attr("disabled", false);
             $('form#frmReservation #CurrencyId').attr("disabled", false);
@@ -1565,9 +1600,15 @@
             $('form#frmReservation #ReservationSourceId').attr("disabled", false);
             $('form#frmReservation #PaymentMethodId').attr("disabled", false);
 
+            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected');
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
             //Credit Card#.
-            if(isCreditCardEdit == false){
-                $('form#frmReservation #CreditCardNo').val($('form#frmReservation #hdnOriginalCreditCardNo').val());
+            if(isCreditCardEdit == false && isCreditCardPay == true){
+                var creditCardNo = $('form#frmReservation #hdnOriginalCreditCardNo').val();
+                if(!IsNullOrEmpty(creditCardNo)){
+                    $('form#frmReservation #CreditCardNo').val(creditCardNo);
+                }
             }
 
             var formData = $('#frmReservation').serializeObject();
@@ -2102,23 +2143,13 @@
     }
 
     function SelectPaymentMethod() {
-        if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
-            var paymentMethod = $('#PaymentMethodId option:selected').text();
+        if (!IsNullOrEmpty($('form#frmReservation #PaymentMethodId').val())) {
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var paymentMethod = $('form#frmReservation #PaymentMethodId option:selected');
 
-            if (trim(paymentMethodName) == 'Cash') {
-                //Remove Label Bold.
-                $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
-                $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");
-                $('form#frmReservation label[for="CVVNo"]').removeClass("label-bold");
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
 
-                //Set Reservation Type = 'Non-Guaranteed'
-                $("form#frmReservation #ReservationTypeId").val('@NonGuranteedReservationTypeId');
-            } else {
+            if(isCreditCardPay){
                 //Set Label Bold.
                 $('form#frmReservation label[for="CreditCardNo"]').addClass("label-bold");
                 $('form#frmReservation label[for="CardExpiryDate"]').addClass("label-bold");
@@ -2126,6 +2157,14 @@
 
                 //Set Reservation Type = 'Guarantee Type'
                 $("form#frmReservation #ReservationTypeId").val('@GuranteedReservationTypeId');
+            }else{
+                //Remove Label Bold.
+                $('form#frmReservation label[for="CreditCardNo"]').removeClass("label-bold");
+                $('form#frmReservation label[for="CardExpiryDate"]').removeClass("label-bold");
+                $('form#frmReservation label[for="CVVNo"]').removeClass("label-bold");
+
+                //Set Reservation Type = 'Non-Guaranteed'
+                $("form#frmReservation #ReservationTypeId").val('@NonGuranteedReservationTypeId');
             }
         }
 
@@ -2144,7 +2183,7 @@
 
             if (rateCode == 'CORPBB' || rateCode == 'CORPDBB' || rateCode == 'CORPRO') {
                 selectMarket("Corporate");
-                selectReservationSource("Corporate");                
+                selectReservationSource("Corporate");
             }
 
             getPriceDetails(); //Get Week Day & Week End Price.
@@ -2740,6 +2779,86 @@
         $('form#frmReservation #CreditCardNo').val(creditCardNo);
 
         isCreditCardEdit = true;
+    }
+
+    function LoadPaymentMethod(){
+        var paymentMethods = @Html.Raw(Json.Encode(ViewBag.PaymentMethodList));
+
+        if(!IsNullOrEmpty(paymentMethods) && paymentMethods.length > 0){
+
+            var optionHtml = "";
+            optionHtml += "<option value=''>--Select Payment Method--</option>";
+            $.each(paymentMethods, function(index, item) {
+                var id = item.Id;
+                var code = item.Code;
+                var name = item.Name;
+                var isCreditCardPay = parseBoolean(item.IsCreditCardPay);
+
+                optionHtml += "<option value='" + id + "' data-iscreditcardpay='" + isCreditCardPay + "'>" + (code + " - " + name ) + "</option>";
+            });
+
+            $('form#frmReservation #PaymentMethodId').html(optionHtml);
+
+            if(!IsNullOrEmpty('@Model.PaymentMethodId')){
+                $('form#frmReservation #PaymentMethodId').val('@Model.PaymentMethodId');
+            }
+        }else{
+            $('form#frmReservation #PaymentMethodId').html("");
+            $('form#frmReservation #PaymentMethodId').append($("<option></option>").val("").html("--Select Payment Method--"));
+        }
+    }
+
+    function LoadCompanyDetails(){
+        var companies = @Html.Raw(Json.Encode(ViewBag.CompanyList));
+
+        if(!IsNullOrEmpty(companies) && companies.length > 0){
+
+            var optionHtml = "";
+            optionHtml += "<option value=''>--Select Company--</option>";
+            $.each(companies, function(index, item) {
+                var id = item.Id;
+                var accountNumber = item.AccountNumber;
+                var companyName = item.CompanyName;
+                var telephoneNo = item.TelephoneNo;
+
+                optionHtml += "<option value='" + id + "' data-companyname ='" + companyName + "' data-telephone-no ='" + telephoneNo + "'" +
+                              " data-account-number ='" + accountNumber + "'>" + companyName + "</option>";
+            });
+
+            $('form#frmReservation #CompanyId').html(optionHtml);
+
+            if(!IsNullOrEmpty('@Model.CompanyId')){
+                $('form#frmReservation #CompanyId').val('@Model.CompanyId');
+                ShowCompanyDetails();
+            }
+        }else{
+            $('form#frmReservation #CompanyId').html("");
+            $('form#frmReservation #CompanyId').append($("<option></option>").val("").html("--Select Company--"));
+        }
+    }
+
+    function ShowCompanyDetails(){
+        var selectedCompany= $('form#frmReservation #CompanyId option:selected');
+        var companyId = selectedCompany.val();
+
+        if (!IsNullOrEmpty(companyId)) {
+            var companyName = selectedCompany.data("companyname");
+            var accountNumber = selectedCompany.data("account-number");
+            var telephoneNo = selectedCompany.data("telephone-no");
+
+            if(IsNullOrEmpty(companyName)) { companyName = "";}
+            if(IsNullOrEmpty(accountNumber)) { accountNumber = "";}
+            if(IsNullOrEmpty(telephoneNo)) { telephoneNo = "";}
+
+            $('form#frmReservation #tdCompanyName').text(companyName);
+            $('form#frmReservation #tdCompanyAccountNo').text(accountNumber);
+            $('form#frmReservation #tdCompanyTelephoneNo').text(telephoneNo);
+
+            $('form#frmReservation #divCompanyDetails').show();
+
+        }else{
+            $('form#frmReservation #divCompanyDetails').hide();
+        }
     }
 
     window.onbeforeunload = function () {

@@ -242,10 +242,11 @@
                 <div class="row">
                     <div class="col-md-3 form-group">
                         @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
-                        @Html.DropDownListFor(m => m.PaymentMethodId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewBag.PaymentMethodList, "Value", "Text"),
-                                "--Select Payment Method--",
-                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
+                        @Html.DropDownList("PaymentMethodId", new List<SelectListItem>
+                        {
+                            new SelectListItem{ Text="--Select Payment Method--", Value = "" }
+                        },
+                        htmlAttributes: new { @class = "form-control", onchange = "SelectPaymentMethod();" })
                         @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
                     </div>
 
@@ -357,6 +358,9 @@
     var isCreditCardEdit = false;
 
     $(document).ready(function () {
+
+        //Load Payment Methods.
+        LoadPaymentMethod();
 
         $('#CardExpiryDate').attr("placeholder", "MM/YY");
 
@@ -473,14 +477,12 @@
         }
 
         if (!IsNullOrEmpty($('form#frmBulkReservation #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected').text();
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected');
 
-            if (trim(paymentMethodName) != 'Cash') {
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
+            if (isCreditCardPay) {
                 var creditCardNo = $('form#frmBulkReservation #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmBulkReservation #CardExpiryDate').val();
                 var cvvNo = $('form#frmBulkReservation #CVVNo').val();
@@ -527,9 +529,15 @@
             //Enable all select box before form submit.
             $('form#frmBulkReservation #RoomTypeId').attr("disabled", false);
 
-            //Credit Card#.
-            if(isCreditCardEdit == false){
-                $('form#frmBulkReservation #CreditCardNo').val($('form#frmBulkReservation #hdnOriginalCreditCardNo').val());
+            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected');
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
+            //Credit Card#.            
+            if(isCreditCardEdit == false && isCreditCardPay == true){
+                var creditCardNo = $('form#frmBulkReservation #hdnOriginalCreditCardNo').val();
+                if(!IsNullOrEmpty(creditCardNo)){
+                    $('form#frmBulkReservation #CreditCardNo').val(creditCardNo);
+                }
             }
 
             var formData = $('#frmBulkReservation').serializeObject();
@@ -668,22 +676,12 @@
 
     function SelectPaymentMethod() {
         if (!IsNullOrEmpty($('form#frmBulkReservation #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected').text();
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected');
 
-            if (trim(paymentMethodName) == 'Cash') {
-                //Remove Label Bold.
-                $('form#frmBulkReservation label[for="CreditCardNo"]').removeClass("label-bold");
-                $('form#frmBulkReservation label[for="CardExpiryDate"]').removeClass("label-bold");
-                $('form#frmBulkReservation label[for="CVVNo"]').removeClass("label-bold");
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
 
-                //Set Reservation Type = 'Non-Guaranteed'
-                $("form#frmBulkReservation #ReservationTypeId").val('@NonGuranteedReservationTypeId');
-            } else {
+            if(isCreditCardPay){
                 //Set Label Bold.
                 $('form#frmBulkReservation label[for="CreditCardNo"]').addClass("label-bold");
                 $('form#frmBulkReservation label[for="CardExpiryDate"]').addClass("label-bold");
@@ -691,6 +689,14 @@
 
                 //Set Reservation Type = 'Guarantee Type'
                 $("form#frmBulkReservation #ReservationTypeId").val('@GuranteedReservationTypeId');
+            }else{
+                //Remove Label Bold.
+                $('form#frmBulkReservation label[for="CreditCardNo"]').removeClass("label-bold");
+                $('form#frmBulkReservation label[for="CardExpiryDate"]').removeClass("label-bold");
+                $('form#frmBulkReservation label[for="CVVNo"]').removeClass("label-bold");
+
+                //Set Reservation Type = 'Non-Guaranteed'
+                $("form#frmBulkReservation #ReservationTypeId").val('@NonGuranteedReservationTypeId');
             }
         }
 
@@ -1104,6 +1110,33 @@
         $('form#frmBulkReservation #CreditCardNo').val(creditCardNo);
 
         isCreditCardEdit = true;
+    }
+
+    function LoadPaymentMethod(){
+        var paymentMethods = @Html.Raw(Json.Encode(ViewBag.PaymentMethodList));
+
+        if(!IsNullOrEmpty(paymentMethods) && paymentMethods.length > 0){
+
+            var optionHtml = "";
+            optionHtml += "<option value=''>--Select Payment Method--</option>";
+            $.each(paymentMethods, function(index, item) {
+                var id = item.Id;
+                var code = item.Code;
+                var name = item.Name;
+                var isCreditCardPay = parseBoolean(item.IsCreditCardPay);
+
+                optionHtml += "<option value='" + id + "' data-iscreditcardpay='" + isCreditCardPay + "'>" + (code + " - " + name ) + "</option>";
+            });
+
+            $('form#frmBulkReservation #PaymentMethodId').html(optionHtml);
+
+            if(!IsNullOrEmpty('@Model.PaymentMethodId')){
+                $('form#frmBulkReservation #PaymentMethodId').val('@Model.PaymentMethodId');
+            }
+        }else{
+            $('form#frmBulkReservation #PaymentMethodId').html("");
+            $('form#frmBulkReservation #PaymentMethodId').append($("<option></option>").val("").html("--Select Payment Method--"));
+        }
     }
 
 </script>

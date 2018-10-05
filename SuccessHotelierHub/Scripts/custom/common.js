@@ -565,6 +565,12 @@ function goToByScroll(id) {
     }, 'slow');
 }
 
+function goToSpecificElement(id) {
+
+    var row = document.getElementById(id);
+    row.scrollIntoView(true, { behavior: "smooth", block: "end", inline: "nearest" });
+}
+
 function arrayContains(searchItem, array) {
     return (array.indexOf(searchItem) > -1) ? true : false;
 }

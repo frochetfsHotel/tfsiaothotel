@@ -74,7 +74,11 @@
     <div class="row">
         <div class="col-md-4">
             @Html.LabelFor(m => m.PaymentMethodId)
-            @Html.DropDownListFor(m => m.PaymentMethodId,new SelectList((IEnumerable<SelectListItem>)ViewData["PaymentMethodList"], "Value", "Text"),"--Select Payment Method--",new { @class = "form-control", onchange = "SelectPaymentMethod();" })
+            @Html.DropDownList("PaymentMethodId", new List<SelectListItem>
+            {
+                new SelectListItem{ Text="--Select Payment Method--", Value = "" }
+            },
+            htmlAttributes: new { @class = "form-control", onchange = "SelectPaymentMethod();" })
             @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
 
         </div>
@@ -104,6 +108,9 @@
     var isCreditCardEdit = false;
 
     $(document).ready(function () {
+
+        //Load Payment Methods
+        LoadPaymentMethod();
 
         SelectPaymentMethod();
 
@@ -142,9 +149,15 @@
         $('form#frmCheckInPayment .btnCheckInOk').click(function (e) {
             if (validateCheckIn()) {
 
+                var paymentMethod = $('form#frmCheckInPayment #PaymentMethodId option:selected');
+                var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
                 //Credit Card#.
-                if (isCreditCardEdit == false) {
-                    $('form#frmCheckInPayment #CreditCardNo').val($('form#frmCheckInPayment #hdnOriginalCreditCardNo').val());
+                if (isCreditCardEdit == false && isCreditCardPay == true) {
+                    var creditCardNo = $('form#frmCheckInPayment #hdnOriginalCreditCardNo').val();
+                    if(!IsNullOrEmpty(creditCardNo)){
+                        $('form#frmCheckInPayment #CreditCardNo').val(creditCardNo);
+                    }
                 }
 
                 //Ajax request to check in.
@@ -214,14 +227,11 @@
 
 
         if (!IsNullOrEmpty($('form#frmCheckInPayment #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmCheckInPayment #PaymentMethodId option:selected').text();
+            var paymentMethod = $('form#frmCheckInPayment #PaymentMethodId option:selected');
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));  
 
-            if (trim(paymentMethodName) != 'Cash') {
+            if (isCreditCardPay) {
                 var creditCardNo = $('form#frmCheckInPayment #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmCheckInPayment #CardExpiryDate').val();
 
@@ -257,15 +267,12 @@
     }
 
     function SelectPaymentMethod() {
-        if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
-            var paymentMethod = $('#PaymentMethodId option:selected').text();
+        if (!IsNullOrEmpty($('form#frmCheckInPayment #PaymentMethodId').val())) {
+            var paymentMethod = $('form#frmCheckInPayment #PaymentMethodId option:selected');
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));            
 
-            if (trim(paymentMethodName) == 'Cash') {
+            if (!isCreditCardPay) {
                 $('.divCreditCardInfo').hide();
             } else {
                 $('.divCreditCardInfo').show();
@@ -281,6 +288,33 @@
         $('form#frmCheckInPayment #CreditCardNo').val(creditCardNo);
 
         isCreditCardEdit = true;
+    }
+
+    function LoadPaymentMethod(){
+        var paymentMethods = @Html.Raw(Json.Encode(ViewData["PaymentMethodList"]));
+
+        if(!IsNullOrEmpty(paymentMethods) && paymentMethods.length > 0){
+
+            var optionHtml = "";
+            optionHtml += "<option value=''>--Select Payment Method--</option>";
+            $.each(paymentMethods, function(index, item) {
+                var id = item.Id;
+                var code = item.Code;
+                var name = item.Name;
+                var isCreditCardPay = parseBoolean(item.IsCreditCardPay);
+
+                optionHtml += "<option value='" + id + "' data-iscreditcardpay='" + isCreditCardPay + "'>" + (code + " - " + name ) + "</option>";
+            });
+
+            $('form#frmCheckInPayment #PaymentMethodId').html(optionHtml);
+
+            if(!IsNullOrEmpty('@Model.PaymentMethodId')){
+                $('form#frmCheckInPayment #PaymentMethodId').val('@Model.PaymentMethodId');
+            }
+        }else{
+            $('form#frmCheckInPayment #PaymentMethodId').html("");
+            $('form#frmCheckInPayment #PaymentMethodId').append($("<option></option>").val("").html("--Select Payment Method--"));
+        }
     }
 
 </script>

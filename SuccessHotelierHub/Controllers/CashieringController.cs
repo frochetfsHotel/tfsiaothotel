@@ -53,15 +53,7 @@ namespace SuccessHotelierHub.Controllers
             var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
             ViewBag.CompanyList = companyList;
 
-            var paymentMethodList = new SelectList(
-                     paymentMethodRepository.GetPaymentMethods()
-                     .Select(
-                         m => new SelectListItem()
-                         {
-                             Value = m.Id.ToString(),
-                             Text = (m.Code + " - " + m.Name)
-                         }
-                ), "Value", "Text").ToList();
+            var paymentMethodList = paymentMethodRepository.GetPaymentMethods();
             ViewBag.PaymentMethodList = paymentMethodList;
 
             #region Record Activity Log
@@ -172,7 +164,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
                         {
-                            if (!transaction.Description.Contains("Cash"))
+                            if (transaction.IsCreditCardPay)
                             {
                                 //Decrypt Credit Card#
                                 var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
@@ -331,16 +323,8 @@ namespace SuccessHotelierHub.Controllers
             try
             {
                 var reservation = reservationRepository.GetReservationById(reservationId, LogInManager.LoggedInUserId).FirstOrDefault();
-                //var paymentMethodList = new SelectList(paymentMethodRepository.GetPaymentMethods(), "Id", "Name").ToList();
-                var paymentMethodList = new SelectList(
-                     paymentMethodRepository.GetPaymentMethods()
-                     .Select(
-                         m => new SelectListItem()
-                         {
-                             Value = m.Id.ToString(),
-                             Text = (m.Code + " - " + m.Name)
-                         }
-                ), "Value", "Text").ToList();
+                
+                var paymentMethodList = paymentMethodRepository.GetPaymentMethods();
 
                 #region Room Mapping
 
@@ -398,6 +382,23 @@ namespace SuccessHotelierHub.Controllers
                 model.RoomIds = roomIds;
                 model.RoomTypeId = reservation.RoomTypeId;
                 model.Amount = CurrencyManager.ParseAmountToUserCurrency(reservation.GuestBalance, LogInManager.CurrencyCode);
+
+                //Company Info
+                if (reservation.CompanyId != null && reservation.CompanyId.HasValue)
+                {
+                    model.CompanyId = reservation.CompanyId;
+
+                    var companyInfo = CompanyRepository.GetCompanyList().Where(m => m.Id == reservation.CompanyId.Value).FirstOrDefault();
+                    if (companyInfo != null)
+                    {
+                        model.CompanyName = companyInfo.CompanyName;
+                        model.CompanyAddress = companyInfo.CompanyAddress;
+                        model.AccountNumber = companyInfo.AccountNumber;
+                        model.ContactPerson = companyInfo.ContactPerson;
+                        model.TelephoneNo = companyInfo.TelephoneNo;
+                        model.Email = companyInfo.Email;
+                    }
+                }
 
                 ViewData["Source"] = source;
                 ViewData["PaymentMethodList"] = paymentMethodList;
@@ -672,7 +673,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         if(transaction.Code == AdditionalChargeCode.CHECK_OUT)
                         {
-                            if(!transaction.Description.Contains("Cash"))
+                            if (transaction.IsCreditCardPay)
                             {
                                 //Decrypt Credit Card#
                                 var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
@@ -941,7 +942,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
                         {
-                            if (!transaction.Description.Contains("Cash"))
+                            if (transaction.IsCreditCardPay)
                             {
                                 //Decrypt Credit Card#
                                 var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
@@ -1235,7 +1236,7 @@ namespace SuccessHotelierHub.Controllers
                         {
                             if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
                             {
-                                if (!transaction.Description.Contains("Cash"))
+                                if (transaction.IsCreditCardPay)
                                 {
                                     //Decrypt Credit Card#
                                     var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
@@ -1854,7 +1855,7 @@ namespace SuccessHotelierHub.Controllers
                 {
                     if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
                     {
-                        if (!transaction.Description.Contains("Cash"))
+                        if (transaction.IsCreditCardPay)
                         {
                             //Decrypt Credit Card#
                             var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);
@@ -2221,7 +2222,7 @@ namespace SuccessHotelierHub.Controllers
                     {
                         if (transaction.Code == AdditionalChargeCode.CHECK_OUT)
                         {
-                            if (!transaction.Description.Contains("Cash"))
+                            if (transaction.IsCreditCardPay)
                             {
                                 //Decrypt Credit Card#
                                 var originalCreditCardNo = Utility.Utility.Decrypt(transaction.CreditCardNo, Utility.Utility.EncryptionKey);

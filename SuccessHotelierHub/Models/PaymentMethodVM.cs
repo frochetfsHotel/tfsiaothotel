@@ -21,6 +21,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Description")]        
         public string Description { get; set; }
 
+        [DisplayName("Is Credit Card Pay")]
+        public bool IsCreditCardPay { get; set; }
+
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }

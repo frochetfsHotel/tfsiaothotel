@@ -12,7 +12,7 @@
 @{
     var PagerName = "GuestGrid";
 
-    var paymentMethodList = (List<SelectListItem>)ViewBag.PaymentMethodList;
+    var paymentMethodList = (List<PaymentMethodVM>)ViewBag.PaymentMethodList;
 }
 
 <section class="content-header">
@@ -615,6 +615,10 @@
             var rowNumber = $(this).attr("data-rownumber");
             if (!IsNullOrEmpty(rowNumber)) {
                 rowNumber = parseInt(rowNumber);
+
+                var paymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected');
+                var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
                 var modelSplitPayment = {};
                 modelSplitPayment.ReservationId = ReservationId;
                 modelSplitPayment.CheckOutDate = CheckOutDate;
@@ -623,7 +627,8 @@
                 modelSplitPayment.CreditCardNo = $('form#frmSplitPayment #CreditCardNo_' + rowNumber).val();
                 modelSplitPayment.CardExpiryDate = $('form#frmSplitPayment #CardExpiryDate_' + rowNumber).val();
                 modelSplitPayment.CVVNo = $('form#frmSplitPayment #CardVerificationValue_' + rowNumber).val();
-                modelSplitPayment.PaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected').text();
+                modelSplitPayment.PaymentMethod = paymentMethod.text();
+                modelSplitPayment.IsCreditCardPay = isCreditCardPay;
                 listOfSplitPayment.push(modelSplitPayment);
             }
         })
@@ -636,7 +641,7 @@
             $(listOfSplitPayment).each(function () {
 
                 TotalAmountOfSplitPayment = parseFloat(TotalAmountOfSplitPayment) + parseFloat(this.Amount);
-                if (this.PaymentMethod.trim() == "CS - Cash") {
+                if (!this.IsCreditCardPay) {
                     if ((IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0)) {
                         IsValidOrNot = false;
                     }
@@ -1377,7 +1382,13 @@
     function bindSplitPaymentMethodDropdown(rowNumber) {
         if (gblPaymentMethods != null && gblPaymentMethods.length > 0) {
             $.each(gblPaymentMethods, function (data, val) {
-                $("form#frmSplitPayment #SplitPaymentId_" + rowNumber).append($("<option></option>").val(val.Value).html(val.Text));
+                var id = val.Id;
+                var code = val.Code;
+                var name = val.Name;
+                var isCreditCardPay = parseBoolean(val.IsCreditCardPay);
+                var text = (code + " - " + name);
+                
+                $("form#frmSplitPayment #SplitPaymentId_" + rowNumber).append($("<option></option>").val(id).attr("data-iscreditcardpay", isCreditCardPay).html(text));
             })
         }
     }
@@ -1385,7 +1396,13 @@
     function bindInterimBillPaymentMethodDropdown(rowNumber) {
         if (gblPaymentMethods != null && gblPaymentMethods.length > 0) {
             $.each(gblPaymentMethods, function (data, val) {
-                $("form#frmInterimBill #PaymentMethodId_" + rowNumber).append($("<option></option>").val(val.Value).html(val.Text));
+                var id = val.Id;
+                var code = val.Code;
+                var name = val.Name;
+                var isCreditCardPay = parseBoolean(val.IsCreditCardPay);
+                var text = (code + " - " + name);
+
+                $("form#frmInterimBill #PaymentMethodId_" + rowNumber).append($("<option></option>").val(id).attr("data-iscreditcardpay", isCreditCardPay).html(text));
             })
         }
     }
@@ -1604,14 +1621,13 @@
 
         if (!IsNullOrEmpty(selectedValue)) {
 
-            var paymentMethod = $('form#frmInterimBill #PaymentMethodId_' + rowNumber + ' ' + 'option:selected').text();
+            var paymentMethod = $('form#frmInterimBill #PaymentMethodId_' + rowNumber + ' ' + 'option:selected');
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+            var paymentMethodText = paymentMethod.text();
 
-            if (trim(paymentMethodName) == 'Cash') {
+
+            if (!isCreditCardPay) {
                 $('form#frmInterimBill .HideWhenInterimBillPaymentMethodIsCash_' + rowNumber).hide();
 
                 //Remove error messages.

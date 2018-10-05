@@ -106,17 +106,7 @@ namespace SuccessHotelierHub.Controllers
                                  }
                      ), "Value", "Text").ToList();
 
-            
-            var paymentMethodList = new SelectList(
-                    paymentMethodRepository.GetPaymentMethods()
-                    .Select(
-                        m => new SelectListItem()
-                        {
-                            Value = m.Id.ToString(),
-                            //Text = (m.Code + " " + (sb.Clear().Append("".PadLeft((maxCodeLength - m.Code.Length) + 2, ' ').Replace(" ", "\xA0"))) + "-" + " " + (sb.Clear().Append("".PadLeft((maxCodeLength - m.Code.Length) + 2, ' ').Replace(" ", "\xA0"))) + m.Name)
-                            Text = (m.Code + " - " + m.Name)
-                        }   
-                 ), "Value", "Text").ToList();
+            var paymentMethodList = paymentMethodRepository.GetPaymentMethods();
 
             var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
@@ -131,9 +121,8 @@ namespace SuccessHotelierHub.Controllers
 
             var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
             var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
-
-
-            var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
+            
+            var companyList = CompanyRepository.GetCompanyList();
             ViewBag.CompanyList = companyList;
 
             ReservationVM model = new ReservationVM();
@@ -598,16 +587,9 @@ namespace SuccessHotelierHub.Controllers
                                   }
                       ), "Value", "Text").ToList();
 
+                
+                var paymentMethodList = paymentMethodRepository.GetPaymentMethods();
 
-                var paymentMethodList = new SelectList(
-                    paymentMethodRepository.GetPaymentMethods()
-                    .Select(
-                        m => new SelectListItem()
-                        {
-                            Value = m.Id.ToString(),
-                            Text = (m.Code + " - " + m.Name)
-                        }
-                    ), "Value", "Text").ToList();
                 var roomFeaturesList = roomFeatureRepository.GetRoomFeatures();
 
                 var discountApprovedList = new SelectList(discountApprovedRepository.GetDiscountApprovedDetail().Select
@@ -622,7 +604,7 @@ namespace SuccessHotelierHub.Controllers
                 var rtcList = new SelectList(rtcRepository.GetRTC(), "Id", "Code").ToList();
                 var currencyList = new SelectList(CurrencyManager.GetCurrencyInfo(), "Id", "Code").ToList();
 
-                var companyList = new SelectList(CompanyRepository.GetCompanyList(), "Id", "CompanyName").ToList();
+                var companyList = CompanyRepository.GetCompanyList();
                 ViewBag.CompanyList = companyList;
 
                 ViewBag.TitleList = titleList;

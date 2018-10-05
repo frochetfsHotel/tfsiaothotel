@@ -71,10 +71,11 @@
     <div class="row" id="divHidePaymentMethod">
         <div class="col-md-4">
             @Html.LabelFor(m => m.PaymentMethodId, new { @class = "required-label" })
-            @Html.DropDownListFor(m => m.PaymentMethodId,
-                                new SelectList((IEnumerable<SelectListItem>)ViewData["PaymentMethodList"], "Value", "Text"),
-                                "--Select Payment Method--",
-                                new { @class = "form-control", onchange = "SelectPaymentMethod();" })
+            @Html.DropDownList("PaymentMethodId", new List<SelectListItem>
+            {
+                new SelectListItem{ Text="--Select Payment Method--", Value = "" }
+            },
+            htmlAttributes: new { @class = "form-control", onchange = "SelectPaymentMethod();" })
             @Html.ValidationMessageFor(m => m.PaymentMethodId, "", new { @class = "text-danger" })
 
         </div>
@@ -90,6 +91,16 @@
         <div class="col-md-4 divCreditCardInfo m-t-sm">
             @Html.LabelFor(m => m.CVVNo)
             @Html.TextBoxFor(m => m.CVVNo, new { @class = "form-control", placeholder = "CVV #", onkeydown = "onlyDigits(event)", maxlength = "4" })
+        </div>
+        <div class="col-md-8 m-t divCompanyDetails" style="display:none;">
+            @if (!string.IsNullOrWhiteSpace(Model.CompanyName))
+            {
+                <label class="label-bold">Company Name : </label> <span>@Model.CompanyName</span> <br/>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.AccountNumber))
+            {
+                <label class="label-bold">Account No : </label> <span>@Model.AccountNumber</span>
+            }
         </div>
     </div>
     <div class="row m-t-sm">
@@ -121,6 +132,9 @@
     var isCreditCardEdit = false;
 
     $(document).ready(function () {
+
+        //Load Payment Methods.
+        LoadPaymentMethod();
 
         $('form#frmCheckOutPayment #CardExpiryDate').attr("placeholder", "MM/YY");
 
@@ -158,9 +172,15 @@
         $('form#frmCheckOutPayment .btnCheckOutOk').click(function (e) {
             if (validateCheckOut()) {
 
+                var paymentMethod = $('form#frmCheckOutPayment #PaymentMethodId option:selected');
+                var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+
                 //Credit Card#.
-                if (isCreditCardEdit == false) {
-                    $('form#frmCheckOutPayment #CreditCardNo').val($('form#frmCheckOutPayment #hdnOriginalCreditCardNo').val());
+                if (isCreditCardEdit == false && isCreditCardPay == true) {
+                    var creditCardNo = $('form#frmCheckOutPayment #hdnOriginalCreditCardNo').val();
+                    if(!IsNullOrEmpty(creditCardNo)){
+                        $('form#frmCheckOutPayment #CreditCardNo').val(creditCardNo);
+                    }                    
                 }
 
                 //Ajax request to check out.
@@ -345,15 +365,11 @@
     function SelectSplitPaymentMethod(RowNumber) {
         var SelectedDropDownvalue = [];
         if (!IsNullOrEmpty($('form#frmSplitPayment #SplitPaymentId_' + RowNumber).val())) {
-            Insidetext = 'form#frmSplitPayment #SplitPaymentId_' + RowNumber + ' ' + 'option:selected';
-            var splitPaymentMethod = $(Insidetext).text();
-            var MethodId = $('form#frmSplitPayment #SplitPaymentId_' + RowNumber).val();
-            var splitPaymentMethodName = splitPaymentMethod;
-            if (Contains(splitPaymentMethod, '-')) {
-                splitPaymentMethodName = trim(splitPaymentMethod.split('-')[1]);
-            }
 
-            if (trim(splitPaymentMethodName) == 'Cash') {
+            var splitPaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + RowNumber + ' ' + 'option:selected');
+            var isCreditCardPay = parseBoolean(splitPaymentMethod.data("iscreditcardpay"));
+
+            if (!isCreditCardPay) {
                 $('form#frmSplitPayment .HideWhenCashIsSelected_' + RowNumber).hide();
             } else {
                 $('form#frmSplitPayment .HideWhenCashIsSelected_' + RowNumber).show();
@@ -366,14 +382,11 @@
         var blnValid = true;
 
         if (!IsNullOrEmpty($('form#frmCheckOutPayment #PaymentMethodId').val())) {
-            var paymentMethod = $('form#frmCheckOutPayment #PaymentMethodId option:selected').text();
+            var paymentMethod = $('form#frmCheckOutPayment #PaymentMethodId option:selected');
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
-
-            if (trim(paymentMethodName) != 'Cash') {
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+            
+            if (isCreditCardPay) {
                 var creditCardNo = $('form#frmCheckOutPayment #CreditCardNo').val();
                 var cardExpiryDate = $('form#frmCheckOutPayment #CardExpiryDate').val();
                 var CVVNo = $('form#frmCheckOutPayment #CVVNo').val();
@@ -422,21 +435,27 @@
     }
 
     function SelectPaymentMethod() {
-        if (!IsNullOrEmpty($('#PaymentMethodId').val())) {
-            var paymentMethod = $('#PaymentMethodId option:selected').text();
+        if (!IsNullOrEmpty($('form#frmCheckOutPayment #PaymentMethodId').val())) {            
+            var paymentMethod = $('form#frmCheckOutPayment #PaymentMethodId option:selected');
 
-            var paymentMethodName = paymentMethod;
-            if (Contains(paymentMethod, '-')) {
-                paymentMethodName = trim(paymentMethod.split('-')[1]);
-            }
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+            var paymentMethodText = paymentMethod.text();
 
-            if (trim(paymentMethodName) == 'Cash') {
+            if (!isCreditCardPay) {
                 $('.divCreditCardInfo').hide();
+
+                if(Contains(trim(paymentMethodText),"City Ledger")){
+                    $('.divCompanyDetails').show();
+                }else{
+                    $('.divCompanyDetails').hide();
+                }
+
             } else {
                 $('.divCreditCardInfo').show();
+                $('.divCompanyDetails').hide();
             }
 
-            $('#PaymentMethod').val(paymentMethod);
+            $('#PaymentMethod').val(paymentMethodText);
         }
 
     }
@@ -460,6 +479,33 @@
         $('form#frmCheckOutPayment #CreditCardNo').val(creditCardNo);
 
         isCreditCardEdit = true;
+    }
+
+    function LoadPaymentMethod(){
+        var paymentMethods = @Html.Raw(Json.Encode(ViewData["PaymentMethodList"]));
+
+        if(!IsNullOrEmpty(paymentMethods) && paymentMethods.length > 0){
+
+            var optionHtml = "";
+            optionHtml += "<option value=''>--Select Payment Method--</option>";
+            $.each(paymentMethods, function(index, item) {
+                var id = item.Id;
+                var code = item.Code;
+                var name = item.Name;
+                var isCreditCardPay = parseBoolean(item.IsCreditCardPay);
+
+                optionHtml += "<option value='" + id + "' data-iscreditcardpay='" + isCreditCardPay + "'>" + (code + " - " + name ) + "</option>";
+            });
+
+            $('form#frmCheckOutPayment #PaymentMethodId').html(optionHtml);
+
+            if(!IsNullOrEmpty('@Model.PaymentMethodId')){
+                $('form#frmCheckOutPayment #PaymentMethodId').val('@Model.PaymentMethodId');
+            }
+        }else{
+            $('form#frmCheckOutPayment #PaymentMethodId').html("");
+            $('form#frmCheckOutPayment #PaymentMethodId').append($("<option></option>").val("").html("--Select Payment Method--"));
+        }
     }
 
 </script>

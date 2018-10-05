@@ -56,5 +56,14 @@ namespace SuccessHotelierHub.Models
         public string Reference { get; set; }
 
         public Boolean SplitPayment { get; set; }
+
+        //Company Details.
+        public Guid? CompanyId { get; set; }
+        public string CompanyName { get; set; }
+        public string CompanyAddress { get; set; }
+        public string AccountNumber { get; set; }
+        public string ContactPerson { get; set; }
+        public string TelephoneNo { get; set; }
+        public string Email { get; set; }
     }
 }

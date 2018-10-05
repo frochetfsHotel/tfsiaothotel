@@ -29,24 +29,33 @@
 
             <div class="box-body pt_10 pb-0">
                 <div class="row">
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Code, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Code, new { @class = "form-control text-uppercase", placeholder = "Code" })
                         @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Name, new { @class = "required-label" })
                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
                         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         @Html.LabelFor(m => m.Description)
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", rows = "3" })
                     </div>
-                    <div class="col-md-3 form-group m-t-lg">
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <label class="container1" for="IsCreditCardPay">
+                            Is Credit Card Pay
+                            @Html.CheckBoxFor(m => m.IsCreditCardPay)
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-4 form-group">
                         <label class="container1" for="IsActive">
                             Is Active
-                            @Html.CheckBoxFor(m => m.IsActive)
+                            @Html.CheckBoxFor(m => m.IsActive, new { @checked = "checked" })
                             <span class="checkmark"></span>
                         </label>
                     </div>

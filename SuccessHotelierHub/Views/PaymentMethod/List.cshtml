@@ -62,10 +62,11 @@
                                 <tr>
                                     <th class="width_5"></th>
                                     <th class="width_10">Code</th>
-                                    <th class="width_20">Name</th>
-                                    <th class="width_30">Description</th>
+                                    <th class="width_15">Name</th>
+                                    <th class="width_20">Description</th>
+                                    <th class="width_10">Credit Card Pay</th>
                                     <th class="width_10">Status</th>
-                                    <th class="width_25">Action</th>
+                                    <th class="width_20">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -180,6 +181,19 @@
             },
             {
                 targets: 4,
+                data: "IsCreditCardPay",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    var isCreditCardPay = full.IsCreditCardPay;
+                    if (isCreditCardPay == true) {
+                        return "Yes";
+                    } else {
+                        return "No";
+                    }
+                }
+            },
+            {
+                targets: 5,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -192,7 +206,7 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "Id",
                 orderable: false,
                 className: "text-center",
@@ -204,7 +218,7 @@
                 }
             }
             ],
-            order: [[1, "asc"]],
+            order: [[2, "asc"]],
             fnCreatedRow: function (nRow, aData, iDataIndex) {
                 $(nRow).attr('ID', aData.ID)
             }
