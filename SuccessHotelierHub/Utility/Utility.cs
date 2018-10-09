@@ -1278,7 +1278,8 @@ namespace SuccessHotelierHub.Utility
 
     public static class UserLoginConfigurationType
     {
-        public const string ALWAYS = "A";
-        public const string SET_LIMIT = "S";
+        public const string ALWAYS = "A"; //Always
+        public const string SET_LIMIT = "S"; //Set Limit
+        public const string DONT_ALLOW = "R"; //Restrict
     }
 } 

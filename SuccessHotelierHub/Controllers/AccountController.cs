@@ -163,14 +163,8 @@ namespace SuccessHotelierHub.Controllers
                         }, JsonRequestBehavior.AllowGet);
                     case LoginStatus.InvalidLoginTime:         
                                        
-                        var msg = Convert.ToString(Session["InvalidLoginTimeMessage"]);
-                        if (string.IsNullOrWhiteSpace(msg))
-                        {
-                            msg = "Invalid login access.You can only do login between time-frame assigned by your Tutor.";
-                        }
-
-                        Session.Remove("InvalidLoginTimeMessage");
-
+                        var msg = "Please note your course is restricted; therefore, you can only access it during the times set by your Tutor.";
+                        
                         return Json(new
                         {
                             IsSuccess = false,

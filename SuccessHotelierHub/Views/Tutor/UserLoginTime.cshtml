@@ -47,6 +47,11 @@
                             <span>Set Limit</span>
                             <input type="radio" class="cursor-P flat-red" id="rbIsSetLimit" name="ConfigurationType" value="@UserLoginConfigurationType.SET_LIMIT" onchange="showHideTimeFrame('@UserLoginConfigurationType.SET_LIMIT')">
                             <span class="checkmark_radio"></span>
+                        </label> 
+                        <label class="container_radio ml-35" for="rbIsDontAllow">
+                            <span>Dont' Allow</span>
+                            <input type="radio" class="cursor-P flat-red" id="rbIsDontAllow" name="ConfigurationType" value="@UserLoginConfigurationType.DONT_ALLOW" onchange="showHideTimeFrame('@UserLoginConfigurationType.DONT_ALLOW')">
+                            <span class="checkmark_radio"></span>
                         </label>     
                     </div>
                                    
@@ -96,19 +101,21 @@
 
         var configurationType = trim('@configurationType');
 
-        if (!IsNullOrEmpty(configurationType)) {            
-            if (configurationType == "A") {
+        if (!IsNullOrEmpty(configurationType)) {
+            if (configurationType == trim("@UserLoginConfigurationType.ALWAYS")) {
                 $('#rbIsAlways').prop("checked", true).trigger('change');
-            } else if (configurationType == "S") {
+            } else if (configurationType == trim("@UserLoginConfigurationType.SET_LIMIT")) {
                 $('#rbIsSetLimit').prop("checked", true).trigger('change');
+            } else if (configurationType == trim("@UserLoginConfigurationType.DONT_ALLOW") ) {
+                $('#rbIsDontAllow').prop("checked", true).trigger('change');
             }
         }
 
         //Timepicker
         $('#LoginStartTimeText').timepicker({
             showInputs: false,
-            showMeridian: false,            
-            minuteStep: 1        
+            showMeridian: false,
+            minuteStep: 1
         });
 
         if (IsNullOrEmpty('@loginStartTimeText')) {
@@ -118,7 +125,7 @@
         $('#LoginEndTimeText').timepicker({
             showInputs: false,
             showMeridian: false,
-            minuteStep: 1            
+            minuteStep: 1
         });
 
         //Input Mask
@@ -143,10 +150,10 @@
         }
     });
 
-    function showHideTimeFrame(type) {        
-        if (type == "A") {
+    function showHideTimeFrame(type) {
+        if (type == trim("@UserLoginConfigurationType.ALWAYS") || type == trim("@UserLoginConfigurationType.DONT_ALLOW")) {
             $('#divShowTimeFrame').hide();
-        } else if (type == "S") {
+        } else if (type == trim("@UserLoginConfigurationType.SET_LIMIT")) {
             $('#divShowTimeFrame').show();
         }
     }
@@ -186,13 +193,10 @@
     function saveUserLoginTime() {
 
         if (validateUserLoginTime()) {
-            
-            var isSetLimit = $('#rbIsSetLimit').prop("checked");
-            if (isSetLimit) {
-                $('#ConfigurationType').val(trim($('#rbIsSetLimit').val()));
-            } else {
-                $('#ConfigurationType').val(trim($('#rbIsAlways').val()));
-            }
+
+            var configurationType = trim($('input[name=ConfigurationType]:checked').val());
+
+            $('#ConfigurationType').val(configurationType);
 
             $.ajax({
                 beforeSend: function (xhr) {
