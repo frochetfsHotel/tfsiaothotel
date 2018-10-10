@@ -172,7 +172,23 @@ namespace SuccessHotelierHub.Controllers
                     userRepository.AddUpdateUserRoleMapping(userRoleMapping);
 
                     #endregion
-                    
+
+                    #region Set Default Tutor Configuration Type to Restricted.
+
+                    UserLoginTimeVM userLoginTime = new UserLoginTimeVM();
+
+                    userLoginTime.ConfigurationType = UserLoginConfigurationType.RESTRICTED;
+                    userLoginTime.LoginStartTime = null;
+                    userLoginTime.LoginEndTime = null;
+                    userLoginTime.TutorId = Guid.Parse(userId);
+                    userLoginTime.CreatedBy = LogInManager.LoggedInUserId;
+                    userLoginTime.UpdatedBy = LogInManager.LoggedInUserId;
+                    userLoginTime.IsActive = true;
+
+                    userRepository.AddUpdateUserLoginTime(userLoginTime);
+
+                    #endregion
+
                     return Json(new
                     {
                         IsSuccess = true,
@@ -802,7 +818,7 @@ namespace SuccessHotelierHub.Controllers
             UserLoginTimeVM model = new UserLoginTimeVM();
 
             model.TutorId = LogInManager.LoggedInUser.Id;   
-            model.ConfigurationType = UserLoginConfigurationType.ALWAYS;
+            model.ConfigurationType = UserLoginConfigurationType.RESTRICTED;
 
             if (userLoginDetails != null && userLoginDetails.Count > 0)
             {

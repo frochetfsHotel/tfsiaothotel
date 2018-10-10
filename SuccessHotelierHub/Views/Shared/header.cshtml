@@ -1,4 +1,18 @@
-﻿<header class="main-header">
+﻿@using SuccessHotelierHub.Repository;
+@{ 
+    UserRepository userRepository = new UserRepository();
+
+    var loggedInUsers = userRepository.GetLoggedInStudentInfo();
+
+    var totalLoggedInUsers = 0;
+    if(loggedInUsers != null && loggedInUsers.Count > 0)
+    {
+        totalLoggedInUsers = loggedInUsers.Count;
+    }
+
+}
+
+<header class="main-header">
     <!-- Logo -->
     <a href="javascript:void(0);" class="logo" onclick="setCurrentMenu('Dashboard','@Url.Content("~/Home/Index")');">
         <!-- mini logo for sidebar mini 50x50 pixels -->
@@ -81,8 +95,11 @@
             @if (LogInManager.HasRights("ADMIN"))
             {
                 <li class="text-center topMenu" id="menuLoggedInUserScreen">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('LoggedInUserScreen','@Url.Content("~/Home/Default")');" title="LoggedIn Users">
-                        <i class="fa fa-sign-in font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">LoggedIn Users</span>
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('LoggedInUserScreen','@Url.Content("~/User/LoggedInUserInfo")');" title="LoggedIn Users">
+                        <i class="fa fa-sign-in font_20 m-b-xs" aria-hidden="true">
+                            <span class="spn_users label label-success">@(totalLoggedInUsers)</span>
+                        </i><br /> 
+                        <span class="span_none">LoggedIn Users</span>
                     </a>
                 </li>
             }

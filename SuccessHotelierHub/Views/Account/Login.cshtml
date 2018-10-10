@@ -72,7 +72,7 @@
 
 
         if ($("#frmLogin").valid() == false) {
-            showToaster("Please fill all the required field", ToasterType.ERROR);
+            showToaster_V2("Please fill all the required field", ToasterType.ERROR, ToasterTimeOut.ONE_MINUTE);
             blnValid = false;
         }
 
@@ -98,7 +98,7 @@
                 data: $('#frmLogin').serialize(),
                 success: function (response) {
                     if (response.IsSuccess == false) {
-                        showToaster(response.errorMessage, ToasterType.ERROR);
+                        showToaster_V2(response.errorMessage, ToasterType.ERROR, ToasterTimeOut.ONE_MINUTE);
                     }
                     else {
                         //Load default dashboard menu.

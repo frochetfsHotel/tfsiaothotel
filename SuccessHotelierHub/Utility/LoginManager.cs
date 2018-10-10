@@ -77,7 +77,7 @@ namespace SuccessHotelierHub
                                     LogInManager.LoginEndTime = loginEndTime;
                                 }
                             }
-                            else if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.DONT_ALLOW)
+                            else if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.RESTRICTED)
                             {
                                 return LoginStatus.InvalidLoginTime;
                             }
@@ -188,7 +188,7 @@ namespace SuccessHotelierHub
                                     LogInManager.LoginEndTime = loginEndTime;
                                 }
                             }
-                            else if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.DONT_ALLOW)
+                            else if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.RESTRICTED)
                             {
                                 return LoginStatus.Failure;
                             }

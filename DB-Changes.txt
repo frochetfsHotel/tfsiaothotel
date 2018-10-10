@@ -63938,5 +63938,49 @@ BEGIN
 	ORDER BY SortOrder
 END
 
+/****************************************************************************************************************************
 
+Name : Nilesh
+Date : 03-JAN-2018
+
+*****************************************************************************************************************************/
+
+/***********************************************************************************************************************************
+	SP Name : GetLoggedInStudentInfo
+	Comment : Create SP
+***********************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[GetLoggedInStudentInfo]    Script Date: 10/10/2018 12:30:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetLoggedInStudentInfo]		
+AS
+BEGIN		
+	SET NOCOUNT ON;
+
+	SELECT UD.[Id],		
+			UD.[Name],
+			UD.[Email],
+			T.[Id] AS TutorId,
+			T.[Name] AS TutorName,																							
+			UD.CollegeGroupId,
+			ISNULL(CG.[Name],'') AS [CollegeGroupName],				
+			UD.[LastLoggedOn]
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0		
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0
+				LEFT JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+					AND ISNULL(TSM.IsDeleted,0) = 0				
+				LEFT JOIN [UserDetail] T ON T.Id = TSM.TutorId 
+					AND ISNULL(T.IsDeleted,0) = 0 
+				INNER JOIN [CollegeGroup] CG ON CG.Id = UD.[CollegeGroupId]
+					AND ISNULL(CG.IsDeleted,0) = 0 
+		WHERE	ISNULL(UD.IsDeleted,0) = 0		
+				AND ISNULL(UD.IsLoggedIn, 0) = 1									
+				AND ISNULL(UR.Code,'') = 'STUDENT'																								
+END
 

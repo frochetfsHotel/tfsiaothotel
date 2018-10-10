@@ -380,6 +380,16 @@ namespace SuccessHotelierHub.Repository
             return admins;
         }
 
+        public List<SearchLoggedInUserInfoResultVM> GetLoggedInStudentInfo()
+        {
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetLoggedInStudentInfo");
+
+            var users = new List<SearchLoggedInUserInfoResultVM>();
+            users = DALHelper.CreateListFromTable<SearchLoggedInUserInfoResultVM>(dt);
+
+            return users;
+        }
+
         public List<SearchLoggedInUserInfoResultVM> GetLoggedInUserInfo(SearchLoggedInUserInfoParametersVM model)
         {
             SqlParameter[] parameters =

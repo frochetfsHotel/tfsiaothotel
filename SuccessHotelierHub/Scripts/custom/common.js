@@ -73,6 +73,15 @@ var ToasterTitle = {
     WARNING: "Warning!"
 };
 
+var ToasterTimeOut = {
+    ONE_SECOND: 1000,
+    FIVE_SECOND: 5000,
+    TEN_SECOND: 10000,
+    THIRTY_SECOND: 30000,
+    ONE_MINUTE: 60000,
+    FIVE_MINUTE: 300000,
+};
+
 var Delimeter = {
     BREAKLINE: "<br/>",
     NEWLINE: "\n",
@@ -103,6 +112,7 @@ var Messages = {
 
 function loadToastrSetting() {
     toastr.options = {
+        tapToDismiss: true,
         closeButton: true,
         progressBar: false,
         preventDuplicates: true,
@@ -114,6 +124,40 @@ function loadToastrSetting() {
 
 function showToaster(message, toastrType) {
     loadToastrSetting();
+
+    if (toastrType == ToasterType.SUCCESS) {
+        toastr.success(ToasterTitle.SUCCESS, message);
+    }
+    else if (toastrType == ToasterType.ERROR) {
+        toastr.error(message);
+    }
+    else if (toastrType == ToasterType.INFO) {
+        toastr.info(ToasterTitle.INFO, message);
+    }
+    else if (toastrType == ToasterType.WARNING) {
+        toastr.warnnig(ToasterTitle.WARNING, message);
+    }
+}
+
+function loadToastrSetting_V2(timeout) {
+
+    if (IsNullOrEmpty(timeout) || timeout == "0") {
+        timeout = 60000;
+    }
+
+    toastr.options = {
+        tapToDismiss: true,
+        closeButton: true,
+        progressBar: false,
+        preventDuplicates: true,
+        showMethod: 'slideDown',
+        timeOut: timeout
+    };
+
+}
+
+function showToaster_V2(message, toastrType, timeout) {
+    loadToastrSetting_V2(timeout);
 
     if (toastrType == ToasterType.SUCCESS) {
         toastr.success(ToasterTitle.SUCCESS, message);

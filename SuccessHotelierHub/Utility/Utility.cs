@@ -1280,6 +1280,6 @@ namespace SuccessHotelierHub.Utility
     {
         public const string ALWAYS = "A"; //Always
         public const string SET_LIMIT = "S"; //Set Limit
-        public const string DONT_ALLOW = "R"; //Restrict
+        public const string RESTRICTED = "R"; //Restrict
     }
 } 
