@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
+using Hangfire;
 
 namespace SuccessHotelierHub.Controllers
 {
@@ -850,12 +851,12 @@ namespace SuccessHotelierHub.Controllers
         public ActionResult UserLoginTime(UserLoginTimeVM model)
         {
             try
-            {                
+            {
+                DateTime startTime = DateTime.Now;
+                DateTime endTime = DateTime.Now;
+
                 if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT) 
                 {
-                    DateTime startTime = DateTime.Now;
-                    DateTime endTime = DateTime.Now;
-
                     if (!string.IsNullOrWhiteSpace(model.LoginStartTimeText))
                     {
                         string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
@@ -896,7 +897,39 @@ namespace SuccessHotelierHub.Controllers
                 model.UpdatedBy = LogInManager.LoggedInUserId;
                 model.IsActive = true;
 
-                userRepository.AddUpdateUserLoginTime(model);                
+                userRepository.AddUpdateUserLoginTime(model);
+
+                #endregion
+
+                #region Set Configuration to Restricted After End Time Limit Reach
+
+                if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT)
+                {
+                    DateTime currentTime = DateTime.Now;
+
+                    if(currentTime < startTime)
+                    {   
+                        double totalMinutes = ((endTime - currentTime).TotalMinutes + 1);
+                        
+                        //Start Background Schedule Job (Execute only once)
+                        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), TimeSpan.FromMinutes(totalMinutes));
+                    }
+                    else if(currentTime > startTime && currentTime < endTime) //Between Start & End Time
+                    {
+                        double totalMinutes = ((endTime - currentTime).TotalMinutes + 1);
+
+                        //Start Background Schedule Job (Execute only once)
+                        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), TimeSpan.FromMinutes(totalMinutes));
+                    }
+                    else if(endTime < currentTime)
+                    {
+                        DateTime scheduleDate = endTime.AddDays(1);
+                        scheduleDate = scheduleDate.AddMinutes(1);
+
+                        //Start Background Schedule Job (Execute only once)
+                        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), scheduleDate.TimeOfDay);
+                    }
+                }
 
                 #endregion
 
@@ -945,6 +978,12 @@ namespace SuccessHotelierHub.Controllers
             }
 
             return blnAvailable;
+        }
+
+        public void SetStudentLoginTimeToRestrict(Guid  tutorId)
+        {
+            UserRepository userRepository = new UserRepository();
+            userRepository.RestrictStudentLogin(tutorId);
         }
 
     }

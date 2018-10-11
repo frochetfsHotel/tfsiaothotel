@@ -677,6 +677,16 @@ namespace SuccessHotelierHub.Repository
             return results;
         }
 
+        public void RestrictStudentLogin(Guid tutorId)
+        {
+            SqlParameter[] parameters =
+            {
+                new SqlParameter { ParameterName = "@TutorId", Value = tutorId }
+            };
+
+            DALHelper.ExecuteScalar("RestrictStudentLogin", parameters);
+        }
+
         #endregion
     }
 }

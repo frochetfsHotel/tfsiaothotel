@@ -63941,7 +63941,7 @@ END
 /****************************************************************************************************************************
 
 Name : Nilesh
-Date : 03-JAN-2018
+Date : 10-OCT-2018
 
 *****************************************************************************************************************************/
 
@@ -63983,4 +63983,42 @@ BEGIN
 				AND ISNULL(UD.IsLoggedIn, 0) = 1									
 				AND ISNULL(UR.Code,'') = 'STUDENT'																								
 END
+
+
+
+/**********************************************************************************************************************************************
+Name : Nilesh
+Date : 11-OCT-2018
+************************************************************************************************************************************************/
+
+/***********************************************************************************************************************************************
+	SP Name : RestrictStudentLogin
+	Comment : Create SP
+***********************************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[RestrictStudentLogin]    Script Date: 10/11/2018 11:59:22 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RestrictStudentLogin]
+	@TutorId 	UNIQUEIDENTIFIER 	
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserLoginTime] 
+		SET	[ConfigurationType]		=	'R'
+			,[LoginStartTime]		=	NULL
+			,[LoginEndTime]			=	NULL		    
+     WHERE	ISNULL(IsDeleted,0) 	= 	0 
+			AND [TutorId] 			=	@TutorId
+			
+END
+
+/****** Add HangFire Connection String in web.config file ******/
+
+<add name="Hangfire_Connection" connectionString="Data Source=TA15\SQLExpress;Initial Catalog=SuccessHotelierHub_Dev;User Id=sa;Password=Admin@123;Pooling=false;Timeout=9999;" providerName="System.Data.SqlClient" />
+
 
