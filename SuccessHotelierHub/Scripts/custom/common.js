@@ -77,7 +77,15 @@ var ToasterTimeOut = {
     ONE_SECOND: 1000,
     FIVE_SECOND: 5000,
     TEN_SECOND: 10000,
+    FIFTEEN_SECOND: 15000,
+    TWENTY_SECOND: 20000,
+    TWENTY_FIVE_SECOND: 25000,
     THIRTY_SECOND: 30000,
+    THIRTY_FIVE_SECOND: 35000,
+    FOURTY_SECOND: 40000,
+    FOURTY_FIVE_SECOND: 45000,
+    FIFTY_SECOND: 50000,
+    FIFTY_FIVE_SECOND: 55000,
     ONE_MINUTE: 60000,
     FIVE_MINUTE: 300000,
 };
@@ -123,26 +131,31 @@ function loadToastrSetting() {
 }
 
 function showToaster(message, toastrType) {
-    loadToastrSetting();
+    //loadToastrSetting();
+    loadToastrSetting_V2(ToasterTimeOut.TEN_SECOND);
 
     if (toastrType == ToasterType.SUCCESS) {
-        toastr.success(ToasterTitle.SUCCESS, message);
+        //toastr.success(ToasterTitle.SUCCESS, message); //Remove "Success!" title.
+        toastr.success(message);
     }
     else if (toastrType == ToasterType.ERROR) {
+        //toastr.error(ToasterTitle.ERROR, message); //Remove "Error!" title.
         toastr.error(message);
     }
     else if (toastrType == ToasterType.INFO) {
-        toastr.info(ToasterTitle.INFO, message);
+        //toastr.info(ToasterTitle.INFO, message); //Remove "Info!" title.
+        toastr.info(message);
     }
     else if (toastrType == ToasterType.WARNING) {
-        toastr.warnnig(ToasterTitle.WARNING, message);
+        //toastr.warnnig(ToasterTitle.WARNING, message); //Remove "Warning!" title.
+        toastr.warnnig(message);
     }
 }
 
 function loadToastrSetting_V2(timeout) {
 
     if (IsNullOrEmpty(timeout) || timeout == "0") {
-        timeout = 60000;
+        timeout = ToasterTimeOut.ONE_MINUTE; //Default TimeOut 1 minute.
     }
 
     toastr.options = {
