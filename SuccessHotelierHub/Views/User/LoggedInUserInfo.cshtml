@@ -31,20 +31,18 @@
             <div class="box-body box-body-list">
                 <div class="pt_10 pl_10 pr_10 searchBox_Border">
                     <div class="row">
+                        <div class="col-md-3 form-group" id="divUserRole">
+                            @Html.LabelFor(m => m.UserRoleId)
+                            @Html.DropDownListFor(m => m.UserRoleId,
+                                (IEnumerable<SelectListItem>)ViewBag.UserRoleList, "-- All --",
+                                htmlAttributes: new { @class = "form-control" })                            
+                        </div>
                         <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.CollegeGroupId)
                             @Html.DropDownListFor(m => m.CollegeGroupId,
                                 (IEnumerable<SelectListItem>)ViewBag.CollegeGroupList, "-- College Group --",
-                                htmlAttributes: new { @class = "form-control", onchange = "loadTutorDetail();" })
-                        </div>
-                        <div class="col-md-3 form-group">
-                            @Html.LabelFor(m => m.TutorId)
-                            @Html.DropDownList("TutorId", new List<SelectListItem>
-                            {
-                                    new SelectListItem{ Text="-- Tutor --", Value = "" }
-                            },
-                            htmlAttributes: new { @class = "form-control" })
-                        </div>
+                                htmlAttributes: new { @class = "form-control" })
+                        </div>                       
                         <div class="col-md-3 form-group">
                             @Html.LabelFor(m => m.Name)
                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Name" })
@@ -78,11 +76,12 @@
                         <table class="table table-bordered table-hover table-striped" id="tblUser">
                             <thead>
                                 <tr>
-                                    <th class="width_20">Name</th>
+                                    <th class="width_15">Name</th>
                                     <th class="width_20">Email</th>
                                     <th class="width_20">College Group</th>
-                                    <th class="width_20">Tutor</th>
+                                    <th class="width_15">Tutor</th>
                                     <th class="width_20">Last LoggedOn</th>
+                                    <th class="width_10">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -110,11 +109,17 @@
                 $("#btnSearch").click();
             }
         });
+
+        if (parseBoolean('@LogInManager.HasRights("TUTOR")')) {
+            $('#divUserRole').hide();
+        } else {
+            $('#divUserRole').show();
+        }
     });
 
     function SearchUserParameters(d) {
+        var userRoleId = $('#UserRoleId').val();
         var collegeGroupId = $('#CollegeGroupId').val();
-        var tutorId = $('#TutorId').val();
         var name = $('#Name').val();
         var email = $('#Email').val();
         var isViewAll = $('#IsViewAll').prop('checked');
@@ -122,7 +127,7 @@
 
         d.PageNum = currentPage;
         d.CollegeGroupId = collegeGroupId;
-        d.TutorId = tutorId;
+        d.UserRoleId = userRoleId;
         d.Name = name;
         d.Email = email;
         d.IsViewAll = isViewAll;
@@ -225,6 +230,15 @@
                         return "";
                     }
                 }
+            },
+            {
+                targets: 5,
+                data: "Id",
+                orderable: false,
+                render: function (data, type, full, meta) {
+                    return '<a href="javascript:void(0);" onclick="LogoutUser(\'' + full.Id + '\')" '
+                        + ' class="btn btn-success btn-xs font_11">Logout</a> ';
+                }
             }
             ],
             order: [[4, "desc"]],
@@ -242,8 +256,8 @@
     }
 
     function clearUser() {
+        $('#UserRoleId').val('');
         $('#CollegeGroupId').val('');
-        $('#TutorId').val('');
         $('#Name').val('');
         $('#Email').val('');
 
@@ -252,44 +266,50 @@
         searchUser();
     }
 
-    function loadTutorDetail() {
-        var collegeGroupId = $('form#frmUserList #CollegeGroupId').val();
+    function LogoutUser(id) {
+        swal({
+            title: 'Are you sure you want to logout this user?',
+            type: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    beforeSend: function (xhr) {
+                        showLoader();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        ShowErrorMessage(jqXHR.status, errorThrown);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    },
+                    url: '@Url.Content("~/User/LogoutUser")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (!IsNullOrEmpty(response)) {
+                            if (response.IsSuccess == true) {
 
-        if (!IsNullOrEmpty(collegeGroupId)) {
-            //Call ajax to get tutor details by college group id.
-            $.ajax({
-                beforeSend: function (xhr) {
-                    showLoader();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    ShowErrorMessage(jqXHR.status, errorThrown);
-                },
-                complete: function () {
-                    hideLoader();
-                },
-                url: '@Url.Content("~/User/GetTutorDetailByCollegeGroupId")',
-                type: 'GET',
-                data: {
-                    collegeGroupId: collegeGroupId
-                },
-                success: function (result) {
-                    if (!IsNullOrEmpty(result)) {
-                        var optionHtml = "";
-                        optionHtml += "<option value=''>-- Tutor --</option>";
-                        if (result.IsSuccess == true) {
-                            for (i = 0; i < result.data.length; i++) {
-                                optionHtml += "<option value='" + result.data[i].Id + "'>" + result.data[i].Name + "</option>";
+                                var tr = $('#tblUser tbody tr#' + id)
+                                var row = grdUser.row(tr);
+                                var rowNode = row.node();
+                                row.remove();
+                                grdUser.draw();
+
+                                showToaster("User logged out successfully", ToasterType.SUCCESS);
+                            }
+                            else {
+                                showToaster(response.errorMessage, ToasterType.ERROR);
                             }
                         }
-                        $('form#frmUserList #TutorId').html(optionHtml);
                     }
-                }
-            });
-        } else {
-            //Remove all <option> items from dropdown except first <option> item.
-            $('form#frmUserList #TutorId').html("");
-            $('form#frmUserList #TutorId').append($("<option></option>").val("").html("-- Tutor --"));
-        }
+                });
+            }
+        });
     }
 
 </script>

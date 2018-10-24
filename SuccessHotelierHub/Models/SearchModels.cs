@@ -2749,6 +2749,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Tutor")]
         public Guid? TutorId { get; set; }
 
+        [DisplayName("User Role")]
+        public Guid? UserRoleId { get; set; }
+
         [DisplayName("Name")]
         public string Name { get; set; }
 

@@ -562,7 +562,7 @@
 
             </ul>
         }
-        @if (LogInManager.HasRights("ADMIN"))
+        @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("TUTOR"))
         {
             <ul class="sidebar-menu tree leftsidemenu" id="MenusLoggedInUserScreen" data-widget="tree" style="display:none;">
                 <li>

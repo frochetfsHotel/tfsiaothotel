@@ -1,8 +1,19 @@
 ﻿@using SuccessHotelierHub.Repository;
+@using SuccessHotelierHub.Models;
 @{ 
     UserRepository userRepository = new UserRepository();
 
-    var loggedInUsers = userRepository.GetLoggedInStudentInfo();
+    var loggedInUsers = new List<SearchLoggedInUserInfoResultVM>();
+
+    if (LogInManager.HasRights("TUTOR"))
+    {
+        loggedInUsers = userRepository.GetLoggedInStudentInfo(LogInManager.LoggedInUser.Id);
+    }
+    else
+    {
+        loggedInUsers = userRepository.GetLoggedInStudentInfo();
+    }
+
 
     var totalLoggedInUsers = 0;
     if(loggedInUsers != null && loggedInUsers.Count > 0)
@@ -91,18 +102,7 @@
                         <i class="fa fa-cc-mastercard font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Master Screens</span>
                     </a>
                 </li>
-            }
-            @if (LogInManager.HasRights("ADMIN"))
-            {
-                <li class="text-center topMenu" id="menuLoggedInUserScreen">
-                    <a href="javascript:void(0);" onclick="setCurrentMenu('LoggedInUserScreen','@Url.Content("~/User/LoggedInUserInfo")');" title="LoggedIn Users">
-                        <i class="fa fa-sign-in font_20 m-b-xs" aria-hidden="true">
-                            <span class="spn_users label label-success">@(totalLoggedInUsers)</span>
-                        </i><br /> 
-                        <span class="span_none">LoggedIn Users</span>
-                    </a>
-                </li>
-            }
+            }            
             @if (LogInManager.HasRights("TUTOR"))
             {
                 <li class="text-center topMenu" id="menuManageStudents">
@@ -113,6 +113,17 @@
                 <li class="text-center topMenu" id="menuChangePasswordScreen">
                     <a href="javascript:void(0);" onclick="setCurrentMenu('ChangePassword','@Url.Content("~/User/ChangePassword")');" title="Change Password">
                         <i class="fa fa-key font_20 m-b-xs" aria-hidden="true"></i><br /> <span class="span_none">Change Password</span>
+                    </a>
+                </li>
+            }
+            @if (LogInManager.HasRights("ADMIN") || LogInManager.HasRights("TUTOR"))
+            {
+                <li class="text-center topMenu" id="menuLoggedInUserScreen">
+                    <a href="javascript:void(0);" onclick="setCurrentMenu('LoggedInUserScreen','@Url.Content("~/User/LoggedInUserInfo")');" title="LoggedIn Users">
+                        <i class="fa fa-sign-in font_20 m-b-xs" aria-hidden="true">
+                            <span class="spn_users label label-success">@(totalLoggedInUsers)</span>
+                        </i><br />
+                        <span class="span_none">LoggedIn Users</span>
                     </a>
                 </li>
             }

@@ -380,9 +380,14 @@ namespace SuccessHotelierHub.Repository
             return admins;
         }
 
-        public List<SearchLoggedInUserInfoResultVM> GetLoggedInStudentInfo()
+        public List<SearchLoggedInUserInfoResultVM> GetLoggedInStudentInfo(Guid? tutorId = null)
         {
-            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetLoggedInStudentInfo");
+            SqlParameter[] parameters =
+            {
+                new SqlParameter { ParameterName = "@TutorId", Value = tutorId }
+            };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetLoggedInStudentInfo", parameters);
 
             var users = new List<SearchLoggedInUserInfoResultVM>();
             users = DALHelper.CreateListFromTable<SearchLoggedInUserInfoResultVM>(dt);
@@ -394,6 +399,7 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserRoleId", Value = model.UserRoleId },
                     new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
                     new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
@@ -412,8 +418,9 @@ namespace SuccessHotelierHub.Repository
         {
             SqlParameter[] parameters =
                 {
+                    new SqlParameter { ParameterName = "@UserRoleId ", Value = model.UserRoleId },
                     new SqlParameter { ParameterName = "@CollegeGroupId", Value = model.CollegeGroupId },
-                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },                    
                     new SqlParameter { ParameterName = "@Name", Value = model.Name },
                     new SqlParameter { ParameterName = "@Email", Value = model.Email },
                     new SqlParameter { ParameterName = "@IsViewAll", Value = model.IsViewAll },

@@ -1063,16 +1063,27 @@ namespace SuccessHotelierHub.Controllers
 
         #region Logged In User Info
 
-        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
         public ActionResult LoggedInUserInfo()
         {
             var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
             ViewBag.CollegeGroupList = collegeGroupList;
 
+            var userRoleList = userRoleRepository.GetUserRoles();
+            if(userRoleList != null && userRoleList.Count > 0)
+            {
+                var userRoleWithoutAdmin = new SelectList(userRoleList.Where(i => i.Code != "ADMIN"), "Id", "Name").ToList();
+                ViewBag.UserRoleList = userRoleWithoutAdmin;
+            }
+            else
+            {
+                ViewBag.UserRoleList = new SelectList(new List<UserRoleVM>(), "Id", "Name").ToList();
+            }            
+
             return View();
         }
 
-        [HotelierHubAuthorize(Roles = "ADMIN")]
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
         [HttpPost]
         public ActionResult LoggedInUserInfo(SearchLoggedInUserInfoParametersVM model)
         {
@@ -1093,6 +1104,17 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 model.PageSize = Constants.PAGESIZE;
+
+
+                if (LogInManager.HasRights("TUTOR"))
+                {
+                    model.TutorId = LogInManager.LoggedInUser.Id;
+
+                    var userRoles = userRoleRepository.GetUserRoles();
+                    var studentRoleId = userRoles.Where(m => m.Code == "STUDENT").FirstOrDefault().Id;
+                    model.UserRoleId = studentRoleId;
+                }
+
                 var users = userRepository.SearchLoggedInUserInfo(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
                 
                 int totalRecords = 0;
@@ -1122,6 +1144,45 @@ namespace SuccessHotelierHub.Controllers
             catch (Exception e)
             {
                 Utility.Utility.LogError(e, "LoggedInUserInfo");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN,TUTOR")]
+        [HttpPost]
+        public ActionResult LogoutUser(Guid id)
+        {
+            try
+            {
+                string userId = string.Empty;
+
+                userId = userRepository.UpdateIsLoggedInFlag(id, false);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    RecordActivityLog.TrackUsersActivityByUserId_V2(id);
+
+                    return Json(new
+                    {
+                        IsSuccess = true,
+                        data = new
+                        {
+                            UserId = userId
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "User not logged out successfully."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "LogoutUser");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
