@@ -244,6 +244,8 @@
             $('form#frmSplitPayment #lblFinalAmount').text('@Model.Amount');
             $('form#frmSplitPayment #lblDiductAmount').text('@Model.Amount');
             $('form#frmSplitPayment #lblpayableAmount').text(0);
+
+            AddSplitPaymentValidationRule(1);
         }
         else {
             $('#divHidePaymentMethod').show();
@@ -325,6 +327,9 @@
 
         //Bind Payment Method Dropdown for Split Payment Popup.
         bindSplitPaymentMethodDropdown(rowNumber);
+
+        //Add validation rule.
+        AddSplitPaymentValidationRule(rowNumber);
     }
 
     //remove row from split payment then refresh total amount value
@@ -362,17 +367,27 @@
     }
 
     //in split payment cash is selected then hide the credit card number and Expiry date field
-    function SelectSplitPaymentMethod(RowNumber) {
-        var SelectedDropDownvalue = [];
-        if (!IsNullOrEmpty($('form#frmSplitPayment #SplitPaymentId_' + RowNumber).val())) {
+    function SelectSplitPaymentMethod(rowNumber) {        
+        var selectedValue = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).val();
 
-            var splitPaymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + RowNumber + ' ' + 'option:selected');
-            var isCreditCardPay = parseBoolean(splitPaymentMethod.data("iscreditcardpay"));
+        if (!IsNullOrEmpty(selectedValue)) {
+
+            var paymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected');
+
+            var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
+            var paymentMethodText = paymentMethod.text();
+
 
             if (!isCreditCardPay) {
-                $('form#frmSplitPayment .HideWhenCashIsSelected_' + RowNumber).hide();
+                $('form#frmSplitPayment .HideWhenCashIsSelected_' + rowNumber).hide();
+
+                //Remove error messages.
+                $('label[for=CreditCardNo_' + rowNumber + ']').html('');
+                $('label[for=CardExpiryDate_' + rowNumber + ']').html('');
+                $('label[for=CardVerificationValue_' + rowNumber + ']').html('');
+
             } else {
-                $('form#frmSplitPayment .HideWhenCashIsSelected_' + RowNumber).show();
+                $('form#frmSplitPayment .HideWhenCashIsSelected_' + rowNumber).show();
             }
         }
     }
@@ -462,12 +477,13 @@
 
     function clearSplitPaymentData() {
         $('form#frmSplitPayment #SplitPaymentId_1').val('');
-        $('form#frmSplitPayment #CardExpiryDate_1').val('');
         $('form#frmSplitPayment #CreditCardNo_1').val('');
+        $('form#frmSplitPayment #CardExpiryDate_1').val('');        
+        $('form#frmSplitPayment #CardVerificationValue_1').val('');
         $('form#frmSplitPayment .HideWhenCashIsSelected_1').show();
         $('form#frmSplitPayment #hdnTotalSplitPayment').val(1);
         //Remove all the rows except first one.
-        $("form#frmSplitPayment  #tblSplitPayment tbody").find("tr:gt(0)").remove();
+        $("form#frmSplitPayment #tblSplitPayment tbody").find("tr:gt(0)").remove();
     }
 
 

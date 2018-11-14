@@ -376,7 +376,7 @@
             </div>
             <div class="modal-body modal-body_padding" id="divSplitPaymentMethod">
                 <div class="row">
-                    @using (Html.BeginForm("SplitPayment", "ReservationCharge", FormMethod.Post, new { id = "frmSplitPayment", enctype = "multipart/form-data" }))
+                    @using (Html.BeginForm("SplitPayment", "ReservationCharge", FormMethod.Post, new { id = "frmSplitPayment", @class = "form", enctype = "multipart/form-data", novalidate = "novalidate" }))
                     {
                     <input type="hidden" value="test" id="hdnSaveReservationId" />
                     <input type="hidden" value="test" id="hdnCheckOutDate" />
@@ -605,12 +605,70 @@
     }
 
 
+    function AddSplitPaymentValidationRule(rowNumber) {
+
+        //First assign .validate() method in form at document.ready // $("form#frmSplitPayment").validate();
+
+        setTimeout(function () {
+            $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please select payment method.'
+                }
+            });
+
+            $('form#frmSplitPayment #txtAmount_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter amount.'
+                }
+            });
+
+            $('form#frmSplitPayment #CreditCardNo_' + rowNumber).rules("add", {
+                required: true,
+                minlength: 16,
+                messages: {
+                    required: 'Please enter credit card no.',
+                    minlength: 'Please enter 16 digits of your credit card'
+                }
+            });
+
+            $('form#frmSplitPayment #CardExpiryDate_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter card expiry date.'
+                }
+            });
+
+            $('form#frmSplitPayment #CardVerificationValue_' + rowNumber).rules("add", {
+                required: true,
+                messages: {
+                    required: 'Please enter CVV.'
+                }
+            });
+
+        }, 0);
+    }
+
+
+    function RemoveSplitPaymentValidationRule(rowNumber) {
+        setTimeout(function () {
+            $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).rules("remove");
+            $('form#frmSplitPayment #txtAmount_' + rowNumber).rules("remove");
+            $('form#frmSplitPayment #CreditCardNo_' + rowNumber).rules("remove");
+            $('form#frmSplitPayment #CardExpiryDate_' + rowNumber).rules("remove");
+            $('form#frmSplitPayment #CardVerificationValue_' + rowNumber).rules("remove");
+        }, 0);
+    }
+
     function saveSplitPayment() {
         AjaxRequestStart();
         IsValidOrNot = true;
         var listOfSplitPayment = [];
         var ReservationId = $('form#frmSplitPayment #hdnSaveReservationId').val();
         var CheckOutDate = $('form#frmSplitPayment #hdnCheckOutDate').val();
+
+        var TotalAmountOfSplitPayment = 0;
         $("form#frmSplitPayment #tblSplitPayment tbody tr").each(function () {
             var rowNumber = $(this).attr("data-rownumber");
             if (!IsNullOrEmpty(rowNumber)) {
@@ -619,42 +677,38 @@
                 var paymentMethod = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber + ' ' + 'option:selected');
                 var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
 
+                var amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
+
                 var modelSplitPayment = {};
                 modelSplitPayment.ReservationId = ReservationId;
                 modelSplitPayment.CheckOutDate = CheckOutDate;
                 modelSplitPayment.PaymentMethodId = $('form#frmSplitPayment #SplitPaymentId_' + rowNumber).val();
-                modelSplitPayment.Amount = $('form#frmSplitPayment #txtAmount_' + rowNumber).val();
+                modelSplitPayment.Amount = parseFloat(amount);
                 modelSplitPayment.CreditCardNo = $('form#frmSplitPayment #CreditCardNo_' + rowNumber).val();
                 modelSplitPayment.CardExpiryDate = $('form#frmSplitPayment #CardExpiryDate_' + rowNumber).val();
                 modelSplitPayment.CVVNo = $('form#frmSplitPayment #CardVerificationValue_' + rowNumber).val();
                 modelSplitPayment.PaymentMethod = paymentMethod.text();
                 modelSplitPayment.IsCreditCardPay = isCreditCardPay;
                 listOfSplitPayment.push(modelSplitPayment);
+
+                TotalAmountOfSplitPayment = parseFloat(TotalAmountOfSplitPayment) + parseFloat(amount);
             }
         })
 
 
-        if (listOfSplitPayment != null) {
-            var TotalAmountOfSplitPayment = 0;
-            var TotalPaybleAmount = $('form#frmSplitPayment #hdnTotalAmount').val();
+        if (listOfSplitPayment != null && listOfSplitPayment.length > 0) {                        
+            var TotalPaybleAmount = $('form#frmSplitPayment #hdnTotalAmount').val();         
 
-            $(listOfSplitPayment).each(function () {
+            if (parseFloat(TotalAmountOfSplitPayment.toFixed(2)) != parseFloat(TotalPaybleAmount)) {                                
+                showToaster("Total Amount and Payable amount must be same.", ToasterType.ERROR);
+                AjaxRequestFinish();
+                return false;
+            }
+            
+            var blnValid = true;
+            blnValid = $('#frmSplitPayment').valid();
 
-                TotalAmountOfSplitPayment = parseFloat(TotalAmountOfSplitPayment) + parseFloat(this.Amount);
-                if (!this.IsCreditCardPay) {
-                    if ((IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0)) {
-                        IsValidOrNot = false;
-                    }
-                }
-                else {
-                    if (IsNullOrEmpty(this.PaymentMethodId) || IsNullOrEmpty(this.Amount) || this.Amount <= 0 || IsNullOrEmpty(this.CreditCardNo) || IsNullOrEmpty(this.CardExpiryDate) || !IsValidCreditCardNo(this.CreditCardNo) || IsNullOrEmpty(this.CVVNo) || !IsValidCVVNo(this.CVVNo)) {
-                        IsValidOrNot = false;
-                    }
-                }
-            })
-
-            if (!IsValidOrNot || parseFloat(TotalAmountOfSplitPayment.toFixed(2)) != parseFloat(TotalPaybleAmount)) {
-                showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
+            if (!blnValid) {
                 AjaxRequestFinish();
                 return false;
             }
@@ -698,6 +752,9 @@
 
         //Default Departure Date. (Set today's date).
         //$("#DepartureDate").datepicker("setDate", new Date());
+
+        //Split Payment Form Validate.        
+        $("form#frmSplitPayment").validate();
 
         //Bind Payment Method Dropdown for Split Payment Popup.
         bindSplitPaymentMethodDropdown(1);
@@ -1428,8 +1485,10 @@
 
             $('form#frmInterimBill #CreditCardNo_' + rowNumber).rules("add", {
                 required: true,
+                minlength:16,
                 messages: {
-                    required: 'Please enter credit card no.'
+                    required: 'Please enter credit card no.',
+                    minlength: 'Please enter 16 digits of your credit card'
                 }
             });
 
