@@ -64,7 +64,7 @@
         </div>
         <div class="col-md-4 col-sm-4 col-xs-12 form-group">
             <label class="required-label" for="Amount">Amount (@Html.Raw(LogInManager.CurrencySymbol))</label>
-            @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model.Amount.HasValue ? Model.Amount.Value : 0), new { @class = "form-control", onkeypress = "onlyNumeric(event)" })
+            @Html.TextBoxFor(m => m.Amount, Utility.FormatAmountWithTwoDecimal(Model.Amount.HasValue ? Model.Amount.Value : 0), new { @class = "form-control", onkeypress = "onlyNumeric(event)", @readonly="readonly" })
 
         </div>
     </div>

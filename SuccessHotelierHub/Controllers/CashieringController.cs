@@ -437,159 +437,212 @@ namespace SuccessHotelierHub.Controllers
 
                     //Get Reservation detail.
                     var reservation = reservationRepository.GetReservationById(model.ReservationId, LogInManager.LoggedInUserId).FirstOrDefault();
-
+                    
                     if (reservation != null)
                     {
-                        #region Add Entry for Minus All the Expenses
+                        double? dblTotalAmount = 0;
+                        double? dblTotalPaidAmount = 0;
+                        double? dblTotalPayableAmount = 0;
 
-                        var checkOutCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
 
                         double totalAmount = model.Amount.HasValue ? model.Amount.Value : 0;
-
                         totalAmount = CurrencyManager.ConvertAmountToBaseCurrency(totalAmount, LogInManager.CurrencyCode);
 
-                        ReservationChargeVM reservationCharge = new ReservationChargeVM();
-                        reservationCharge.ReservationId = reservation.Id;
-                        reservationCharge.PaymentMethodId = model.PaymentMethodId;
-                        reservationCharge.AdditionalChargeId = checkOutCharge.Id;
-                        reservationCharge.CVVNo = model.CVVNo;
-                        reservationCharge.IsDummyReservationPayment = false;
-                        reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
-                        reservationCharge.Code = checkOutCharge.Code;
-                        reservationCharge.Description = model.PaymentMethod;
-                        reservationCharge.TransactionDate = model.CheckOutDate.Value;
-                        reservationCharge.Amount = -(totalAmount);
-                        reservationCharge.Qty = 1;
-                        
-                        //Encrypt Credit Card#.
-                        reservationCharge.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
+                        #region Fetch Reservation Charges
 
-                        reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
-                        reservationCharge.IsActive = true;
-                        reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
+                        var transactions = reservationChargeRepository.GetReservationCharges(reservation.Id, null, LogInManager.LoggedInUserId);
 
-                        reservationChargeRepository.AddReservationCharges(reservationCharge);
-
-                        #endregion
-
-                        #region Update Room Occupied Flag
-
-                        var roomIds = model.RoomIds;
-                        if (!string.IsNullOrWhiteSpace(roomIds))
+                        if (transactions != null && transactions.Count > 0)
                         {
-                            var roomIdsArr = roomIds.Split(',');
+                            //Total Amount
+                            var vTotalAmount = transactions.Where(m => m.PaymentMethodId.HasValue == false).Sum(m => m.Amount);
 
-                            if (roomIdsArr != null)
+                            vTotalAmount = vTotalAmount.HasValue ? Math.Round(vTotalAmount.Value, 2) : 0;
+
+                            dblTotalAmount = vTotalAmount;
+
+                            //Total Paid Amount
+                            var vTotalPaidAmount = transactions.Where(m => m.PaymentMethodId.HasValue == true).Sum(m => m.Amount);
+
+                            vTotalPaidAmount = vTotalPaidAmount.HasValue ? Math.Abs(Math.Round(vTotalPaidAmount.Value, 2)) : 0;
+
+                            dblTotalPaidAmount = (vTotalPaidAmount + totalAmount); //Previously Paid + Current Paid
+
+                            //Total Payable Amount.
+                            dblTotalPayableAmount = Math.Round(((double)(dblTotalAmount - dblTotalPaidAmount)), 2);
+
+                            if(dblTotalPayableAmount < 0)
                             {
-                                //Remove Duplication.
-                                roomIdsArr = roomIdsArr.Distinct().ToArray();
-
-                                foreach (var item in roomIdsArr)
-                                {
-                                    #region Add Reservation Log
-
-                                    var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
-
-                                    if (lstReservationLog != null)
-                                    {
-                                        lstReservationLog.ReservationId = model.ReservationId;
-                                        lstReservationLog.ProfileId = model.ProfileId;
-                                        lstReservationLog.RoomId = Guid.Parse(item.Trim());
-                                        lstReservationLog.CheckInDate = reservation.ArrivalDate;
-                                        lstReservationLog.CheckOutDate = model.CheckOutDate;
-                                        lstReservationLog.CheckOutTime = checkOutTime;
-                                        lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
-                                        lstReservationLog.IsActive = true;
-                                        lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
-
-                                        reservationLogRepository.UpdateReservationLog(lstReservationLog);
-                                    }
-                                    else
-                                    {
-                                        ReservationLogVM reservationLog = new ReservationLogVM();
-                                        reservationLog.ReservationId = model.ReservationId;
-                                        reservationLog.ProfileId = model.ProfileId;
-                                        reservationLog.RoomId = Guid.Parse(item.Trim());
-                                        reservationLog.CheckInDate = reservation.ArrivalDate;
-                                        reservationLog.CheckOutDate = model.CheckOutDate;
-                                        reservationLog.CheckOutTime = checkOutTime;
-                                        reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
-                                        reservationLog.IsActive = true;
-                                        reservationLog.CreatedBy = LogInManager.LoggedInUserId;
-
-                                        reservationLogRepository.AddReservationLog(reservationLog);
-                                    }
-
-                                    #endregion
-                                }
+                                dblTotalPayableAmount = 0;
+                                totalAmount = 0;
                             }
                         }
 
                         #endregion
 
-                        #region Update Check Out Details
+                        var checkOutId = "";
 
-                        checkOut.Id = checkInDetails.Id;
-                        checkOut.ReservationId = model.ReservationId;
-                        checkOut.ProfileId = model.ProfileId;
-                        checkOut.CheckOutDate = model.CheckOutDate.Value;
-                        checkOut.CheckOutTime = checkOutTime;
-                        checkOut.CheckOutReference = model.Reference;
-                        checkOut.IsActive = true;
-                        checkOut.UpdatedBy = LogInManager.LoggedInUserId;
-
-                        var checkOutId = checkInCheckOutRepository.UpdateCheckOutDetail(checkOut);
-
-                        #endregion
-
-                        #region Update Reservation
-
-                        reservation.PaymentMethodId = model.PaymentMethodId;                        
-
-                        //Encrypt Credit Card#.
-                        reservation.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
-
-                        reservation.CardExpiryDate = model.CardExpiryDate;
-
-                        //Replace Departure date with  check out date.
-                        //reservation.DepartureDate = model.CheckOutDate.Value;
-
-                        //Update Total Balance.
-                        if (totalAmount > reservation.GuestBalance)
+                        //If full payment done do check out.
+                        if (dblTotalPayableAmount == 0)
                         {
-                            reservation.GuestBalance = 0;
+                            #region Add Entry for Minus All the Expenses
+
+                            var checkOutCharge = additionalChargeRepository.GetAdditionalChargesByCode(AdditionalChargeCode.CHECK_OUT).FirstOrDefault();
+
+                            if (totalAmount > 0)
+                            {
+                                ReservationChargeVM reservationCharge = new ReservationChargeVM();
+                                reservationCharge.ReservationId = reservation.Id;
+                                reservationCharge.PaymentMethodId = model.PaymentMethodId;
+                                reservationCharge.AdditionalChargeId = checkOutCharge.Id;
+                                reservationCharge.CVVNo = model.CVVNo;
+                                reservationCharge.IsDummyReservationPayment = false;
+                                reservationCharge.AdditionalChargeSource = AdditionalChargeSource.ADDITIONAL_CHARGE;
+                                reservationCharge.Code = checkOutCharge.Code;
+                                reservationCharge.Description = model.PaymentMethod;
+                                reservationCharge.TransactionDate = model.CheckOutDate.Value;
+                                reservationCharge.Amount = -(totalAmount);
+                                reservationCharge.Qty = 1;
+
+                                //Encrypt Credit Card#.
+                                reservationCharge.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                                reservationCharge.CardExpiryDate = reservation.CardExpiryDate;
+                                reservationCharge.IsActive = true;
+                                reservationCharge.CreatedBy = LogInManager.LoggedInUserId;
+
+                                reservationChargeRepository.AddReservationCharges(reservationCharge);
+                            }
+
+                            #endregion
+
+                            #region Update Reservation
+
+                            reservation.PaymentMethodId = model.PaymentMethodId;
+
+                            //Encrypt Credit Card#.
+                            reservation.CreditCardNo = Utility.Utility.Encrypt(model.CreditCardNo, Utility.Utility.EncryptionKey);
+
+                            reservation.CardExpiryDate = model.CardExpiryDate;
+
+                            //Replace Departure date with  check out date.
+                            //reservation.DepartureDate = model.CheckOutDate.Value;
+
+                            //Update Total Balance.
+                            if (totalAmount > reservation.GuestBalance)
+                            {
+                                reservation.GuestBalance = 0;
+                            }
+                            else
+                            {
+                                reservation.GuestBalance -= totalAmount;
+                            }
+
+                            reservation.UpdatedBy = LogInManager.LoggedInUserId;
+                            reservationRepository.UpdateReservation(reservation);
+
+                            #endregion
+
+                            #region Update Room Occupied Flag
+
+                            var roomIds = model.RoomIds;
+                            if (!string.IsNullOrWhiteSpace(roomIds))
+                            {
+                                var roomIdsArr = roomIds.Split(',');
+
+                                if (roomIdsArr != null)
+                                {
+                                    //Remove Duplication.
+                                    roomIdsArr = roomIdsArr.Distinct().ToArray();
+
+                                    foreach (var item in roomIdsArr)
+                                    {
+                                        #region Add Reservation Log
+
+                                        var lstReservationLog = reservationLogRepository.GetReservationLogDetails(model.ReservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                                        if (lstReservationLog != null)
+                                        {
+                                            lstReservationLog.ReservationId = model.ReservationId;
+                                            lstReservationLog.ProfileId = model.ProfileId;
+                                            lstReservationLog.RoomId = Guid.Parse(item.Trim());
+                                            lstReservationLog.CheckInDate = reservation.ArrivalDate;
+                                            lstReservationLog.CheckOutDate = model.CheckOutDate;
+                                            lstReservationLog.CheckOutTime = checkOutTime;
+                                            lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                            lstReservationLog.IsActive = true;
+                                            lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                            reservationLogRepository.UpdateReservationLog(lstReservationLog);
+                                        }
+                                        else
+                                        {
+                                            ReservationLogVM reservationLog = new ReservationLogVM();
+                                            reservationLog.ReservationId = model.ReservationId;
+                                            reservationLog.ProfileId = model.ProfileId;
+                                            reservationLog.RoomId = Guid.Parse(item.Trim());
+                                            reservationLog.CheckInDate = reservation.ArrivalDate;
+                                            reservationLog.CheckOutDate = model.CheckOutDate;
+                                            reservationLog.CheckOutTime = checkOutTime;
+                                            reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                            reservationLog.IsActive = true;
+                                            reservationLog.CreatedBy = LogInManager.LoggedInUserId;
+
+                                            reservationLogRepository.AddReservationLog(reservationLog);
+                                        }
+
+                                        #endregion
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                            #region Update Check Out Details
+
+                            checkOut.Id = checkInDetails.Id;
+                            checkOut.ReservationId = model.ReservationId;
+                            checkOut.ProfileId = model.ProfileId;
+                            checkOut.CheckOutDate = model.CheckOutDate.Value;
+                            checkOut.CheckOutTime = checkOutTime;
+                            checkOut.CheckOutReference = model.Reference;
+                            checkOut.IsActive = true;
+                            checkOut.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            checkOutId = checkInCheckOutRepository.UpdateCheckOutDetail(checkOut);
+
+                            #endregion
+
+                            #region Update Reservation Check Out Flag
+
+                            reservationRepository.UpdateReservationCheckOutFlag(model.ReservationId, true, LogInManager.LoggedInUserId);
+
+                            #endregion
+
+                            #region Update Reservation Status
+
+                            reservationRepository.UpdateReservationStatus(model.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
+
+                            #endregion
+
+                            #region Update TrackFolioLog Status
+
+                            reservationRepository.UpdateTrackFolioLogStatusByReservationId(model.ReservationId, true);
+
+                            #endregion
+
+                            #region Record Activity Log
+                            RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
+                            #endregion
                         }
                         else
                         {
-                            reservation.GuestBalance -= totalAmount;
+                            return Json(new
+                            {
+                                IsSuccess = false,
+                                errorMessage = "Reservation not checked out successfully due to outstanding payable amount."
+                            }, JsonRequestBehavior.AllowGet);
                         }
-
-                        reservation.UpdatedBy = LogInManager.LoggedInUserId;
-                        reservationRepository.UpdateReservation(reservation);
-
-                        #endregion
-
-                        #region Update Reservation Check Out Flag
-
-                        reservationRepository.UpdateReservationCheckOutFlag(model.ReservationId, true, LogInManager.LoggedInUserId);
-
-                        #endregion
-
-                        #region Update Reservation Status
-
-                        reservationRepository.UpdateReservationStatus(model.ReservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
-
-                        #endregion
-
-                        #region Update TrackFolioLog Status
-
-                        reservationRepository.UpdateTrackFolioLogStatusByReservationId(model.ReservationId, true);
-
-                        #endregion
-
-                        #region Record Activity Log
-                        RecordActivityLog.RecordActivity(Pages.CHECKOUT, string.Format("Checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));
-                        #endregion
 
                         return Json(new
                         {
@@ -2048,103 +2101,104 @@ namespace SuccessHotelierHub.Controllers
 
                                 #endregion
 
-                                //If full payment done.
-                                if (dblTotalAmount == totalPayableAmount)
-                                {
-                                    #region Update Room Occupied Flag
+                                //Commented on 16-NOV-2018 
+                                ////If full payment done.
+                                //if (dblTotalAmount == totalPayableAmount)
+                                //{
+                                //    #region Update Room Occupied Flag
 
 
-                                    if (!string.IsNullOrWhiteSpace(roomIds))
-                                    {
-                                        var roomIdsArr = roomIds.Split(',');
+                                //    if (!string.IsNullOrWhiteSpace(roomIds))
+                                //    {
+                                //        var roomIdsArr = roomIds.Split(',');
 
-                                        if (roomIdsArr != null)
-                                        {
-                                            //Remove Duplication.
-                                            roomIdsArr = roomIdsArr.Distinct().ToArray();
+                                //        if (roomIdsArr != null)
+                                //        {
+                                //            //Remove Duplication.
+                                //            roomIdsArr = roomIdsArr.Distinct().ToArray();
 
-                                            foreach (var item in roomIdsArr)
-                                            {
-                                                ////Update Room Occupied Flag.
-                                                //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
+                                //            foreach (var item in roomIdsArr)
+                                //            {
+                                //                ////Update Room Occupied Flag.
+                                //                //roomRepository.UpdateRoomOccupiedFlag(Guid.Parse(item.Trim()), false, LogInManager.LoggedInUserId);
 
-                                                ////Update Room Status DIRTY to CLEAN.
-                                                //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
+                                //                ////Update Room Status DIRTY to CLEAN.
+                                //                //roomRepository.UpdateRoomCheckOutStatus(Guid.Parse(item.Trim()), Guid.Parse(RoomStatusType.CLEAN), false, LogInManager.LoggedInUserId);
 
-                                                #region Add Reservation Log
+                                //                #region Add Reservation Log
 
-                                                var lstReservationLog = reservationLogRepository.GetReservationLogDetails(reservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
+                                //                var lstReservationLog = reservationLogRepository.GetReservationLogDetails(reservationId, Guid.Parse(item.Trim()), null, LogInManager.LoggedInUserId).FirstOrDefault();
 
-                                                if (lstReservationLog != null)
-                                                {
-                                                    lstReservationLog.ReservationId = reservationId;
-                                                    lstReservationLog.ProfileId = profileId;
-                                                    lstReservationLog.RoomId = Guid.Parse(item.Trim());
-                                                    lstReservationLog.CheckInDate = arrivalDate;
-                                                    lstReservationLog.CheckOutDate = departureDate;
-                                                    lstReservationLog.CheckOutTime = checkOutTime;
-                                                    lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
-                                                    lstReservationLog.IsActive = true;
-                                                    lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
+                                //                if (lstReservationLog != null)
+                                //                {
+                                //                    lstReservationLog.ReservationId = reservationId;
+                                //                    lstReservationLog.ProfileId = profileId;
+                                //                    lstReservationLog.RoomId = Guid.Parse(item.Trim());
+                                //                    lstReservationLog.CheckInDate = arrivalDate;
+                                //                    lstReservationLog.CheckOutDate = departureDate;
+                                //                    lstReservationLog.CheckOutTime = checkOutTime;
+                                //                    lstReservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                //                    lstReservationLog.IsActive = true;
+                                //                    lstReservationLog.UpdatedBy = LogInManager.LoggedInUserId;
 
-                                                    reservationLogRepository.UpdateReservationLog(lstReservationLog);
-                                                }
-                                                else
-                                                {
-                                                    ReservationLogVM reservationLog = new ReservationLogVM();
-                                                    reservationLog.ReservationId = reservationId;
-                                                    reservationLog.ProfileId = profileId;
-                                                    reservationLog.RoomId = Guid.Parse(item.Trim());
-                                                    reservationLog.CheckInDate = arrivalDate;
-                                                    reservationLog.CheckOutDate = departureDate;
-                                                    reservationLog.CheckOutTime = checkOutTime;
-                                                    reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
-                                                    reservationLog.IsActive = true;
-                                                    reservationLog.CreatedBy = LogInManager.LoggedInUserId;
+                                //                    reservationLogRepository.UpdateReservationLog(lstReservationLog);
+                                //                }
+                                //                else
+                                //                {
+                                //                    ReservationLogVM reservationLog = new ReservationLogVM();
+                                //                    reservationLog.ReservationId = reservationId;
+                                //                    reservationLog.ProfileId = profileId;
+                                //                    reservationLog.RoomId = Guid.Parse(item.Trim());
+                                //                    reservationLog.CheckInDate = arrivalDate;
+                                //                    reservationLog.CheckOutDate = departureDate;
+                                //                    reservationLog.CheckOutTime = checkOutTime;
+                                //                    reservationLog.RoomStatusId = Guid.Parse(RoomStatusType.CLEAN);
+                                //                    reservationLog.IsActive = true;
+                                //                    reservationLog.CreatedBy = LogInManager.LoggedInUserId;
 
-                                                    reservationLogRepository.AddReservationLog(reservationLog);
-                                                }
+                                //                    reservationLogRepository.AddReservationLog(reservationLog);
+                                //                }
 
-                                                #endregion
-                                            }
-                                        }
-                                    }
+                                //                #endregion
+                                //            }
+                                //        }
+                                //    }
 
-                                    #endregion
+                                //    #endregion
 
-                                    #region Update Check Out Details
+                                //    #region Update Check Out Details
 
-                                    checkOut.Id = checkInDetails.Id;
-                                    checkOut.ReservationId = reservationId;
-                                    checkOut.ProfileId = profileId;
-                                    checkOut.CheckOutDate = departureDate.Value;
-                                    checkOut.CheckOutTime = checkOutTime;
-                                    checkOut.CheckOutReference = string.Empty;
-                                    checkOut.IsActive = true;
-                                    checkOut.UpdatedBy = LogInManager.LoggedInUserId;
+                                //    checkOut.Id = checkInDetails.Id;
+                                //    checkOut.ReservationId = reservationId;
+                                //    checkOut.ProfileId = profileId;
+                                //    checkOut.CheckOutDate = departureDate.Value;
+                                //    checkOut.CheckOutTime = checkOutTime;
+                                //    checkOut.CheckOutReference = string.Empty;
+                                //    checkOut.IsActive = true;
+                                //    checkOut.UpdatedBy = LogInManager.LoggedInUserId;
 
-                                    checkOutId = checkInCheckOutRepository.UpdateCheckOutDetail(checkOut);
+                                //    checkOutId = checkInCheckOutRepository.UpdateCheckOutDetail(checkOut);
 
-                                    #endregion
+                                //    #endregion
 
-                                    #region Update Reservation Check Out Flag
+                                //    #region Update Reservation Check Out Flag
 
-                                    reservationRepository.UpdateReservationCheckOutFlag(reservationId, true, LogInManager.LoggedInUserId);
+                                //    reservationRepository.UpdateReservationCheckOutFlag(reservationId, true, LogInManager.LoggedInUserId);
 
-                                    #endregion
+                                //    #endregion
 
-                                    #region Update Reservation Status
+                                //    #region Update Reservation Status
 
-                                    reservationRepository.UpdateReservationStatus(reservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
+                                //    reservationRepository.UpdateReservationStatus(reservationId, Guid.Parse(ReservationStatusName.CHECKEDOUT), LogInManager.LoggedInUserId);
 
-                                    #endregion
+                                //    #endregion
 
-                                    #region Update TrackFolioLog Status
+                                //    #region Update TrackFolioLog Status
 
-                                    reservationRepository.UpdateTrackFolioLogStatusByReservationId(reservationId, true);
+                                //    reservationRepository.UpdateTrackFolioLogStatusByReservationId(reservationId, true);
 
-                                    #endregion
-                                }
+                                //    #endregion
+                                //}
 
                                 #region Record Activity Log
                                 RecordActivityLog.RecordActivity(Pages.SPLIT_PAYMENT, string.Format("Interim Bill Payment added and checked out profile successfully. Name: {0} {1}, Comfirmation #: {2} ", reservation.LastName, reservation.FirstName, reservation.ConfirmationNumber));

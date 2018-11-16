@@ -194,7 +194,7 @@
                                 foreach (var transaction in Model.Transactions)
                                 {
                                     <tr>
-                                        <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("MM-dd-yyyy") : "")</td>
+                                        <td>@(transaction.TransactionDate.HasValue ? transaction.TransactionDate.Value.ToString("dd-MM-yyyy") : "")</td>
                                         <td>@transaction.Description</td>
                                         <td>@transaction.Code</td>
                                         <td>@(transaction.Qty.HasValue ? transaction.Qty.Value : 1)</td>
