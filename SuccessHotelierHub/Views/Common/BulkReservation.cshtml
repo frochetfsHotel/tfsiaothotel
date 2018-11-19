@@ -108,17 +108,17 @@
                             <thead>
                                 <tr>
                                     <th>CreatedOn</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>                                    
-                                    <th>Arrival</th>
-                                    <th>Nights</th>
-                                    <th>Departure</th>
-                                    <th>Adults</th>
-                                    <th>Child</th>                                    
-                                    <th>Room #</th>
-                                    <th>Room Type</th>
-                                    <th>Rate Type</th>
-                                    <th class="width_10">Action</th>
+                                    <th class="width_10">Last Name</th>
+                                    <th class="width_10">First Name</th>                                    
+                                    <th class="width_10">Arrival</th>
+                                    <th class="width_5">Nights</th>
+                                    <th class="width_10">Departure</th>
+                                    <th class="width_5">Adults</th>
+                                    <th class="width_5">Child</th>                                    
+                                    <th class="width_5">Room #</th>
+                                    <th class="width_10">Room Type</th>
+                                    <th class="width_10">Rate Type</th>
+                                    <th class="width_20">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -171,7 +171,7 @@
         d.PageNum = currentPage;
         d.LastName = lastName;
         d.FirstName = firstName;
-        d.RateTypeId = rateTypeId;       
+        d.RateTypeId = rateTypeId;
         d.ArrivalFrom = ConvertDDMMYYYY_To_MMDDYYYY(arrivalFrom, DateSeprator.SLASH);
         d.ArrivalTo = ConvertDDMMYYYY_To_MMDDYYYY(arrivalTo, DateSeprator.SLASH);
         d.RoomTypeId = roomTypeId;
@@ -258,7 +258,7 @@
                         + ' class="">' + full.FirstName + '</a> ';
 
                 }
-            },            
+            },
             {
                 targets: 3,
                 data: "ArrivalDate",
@@ -308,7 +308,7 @@
                         + ' class="">' + full.NoOfChildren + '</a> ';
 
                 }
-            },            
+            },
             {
                 targets: 8,
                 data: "RoomNo",
@@ -349,6 +349,9 @@
                     var isCheckIn = full.IsCheckIn;
                     var isCheckOut = full.IsCheckOut;
                     var buttons = "";
+
+                    buttons += '<a href="javascript:void(0);" onclick="GotoProfileEditPage(\'' + full.ProfileId + '\')" '
+                               + ' class="btn btn-primary btn-xs m-r-xs">Profile</a> ';
 
                     buttons += '<a href="javascript:void(0);" onclick="GotoBulkReservationEdit(\'' + full.Id + '\')" '
                                 + ' class="btn btn-success btn-xs m-r-xs">Edit</a> ';
@@ -404,7 +407,7 @@
     function clearReservation() {
         $('#LastName').val('');
         $('#FirstName').val('');
-        $('#RateTypeId').val('');        
+        $('#RateTypeId').val('');
         $('#ArrivalFrom').val('');
         $('#ArrivalTo').val('');
         $('#RoomTypeId').val('');
@@ -412,6 +415,13 @@
         $('#RateTypeId').val('');
 
         searchReservation();
+    }
+
+    function GotoProfileEditPage(profileId) {
+        if (!IsNullOrEmpty(profileId)) {
+            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=BulkReservation";
+            redirectTo(url);
+        }
     }
 
 

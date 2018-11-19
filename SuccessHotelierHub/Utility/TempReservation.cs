@@ -148,6 +148,34 @@ namespace SuccessHotelierHub.Utility
                                 }
                             }
 
+                            //Get Profile Detail
+                            var profileDetail = profileRepository.GetIndividualProfileById(tempReservation.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+
+
+                            #region Profile Preferences
+
+                            var profilePreferences = new List<ProfilePreferenceMappingVM>();
+                            var preferenceItems = "";
+
+                            if (profileDetail != null && profileDetail.Id != null)
+                            {
+                                //Get Profile Preference Mapping
+                                profilePreferences = preferenceRepository.GetProfilePreferenceMapping(profileDetail.ProfileTypeId, profileDetail.Id, null, LogInManager.LoggedInUserId);
+
+                                if (profilePreferences != null && profilePreferences.Count > 0)
+                                {
+                                    preferenceItems = String.Join(", ", profilePreferences.Select(m => m.PreferenceId));
+
+                                    if (!string.IsNullOrWhiteSpace(preferenceItems))
+                                    {
+                                        preferenceItems = Utility.RemoveLastCharcter(preferenceItems.Trim(), ',');
+                                    }
+                                }
+                            }
+                            reservation.PreferenceItems = preferenceItems;
+                            
+                            #endregion
+
                             //Create Reservation.
                             CreateReservation(reservation);
                         }

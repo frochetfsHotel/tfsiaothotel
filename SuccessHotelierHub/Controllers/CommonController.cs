@@ -322,7 +322,7 @@ namespace SuccessHotelierHub.Controllers
                 var roomList = new List<SelectListItem>();
                 if (model.RoomTypeId.HasValue)
                 {
-                    roomList = new SelectList(roomRepository.GetRoomByRoomTypeId(model.RoomTypeId.Value),"Id","RoomNo").ToList();
+                    roomList = new SelectList(roomRepository.GetRoomDetailsForBulkReservation(model.RoomTypeId.Value, model.Id), "Id","RoomNo").ToList();                    
                 }
 
 
@@ -464,6 +464,30 @@ namespace SuccessHotelierHub.Controllers
             {
                 Utility.Utility.LogError(e, "GetPriceDetails");
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
+            }
+        }
+
+        [HotelierHubAuthorize(Roles = "ADMIN")]
+        public ActionResult GetRoomDetailsForBulkReservation(Guid roomTypeId, Guid bulkReservationId)
+        {
+            try
+            {
+                var roomList = roomRepository.GetRoomDetailsForBulkReservation(roomTypeId, bulkReservationId);
+
+                return Json(new
+                {
+                    IsSuccess = true,
+                    data = roomList
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "GetRoomDetailsForBulkReservation");
+                return Json(new
+                {
+                    IsSuccess = false,
+                    errorMessage = e.Message
+                });
             }
         }
 

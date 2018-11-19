@@ -2379,6 +2379,7 @@ namespace SuccessHotelierHub.Models
     {
         public int RowNum { get; set; }
         public Guid Id { get; set; }
+        public Guid ProfileId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }

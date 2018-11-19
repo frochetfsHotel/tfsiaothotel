@@ -74,6 +74,9 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Bulk Reservation Details</h3>
+            <div class="pull-right">                
+                <a href="javascript:void(0);" class="btn btn-warning btn-xs m-l-md" onclick="GotoProfileEditPage();">Profile</a>
+            </div>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
@@ -532,7 +535,7 @@
             var paymentMethod = $('form#frmBulkReservation #PaymentMethodId option:selected');
             var isCreditCardPay = parseBoolean(paymentMethod.data("iscreditcardpay"));
 
-            //Credit Card#.            
+            //Credit Card#.
             if(isCreditCardEdit == false && isCreditCardPay == true){
                 var creditCardNo = $('form#frmBulkReservation #hdnOriginalCreditCardNo').val();
                 if(!IsNullOrEmpty(creditCardNo)){
@@ -729,7 +732,9 @@
 
     function RoomTypeChange() {
         var roomTypeId = $('form#frmBulkReservation #RoomTypeId').val();
-        if (!IsNullOrEmpty(roomTypeId)) {
+        var bulkReservationId = $('form#frmBulkReservation #Id').val();
+
+        if (!IsNullOrEmpty(roomTypeId) && !IsNullOrEmpty(bulkReservationId)) {
 
             //Ajax request to get room numbers.
             $.ajax({
@@ -742,9 +747,9 @@
                 complete: function () {
                     hideLoader();
                 },
-                url: '@Url.Content("~/Room/GetRoomByRoomType")',
+                url: '@Url.Content("~/Common/GetRoomDetailsForBulkReservation")',
                 type: 'POST',
-                data: { roomTypeId: roomTypeId },
+                data: { roomTypeId: roomTypeId, bulkReservationId: bulkReservationId },
                 success: function (response) {
                     if (response != null) {
                         if (response.IsSuccess == false) {
@@ -1136,6 +1141,15 @@
         }else{
             $('form#frmBulkReservation #PaymentMethodId').html("");
             $('form#frmBulkReservation #PaymentMethodId').append($("<option></option>").val("").html("--Select Payment Method--"));
+        }
+    }
+
+    function GotoProfileEditPage() {
+        var profileId = $('#ProfileId').val();
+        var reservationId = $('#Id').val();
+        if (!IsNullOrEmpty(profileId)) {
+            var url = '@Url.Content("~/Profile/EditIndividualProfile")' + "?id=" + profileId + "&source=EditBulkReservation&rid=" + reservationId;
+            redirectTo(url);
         }
     }
 

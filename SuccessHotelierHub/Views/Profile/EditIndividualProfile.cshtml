@@ -29,6 +29,15 @@
         {
             btnCancelUrl = Url.Action("Arrivals", "FrontDesk");
         }
+        else if (sourceParam == "BulkReservation")
+        {
+            btnCancelUrl = Url.Action("BulkReservation", "Common");
+        }
+        else if (sourceParam == "EditBulkReservation")
+        {
+            qid = Convert.ToString(Request.QueryString["rid"]);
+            btnCancelUrl = Url.Action("EditBulkReservation", "Common", new { Id = qid });            
+        }
     }
 
     var preferenceGroupList = (List<SelectListItem>)ViewBag.PreferenceGroupList;

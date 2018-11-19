@@ -294,10 +294,42 @@ namespace SuccessHotelierHub.Controllers
                         {
                             var profile = profileRepository.GetIndividualProfileById(model.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
 
+                            double rate = 0;
+                            string currencyCode = string.Empty, currencySymbol = string.Empty;
+
                             if (profile != null)
                             {
+                                var userDetail = userRepository.GetUserDetailByUserId(LogInManager.LoggedInUserId).FirstOrDefault();
+                                var userGroupDetail = new UserGroupVM();
+
+                                if (userDetail != null)
+                                {
+                                    var collegeGroup = collegeGroupRepository.GetCollegeGroupById(userDetail.CollegeGroupId.Value);
+
+                                    if (collegeGroup != null)
+                                    {
+                                        userGroupDetail = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
+                                    }
+                                }
+
+                                if (userGroupDetail != null && userGroupDetail.Id != null)
+                                {
+                                    var currencyDetail = currencyRepository.GetCurrencyInfoById(userGroupDetail.CurrencyId).FirstOrDefault();
+
+                                    if (currencyDetail != null)
+                                    {
+                                        currencyCode = currencyDetail.Code;
+                                        currencySymbol = currencyDetail.CurrencySymbol;
+                                    }
+                                }
+
                                 var profileName = (profile.LastName + ' ' + profile.FirstName);
                                 var email = profile.Email;
+
+                                if (model.Rate.HasValue)
+                                {
+                                    rate = CurrencyManager.ParseAmountToUserCurrency(model.Rate.Value, currencyCode);
+                                }
 
                                 if (!string.IsNullOrWhiteSpace(email))
                                 {
@@ -312,6 +344,10 @@ namespace SuccessHotelierHub.Controllers
                                     obj.NoOfAdult = model.NoOfAdult;
                                     obj.NoOfChildren = model.NoOfChildren;
                                     obj.CashierName = LogInManager.UserName;
+
+                                    obj.Rate = rate;                                    
+
+                                    obj.RatePerNight = Utility.Utility.FormatAmountWithTwoDecimal(rate);
 
                                     //Method Of Payment.
                                     if (model.PaymentMethodId.HasValue)
@@ -351,8 +387,20 @@ namespace SuccessHotelierHub.Controllers
                                         obj.Accommodation = string.Empty;
                                     }
 
-                                    obj.DepositPaid = "EUR";
+                                    if (userDetail != null)
+                                    {
+                                        //Package
+                                        var reservationPackageMapping = reservationRepository.GetReservationPackageMapping(model.Id, null, userDetail.UserId);
 
+                                        if (reservationPackageMapping != null && reservationPackageMapping.Count > 0)
+                                        {
+                                            obj.IsBreakFast = reservationPackageMapping.Where(i => i.PackageName == "Full Irish Breakfast").Any();
+                                        }
+                                    }
+
+                                    //obj.DepositPaid = "EUR";
+                                    obj.DepositPaid = currencyCode;
+                                    obj.CurrencySymbol = currencySymbol;
 
                                     //HTML generation.
                                     string html = Utility.Utility.RenderPartialViewToString((Controller)this, "ReservationConfirmation", obj);
@@ -420,6 +468,9 @@ namespace SuccessHotelierHub.Controllers
                 model = reservation[0];
                 model.Remarks = string.Empty;
 
+                //Get Profile Detail
+                var profileDetail = profileRepository.GetIndividualProfileById(model.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+
                 if (!model.CurrencyId.HasValue)
                 {
                     model.CurrencyId = LogInManager.CurrencyId;
@@ -471,6 +522,14 @@ namespace SuccessHotelierHub.Controllers
                 var selectedPreferences = preferenceRepository.GetReservationPreferenceMapping(model.Id, null, LogInManager.LoggedInUserId);
 
                 ViewBag.SelectedPreferences = selectedPreferences;
+
+                var profilePreferences = new List<ProfilePreferenceMappingVM>();
+                if (profileDetail != null && profileDetail.Id != null)
+                {
+                    //Get Profile Preference Mapping
+                    profilePreferences = preferenceRepository.GetProfilePreferenceMapping(profileDetail.ProfileTypeId, profileDetail.Id, null, LogInManager.LoggedInUserId);
+                }
+                ViewBag.ProfilePreferences = profilePreferences;
 
                 #endregion
 
@@ -1770,6 +1829,19 @@ namespace SuccessHotelierHub.Controllers
                             {
                                 model.Accommodation = string.Empty;
                             }
+
+
+                            if(userDetail != null)
+                            {
+                                //Package
+                                var reservationPackageMapping = reservationRepository.GetReservationPackageMapping(reservation.Id, null, userDetail.UserId);
+
+                                if(reservationPackageMapping != null && reservationPackageMapping.Count > 0)
+                                {
+                                    model.IsBreakFast = reservationPackageMapping.Where(i => i.PackageName == "Full Irish Breakfast").Any();
+                                }
+                            }
+                            
 
                             model.DepositPaid = currencyCode;
                             model.CurrencySymbol = currencySymbol;

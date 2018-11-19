@@ -460,5 +460,25 @@ namespace SuccessHotelierHub.Repository
 
         #endregion
 
+        #region Bulk Reservation
+
+        public List<RoomVM> GetRoomDetailsForBulkReservation(Guid roomTypeId, Guid bulkReservationId)
+        {
+            SqlParameter[] parameters =
+               {
+                    new SqlParameter { ParameterName = "@RoomTypeId", Value = roomTypeId },
+                    new SqlParameter { ParameterName = "@BulkReservationId", Value = bulkReservationId }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetRoomDetailsForBulkReservation", parameters);
+
+            var rooms = new List<RoomVM>();
+            rooms = DALHelper.CreateListFromTable<RoomVM>(dt);
+
+            return rooms;
+        }
+
+        #endregion
+
     }
 }

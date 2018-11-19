@@ -33,10 +33,12 @@
         strRate = string.Format("{0:0.00}", Model.Rate.Value);
     }
 
-    var originalCreditCardNo = (string)ViewBag.OriginalCreditCardNo;   
+    var originalCreditCardNo = (string)ViewBag.OriginalCreditCardNo;
 
     #region Preference Mapping
     var selectedPreferences = (List<ReservationPreferenceMappingVM>)ViewBag.SelectedPreferences;
+    var profilePreferences = (List<ProfilePreferenceMappingVM>)ViewBag.ProfilePreferences;
+
     var preferenceItems = string.Empty;
     var selectedPreferencesHtml = string.Empty;
 
@@ -48,12 +50,25 @@
 
             selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
         }
-
-        if (!string.IsNullOrWhiteSpace(preferenceItems))
+    }
+    else
+    {
+        //Profile Preferences.
+        if (profilePreferences != null && profilePreferences.Count > 0)
         {
-            //Remove Last Comma.
-            preferenceItems = Utility.RemoveLastCharcter(preferenceItems, ',');
+            foreach (var preference in profilePreferences)
+            {
+                preferenceItems += string.Format("{0},", preference.PreferenceId);
+
+                selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);             
+            }
         }
+    }
+
+    if (!string.IsNullOrWhiteSpace(preferenceItems))
+    {
+        //Remove Last Comma.
+        preferenceItems = Utility.RemoveLastCharcter(preferenceItems, ',');
     }
     #endregion
 

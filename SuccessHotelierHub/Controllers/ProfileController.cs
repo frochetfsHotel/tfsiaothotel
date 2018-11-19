@@ -452,6 +452,16 @@ namespace SuccessHotelierHub.Controllers
 
                             url = Url.Action("Arrivals", "FrontDesk");
                         }
+                        else if (source == "BulkReservation")
+                        {
+                            url = Url.Action("BulkReservation", "Common");
+                        }
+                        else if (source == "EditBulkReservation")
+                        {
+                            qid = Convert.ToString(Request.Form["Qid"]);
+
+                            url = Url.Action("EditBulkReservation", "Common", new { Id = qid });
+                        }
 
                         if (!string.IsNullOrWhiteSpace(url))
                         {

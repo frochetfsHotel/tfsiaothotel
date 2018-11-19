@@ -85,6 +85,7 @@ namespace SuccessHotelierHub.Models
 
         public string CurrencySymbol { get; set; }
 
+        public bool IsBreakFast { get; set; }
 
     }
 }
