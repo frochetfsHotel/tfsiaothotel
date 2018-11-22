@@ -1479,6 +1479,9 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Email")]
         public string Email { get; set; }
 
+        [DisplayName("Password")]
+        public string Password { get; set; }
+
         public DateTime? CreatedOn { get; set; }
         public bool IsActive { get; set; }
         public bool IsRecordActivity { get; set; }

@@ -64655,3 +64655,157 @@ BEGIN
 		ORDER BY TRY_PARSE(R.[RoomNo] AS INT)
 END
 
+
+/**********************************************************************************************************************************************
+Name : Nilesh
+Date : 22-NOV-2018
+************************************************************************************************************************************************/
+
+/***********************************************************************************************************************************************
+	SP Name : SearchStudentDetail
+	Comment : Get Password coloumn in result
+***********************************************************************************************************************************************/
+
+/****** Object:  StoredProcedure [dbo].[SearchStudentDetail]    Script Date: 11/22/2018 4:57:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	EXEC [SearchStudentDetail]  'D4878B1D-C234-43FB-9D5F-CC4FA40CCAD0','', '', 1, 10
+*/
+
+ALTER PROCEDURE [dbo].[SearchStudentDetail]			
+	@TutorId		UNIQUEIDENTIFIER				,
+	@Name			NVARCHAR(500)		=	NULL	,	
+	@Email			NVARCHAR(500)		=	NULL	,	
+	@PageNum		INT					=	1		,
+	@PageSize		INT					=	10		,
+	@SortColumn		NVARCHAR(255)		=	NULL	,
+	@SortDirection	NVARCHAR(20)		=	NULL
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+	--DECLARATIONS
+	DECLARE @TotalCount AS INT	
+
+	CREATE TABLE #tempStudentDetail
+	(
+			[RowNum]							INT					NOT NULL
+		,	[Id]								UNIQUEIDENTIFIER	NOT NULL				
+		,   [Name]								NVARCHAR(500)		NULL	
+		,   [Email]								NVARCHAR(500)		NULL	
+		,	[Password]							NVARCHAR(2000)		NULL									
+		,	[CreatedOn]							DATETIME			NULL
+		,   [IsActive]							BIT					NULL
+		,   [IsRecordActivity]					BIT					NULL
+		,	[TotalLoggedInDurationInSeconds]	DECIMAL				NULL
+	)
+	--DECLARATIONS OVER
+
+	
+	-- PREPARING DATA
+	SET @TotalCount = (SELECT COUNT(DISTINCT UD.Id) 
+						FROM [dbo].[UserDetail] UD 
+								INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+									AND ISNULL(URM.IsDeleted,0) = 0									
+
+								INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+									AND ISNULL(UR.IsDeleted,0) = 0
+								INNER JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+									AND ISNULL(TSM.IsDeleted,0) = 0
+									AND TSM.TutorId = @TutorId
+									
+									
+						WHERE	ISNULL(UD.IsDeleted,0) = 0		
+								AND ISNULL(UR.Code,'') = 'STUDENT'						
+								AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+								AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')
+						)
+
+
+		INSERT INTO #tempStudentDetail 
+		(
+			[RowNum], 
+			[Id], 
+			[Name], 
+			[Email], 
+			[Password],
+			[CreatedOn], 
+			[IsActive],
+			[IsRecordActivity],
+			[TotalLoggedInDurationInSeconds]
+		)
+			SELECT 
+				ROW_NUMBER() OVER 
+				(	
+					ORDER BY  
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'asc'
+							THEN UD.[CreatedOn] END ASC,
+						CASE WHEN @SortColumn = 'CreatedOn' and @SortDirection = 'desc'
+							THEN UD.[CreatedOn] END DESC,
+
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'asc'
+							THEN UD.[Name] END ASC,
+						CASE WHEN @SortColumn = 'Name' and @SortDirection = 'desc'
+							THEN UD.[Name] END DESC,
+
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'asc'
+							THEN UD.[Email] END ASC,
+						CASE WHEN @SortColumn = 'Email' and @SortDirection = 'desc'
+							THEN UD.[Email] END DESC,
+
+						CASE WHEN ISNULL(@SortColumn,'') = '' AND ISNULL(@SortDirection,'') = ''
+							THEN UD.[Name] END ASC
+
+				) AS RowNum,
+				UD.[Id],		
+				UD.[Name],
+				UD.[Email],		
+				UD.[Password],		
+				UD.[CreatedOn],
+				ISNULL(UD.[IsActive],0) AS [IsActive],
+				ISNULL(UD.[IsRecordActivity],0) AS  [IsRecordActivity],
+				ISNULL((
+					SELECT SUM(UAL.LoggedInDurationInSeconds) FROM [dbo].[UsersActivityLog] UAL 
+						WHERE	ISNULL(UAL.IsDeleted,0) = 0 AND UAL.UserId = UD.Id 
+								AND ISNULL(UAL.LoggedInDurationInSeconds,0) <> 0 
+				),0) AS TotalLoggedInDurationInSeconds
+		FROM [dbo].[UserDetail] UD 
+				INNER JOIN [dbo].[UserRoleMapping] URM ON URM.UserId = UD.Id
+					AND ISNULL(URM.IsDeleted,0) = 0									
+
+				INNER JOIN [dbo].[UserRole] UR ON UR.Id = URM.UserRoleId
+					AND ISNULL(UR.IsDeleted,0) = 0					
+
+				INNER JOIN [dbo].[TutorStudentMapping] TSM ON TSM.StudentId = UD.Id
+					AND ISNULL(TSM.IsDeleted,0) = 0
+					AND TSM.TutorId = @TutorId
+									
+									
+		WHERE	ISNULL(UD.IsDeleted,0) = 0								
+				AND ISNULL(UR.Code,'') = 'STUDENT'
+				AND (ISNULL(@Name,'') = '' OR UD.[Name] LIKE '%'+ @Name +'%') 
+				AND (ISNULL(@Email,'') = '' OR UD.[Email] LIKE '%'+ @Email +'%')				
+	-- DATA PREPARED, MOVING TO PAGGING
+
+
+	-- PAGING STARTED
+	SELECT 
+			temp.[RowNum],
+			temp.[Id],	
+			temp.[Name],				
+			temp.[Email],		
+			temp.[Password],	
+			temp.[CreatedOn],
+			temp.IsActive, 
+			temp.IsRecordActivity,
+			temp.TotalLoggedInDurationInSeconds,
+			@TotalCount AS TotalCount
+	FROM	
+		#tempStudentDetail AS temp
+	WHERE temp.RowNum BETWEEN (((@PageNum - 1) * @PageSize) + 1) AND (@PageNum * @PageSize)	
+	-- PAGING COMPLETED
+
+END

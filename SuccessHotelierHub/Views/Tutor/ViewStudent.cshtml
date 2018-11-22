@@ -59,10 +59,11 @@
                                     <th class=""></th>
                                     <th class="width_10">Name</th>
                                     <th class="width_20">Email</th>
+                                    <th class="width_10">Password</th>
                                     <th class="width_5">Status</th>
                                     <th class="width_5">Record Activity</th>
                                     <th class="width_10">Total Duration</th>
-                                    <th class="width_40">Action</th>
+                                    <th class="width_30">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -170,6 +171,11 @@
             },
             {
                 targets: 3,
+                data: "Password",
+                orderable: false
+            },
+            {
+                targets: 4,
                 data: "IsActive",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -182,7 +188,7 @@
                 }
             },
             {
-                targets: 4,
+                targets: 5,
                 data: "IsRecordActivity",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -195,7 +201,7 @@
                 }
             },
             {
-                targets: 5,
+                targets: 6,
                 data: "TotalLoggedInDurationInSeconds",
                 orderable: false,
                 render: function (data, type, full, meta) {
@@ -208,7 +214,7 @@
                 }
             },
             {
-                targets: 6,
+                targets: 7,
                 data: "Id",
                 orderable: false,
                 className: "text-center",

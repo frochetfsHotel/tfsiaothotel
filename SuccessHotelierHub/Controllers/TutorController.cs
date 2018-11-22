@@ -549,6 +549,15 @@ namespace SuccessHotelierHub.Controllers
                 if (dbRecords != 0)
                     totalRecords = Convert.ToInt32(dbRecords);
 
+                if (students != null && students.Count > 0)
+                {
+                    foreach (var student in students)
+                    {
+                        if (!string.IsNullOrWhiteSpace(student.Password))
+                            student.Password = Utility.Utility.Decrypt(student.Password, Utility.Utility.EncryptionKey);
+                    }
+                }
+
                 return Json(new
                 {
                     IsSuccess = true,
