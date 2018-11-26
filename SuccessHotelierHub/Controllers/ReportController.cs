@@ -216,7 +216,7 @@ namespace SuccessHotelierHub.Controllers
                 //address = profile.Address;
                 address = profile.Address.Replace(",", Delimeter.SPACE);
             }
-            else
+            else if (!string.IsNullOrWhiteSpace(profile.HomeAddress))
             {
                 //address = profile.HomeAddress;
                 address = profile.HomeAddress.Replace(",", Delimeter.SPACE);
@@ -449,7 +449,7 @@ namespace SuccessHotelierHub.Controllers
                             //address = profile.Address;
                             address = profile.Address.Replace(",", Delimeter.SPACE);
                         }
-                        else
+                        else if (!string.IsNullOrWhiteSpace(profile.HomeAddress))
                         {
                             //address = profile.HomeAddress;
                             address = profile.HomeAddress.Replace(",", Delimeter.SPACE);
