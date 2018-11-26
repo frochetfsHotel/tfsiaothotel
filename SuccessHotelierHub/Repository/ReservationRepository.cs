@@ -933,11 +933,12 @@ namespace SuccessHotelierHub.Repository
             return reservationId;
         }
 
-        public void LoadTempBulkReservation(int userId)
+        public void LoadTempBulkReservation(int userId, DateTime? currentDate)
         {
             SqlParameter[] parameters =
                {
-                    new SqlParameter { ParameterName = "@UserId", Value = userId }
+                    new SqlParameter { ParameterName = "@UserId", Value = userId },
+                    new SqlParameter { ParameterName = "@CurrentDate", Value = currentDate }
                 };
 
             DALHelper.Execute("LoadTempBulkReservation", parameters);

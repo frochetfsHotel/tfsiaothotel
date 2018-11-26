@@ -49,5 +49,8 @@ namespace SuccessHotelierHub.Models
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
+
+        //Temp Property
+        public bool IsDummyReservation { get; set; }
     }
 }
