@@ -59,23 +59,38 @@ namespace SuccessHotelierHub
                         {
                             if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.SET_LIMIT)
                             {
-                                var loginStartTime = userLoginTime.LoginStartTime.Value;
-                                var loginEndTime = userLoginTime.LoginEndTime.Value;
+                                var weekDay = (int)DateTime.Now.DayOfWeek;
 
-                                var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
-                                var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+                                var userLoginTimeConfiguration = userRepository.GetUserLoginTimeConfigurationByTutor(tutorDetails[0].TutorId, weekDay).FirstOrDefault();
 
-                                var currentDateTime = DateTime.Now;
-
-                                if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                                //Check is login allow for current week day.
+                                if (userLoginTimeConfiguration != null)
                                 {
-                                    return LoginStatus.InvalidLoginTime;
-                                }
-                                else
-                                {
-                                    LogInManager.LoginStartTime = loginStartTime;
-                                    LogInManager.LoginEndTime = loginEndTime;
-                                }
+                                    if (userLoginTimeConfiguration.IsAllowLogin == true)
+                                    {
+                                        var loginStartTime = userLoginTimeConfiguration.LoginStartTime.Value;
+                                        var loginEndTime = userLoginTimeConfiguration.LoginEndTime.Value;
+
+                                        var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
+                                        var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+
+                                        var currentDateTime = DateTime.Now;
+
+                                        if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                                        {
+                                            return LoginStatus.InvalidLoginTime;
+                                        }
+                                        else
+                                        {
+                                            LogInManager.LoginStartTime = loginStartTime;
+                                            LogInManager.LoginEndTime = loginEndTime;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return LoginStatus.InvalidLoginTime;
+                                    }
+                                }                                
                             }
                             else if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.RESTRICTED)
                             {
@@ -164,32 +179,56 @@ namespace SuccessHotelierHub
                     if (tutorDetails != null && tutorDetails.Count > 0)
                     {
                         var userLoginTime = userRepository.GetUserLoginTimeByTutor(tutorDetails[0].TutorId).FirstOrDefault();
-
+                        
                         //If time limt set then compare current time and time limit
                         if (userLoginTime != null && !string.IsNullOrWhiteSpace(userLoginTime.ConfigurationType))
                         {
                             if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.SET_LIMIT)
                             {
-                                var loginStartTime = userLoginTime.LoginStartTime.Value;
-                                var loginEndTime = userLoginTime.LoginEndTime.Value;
+                                var weekDay = (int)DateTime.Now.DayOfWeek;
 
-                                var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
-                                var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+                                var userLoginTimeConfiguration = userRepository.GetUserLoginTimeConfigurationByTutor(tutorDetails[0].TutorId, weekDay).FirstOrDefault();
 
-                                var currentDateTime = DateTime.Now;
-
-                                if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                                //Check is login allow for current week day.
+                                if(userLoginTimeConfiguration != null)
                                 {
-                                    return LoginStatus.Failure;
-                                }
-                                else
-                                {
-                                    LogInManager.LoginStartTime = loginStartTime;
-                                    LogInManager.LoginEndTime = loginEndTime;
+                                    if(userLoginTimeConfiguration.IsAllowLogin == true)
+                                    {
+                                        var loginStartTime = userLoginTimeConfiguration.LoginStartTime.Value;
+                                        var loginEndTime = userLoginTimeConfiguration.LoginEndTime.Value;
+
+                                        var dtLoginStartTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginStartTime.Hours, loginStartTime.Minutes, loginStartTime.Seconds);
+                                        var dtLoginEndTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, loginEndTime.Hours, loginEndTime.Minutes, loginEndTime.Seconds);
+
+                                        var currentDateTime = DateTime.Now;
+
+                                        if (!((currentDateTime > dtLoginStartTime) && (currentDateTime < dtLoginEndTime)))
+                                        {
+                                            //Update Flag IsLoggedIn = false 
+                                            userRepository.UpdateIsLoggedInFlag(user.Id, false);
+
+                                            return LoginStatus.Failure;
+                                        }
+                                        else
+                                        {
+                                            LogInManager.LoginStartTime = loginStartTime;
+                                            LogInManager.LoginEndTime = loginEndTime;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Update Flag IsLoggedIn = false 
+                                        userRepository.UpdateIsLoggedInFlag(user.Id, false);
+
+                                        return LoginStatus.Failure;
+                                    }
                                 }
                             }
                             else if (userLoginTime.ConfigurationType.Trim() == Utility.UserLoginConfigurationType.RESTRICTED)
                             {
+                                //Update Flag IsLoggedIn = false 
+                                userRepository.UpdateIsLoggedInFlag(user.Id, false);
+
                                 return LoginStatus.Failure;
                             }
                         }

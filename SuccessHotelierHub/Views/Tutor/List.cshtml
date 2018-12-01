@@ -60,15 +60,26 @@
                     </div>
                 </div>
 
-
+                <div class="col-xs-12 padding-zero m-t" id="divMultipleAction">
+                    <div class="row text-left">
+                        <div class="col-md-12">
+                            <button type="button" id="btnSendEmail" class="btn bg-orange btn-sm" onclick="sendEmailToMultipleTutor();">Send Credentials</button>
+                        </div>                        
+                    </div>
+                </div>
 
                 <div class="col-xs-12 padding-zero m-t-md">
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover table-striped" id="tblTutor">
                             <thead>
                                 <tr>
-                                    <th class=""></th>
-                                    <th class="width_20">College Group</th>
+                                    <th class="width_5">
+                                        <label class="container1" for="chkAllTutor">
+                                            <input type="checkbox" class="chkAllTutor" id="chkAllTutor" name="chkAllTutor" value="All">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </th>
+                                    <th class="width_15">College Group</th>
                                     <th class="width_15">Name</th>
                                     <th class="width_20">Email</th>                                    
                                     <th class="width_5">Status</th>
@@ -92,6 +103,7 @@
 <script type="text/javascript">
     var currentPage = 1;
     var grdTutor;
+    var selectedTutorIds = [];
 
     $(document).ready(function () {
         setTimeout(InitializeTutorGrid, 200);
@@ -99,6 +111,15 @@
         $("input[type='text']").keyup(function (event) {
             if (event.keyCode === 13) {
                 $("#btnSearch").click();
+            }
+        });
+
+        //Checkbox all change event.
+        $("#chkAllTutor").change(function () {
+            if (this.checked) {
+                $('.chkTutor').prop("checked", true).trigger("change");
+            } else {
+                ClearTutorIdsArray();
             }
         });
     });
@@ -148,6 +169,7 @@
                 },
                 complete: function () {
                     hideLoader();
+                    BindCheckBoxTutorChangeEvent();
                 },
                 url: '@Url.Content("~/Tutor/Search")',
                 data: SearchTutorParameters,
@@ -168,8 +190,22 @@
             {
                 targets: 0,
                 data: "CreatedOn",
-                orderable: true,
-                "visible": false
+                orderable: false,
+                //"visible": false
+                render: function (data, type, full, meta) {
+                    var chkBox = "";
+                    var checked = "";
+                    if (selectedTutorIds != null && selectedTutorIds.length > 0) {
+                        if (arrayContains(full.Id, selectedTutorIds) == true) {
+                            checked = "checked";
+                        }
+                    }
+
+                    chkBox += "<label class='container1' for='chkTutor_" + full.Id + "'>";
+                    chkBox += "<input type='checkbox' class='chkTutor' id='chkTutor_" + full.Id + "' name='chkTutor_" + full.Id + "' value='" + full.Id + "' " + checked + "/>";
+                    chkBox += "<span class='checkmark'></span> </label>";
+                    return chkBox;
+                }
             },
             {
                 targets: 1,
@@ -240,6 +276,9 @@
         $('#Name').val('');
         $('#Email').val('');
         $('#CollegeGroupId').val('');
+        
+        selectedTutorIds = [];
+        $('#chkAllTutor').prop("checked", false);
 
         searchTutor();
     }
@@ -328,6 +367,74 @@
         });
     }
 
+    /************** Send Credentials in Email : START *******************/
+
+    function BindCheckBoxTutorChangeEvent() {
+        $(".chkTutor").change(function () {
+            if (this.checked) {
+                AddTutorIdIntoArray($(this).val());
+            } else {
+                RemoveTutorIdFromArray($(this).val());
+            }
+        });
+    }
+
+    function AddTutorIdIntoArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedTutorIds.push(id);
+        }
+    }
+
+    function RemoveTutorIdFromArray(id) {
+        if (!IsNullOrEmpty(id)) {
+            selectedTutorIds = RemoveArrayItemByValue(id, selectedTutorIds);
+        }
+    }
+
+    function ClearTutorIdsArray() {
+        selectedTutorIds = [];
+        $(".chkTutor").prop("checked", false);
+        $("#chkAllTutor").prop("checked", false);
+    }
+
+    function sendEmailToMultipleTutor() {
+
+        if (selectedTutorIds != null && selectedTutorIds.length > 0) {
+            //Ajax request to send credentials in email.
+            $.ajax({
+                beforeSend: function (xhr) {
+                    showLoader();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    ShowErrorMessage(jqXHR.status, errorThrown);
+                },
+                complete: function () {
+                    hideLoader();
+                },
+                async: true,
+                url: '@Url.Content("~/Tutor/SendLoginCredentials")',
+                type: 'POST',
+                data: { ids: selectedTutorIds },
+                success: function (response) {
+                    if (!IsNullOrEmpty(response)) {
+                        if (response.IsSuccess == true) {
+
+                            clearTutor();
+
+                            var msg = response.data;
+                            showToaster(msg, ToasterType.SUCCESS);
+                        }
+                        else {
+                            showToaster(response.errorMessage, ToasterType.ERROR);
+                        }
+                    }
+                }
+            });
+        } else {
+            showToaster("Please select at least one checkbox to send email.", ToasterType.ERROR);
+        }
+    }
+    /************** Send Credentials in Email : END *******************/
     
 </script>
 

@@ -65337,3 +65337,278 @@ BEGIN
 END
 
 
+
+/**********************************************************************************************************************************************
+Name : Nilesh
+Date : 01-DEC-2018
+************************************************************************************************************************************************/
+
+/*** Create new UserLoginTimeConfiguration table ***/
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[UserLoginTimeConfiguration](
+	[Id] [uniqueidentifier] NOT NULL,
+	[TutorId] [uniqueidentifier] NOT NULL,
+	[WeekDay] [int] NOT NULL,
+	[IsAllowLogin] [bit] NOT NULL,
+	[CreatedBy] [int] NULL,
+	[CreatedOn] [datetime] NULL,
+	[UpdatedBy] [int] NULL,
+	[UpdatedOn] [datetime] NULL,	
+	[IsDeleted] [bit] NULL,
+ CONSTRAINT [PK_UserLoginTimeConfiguration] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/***********************************************************************************************************************************************
+	SP Name : AddUserLoginTimeConfiguration
+	Comment : New SP
+************************************************************************************************************************************************/
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[AddUserLoginTimeConfiguration]			
+	@TutorId		UNIQUEIDENTIFIER				,		
+	@WeekDay		INT								,
+	@IsAllowLogin	BIT								,	
+	@CreatedBy		INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UserLoginTimeConfiguration]
+           (
+				 [Id]      		   
+				,[TutorId]				      
+				,[WeekDay]		   
+				,[IsAllowLogin]
+				,[CreatedBy]
+				,[CreatedOn]				
+		   )
+     VALUES
+           (
+				 @Id				   
+				,@TutorId		
+				,@WeekDay
+				,@IsAllowLogin
+				,@CreatedBy
+				,GETDATE()
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/***********************************************************************************************************************************************
+	SP Name : UpdateUserLoginTimeConfiguration
+	Comment : New SP
+************************************************************************************************************************************************/
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UpdateUserLoginTimeConfiguration]	
+	@Id					UNIQUEIDENTIFIER				,	
+	@TutorId			UNIQUEIDENTIFIER				,		
+	@WeekDay			INT								,
+	@IsAllowLogin		BIT								,	
+	@UpdatedBy			INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserLoginTimeConfiguration] 
+		SET	[IsAllowLogin]		=	@IsAllowLogin		   
+		   ,[UpdatedBy]			=	@UpdatedBy		   
+		   ,[UpdatedOn]			=	 GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND [Id] 		= 	@Id
+			AND [TutorId] 	= 	@TutorId
+			AND [WeekDay] 	= 	@WeekDay
+
+	SELECT @Id AS Id
+    
+END
+
+
+/***********************************************************************************************************************************************
+	SP Name : GetUserLoginTimeConfigurationByTutor
+	Comment : New SP
+************************************************************************************************************************************************/
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+	EXEC [dbo].[GetUserLoginTimeConfigurationByTutor]
+			@TutorId = '1085C73E-BA8A-4D1F-8421-A729614FB76E',			
+			@WeekDay = NULL
+*/
+
+CREATE PROCEDURE [dbo].[GetUserLoginTimeConfigurationByTutor]	
+	@TutorId 	UNIQUEIDENTIFIER				,
+	@WeekDay 	INT					=	NULL
+AS
+BEGIN
+	
+	SELECT * FROM [dbo].[UserLoginTimeConfiguration]
+		WHERE	ISNULL(IsDeleted ,0) = 0
+				AND [TutorId] = @TutorId
+				AND (@WeekDay IS NULL OR [WeekDay] = @WeekDay)
+END
+
+
+/***********************************************************************************************************************************************
+	SP Name : DeleteUserLoginTimeConfigurationByTutor
+	Comment : New SP
+************************************************************************************************************************************************/
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[DeleteUserLoginTimeConfigurationByTutor]	
+	@TutorId		UNIQUEIDENTIFIER				,
+	@UpdatedBy		INT					=	NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserLoginTimeConfiguration] 
+		SET IsDeleted = 1,
+			UpdatedOn = GETDATE(),
+			UpdatedBy = @UpdatedBy
+		WHERE	ISNULL(IsDeleted,0) = 0
+				AND [TutorId] = @TutorId
+	
+
+	SELECT @TutorId AS Id
+    
+END
+
+
+
+/*********************************************************************************************************************************************/
+
+/*************** Add new LoginStartTime & LoginEndTime Columns in UserLoginTimeConfiguration table ***************/
+
+ALTER TABLE UserLoginTimeConfiguration ADD [LoginStartTime] TIME(7) NULL
+GO
+
+ALTER TABLE UserLoginTimeConfiguration ADD [LoginEndTime] TIME(7) NULL
+GO
+
+
+/***********************************************************************************************************************************************
+	SP Name : AddUserLoginTimeConfiguration
+	Comment : Add Login Start Time & Login End Time.
+************************************************************************************************************************************************/
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[AddUserLoginTimeConfiguration]			
+	@TutorId		UNIQUEIDENTIFIER				,		
+	@WeekDay		INT								,
+	@IsAllowLogin	BIT								,
+	@LoginStartTime	TIME(7)				=	NULL 	,
+	@LoginEndTime	TIME(7)				=	NULL 	,
+	@CreatedBy		INT					=	NULL
+AS
+BEGIN
+
+
+	SET NOCOUNT ON;
+
+	DECLARE @Id UNIQUEIDENTIFIER
+	SET @Id = NEWID()
+
+	INSERT INTO [dbo].[UserLoginTimeConfiguration]
+           (
+				 [Id]      		   
+				,[TutorId]				      
+				,[WeekDay]		   
+				,[IsAllowLogin]
+				,[LoginStartTime]
+				,[LoginEndTime]
+				,[CreatedBy]
+				,[CreatedOn]				
+		   )
+     VALUES
+           (
+				 @Id				   
+				,@TutorId		
+				,@WeekDay
+				,@IsAllowLogin
+				,@LoginStartTime
+				,@LoginEndTime
+				,@CreatedBy
+				,GETDATE()
+           )
+
+		SELECT @Id AS Id    
+END
+
+
+/***********************************************************************************************************************************************
+	SP Name : UpdateUserLoginTimeConfiguration
+	Comment : Add Login Start Time & Login End Time.
+************************************************************************************************************************************************/
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[UpdateUserLoginTimeConfiguration]	
+	@Id					UNIQUEIDENTIFIER				,	
+	@TutorId			UNIQUEIDENTIFIER				,		
+	@WeekDay			INT								,
+	@IsAllowLogin		BIT								,	
+	@LoginStartTime		TIME(7)				=	NULL 	,
+	@LoginEndTime		TIME(7)				=	NULL 	,
+	@UpdatedBy			INT					=	NULL	
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE [dbo].[UserLoginTimeConfiguration] 
+		SET	[IsAllowLogin]		=	@IsAllowLogin		   
+		   ,[LoginStartTime]	=	@LoginStartTime		   
+		   ,[LoginEndTime]		=	@LoginEndTime		   
+		   ,[UpdatedBy]			=	@UpdatedBy		   
+		   ,[UpdatedOn]			=	GETDATE()
+     WHERE	ISNULL(IsDeleted,0) = 0 
+			AND [Id] 		= 	@Id
+			AND [TutorId] 	= 	@TutorId
+			AND [WeekDay] 	= 	@WeekDay
+
+	SELECT @Id AS Id
+    
+END

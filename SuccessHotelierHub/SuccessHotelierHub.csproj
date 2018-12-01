@@ -356,6 +356,7 @@
     <Compile Include="Models\TitleVM.cs" />
     <Compile Include="Models\TutorStudentMappingVM.cs" />
     <Compile Include="Models\UserGroupVM.cs" />
+    <Compile Include="Models\UserLoginTimeConfigurationVM.cs" />
     <Compile Include="Models\UserLoginTimeVM.cs" />
     <Compile Include="Models\UserPagesVM.cs" />
     <Compile Include="Models\UserRoleMappingVM.cs" />
@@ -434,6 +435,7 @@
     <Content Include="Content\img\user-profile.png" />
     <Content Include="HtmlTemplates\ReservationConfirmationEmail.html" />
     <Content Include="HtmlTemplates\SendFolioReport.html" />
+    <Content Include="HtmlTemplates\WelcomeTutor.html" />
     <Content Include="HtmlTemplates\WelcomeUser.html" />
     <Content Include="Scripts\AdminLTE\select2\select2.min.js" />
     <Content Include="Scripts\custom\date.format.js" />

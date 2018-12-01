@@ -6,7 +6,7 @@
     var configurationType = Model.ConfigurationType;
 
     var loginStartTimeText = Model.LoginStartTimeText;
-    var loginEndTimeText = Model.LoginEndTimeText;
+    var loginEndTimeText = Model.LoginEndTimeText;    
 }
 
 <section class="content-header">
@@ -35,7 +35,7 @@
             <!--HIDDEN FIELD-->
 
             <div class="box-body pt_10 pb-0">
-                <div class="col-xs-12 user-list-radio m-b-sm">                    
+                <div class="col-xs-12 user-list-radio m-b-sm">
                     <div class="row">
                         <label class="label-bold m-r-lg">Type : </label>
                         <label class="container_radio" for="rbIsAlways">
@@ -47,42 +47,111 @@
                             <span>Set Limit</span>
                             <input type="radio" class="cursor-P flat-red" id="rbIsSetLimit" name="ConfigurationType" value="@UserLoginConfigurationType.SET_LIMIT" onchange="showHideTimeFrame('@UserLoginConfigurationType.SET_LIMIT')">
                             <span class="checkmark_radio"></span>
-                        </label> 
+                        </label>
                         <label class="container_radio ml-35" for="rbIsDontAllow">
                             <span>Restricted</span>
                             <input type="radio" class="cursor-P flat-red" id="rbIsDontAllow" name="ConfigurationType" value="@UserLoginConfigurationType.RESTRICTED" onchange="showHideTimeFrame('@UserLoginConfigurationType.RESTRICTED')">
                             <span class="checkmark_radio"></span>
-                        </label>     
+                        </label>
                     </div>
-                                   
                 </div>
+
                 <div class="col-xs-12 padding-zero m-t-md" id="divShowTimeFrame" style="display:none;">
+                    @*<div class="row">
+                            <div class="col-md-4 form-group">
+                                <div class="bootstrap-timepicker" data-date-format="HH:mm">
+                                    @Html.LabelFor(m => m.LoginStartTimeText, new { @class = "required-label" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.LoginStartTimeText, new { @class = "form-control mytimepicker", placeholder = "hh:mm" })
+                                        <label class="input-group-addon cursor-P" for="LoginStartTimeText">
+                                            <i class="fa fa-clock-o"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(m => m.LoginStartTimeText, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <div class="bootstrap-timepicker" data-date-format="HH:mm">
+                                    @Html.LabelFor(m => m.LoginEndTimeText, new { @class = "required-label" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.LoginEndTimeText, new { @class = "form-control mytimepicker", placeholder = "hh:mm" })
+                                        <label class="input-group-addon cursor-P" for="LoginEndTimeText">
+                                            <i class="fa fa-clock-o"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(m => m.LoginEndTimeText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+
                     <div class="row">
-                        <div class="col-md-4 form-group">
-                            <div class="bootstrap-timepicker" data-date-format="HH:mm">
-                                @Html.LabelFor(m => m.LoginStartTimeText, new { @class = "required-label" })
-                                <div class="input-group">
-                                    @Html.TextBoxFor(m => m.LoginStartTimeText, new { @class = "form-control mytimepicker", placeholder = "hh:mm"})
-                                    <label class="input-group-addon cursor-P" for="LoginStartTimeText">
-                                        <i class="fa fa-clock-o"></i>
-                                    </label>
-                                </div>
-                            </div>
-                            @Html.ValidationMessageFor(m => m.LoginStartTimeText, "", new { @class = "text-danger" })
-                        </div>
-                        <div class="col-md-4 form-group">
-                            <div class="bootstrap-timepicker" data-date-format="HH:mm">
-                                @Html.LabelFor(m => m.LoginEndTimeText, new { @class = "required-label" })
-                                <div class="input-group">
-                                    @Html.TextBoxFor(m => m.LoginEndTimeText, new { @class = "form-control mytimepicker", placeholder = "hh:mm" })
-                                    <label class="input-group-addon cursor-P" for="LoginEndTimeText">
-                                        <i class="fa fa-clock-o"></i>
-                                    </label>
-                                </div>
-                            </div>
-                            @Html.ValidationMessageFor(m => m.LoginEndTimeText, "", new { @class = "text-danger" })
+                        <div class="col-md-10 form-group table-responsive">
+                            <table class="table table-bordered" id="tblTimeConfiguration">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th class="width_5">
+                                            <label class="container1" for="chkAllWeekDays">
+                                                <input type="checkbox" class="chkAllWeekDays" id="chkAllWeekDays" name="chkAllWeekDays" value="All">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </th>
+                                        <th class="width_10">Week Day</th>
+                                        <th class="width_40">Login Start Time (24 hours format)</th>
+                                        <th class="width_40">Login End Time (24 hours format)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @if (Model.Configurations != null && Model.Configurations.Count > 0)
+                                    {
+                                        for (int intI = 0; intI < Model.Configurations.Count; intI++)
+                                        {
+                                            var loginConfiguration = Model.Configurations.Where(p => p.WeekDay == intI).FirstOrDefault();
+                                            
+                                            <tr id="@("tr_" + intI)">
+                                                <td>
+                                                    <label class="container1 weekdays_checkbox" for="@("chk_" + intI)">
+                                                        <input type="checkbox" id="@("chk_" + intI)" name="@("chk_" + intI)" value="@intI" class="chkWeekDay" @((loginConfiguration != null && loginConfiguration.IsAllowLogin) ? "checked" : "") />
+                                                        <span class="checkmark"></span>
+                                                    </label>
+                                                </td>
+                                                <td>
+                                                    <label for="text-bold">@(Utility.GetWeekDayName(intI))</label>
+                                                </td>
+                                                <td>
+                                                    <div class="col-md-12 form-group">
+                                                        <div class="bootstrap-timepicker" data-date-format="HH:mm">
+                                                            <div class="input-group">
+                                                                <input type="text" id="@("txt_starttime_" + intI)" name="@("txt_starttime_" + intI)" class="form-control mytimepicker" placeholder="hh:mm" value="@((loginConfiguration != null && loginConfiguration.IsAllowLogin) ? loginConfiguration.LoginStartTimeText : "")" />
+                                                                <label class="input-group-addon cursor-P" for="@("txt_starttime_" + intI)">
+                                                                    <i class="fa fa-clock-o"></i>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-danger spn_err" id="@("spn_starttime_err_" + intI)"></span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="col-md-12 form-group">
+                                                        <div class="bootstrap-timepicker" data-date-format="HH:mm">
+                                                            <div class="input-group">
+                                                                <input type="text" id="@("txt_endtime_" + intI)" name="@("txt_endtime_" + intI)" class="form-control mytimepicker" placeholder="hh:mm" value="@((loginConfiguration != null && loginConfiguration.IsAllowLogin) ? loginConfiguration.LoginEndTimeText : "")" />
+                                                                <label class="input-group-addon cursor-P" for="@("txt_endtime_" + intI)">
+                                                                    <i class="fa fa-clock-o"></i>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-danger spn_err" id="@("spn_endtime_err_" + intI)"></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class="box-footer text-right">
@@ -111,25 +180,24 @@
             }
         }
 
-        //Timepicker
-        $('#LoginStartTimeText').timepicker({
-            showInputs: false,
-            showMeridian: false,
-            minuteStep: 1
+        //Checkbox all change event.
+        $("#chkAllWeekDays").change(function () {
+            if (this.checked) {
+                $('.chkWeekDay').prop("checked", true);
+            } else {
+                $('.chkWeekDay').prop("checked", false);
+            }
         });
 
-        if (IsNullOrEmpty('@loginStartTimeText')) {
-            $('#LoginStartTimeText').val('');
-        }
-
-        $('#LoginEndTimeText').timepicker({
+        //Timepicker
+        $('.mytimepicker').timepicker({
             showInputs: false,
             showMeridian: false,
             minuteStep: 1
         });
 
         //Input Mask
-        $('#LoginStartTimeText').inputmask(
+        $('.mytimepicker').inputmask(
             "hh:mm", {
                 placeholder: "hh:mm",
                 insertMode: false,
@@ -137,17 +205,16 @@
             }
         );
 
-        $('#LoginEndTimeText').inputmask(
-           "hh:mm", {
-               placeholder: "hh:mm",
-               insertMode: false,
-               showMaskOnHover: true
-           }
-       );
+        //Clear Time Picker text box if value not exist.
+        $('.chkWeekDay').each(function () {
+            var weekDay = $(this).val();           
 
-        if (IsNullOrEmpty('@loginEndTimeText')) {
-            $('#LoginEndTimeText').val('');
-        }
+            if (!$(this).is(':checked')) {
+                $('form#frmUserLoginTime #txt_starttime_' + weekDay).val('');
+                $('form#frmUserLoginTime #txt_endtime_' + weekDay).val('');
+            }
+        });
+
     });
 
     function showHideTimeFrame(type) {
@@ -163,7 +230,6 @@
         var errorMessage = "";
         var blnValid = true;
 
-
         if ($("#frmUserLoginTime").valid() == false) {
             showToaster("Please fill all the Required Fields first", ToasterType.ERROR);
             blnValid = false;
@@ -171,21 +237,46 @@
 
         var isSetLimit = $('#rbIsSetLimit').prop("checked");
         if (isSetLimit) {
-            var loginStartTime = $('#LoginStartTimeText').val();
-            var loginEndTime = $('#LoginEndTimeText').val();
 
-            if (!IsNullOrEmpty(loginStartTime) && !IsNullOrEmpty(loginEndTime)) {
+            var blnIsCheckboxChecked = false;
+            $('.chkWeekDay').each(function () {
+                var weekDay = $(this).val();
 
-                var dtStartTime = GetDateObjectFromTime(loginStartTime);
-                var dtEndTime = GetDateObjectFromTime(loginEndTime);
+                $('form#frmUserLoginTime #spn_starttime_err_' + weekDay).html("");
+                $('form#frmUserLoginTime #spn_endtime_err_' + weekDay).html("");
 
-                if (dtEndTime < dtStartTime) {
-                    showToaster("Login start time must be less than login end time.", ToasterType.ERROR);
-                    blnValid = false;
+                if ($(this).is(':checked')) {
+                    blnIsCheckboxChecked = true;
+
+                    var loginStartTime = $('form#frmUserLoginTime #txt_starttime_' + weekDay).val();
+                    var loginEndTime = $('form#frmUserLoginTime #txt_endtime_' + weekDay).val();
+
+                    if (IsNullOrEmpty(loginStartTime)) {
+                        $('form#frmUserLoginTime #spn_starttime_err_' + weekDay).html("Please select login start time.");
+                        blnValid = false;
+                    }
+
+                    if (IsNullOrEmpty(loginEndTime)) {
+                        $('form#frmUserLoginTime #spn_endtime_err_' + weekDay).html("Please select login end time.");
+                        blnValid = false;
+                    }
+                    else {
+                        var dtStartTime = GetDateObjectFromTime(loginStartTime);
+                        var dtEndTime = GetDateObjectFromTime(loginEndTime);
+
+                        if (dtEndTime < dtStartTime) {
+                            $('form#frmUserLoginTime #spn_starttime_err_' + weekDay).html("Login start time must be less than login end time.");
+                            blnValid = false;
+                        }
+                    }
                 }
+            });
+
+            if (blnIsCheckboxChecked == false) {
+                showToaster("Please select at least one week day checkbox.", ToasterType.ERROR);
+                return false;
             }
         }
-
 
         return blnValid;
     }
@@ -197,6 +288,37 @@
             var configurationType = trim($('input[name=ConfigurationType]:checked').val());
 
             $('#ConfigurationType').val(configurationType);
+
+            var configurations = [];
+            var tutorId = $('form#frmUserLoginTime #TutorId').val();
+
+            if (configurationType == trim("@UserLoginConfigurationType.SET_LIMIT")) {
+
+                for (i = 0; i < 7; i++) {
+                    var isChecked = $('form#frmUserLoginTime #chk_' + i).prop("checked");
+
+                    var weekDay = $('form#frmUserLoginTime #chk_' + i).val();
+                    var loginStartTime = $('form#frmUserLoginTime #txt_starttime_' + i).val();
+                    var loginEndTime = $('form#frmUserLoginTime #txt_endtime_' + i).val();
+
+                    var configuration = {};
+                    configuration.TutorId = tutorId;
+                    configuration.WeekDay = parseInt(weekDay);
+                    configuration.IsAllowLogin = isChecked;
+                    configuration.LoginStartTimeText = loginStartTime;
+                    configuration.LoginEndTimeText = loginEndTime;
+
+                    configurations.push(configuration);
+                }
+            }
+
+            //Clear error
+            $('.spn_err').html("");
+
+            var formData = $('#frmUserLoginTime').serializeObject();
+
+            //Add additional property in form data.
+            $.extend(formData, { Configurations: configurations });
 
             $.ajax({
                 beforeSend: function (xhr) {
@@ -210,10 +332,10 @@
                 },
                 url: '@Url.Content("~/Tutor/UserLoginTime")',
                 type: 'POST',
-                data: $('#frmUserLoginTime').serialize(),
+                //data: $('#frmUserLoginTime').serialize(),
+                data: formData,
                 success: function (response) {
                     if (!IsNullOrEmpty(response)) {
-
                         if (response.IsSuccess == false) {
                             showToaster(response.errorMessage, ToasterType.ERROR);
                         }
@@ -229,8 +351,6 @@
 
 </script>
 
-
-
 @section scripts {
-    <script type="text/javascript" src="~/Scripts/custom/jquery.inputmask.bundle.js"></script>    
+    <script type="text/javascript" src="~/Scripts/custom/jquery.inputmask.bundle.js"></script>
 }

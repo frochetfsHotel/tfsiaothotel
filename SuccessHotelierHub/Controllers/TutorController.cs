@@ -7,10 +7,11 @@ using SuccessHotelierHub.Models;
 using SuccessHotelierHub.Utility;
 using SuccessHotelierHub.Repository;
 using Hangfire;
+using System.IO;
 
 namespace SuccessHotelierHub.Controllers
 {
-    
+
     public class TutorController : Controller
     {
         #region Declaration
@@ -93,7 +94,7 @@ namespace SuccessHotelierHub.Controllers
                 return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
-        
+
         [HotelierHubAuthorize(Roles = "ADMIN")]
         public ActionResult Create()
         {
@@ -145,7 +146,7 @@ namespace SuccessHotelierHub.Controllers
                 model.UserId = newUserId;
 
                 #endregion
-                
+
                 #region Generate Cashier Number
 
                 var firstTwoCharactersOfName = !string.IsNullOrWhiteSpace(model.Name) ? model.Name.Substring(0, 2) : "";
@@ -231,7 +232,7 @@ namespace SuccessHotelierHub.Controllers
                 model = user[0];
 
                 var collegeGroupList = new SelectList(collegeGroupRepository.GetCollegeGroups(), "Id", "Name").ToList();
-                ViewBag.CollegeGroupList = collegeGroupList;                
+                ViewBag.CollegeGroupList = collegeGroupList;
 
                 return View(model);
             }
@@ -286,7 +287,7 @@ namespace SuccessHotelierHub.Controllers
                 }
 
                 #endregion
-                                
+
                 userId = userRepository.UpdateUserDetail(model);
 
                 if (!string.IsNullOrWhiteSpace(userId))
@@ -407,7 +408,7 @@ namespace SuccessHotelierHub.Controllers
 
             var tutor = userRepository.GetUserDetailById(id).FirstOrDefault();
 
-            if(tutor != null)
+            if (tutor != null)
             {
                 var students = userRepository.GetStudentDetailsForTutorMapping(id, tutor.CollegeGroupId);
 
@@ -422,7 +423,7 @@ namespace SuccessHotelierHub.Controllers
                     return View();
                 }
             }
-            
+
             return RedirectToAction("List");
         }
 
@@ -623,7 +624,7 @@ namespace SuccessHotelierHub.Controllers
                     sortDirection = model.order[0].dir ?? (object)DBNull.Value;
                 }
 
-                model.PageSize = Constants.PAGESIZE;                
+                model.PageSize = Constants.PAGESIZE;
 
                 var activities = usersActivityLogRepository.SearchUsersActivityLog(model, Convert.ToString(sortColumn), Convert.ToString(sortDirection));
 
@@ -687,7 +688,7 @@ namespace SuccessHotelierHub.Controllers
 
                 if (userDetail == null)
                 {
-                    return Json(new { IsSuccess = false, errorMessage = "User details not exist."});
+                    return Json(new { IsSuccess = false, errorMessage = "User details not exist." });
                 }
 
                 model.UserId = userDetail.UserId;
@@ -751,7 +752,7 @@ namespace SuccessHotelierHub.Controllers
 
             var userDetail = userRepository.GetUserDetailById(id).FirstOrDefault();
 
-            if(userDetail != null)
+            if (userDetail != null)
             {
                 model.UserName = userDetail.Name;
                 model.UserEmail = userDetail.Email;
@@ -827,7 +828,7 @@ namespace SuccessHotelierHub.Controllers
 
             UserLoginTimeVM model = new UserLoginTimeVM();
 
-            model.TutorId = LogInManager.LoggedInUser.Id;   
+            model.TutorId = LogInManager.LoggedInUser.Id;
             model.ConfigurationType = UserLoginConfigurationType.RESTRICTED;
 
             if (userLoginDetails != null && userLoginDetails.Count > 0)
@@ -836,7 +837,7 @@ namespace SuccessHotelierHub.Controllers
 
                 model.ConfigurationType = userLoginDetail.ConfigurationType;
                 model.LoginStartTime = userLoginDetail.LoginStartTime;
-                model.LoginEndTime = userLoginDetail.LoginEndTime;                                
+                model.LoginEndTime = userLoginDetail.LoginEndTime;
                 model.UserName = userLoginDetail.UserName;
 
                 if (model.LoginStartTime != null && model.LoginStartTime.HasValue)
@@ -849,6 +850,40 @@ namespace SuccessHotelierHub.Controllers
                 {
                     DateTime endTime = DateTime.Today.Add(model.LoginEndTime.Value);
                     model.LoginEndTimeText = endTime.ToString("HH:mm");
+                }
+
+                //Get user's login time configuration setting
+                var loginTimeConfigurations = userRepository.GetUserLoginTimeConfigurationByTutor(LogInManager.LoggedInUser.Id, null);
+                if (loginTimeConfigurations != null && loginTimeConfigurations.Count > 0)
+                {
+                    foreach(var item in loginTimeConfigurations)
+                    {
+                        if (item.IsAllowLogin)
+                        {
+                            DateTime startTime = DateTime.Today.Add(item.LoginStartTime.Value);
+                            item.LoginStartTimeText = startTime.ToString("HH:mm");
+
+                            DateTime endTime = DateTime.Today.Add(item.LoginEndTime.Value);
+                            item.LoginEndTimeText = endTime.ToString("HH:mm");
+                        }                        
+                    }
+
+                    model.Configurations = loginTimeConfigurations;                    
+                }
+                else
+                {
+                    List<UserLoginTimeConfigurationVM> configurations = new List<UserLoginTimeConfigurationVM>();
+                    for (int i = 0; i < 7; i++) // Sunday to Saturday
+                    {
+                        UserLoginTimeConfigurationVM objTimeConfiguration = new UserLoginTimeConfigurationVM();
+                        objTimeConfiguration.WeekDay = i;
+                        objTimeConfiguration.IsAllowLogin = false;
+                        objTimeConfiguration.LoginStartTimeText = string.Empty;
+                        objTimeConfiguration.LoginEndTimeText = string.Empty;
+
+                        configurations.Add(objTimeConfiguration);
+                    }
+                    model.Configurations = configurations;
                 }
             }
             return View(model);
@@ -864,43 +899,131 @@ namespace SuccessHotelierHub.Controllers
                 DateTime startTime = DateTime.Now;
                 DateTime endTime = DateTime.Now;
 
-                if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT) 
+                if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT)
                 {
-                    if (!string.IsNullOrWhiteSpace(model.LoginStartTimeText))
+                    #region Add/Update Time Configuration Setting
+
+                    if (model.Configurations != null && model.Configurations.Count > 0)
                     {
-                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                        string date = (todayDate + " " + model.LoginStartTimeText);
-                        startTime = Convert.ToDateTime(date);
-
-                        model.LoginStartTime = startTime.TimeOfDay;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(model.LoginEndTimeText))
-                    {
-                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
-                        string date = (todayDate + " " + model.LoginEndTimeText);
-                        endTime = Convert.ToDateTime(date);
-
-                        model.LoginEndTime = endTime.TimeOfDay;
-                    }
-
-                    if (endTime < startTime)
-                    {
-                        return Json(new
+                        var loginTimeConfigurations = userRepository.GetUserLoginTimeConfigurationByTutor(LogInManager.LoggedInUser.Id, null);
+                        if (loginTimeConfigurations != null && loginTimeConfigurations.Count > 0)
                         {
-                            IsSuccess = false,
-                            errorMessage = "Login start time must be less than login end time."
-                        });
+                            for (int i = 0; i < 7; i++)  // Sunday to Saturday
+                            {
+                                var existingTimeConfiguration = loginTimeConfigurations.Where(p => p.WeekDay == i).FirstOrDefault();
+                                var newTimeConfiguration = model.Configurations.Where(p => p.WeekDay == i).FirstOrDefault();
+
+                                if (existingTimeConfiguration != null)
+                                {
+                                    existingTimeConfiguration.IsAllowLogin = newTimeConfiguration.IsAllowLogin;
+
+                                    if (existingTimeConfiguration.IsAllowLogin)
+                                    {
+                                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+
+                                        string dateStart = (todayDate + " " + newTimeConfiguration.LoginStartTimeText);
+                                        startTime = Convert.ToDateTime(dateStart);
+
+                                        string dateEnd = (todayDate + " " + newTimeConfiguration.LoginEndTimeText);
+                                        endTime = Convert.ToDateTime(dateEnd);
+
+                                        existingTimeConfiguration.LoginStartTime = startTime.TimeOfDay;
+                                        existingTimeConfiguration.LoginEndTime = endTime.TimeOfDay;
+                                    }
+                                    else
+                                    {
+                                        existingTimeConfiguration.LoginStartTime = null;
+                                        existingTimeConfiguration.LoginEndTime = null;
+                                    }
+
+                                    existingTimeConfiguration.TutorId = LogInManager.LoggedInUser.Id;
+                                    existingTimeConfiguration.WeekDay = newTimeConfiguration.WeekDay;                                    
+                                    existingTimeConfiguration.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                    //Update existing configuration
+                                    userRepository.UpdateUserLoginTimeConfiguration(existingTimeConfiguration);
+                                }
+                                else
+                                {
+                                    if(newTimeConfiguration.IsAllowLogin)
+                                    {
+                                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+
+                                        string dateStart = (todayDate + " " + newTimeConfiguration.LoginStartTimeText);
+                                        startTime = Convert.ToDateTime(dateStart);
+
+                                        string dateEnd = (todayDate + " " + newTimeConfiguration.LoginEndTimeText);
+                                        endTime = Convert.ToDateTime(dateEnd);
+
+                                        newTimeConfiguration.LoginStartTime = startTime.TimeOfDay;
+                                        newTimeConfiguration.LoginEndTime = endTime.TimeOfDay;
+                                    }
+                                    else
+                                    {
+                                        newTimeConfiguration.LoginStartTime = null;
+                                        newTimeConfiguration.LoginEndTime = null;
+                                    }
+
+                                    newTimeConfiguration.TutorId = LogInManager.LoggedInUser.Id;
+                                    newTimeConfiguration.CreatedBy = LogInManager.LoggedInUserId;
+
+                                    //Add new configuration
+                                    userRepository.AddUserLoginTimeConfiguration(newTimeConfiguration);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 7; i++) // Sunday to Saturday
+                            {
+                                var newTimeConfiguration = model.Configurations.Where(p => p.WeekDay == i).FirstOrDefault();
+
+                                if (newTimeConfiguration != null)
+                                {
+                                    if(newTimeConfiguration.IsAllowLogin == true)
+                                    {
+                                        string todayDate = DateTime.Now.ToString("dd/MM/yyyy");
+
+                                        string dateStart = (todayDate + " " + newTimeConfiguration.LoginStartTimeText);
+                                        startTime = Convert.ToDateTime(dateStart);
+
+                                        string dateEnd = (todayDate + " " + newTimeConfiguration.LoginEndTimeText);
+                                        endTime = Convert.ToDateTime(dateEnd);
+
+                                        newTimeConfiguration.LoginStartTime = startTime.TimeOfDay;
+                                        newTimeConfiguration.LoginEndTime = endTime.TimeOfDay;
+                                    }
+                                    else
+                                    {
+                                        newTimeConfiguration.LoginStartTime = null;
+                                        newTimeConfiguration.LoginEndTime = null;
+                                    }
+                                    
+                                    newTimeConfiguration.TutorId = LogInManager.LoggedInUser.Id;
+                                    newTimeConfiguration.CreatedBy = LogInManager.LoggedInUserId;
+
+                                    //Add new configuration
+                                    userRepository.AddUserLoginTimeConfiguration(newTimeConfiguration);
+                                }
+                            }
+                        }
                     }
+
+                    #endregion
                 }
                 else
                 {
-                    model.LoginStartTime = null;
-                    model.LoginEndTime = null;
+                    #region Delete Time Configuration Setting If Exist
+
+                    userRepository.DeleteUserLoginTimeConfigurationByTutor(LogInManager.LoggedInUser.Id, LogInManager.LoggedInUserId);
+
+                    #endregion
                 }
 
                 #region Add / Update User Login Time
 
+                model.LoginStartTime = null;
+                model.LoginEndTime = null;
                 model.TutorId = LogInManager.LoggedInUser.Id;
                 model.CreatedBy = LogInManager.LoggedInUserId;
                 model.UpdatedBy = LogInManager.LoggedInUserId;
@@ -909,36 +1032,36 @@ namespace SuccessHotelierHub.Controllers
                 userRepository.AddUpdateUserLoginTime(model);
 
                 #endregion
-
+                
                 #region Set Configuration to Restricted After End Time Limit Reach
 
-                if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT)
-                {
-                    DateTime currentTime = DateTime.Now;
+                //if (model.ConfigurationType == UserLoginConfigurationType.SET_LIMIT)
+                //{
+                //    DateTime currentTime = DateTime.Now;
 
-                    if(currentTime < startTime)
-                    {   
-                        double totalMinutes = ((endTime - currentTime).TotalMinutes + 1);
-                        
-                        //Start Background Schedule Job (Execute only once)
-                        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), TimeSpan.FromMinutes(totalMinutes));
-                    }
-                    else if(currentTime > startTime && currentTime < endTime) //Between Start & End Time
-                    {
-                        double totalMinutes = ((endTime - currentTime).TotalMinutes + 1);
+                //    if(currentTime < startTime)
+                //    {   
+                //        double totalMinutes = ((endTime - currentTime).TotalMinutes + 1);
 
-                        //Start Background Schedule Job (Execute only once)
-                        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), TimeSpan.FromMinutes(totalMinutes));
-                    }
-                    else if(endTime < currentTime)
-                    {
-                        DateTime scheduleDate = endTime.AddDays(1);
-                        scheduleDate = scheduleDate.AddMinutes(1);
+                //        //Start Background Schedule Job (Execute only once)
+                //        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), TimeSpan.FromMinutes(totalMinutes));
+                //    }
+                //    else if(currentTime > startTime && currentTime < endTime) //Between Start & End Time
+                //    {
+                //        double totalMinutes = ((endTime - currentTime).TotalMinutes + 1);
 
-                        //Start Background Schedule Job (Execute only once)
-                        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), scheduleDate.TimeOfDay);
-                    }
-                }
+                //        //Start Background Schedule Job (Execute only once)
+                //        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), TimeSpan.FromMinutes(totalMinutes));
+                //    }
+                //    else if(endTime < currentTime)
+                //    {
+                //        DateTime scheduleDate = endTime.AddDays(1);
+                //        scheduleDate = scheduleDate.AddMinutes(1);
+
+                //        //Start Background Schedule Job (Execute only once)
+                //        BackgroundJob.Schedule(() => SetStudentLoginTimeToRestrict(model.TutorId), scheduleDate.TimeOfDay);
+                //    }
+                //}
 
                 #endregion
 
@@ -956,6 +1079,92 @@ namespace SuccessHotelierHub.Controllers
                     IsSuccess = false,
                     errorMessage = e.Message
                 });
+            }
+        }
+
+        #endregion
+
+        #region Send Login Credentials to Users
+
+        [HttpPost]
+        public ActionResult SendLoginCredentials(List<Guid> ids)
+        {
+            try
+            {
+                if (ids != null)
+                {
+                    bool blnMailSend = false;
+                    foreach (var id in ids)
+                    {
+                        var user = userRepository.GetUserDetailById(id).FirstOrDefault();
+
+                        if (user != null)
+                        {
+                            string bodyMsg = "";
+                            string email = string.Empty;
+                            email = user.Email;
+
+                            var firstName = string.Empty;
+
+                            using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/WelcomeTutor.html")))
+                            {
+                                bodyMsg = sr.ReadToEnd();
+
+                                if (!string.IsNullOrWhiteSpace(user.Name))
+                                {
+                                    firstName = user.Name.Split(' ')[0];
+                                }
+                                bodyMsg = bodyMsg.Replace("[@TutorName]", firstName);
+                                bodyMsg = bodyMsg.Replace("[@Email]", email);
+                                bodyMsg = bodyMsg.Replace("[@Password]", Utility.Utility.Decrypt(user.Password, Utility.Utility.EncryptionKey));
+                                bodyMsg = bodyMsg.Replace("[@CashierName]", LogInManager.UserName);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(email))
+                            {
+                                //Send Email.
+                                string EmailSubject = string.Format("Welcome to Hotelier Hub - {0}", firstName);
+
+                                blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, bodyMsg);
+
+                                if (!blnMailSend)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (blnMailSend)
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = true,
+                            data = "Login credentials email send successfully."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            IsSuccess = false,
+                            errorMessage = "Oops! Something went wrong. Email not send."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        IsSuccess = false,
+                        errorMessage = "Please select at least one checkbox to send email."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Utility.Utility.LogError(e, "SendLoginCredentials");
+                return Json(new { IsSuccess = false, errorMessage = e.Message });
             }
         }
 
@@ -989,7 +1198,7 @@ namespace SuccessHotelierHub.Controllers
             return blnAvailable;
         }
 
-        public void SetStudentLoginTimeToRestrict(Guid  tutorId)
+        public void SetStudentLoginTimeToRestrict(Guid tutorId)
         {
             UserRepository userRepository = new UserRepository();
             userRepository.RestrictStudentLogin(tutorId);

@@ -1197,3 +1197,8 @@ label.error{
     padding: 3px 6px;    
     margin-left: 15px;
 }
+
+.weekdays_checkbox{
+    display: inline-block !important;
+    margin-right: 10px!important;
+}

@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace SuccessHotelierHub.Models
 {
-    public class UserLoginTimeVM
+    public class UserLoginTimeConfigurationVM
     {
         public Guid Id { get; set; }
+        public Guid TutorId { get; set; }
 
-        public Guid TutorId { get; set; }        
-        
-        public string ConfigurationType { get; set; }
+        [DisplayName("Week Day")]
+        public int WeekDay { get; set; }
 
-        [DisplayName("User Name")]
-        public string UserName { get; set; }
+        [DisplayName("Is Allow Login")]
+        public bool IsAllowLogin { get; set; }
 
         [DisplayName("Login Start Time")]
         [Required(ErrorMessage = "Please select login start time.")]
@@ -32,13 +33,10 @@ namespace SuccessHotelierHub.Models
         [Required(ErrorMessage = "Please select login end time.")]
         public string LoginEndTimeText { get; set; }
 
-        public List<UserLoginTimeConfigurationVM> Configurations { get; set; }
-
         public int? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public int? UpdatedBy { get; set; }
-        public DateTime? UpdatedOn { get; set; }
-        public bool IsActive { get; set; }
+        public DateTime? UpdatedOn { get; set; }        
         public bool IsDeleted { get; set; }
     }
 }

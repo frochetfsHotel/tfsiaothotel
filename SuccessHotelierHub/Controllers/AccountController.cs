@@ -163,7 +163,7 @@ namespace SuccessHotelierHub.Controllers
                         }, JsonRequestBehavior.AllowGet);
                     case LoginStatus.InvalidLoginTime:         
                                        
-                        var msg = "Please note your course is restricted; therefore, you can only access it during the times set by your Tutor.";
+                        var msg = "Please note your course is restricted; therefore, you can only access it during the times & day set by your Tutor.";
                         
                         return Json(new
                         {

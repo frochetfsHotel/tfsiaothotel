@@ -1014,6 +1014,37 @@ namespace SuccessHotelierHub.Utility
             return "";
         }
 
+        public static string GetWeekDayName(int weekDay)
+        {
+            string weekDayText = string.Empty;
+            switch(weekDay)
+            {
+                case 0:
+                    weekDayText = "Sunday";
+                    break;
+                case 1:
+                    weekDayText = "Monday";
+                    break;
+                case 2:
+                    weekDayText = "Tuesday";
+                    break;
+                case 3:
+                    weekDayText = "Wednesday";
+                    break;
+                case 4:
+                    weekDayText = "Thursday";
+                    break;
+                case 5:
+                    weekDayText = "Friday";
+                    break;
+                case 6:
+                    weekDayText = "Saturday";
+                    break;
+
+            }
+            return weekDayText;
+        }
+
     }
 
 

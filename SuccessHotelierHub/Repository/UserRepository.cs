@@ -694,6 +694,76 @@ namespace SuccessHotelierHub.Repository
             DALHelper.ExecuteScalar("RestrictStudentLogin", parameters);
         }
 
+        public string AddUserLoginTimeConfiguration(UserLoginTimeConfigurationVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@WeekDay", Value = model.WeekDay },
+                    new SqlParameter { ParameterName = "@IsAllowLogin", Value = model.IsAllowLogin },
+                    new SqlParameter { ParameterName = "@LoginStartTime", Value = model.LoginStartTime },
+                    new SqlParameter { ParameterName = "@LoginEndTime", Value = model.LoginEndTime },
+                    new SqlParameter { ParameterName = "@CreatedBy", Value = model.CreatedBy },                    
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("AddUserLoginTimeConfiguration", parameters));
+
+            return id;
+        }
+
+        public string UpdateUserLoginTimeConfiguration(UserLoginTimeConfigurationVM model)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@Id", Value = model.Id },
+                    new SqlParameter { ParameterName = "@TutorId", Value = model.TutorId },
+                    new SqlParameter { ParameterName = "@WeekDay", Value = model.WeekDay },
+                    new SqlParameter { ParameterName = "@IsAllowLogin", Value = model.IsAllowLogin },
+                    new SqlParameter { ParameterName = "@LoginStartTime", Value = model.LoginStartTime },
+                    new SqlParameter { ParameterName = "@LoginEndTime", Value = model.LoginEndTime },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = model.UpdatedBy },
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("UpdateUserLoginTimeConfiguration", parameters));
+
+            return id;
+        }
+
+        public List<UserLoginTimeConfigurationVM> GetUserLoginTimeConfigurationByTutor(Guid tutorId, int? weekDay)
+        {
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId },
+                    new SqlParameter { ParameterName = "@WeekDay", Value = weekDay }
+                };
+
+            var dt = DALHelper.GetDataTableWithExtendedTimeOut("GetUserLoginTimeConfigurationByTutor", parameters);
+
+            var results = new List<UserLoginTimeConfigurationVM>();
+            results = DALHelper.CreateListFromTable<UserLoginTimeConfigurationVM>(dt);
+
+            return results;
+        }
+
+        public string DeleteUserLoginTimeConfigurationByTutor(Guid tutorId, int updatedBy)
+        {
+            string id = string.Empty;
+
+            SqlParameter[] parameters =
+                {
+                    new SqlParameter { ParameterName = "@TutorId", Value = tutorId },
+                    new SqlParameter { ParameterName = "@UpdatedBy", Value = updatedBy }
+                };
+
+            id = Convert.ToString(DALHelper.ExecuteScalar("DeleteUserLoginTimeConfigurationByTutor", parameters));
+
+            return id;
+        }
+
         #endregion
     }
 }
