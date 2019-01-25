@@ -696,15 +696,15 @@
         })
 
 
-        if (listOfSplitPayment != null && listOfSplitPayment.length > 0) {                        
-            var TotalPaybleAmount = $('form#frmSplitPayment #hdnTotalAmount').val();         
+        if (listOfSplitPayment != null && listOfSplitPayment.length > 0) {
+            var TotalPaybleAmount = $('form#frmSplitPayment #hdnTotalAmount').val();
 
-            if (parseFloat(TotalAmountOfSplitPayment.toFixed(2)) != parseFloat(TotalPaybleAmount)) {                                
+            if (parseFloat(TotalAmountOfSplitPayment.toFixed(2)) != parseFloat(TotalPaybleAmount)) {
                 showToaster("Total Amount and Payable amount must be same.", ToasterType.ERROR);
                 AjaxRequestFinish();
                 return false;
             }
-            
+
             var blnValid = true;
             blnValid = $('#frmSplitPayment').valid();
 
@@ -753,7 +753,7 @@
         //Default Departure Date. (Set today's date).
         //$("#DepartureDate").datepicker("setDate", new Date());
 
-        //Split Payment Form Validate.        
+        //Split Payment Form Validate.
         $("form#frmSplitPayment").validate();
 
         //Bind Payment Method Dropdown for Split Payment Popup.
@@ -1177,7 +1177,7 @@
                 //Delete  Charge
                 if (!IsNullOrEmpty(data[i].Code)) {
                     //Room Rent, Package Charge.
-                    if (data[i].Code != "1000" && data[i].Code != "9005") {
+                    if (data[i].Code != "@(SuccessHotelierHub.Utility.AdditionalChargeCode.ROOM_RENT)" && data[i].Code != "@(SuccessHotelierHub.Utility.AdditionalChargeCode.PACKAGE)") {
                         html += "<td><span class='text-red font_20 cursor-P' onclick='removeTransactionCharge(this);'><i class='fa fa-remove text'></i></span></td>";
                     } else {
                         html += "<td></td>";
@@ -1191,7 +1191,7 @@
                 html += "<td>" + (IsNullOrEmpty(data[i].Code) ? "" : data[i].Code) + "</td>";
                 html += "<td>" + (IsNullOrEmpty(data[i].Description) ? "" : data[i].Description) + "</td>";
                 html += "<td>" + qty + "</td>";
-                if (data[i].Code == "1000") { //Room Rent
+                if (data[i].Code == "@(SuccessHotelierHub.Utility.AdditionalChargeCode.ROOM_RENT)") { //Room Rent
                     html += "<td class='tdAmount' data-amount='" + payableAmount + "' data-qty='" + qty + "'>" + "@(Html.Raw(LogInManager.CurrencySymbol))" + " " + FormatNumberWithTwoDecimal(amount) + "</td>";
                 } else {
                     html += "<td class='tdAmount' data-amount='" + amount + "' data-qty='" + qty + "'>" + "@(Html.Raw(LogInManager.CurrencySymbol))" + " " + FormatNumberWithTwoDecimal(amount) + "</td>";
@@ -1444,7 +1444,7 @@
                 var name = val.Name;
                 var isCreditCardPay = parseBoolean(val.IsCreditCardPay);
                 var text = (code + " - " + name);
-                
+
                 $("form#frmSplitPayment #SplitPaymentId_" + rowNumber).append($("<option></option>").val(id).attr("data-iscreditcardpay", isCreditCardPay).html(text));
             })
         }
@@ -1533,7 +1533,7 @@
         //$('label[for=CreditCardNo_1]').html('');
         //$('label[for=CardExpiryDate_1]').html('');
         //$('label[for=CVV_1]').html('');
-        $('form#frmInterimBill').validate().resetForm();        
+        $('form#frmInterimBill').validate().resetForm();
 
 
         $('form#frmInterimBill .HideWhenInterimBillPaymentMethodIsCash_1').show();
@@ -1635,28 +1635,28 @@
         //Amount
         html += '<td>';
         html += '<div class="row col-md-12">';
-        html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculateInterimBillPayableAmount(this)' value='' maxlength='12' />"; 
+        html += "<input type='text' id='txtAmount_" + rowNumber + "' name='txtAmount_" + rowNumber + "' class='form-control' placeholder='Amount' onkeypress='return checkValueIsNumericOrNot(event)' onchange='calculateInterimBillPayableAmount(this)' value='' maxlength='12' />";
         html += '</div>';
         html += '</td>';
 
         //Credit Card Number
         html += '<td>';
         html += '<div class="row col-md-12">';
-        html += '<input class="form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16"  name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="" />';        
+        html += '<input class="form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + ' " id="CreditCardNo_' + rowNumber + '" maxlength="16"  name="CreditCardNo_' + rowNumber + '" onkeydown="onlyDigits(event)" placeholder="Credit Card #" type="text" value="" />';
         html += '</div>';
         html += '</td>';
 
         //Card ExpiryDate
         html += '<td>';
         html += '<div class="row col-md-12">';
-        html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'        
+        html += '<input id="CardExpiryDate_' + rowNumber + '" name="CardExpiryDate_' + rowNumber + '" type="text" placeholder="MM/YY" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" pattern="(1[0-2]|0[1-9])\/(1[5-9]|2\d)" />'
         html += '</div>';
         html += '</td>';
 
         //CVV
         html += '<td>'
         html += '<div class="row col-md-12">';
-        html += '<input id="CVV_' + rowNumber + '" name="CVV_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" maxlength="4" />'        
+        html += '<input id="CVV_' + rowNumber + '" name="CVV_' + rowNumber + '" type="text" placeholder="CVV" class="masked form-control HideWhenInterimBillPaymentMethodIsCash_' + rowNumber + '" maxlength="4" />'
         html += '</div>';
         html += '</td>'
 
@@ -1737,7 +1737,7 @@
 
     function PayInterimBillPayment() {
 
-        
+
         var totalPayableAmount = $('form#frmInterimBill #TotalPayableAmount').val();
         totalPayableAmount = IsNullOrEmpty(totalPayableAmount) ? 0 : parseFloat(FormatNumberWithTwoDecimal(totalPayableAmount));
 
@@ -1751,7 +1751,7 @@
         }
 
         //Ajax request to pay bill amount (partial amount) interim bill.
-                
+
         var blnValid = true;
         blnValid = $('#frmInterimBill').valid();
 

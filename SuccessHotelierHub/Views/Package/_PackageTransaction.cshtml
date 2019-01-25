@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col-md-12 form-group">
             @Html.LabelFor(m => m.PackageId, new { @class = "required-label" })
-            <select class="form-control" id="PackageId" name="PackageId" onchange="PackageChange();">
+            <select class="form-control" id="PackageId" name="PackageId">
                 <option value="">--Select Package--</option>
                 @if (packageList != null && packageList.Count > 0)
                     {

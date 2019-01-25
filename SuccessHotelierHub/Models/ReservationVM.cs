@@ -124,11 +124,11 @@ namespace SuccessHotelierHub.Models
         [DisplayName("Currency")]
         public Guid? CurrencyId { get; set; }
 
-        [DisplayName("Package")]
-        public Guid? PackageId { get; set; }
+        //[DisplayName("Package")]
+        //public Guid? PackageId { get; set; }
 
-        [DisplayName("Package Name")]
-        public string PackageName { get; set; }
+        //[DisplayName("Package Name")]
+        //public string PackageName { get; set; }
 
         [DisplayName("Group Code")]
         public Guid? BlockCodeId { get; set; }

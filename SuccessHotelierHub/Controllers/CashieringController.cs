@@ -280,7 +280,7 @@ namespace SuccessHotelierHub.Controllers
                     model.TotalAmount = totalAmount;
 
                     //Total Additional Charge Amount (Other than Room Rent)
-                    var totalAdditionalChargeAmount = transactions.Where(m => m.PaymentMethodId.HasValue == false && m.Code != "1000").Sum(m => m.Amount);
+                    var totalAdditionalChargeAmount = transactions.Where(m => m.PaymentMethodId.HasValue == false && m.Code != AdditionalChargeCode.ROOM_RENT).Sum(m => m.Amount);
 
                     totalAdditionalChargeAmount = totalAdditionalChargeAmount.HasValue ? Math.Round(totalAdditionalChargeAmount.Value, 2) : 0;
 

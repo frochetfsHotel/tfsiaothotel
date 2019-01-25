@@ -188,13 +188,14 @@ namespace SuccessHotelierHub.Controllers
             #region Package Mapping
 
             //Get Package Mapping
-            var selectedPackage = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
+            var selectedPackages = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).ToList();
 
-            if (selectedPackage != null)
+            if (selectedPackages != null)
             {
-                model.PackageName = selectedPackage.PackageName;
-                model.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.PackagePrice, LogInManager.CurrencyCode);
-                model.PackageTotalAmount = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.TotalAmount, LogInManager.CurrencyCode);
+                model.Packages = selectedPackages;
+                //model.PackageName = selectedPackage.PackageName;
+                //model.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.PackagePrice, LogInManager.CurrencyCode);
+                //model.PackageTotalAmount = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.TotalAmount, LogInManager.CurrencyCode);
             }
 
             #endregion
@@ -422,13 +423,14 @@ namespace SuccessHotelierHub.Controllers
                         #region Package Mapping
 
                         //Get Package Mapping
-                        var selectedPackage = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
+                        var selectedPackages = reservationRepository.GetReservationPackageMapping(reservation.Id, null, LogInManager.LoggedInUserId).ToList();
 
-                        if (selectedPackage != null)
+                        if (selectedPackages != null)
                         {
-                            model.PackageName = selectedPackage.PackageName;
-                            model.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.PackagePrice, LogInManager.CurrencyCode);
-                            model.PackageTotalAmount = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.TotalAmount, LogInManager.CurrencyCode);
+                            model.Packages = selectedPackages;
+                            //model.PackageName = selectedPackage.PackageName;
+                            //model.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.PackagePrice, LogInManager.CurrencyCode);
+                            //model.PackageTotalAmount = CurrencyManager.ParseAmountToUserCurrency(selectedPackage.TotalAmount, LogInManager.CurrencyCode);
                         }
 
                         #endregion

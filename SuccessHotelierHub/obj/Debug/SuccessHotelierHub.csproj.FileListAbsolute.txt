@@ -337,7 +337,6 @@ D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Microsoft.Owin.
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.dll
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.pdb
-D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\obj\Debug\SuccessHotelierHub.csprojResolveAssemblyReference.cache
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Hangfire.Core.dll
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Hangfire.SqlServer.dll
 D:\Nilesh\Projects\TFSHH\Src\TFSHH_GitSrc\SuccessHotelierHub\bin\Hangfire.Core.xml

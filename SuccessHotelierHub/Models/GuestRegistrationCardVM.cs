@@ -41,6 +41,8 @@ namespace SuccessHotelierHub.Models
         public double? PackagePrice { get; set; }
         public double? PackageTotalAmount { get; set; }
 
+        public List<ReservationPackageMappingVM> Packages { get; set; }
+
         public string Preferences { get; set; }
 
     }

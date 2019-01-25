@@ -163,7 +163,7 @@ namespace SuccessHotelierHub.Controllers
                 model.Rate = rateQuery.Amount; //Rate
                 model.IsWeekEndPrice = rateQuery.IsWeekEndPrice; // Week End Price.
 
-                model.PackageId = rateQuery.PackageId;
+                //model.PackageId = rateQuery.PackageId;
                 model.CompanyId = rateQuery.CompanyId;
 
                 double? dblWeekEndPrice = model.Rate;
@@ -545,14 +545,10 @@ namespace SuccessHotelierHub.Controllers
                 #region Package Mapping
 
                 //Get Package Mapping
-                var selectedPackage = reservationRepository.GetReservationPackageMapping(model.Id, null, LogInManager.LoggedInUserId).FirstOrDefault();
+                var selectedPackages = reservationRepository.GetReservationPackageMapping(model.Id, null, LogInManager.LoggedInUserId);
+                
 
-                if (selectedPackage != null)
-                {
-                    model.PackageId = selectedPackage.PackageId;
-                }
-
-                ViewBag.PackageMapping = selectedPackage;
+                ViewBag.PackageMapping = selectedPackages;
 
                 #endregion
 
@@ -1082,26 +1078,48 @@ namespace SuccessHotelierHub.Controllers
                         }
                         #endregion
 
-                        var reservationPackageMapping = model.PackageMappingList[0];
-
-                        if (reservationPackageMapping != null)
+                        foreach (var reservationPackageMapping in model.PackageMappingList)
                         {
-                            var packageDetail = packageRepository.GetPackageById(reservationPackageMapping.PackageId.Value).FirstOrDefault();
-
-                            if (packageDetail != null)
+                            if (reservationPackageMapping != null)
                             {
-                                reservationPackageMapping.PackagePrice = packageDetail.Price;
+                                var packageDetail = packageRepository.GetPackageById(reservationPackageMapping.PackageId.Value).FirstOrDefault();
+                                if (packageDetail != null)
+                                {
+                                    reservationPackageMapping.PackagePrice = packageDetail.Price;
+                                }
+
+                                reservationPackageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(reservationPackageMapping.TotalAmount, LogInManager.CurrencyCode);
+
+                                reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                                reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                                reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                                reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
                             }
-
-                            reservationPackageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(reservationPackageMapping.TotalAmount, LogInManager.CurrencyCode);
-
-                            //Save Reservation Package Mapping.
-                            reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
-                            reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                            reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
-
-                            reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
                         }
+
+                        //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
+                        //var reservationPackageMapping = model.PackageMappingList[0];
+
+                        //if (reservationPackageMapping != null)
+                        //{
+                        //    var packageDetail = packageRepository.GetPackageById(reservationPackageMapping.PackageId.Value).FirstOrDefault();
+
+                        //    if (packageDetail != null)
+                        //    {
+                        //        reservationPackageMapping.PackagePrice = packageDetail.Price;
+                        //    }
+
+                        //    reservationPackageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(reservationPackageMapping.TotalAmount, LogInManager.CurrencyCode);
+
+                        //    //Save Reservation Package Mapping.
+                        //    reservationPackageMapping.ReservationId = Guid.Parse(reservationId);
+                        //    reservationPackageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                        //    reservationPackageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                        //    reservationRepository.AddUpdateReservationPackageMapping(reservationPackageMapping);
+                        //}
+                        //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END
                     }
                     else
                     {
@@ -1623,24 +1641,46 @@ namespace SuccessHotelierHub.Controllers
                 
                 if (model.PackageMappingList != null && model.PackageMappingList.Count > 0)
                 {
-                    var packageMapping = model.PackageMappingList[0];
-
-                    if (packageMapping != null)
+                    foreach(var packageMapping in model.PackageMappingList)
                     {
-                        var packageDetail = packageRepository.GetPackageById(packageMapping.PackageId.Value).FirstOrDefault();
-                        if (packageDetail != null)
+                        if (packageMapping != null)
                         {
-                            packageMapping.PackagePrice = packageDetail.Price;
+                            var packageDetail = packageRepository.GetPackageById(packageMapping.PackageId.Value).FirstOrDefault();
+                            if (packageDetail != null)
+                            {
+                                packageMapping.PackagePrice = packageDetail.Price;
+                            }
+
+                            packageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
+
+                            packageMapping.ReservationId = model.Id;
+                            packageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                            packageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                            reservationRepository.AddUpdateReservationPackageMapping(packageMapping);
                         }
-
-                        packageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
-
-                        packageMapping.ReservationId = model.Id;
-                        packageMapping.CreatedBy = LogInManager.LoggedInUserId;
-                        packageMapping.UpdatedBy = LogInManager.LoggedInUserId;
-
-                        reservationRepository.AddUpdateReservationPackageMapping(packageMapping);
                     }
+
+                    //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
+                    //var packageMapping = model.PackageMappingList[0];
+
+                    //if (packageMapping != null)
+                    //{
+                    //    var packageDetail = packageRepository.GetPackageById(packageMapping.PackageId.Value).FirstOrDefault();
+                    //    if (packageDetail != null)
+                    //    {
+                    //        packageMapping.PackagePrice = packageDetail.Price;
+                    //    }
+
+                    //    packageMapping.TotalAmount = CurrencyManager.ConvertAmountToBaseCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
+
+                    //    packageMapping.ReservationId = model.Id;
+                    //    packageMapping.CreatedBy = LogInManager.LoggedInUserId;
+                    //    packageMapping.UpdatedBy = LogInManager.LoggedInUserId;
+
+                    //    reservationRepository.AddUpdateReservationPackageMapping(packageMapping);
+                    //}
+                    //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END
                 }
                 #endregion
 

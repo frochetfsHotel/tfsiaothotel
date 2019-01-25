@@ -28,6 +28,9 @@
         .td_padding {
             padding: 2px 10px;            
         }
+        .td_padding_v2 {
+            padding: 2px 20px;            
+        }
 
         .text_bold {
             font-weight: bold;
@@ -242,11 +245,24 @@
                                         <td class="td_padding">Preferences: @Model.Preferences</td>
                                     </tr>
                                 }
-                                @if (!string.IsNullOrWhiteSpace(Model.PackageName))
+                                @if (Model.Packages != null && Model.Packages.Count > 0)
                                 {
-                                    var package = Model.PackageName + (Model.PackageTotalAmount.HasValue ? string.Format(" ({0} {1})", currencySymbol, Utility.FormatAmountWithTwoDecimal(Model.PackageTotalAmount.Value)) : "");
                                     <tr height="20">
-                                        <td class="td_padding">Package: @(Html.Raw(package))</td>
+                                        <td>
+                                            <table>
+                                                <tr height="20">
+                                                    <td class="td_padding"><b>Packages:</b></td>
+                                                </tr>
+                                                @foreach (var item in Model.Packages)
+                                                {
+                                                    var package = item.PackageName + " : " + (item.TotalAmount.HasValue ? string.Format("{0} {1}", currencySymbol, Utility.FormatAmountWithTwoDecimal(CurrencyManager.ParseAmountToUserCurrency(item.TotalAmount.Value, LogInManager.CurrencyCode))) : "");
+
+                                                    <tr height="20">
+                                                        <td class="td_padding_v2">@(Html.Raw(package))</td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
                                     </tr>
                                 }
                                 <tr height="20">

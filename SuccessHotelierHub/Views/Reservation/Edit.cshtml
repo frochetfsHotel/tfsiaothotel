@@ -60,7 +60,7 @@
             {
                 preferenceItems += string.Format("{0},", preference.PreferenceId);
 
-                selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);             
+                selectedPreferencesHtml += string.Format("<span class='btn btn-xs bg-maroon m-r-xs' id='spnPreference_{1}'>{0}<i class='fa fa-remove m-l-sm' onclick='removePreferenceItem(this)' data-preferenceid='{1}'></i></span>", preference.PreferenceDescription, preference.PreferenceId);
             }
         }
     }
@@ -116,19 +116,22 @@
 
     #region Package Mapping
 
-    var packageMapping = new ReservationPackageMappingVM();
+    var packageMapping = new List<ReservationPackageMappingVM>();
     string packageBeginDate = "", packageEndDate = "";
 
     if (ViewBag.PackageMapping != null)
     {
-        packageMapping = (ReservationPackageMappingVM)ViewBag.PackageMapping;
-        packageBeginDate = packageMapping.BeginDate.HasValue ? packageMapping.BeginDate.Value.ToString("dd/MM/yyyy") : "";
-        packageEndDate = packageMapping.EndDate.HasValue ? packageMapping.EndDate.Value.ToString("dd/MM/yyyy") : "";
+        packageMapping = (List<ReservationPackageMappingVM>)ViewBag.PackageMapping;
 
-        packageMapping.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(packageMapping.PackagePrice, LogInManager.CurrencyCode);
-        packageMapping.TotalAmount = CurrencyManager.ParseAmountToUserCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
+        //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
+        //packageBeginDate = packageMapping.BeginDate.HasValue ? packageMapping.BeginDate.Value.ToString("dd/MM/yyyy") : "";
+        //packageEndDate = packageMapping.EndDate.HasValue ? packageMapping.EndDate.Value.ToString("dd/MM/yyyy") : "";
 
-        Model.PackageName = packageMapping.PackageName;
+        //packageMapping.PackagePrice = CurrencyManager.ParseAmountToUserCurrency(packageMapping.PackagePrice, LogInManager.CurrencyCode);
+        //packageMapping.TotalAmount = CurrencyManager.ParseAmountToUserCurrency(packageMapping.TotalAmount, LogInManager.CurrencyCode);
+
+        //Model.PackageName = packageMapping.PackageName;
+        //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END
     }
 
     #endregion
@@ -555,31 +558,34 @@
                                 }
                             </select>*@
 
-                        <label for="PackageName">
+                        <label for="txtPackage">
                             Packages
-                            <i class="fa fa-remove m-l-sm text-danger cursor-P" onclick="removeSelectedPackage();" title="Remove Package"> </i>
+                            @*<i class="fa fa-remove m-l-sm text-danger cursor-P" onclick="removeSelectedPackage();" title="Remove Package"> </i>*@
                         </label>
                         <div class="input-group">
-                            @Html.TextBoxFor(m => m.PackageName, new
-                       {
-                           @class = "form-control",
-                           placeholder = "Package",
-                           @readonly = "readonly"
-                       })
+                            <input type="text" id="txtPackage" name="txtPackage" class="form-control" placeholder="Package" readonly="readonly" />
+                            @*@Html.TextBoxFor(m => m.PackageName, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Package",
+                                @readonly = "readonly"
+                            })*@
                             <div class="input-group-addon cursor-P" onclick="openPackageTransactionModal();">
                                 <i class="fa fa-search"></i>
                             </div>
                         </div>
 
+                        @*Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
                         @Html.HiddenFor(m => m.PackageId)
                         <input type="hidden" id="PackagePrice" name="PackagePrice" value="@packageMapping.PackagePrice" />
                         <input type="hidden" id="PackageQty" name="PackageQty" value="@packageMapping.Qty" />
                         <input type="hidden" id="PackagePostingRhythm" name="PackagePostingRhythm" value="@packageMapping.PostingRhythm" />
                         <input type="hidden" id="PackageBeginDate" name="PackageBeginDate"
-                               value="@packageBeginDate" />
+                                value="@packageBeginDate" />
                         <input type="hidden" id="PackageEndDate" name="PackageEndDate" value="@packageEndDate" />
                         <input type="hidden" id="PackageTotalAmount" name="PackageTotalAmount"
-                               value="@packageMapping.TotalAmount" />
+                                value="@packageMapping.TotalAmount" />
+                        Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END *@
 
                     </div>
                     <div class="col-md-3 form-group">
@@ -786,6 +792,7 @@
                             <table class="table table-bordered table-striped" id="tblTransactionSummary">
                                 <thead>
                                     <tr>
+                                        <th class="width_3"></th>
                                         <th class="width_60">Notes</th>
                                         <th class="width_20">Rate</th>
                                         <th class="width_20">Total</th>
@@ -794,6 +801,7 @@
                                 <tbody></tbody>
                                 <tfoot>
                                     <tr class="text-bold" data-total-price="">
+                                        <td></td>
                                         <td></td>
                                         <td>Total Price : </td>
                                         <td class="tdTotalPrice"></td>
@@ -960,7 +968,13 @@
 <!-- Package Modal Popup END -->
 
 <script type="text/javascript">
+
+    //GLOBAL - START
+
+    var packageArray = [];
     var isCreditCardEdit = false;
+
+    //GLOBAL - END
 
     $(document).ready(function () {
 
@@ -1035,18 +1049,20 @@
         );
 
         //Show value of selected drop down.
-        $('form#frmReservation #PackageId').val('@Model.PackageId');
+        @*$('form#frmReservation #PackageId').val('@Model.PackageId');*@
         $('form#frmReservation #Rate').val('@strRate');
 
         //Show Selected Rooms
         showSelectedRooms();
 
+        //Show Selected Preferences.
+        showSelectedPreferences();
+
+        //Bind Selected Packages
+        bindSelectedPackages();
 
         //Label Bold
         SetLabelBold();
-
-        //Show Selected Preferences.
-        showSelectedPreferences();
 
         //Preference
         $('.btnAdvanceSearchPreferenceOk').click(function (e) {
@@ -1375,21 +1391,62 @@
             var packagePrice = parseFloat(selectedPackage.attr("data-package-price"));
             var packageName = selectedPackage.attr("data-package-name");
 
-            var qty = $("form#frmPackageTransaction #Qty").val();
+            //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
+            //var qty = $("form#frmPackageTransaction #Qty").val();
+            //var postingRhythm = $("form#frmPackageTransaction #PostingRhythm").val();
+            //var beginDate = $("form#frmPackageTransaction #BeginDate").val();
+            //var endDate = $("form#frmPackageTransaction #EndDate").val();
+
+            //if (IsNullOrEmpty(qty)) { qty = 1; }
+
+            //$('form#frmReservation #PackageId').val(packageId);
+            //$('form#frmReservation #PackagePrice').val(packagePrice);
+            //$('form#frmReservation #PackageName').val(packageName);
+            //$('form#frmReservation #PackageQty').val(qty);
+            //$('form#frmReservation #PackagePostingRhythm').val(postingRhythm);
+            //$('form#frmReservation #PackageBeginDate').val(beginDate);
+            //$('form#frmReservation #PackageEndDate').val(endDate);
+            //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END
+
+            var packageQty = $("form#frmPackageTransaction #Qty").val();
             var postingRhythm = $("form#frmPackageTransaction #PostingRhythm").val();
-            var beginDate = $("form#frmPackageTransaction #BeginDate").val();
-            var endDate = $("form#frmPackageTransaction #EndDate").val();
 
-            if (IsNullOrEmpty(qty)) { qty = 1; }
+            if (IsNullOrEmpty(packageQty)) { packageQty = 1;}
 
-            $('form#frmReservation #PackageId').val(packageId);
-            $('form#frmReservation #PackagePrice').val(packagePrice);
-            $('form#frmReservation #PackageName').val(packageName);
-            $('form#frmReservation #PackageQty').val(qty);
-            $('form#frmReservation #PackagePostingRhythm').val(postingRhythm);
-            $('form#frmReservation #PackageBeginDate').val(beginDate);
-            $('form#frmReservation #PackageEndDate').val(endDate);
+            var packageBeginDate = $('form#frmReservation #PackageBeginDate').val();
+            var packageEndDate = $('form#frmReservation #PackageEndDate').val();
 
+            var noOfDays = 1;
+
+            if (!IsNullOrEmpty(beginDate) && !IsNullOrEmpty(endDate)) {
+                var objPackageBeginDate = GetDateObject(beginDate, DateSeprator.SLASH);
+                var objPackageEndDate = GetDateObject(endDate, DateSeprator.SLASH);
+
+                var timeDiff = Math.abs(objPackageEndDate.getTime() - objPackageBeginDate.getTime());
+                var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                if (!IsNullOrEmpty(diffDays)) {
+                    noOfDays = diffDays > 0 ? diffDays : 1;
+                }
+            }
+
+            if (!IsNullOrEmpty(noOfDays)) { noOfDays = parseInt(noOfDays); }
+            if (!IsNullOrEmpty(packageQty)) { packageQty = parseInt(packageQty); }
+
+            var qty = (packageQty * noOfDays);
+            var totalAmount = (packagePrice * qty);
+
+            var modelPackageMapping = {};
+            modelPackageMapping.PackageId = packageId;
+            modelPackageMapping.PackageName = packageName;
+            modelPackageMapping.PackagePrice = packagePrice;
+            modelPackageMapping.Qty = qty;
+            modelPackageMapping.PostingRhythm = postingRhythm;
+            modelPackageMapping.BeginDate = beginDate;
+            modelPackageMapping.EndDate = endDate;
+            modelPackageMapping.TotalAmount = totalAmount;
+
+            packageArray.push(modelPackageMapping);
 
             //Close Package Modal.
             CloseModal("packageModal");
@@ -1581,31 +1638,33 @@
                 addOnsList.push(modelAddOnsVM);
             });
 
-            //Package Mapping
-            var packageId = $("form#frmReservation #PackageId").val();
-            var packageName = $("form#frmReservation #PackageName").val();
-            var packageMappingList = [];
+            //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
+            ////Package Mapping
+            //var packageId = $("form#frmReservation #PackageId").val();
+            //var packageName = $("form#frmReservation #PackageName").val();
+            //var packageMappingList = [];
 
-            if (!IsNullOrEmpty(packageId) && !IsNullOrEmpty(packageName)) {
-                var packagePrice = $("form#frmReservation #PackagePrice").val();
-                var packageQty = $("form#frmReservation #PackageQty").val();
-                var packagePostingRhythm = $("form#frmReservation #PackagePostingRhythm").val();
-                var packageBeginDate = $("form#frmReservation #PackageBeginDate").val();
-                var packageEndDate = $("form#frmReservation #PackageEndDate").val();
-                var packageTotalAmount = $("form#frmReservation #PackageTotalAmount").val();
+            //if (!IsNullOrEmpty(packageId) && !IsNullOrEmpty(packageName)) {
+            //    var packagePrice = $("form#frmReservation #PackagePrice").val();
+            //    var packageQty = $("form#frmReservation #PackageQty").val();
+            //    var packagePostingRhythm = $("form#frmReservation #PackagePostingRhythm").val();
+            //    var packageBeginDate = $("form#frmReservation #PackageBeginDate").val();
+            //    var packageEndDate = $("form#frmReservation #PackageEndDate").val();
+            //    var packageTotalAmount = $("form#frmReservation #PackageTotalAmount").val();
 
-                var modelPackageMapping = {};
-                modelPackageMapping.PackageId = packageId;
-                modelPackageMapping.PackageName = packageName;
-                modelPackageMapping.PackagePrice = packagePrice;
-                modelPackageMapping.Qty = packageQty;
-                modelPackageMapping.PostingRhythm = packagePostingRhythm;
-                modelPackageMapping.BeginDate = packageBeginDate;
-                modelPackageMapping.EndDate = packageEndDate;
-                modelPackageMapping.TotalAmount = packageTotalAmount;
+            //    var modelPackageMapping = {};
+            //    modelPackageMapping.PackageId = packageId;
+            //    modelPackageMapping.PackageName = packageName;
+            //    modelPackageMapping.PackagePrice = packagePrice;
+            //    modelPackageMapping.Qty = packageQty;
+            //    modelPackageMapping.PostingRhythm = packagePostingRhythm;
+            //    modelPackageMapping.BeginDate = packageBeginDate;
+            //    modelPackageMapping.EndDate = packageEndDate;
+            //    modelPackageMapping.TotalAmount = packageTotalAmount;
 
-                packageMappingList.push(modelPackageMapping);
-            }
+            //    packageMappingList.push(modelPackageMapping);
+            //}
+            //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END
 
             //Enable all select box before form submit.
             $('form#frmReservation #RateCodeId').attr("disabled", false);
@@ -1630,7 +1689,7 @@
 
             //Add additional property in form data.
             $.extend(formData, { AddOnsList: addOnsList });
-            $.extend(formData, { PackageMappingList: packageMappingList });
+            $.extend(formData, { PackageMappingList: packageArray });
 
             //Ajax Request to edit reservation.
             $.ajax({
@@ -2152,8 +2211,8 @@
             $('label[for="Remarks"]').addClass("label-bold");
 
         //Package
-        if (!IsNullOrEmpty('@Model.PackageId'))
-            $('label[for="PackageId"]').addClass("label-bold");
+        if (packageArray != null && packageArray.length > 0)
+            $('label[for="txtPackage"]').addClass("label-bold");
 
     }
 
@@ -2487,7 +2546,6 @@
         var discountAmount = $('form#frmReservation #DiscountAmount').val();
         var discountPercentage = $('form#frmReservation #DiscountPercentage').val();
 
-
         var totalPrice = "0.00";
         var totalDiscount = 0;
         var childrenCharges = 0;
@@ -2547,8 +2605,10 @@
             var qty = 1;
             var total = (rate * qty);
 
-
             html += "<tr data-rate='" + rate + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Action
+            html += "<td></td>";
 
             //Notes
             html += "<td>";
@@ -2581,6 +2641,9 @@
 
             html += "<tr data-rate='" + childrenCharges + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
 
+            //Action
+            html += "<td></td>";
+
             //Notes
             html += "<td>";
             html += "Children : (" + noOfChildren + ")";
@@ -2600,10 +2663,40 @@
         }
 
         //Package.
-        var packageId = $('form#frmReservation #PackageId').val();
-        if (!IsNullOrEmpty(packageId)) {
+        //var packageId = $('form#frmReservation #PackageId').val();
+        if (packageArray != null && packageArray.length > 0) {
 
-            var packagePrice = parseFloat($('form#frmReservation #PackagePrice').val());
+            packageArray.forEach(function(item, index) {
+                console.log("Index : " + index);
+
+                html += "<tr data-rate='" + item.PackagePrice + "' data-qty='" + item.Qty + "'  data-total-price='" + item.TotalAmount + "'>";
+
+                //Action
+                html += "<td class='text-center'>";
+                html += "<i class='fa fa-remove text-danger cursor-P' onclick='removePackage(" + index + ");' title='Remove Package'> </i>";
+                html += "</td>";
+
+                //Notes
+                html += "<td>";
+                html += "Package : " + item.PackageName + "";
+                html += "</td>";
+
+                //Rate
+                html += "<td>";
+                html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(item.PackagePrice) + " * " + item.Qty;
+                html += "</td>";
+
+                //Total
+                html += "<td>";
+                html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(item.TotalAmount);                
+                html += "</td>";
+
+                html += "</tr>";
+
+            });
+
+            //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - START
+            @*var packagePrice = parseFloat($('form#frmReservation #PackagePrice').val());
             var packageName = $('form#frmReservation #PackageName').val();
             var packageQty = parseInt($('form#frmReservation #PackageQty').val());
             var packageBeginDate = $('form#frmReservation #PackageBeginDate').val();
@@ -2651,7 +2744,8 @@
             html += "@(Html.Raw(LogInManager.CurrencySymbol))  " + FormatNumberWithTwoDecimal(total);
             html += "</td>";
 
-            html += "</tr>";
+            html += "</tr>";*@
+            //Nilesh: 23-JAN-2019 - Due to functionality change now user can able to select multiple packages - END
         }
 
         //Add Ons.
@@ -2664,6 +2758,9 @@
             var total = (addOnsPrice * qty);
 
             html += "<tr data-rate='" + addOnsPrice + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+            
+            //Action
+            html += "<td></td>";
 
             //Notes
             html += "<td>";
@@ -2692,6 +2789,9 @@
             var total = (ConvertToNegative(totalDiscount) * qty);
 
             html += "<tr data-rate='" + ConvertToNegative(totalDiscount) + "' data-qty='" + qty + "'  data-total-price='" + total + "'>";
+
+            //Action
+            html += "<td></td>";
 
             //Notes
             html += "<td>";
@@ -2743,31 +2843,7 @@
 
     function openPackageTransactionModal() {
 
-        var packageBeginDate = $("form#frmReservation #PackageBeginDate").val();
-        var packageEndDate = $("form#frmReservation #PackageEndDate").val();
-        var packageQty = $("form#frmReservation #PackageQty").val();
-        var packagePostingRhythm = $("form#frmReservation #PackagePostingRhythm").val();
-        var packageId = $("form#frmReservation #PackageId").val();
-
-        if (!IsNullOrEmpty(packageBeginDate)) {
-            $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject(packageBeginDate, DateSeprator.SLASH));
-        }
-        //else {
-        //    $("form#frmPackageTransaction #BeginDate").datepicker("setDate", GetDateObject($('form#frmReservation #ArrivalDate').val(), DateSeprator.SLASH));
-        //}
-
-        if (!IsNullOrEmpty(packageEndDate)) {
-            $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject(packageEndDate, DateSeprator.SLASH));
-        }
-        //else {
-        //    $("form#frmPackageTransaction #EndDate").datepicker("setDate", GetDateObject($('form#frmReservation #DepartureDate').val(), DateSeprator.SLASH));
-        //}
-
-        if (IsNullOrEmpty(packageQty) || packageQty == "0") { packageQty = 1; }
-
-        $("form#frmPackageTransaction #Qty").val(packageQty);
-        //$("form#frmPackageTransaction #PostingRhythm").val(packagePostingRhythm);
-        $("form#frmPackageTransaction #PackageId").val(packageId);
+        clearPackageDetail();
 
         $('#packageModal').modal('toggle');
     }
@@ -2784,6 +2860,46 @@
         LoadTransactionSummary();
     }
 
+    function removePackage(index) {
+        
+        if(packageArray != null && packageArray.length > 0){
+            packageArray.splice(index, 1);
+        }
+
+        console.log(packageArray);
+
+        LoadTransactionSummary();
+    }
+
+    function clearPackageDetail() {
+        $('form#frmPackageTransaction #PackageId').val('');
+        $('form#frmPackageTransaction #Qty').val('');
+        $('form#frmPackageTransaction #PostingRhythm').val('');
+        $('form#frmPackageTransaction #BeginDate').val('');
+        $('form#frmPackageTransaction #EndDate').val('');
+    }
+
+    function bindSelectedPackages(){        
+        var packageMapping = '@Html.Raw(Json.Encode(packageMapping))';
+
+        if(packageMapping != null && packageMapping != undefined && packageMapping != ""){            
+            var packages = JSON.parse(packageMapping);
+
+            for (i = 0; i < packages.length; i++) {                
+                var modelPackageMapping = {};
+                modelPackageMapping.PackageId = packages[i].PackageId;
+                modelPackageMapping.PackageName = packages[i].PackageName;
+                modelPackageMapping.PackagePrice = packages[i].PackagePrice;
+                modelPackageMapping.Qty = packages[i].Qty;
+                modelPackageMapping.PostingRhythm = packages[i].PostingRhythm;
+                modelPackageMapping.BeginDate = ParseJsonDate(packages[i].BeginDate);
+                modelPackageMapping.EndDate = ParseJsonDate(packages[i].EndDate);
+                modelPackageMapping.TotalAmount = packages[i].TotalAmount;
+
+                packageArray.push(modelPackageMapping);
+            }
+        }
+    }
     //Package : END
 
     function editCreditCardNo(){
