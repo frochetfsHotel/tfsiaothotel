@@ -341,8 +341,8 @@ namespace SuccessHotelierHub.Controllers
                                     obj.DepartureDate = model.DepartureDate.Value.ToString("dd MMM yyyy");
 
                                     obj.NoOfNight = model.NoOfNight;
-                                    obj.NoOfAdult = model.NoOfAdult;
-                                    obj.NoOfChildren = model.NoOfChildren;
+                                    obj.NoOfAdult = model.NoOfAdult == null ? 0 : model.NoOfAdult;
+                                    obj.NoOfChildren = model.NoOfChildren == null ? 0 : model.NoOfChildren;
                                     obj.CashierName = LogInManager.UserName;
 
                                     obj.Rate = rate;                                    
@@ -1247,6 +1247,151 @@ namespace SuccessHotelierHub.Controllers
                             }, JsonRequestBehavior.AllowGet);
                         }
                     }
+                    #endregion
+
+                    #region Send Email 
+
+                    if (model.IsEmailConfirmation)
+                    {
+                        if (model.ProfileId.HasValue)
+                        {
+                            var profile = profileRepository.GetIndividualProfileById(model.ProfileId.Value, LogInManager.LoggedInUserId).FirstOrDefault();
+
+                            double rate = 0;
+                            string currencyCode = string.Empty, currencySymbol = string.Empty;
+
+                            if (profile != null)
+                            {
+                                var userDetail = userRepository.GetUserDetailByUserId(LogInManager.LoggedInUserId).FirstOrDefault();
+                                var userGroupDetail = new UserGroupVM();
+
+                                if (userDetail != null)
+                                {
+                                    var collegeGroup = collegeGroupRepository.GetCollegeGroupById(userDetail.CollegeGroupId.Value);
+
+                                    if (collegeGroup != null)
+                                    {
+                                        userGroupDetail = userGroupRepository.GetUserGroupById(collegeGroup.UserGroupId.Value);
+                                    }
+                                }
+
+                                if (userGroupDetail != null && userGroupDetail.Id != null)
+                                {
+                                    var currencyDetail = currencyRepository.GetCurrencyInfoById(userGroupDetail.CurrencyId).FirstOrDefault();
+
+                                    if (currencyDetail != null)
+                                    {
+                                        currencyCode = currencyDetail.Code;
+                                        currencySymbol = currencyDetail.CurrencySymbol;
+                                    }
+                                }
+
+                                var profileName = (profile.LastName + ' ' + profile.FirstName);
+                                var email = profile.Email;
+
+                                if (model.Rate.HasValue)
+                                {
+                                    rate = CurrencyManager.ParseAmountToUserCurrency(model.Rate.Value, currencyCode);
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(email))
+                                {
+                                    ReservationConfirmationReportVM obj = new ReservationConfirmationReportVM();
+                                    obj.UserName = profile.FirstName;
+                                    obj.GuestName = profileName;
+                                    obj.ConfirmationNumber = model.ConfirmationNumber;
+                                    obj.ArrivalDate = model.ArrivalDate.Value.ToString("dd MMM yyyy");
+                                    obj.DepartureDate = model.DepartureDate.Value.ToString("dd MMM yyyy");
+
+                                    obj.NoOfNight = model.NoOfNight;
+                                    obj.NoOfAdult = model.NoOfAdult == null ? 0 : model.NoOfAdult;
+                                    obj.NoOfChildren = model.NoOfChildren == null ? 0 : model.NoOfChildren;
+                                    obj.CashierName = LogInManager.UserName;
+
+                                    obj.Rate = rate;
+
+                                    obj.RatePerNight = Utility.Utility.FormatAmountWithTwoDecimal(rate);
+
+                                    //Method Of Payment.
+                                    if (model.PaymentMethodId.HasValue)
+                                    {
+                                        var paymentMethod = paymentMethodRepository.GetPaymentMethodById(model.PaymentMethodId.Value).FirstOrDefault();
+
+                                        if (paymentMethod != null)
+                                        {
+                                            obj.MethodOfPayment = paymentMethod.Name;
+                                        }
+                                        else
+                                        {
+                                            obj.MethodOfPayment = string.Empty;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        obj.MethodOfPayment = string.Empty;
+                                    }
+
+                                    //Accommodation
+                                    if (model.RoomTypeId.HasValue)
+                                    {
+                                        var roomType = roomTypeRepository.GetRoomTypeById(model.RoomTypeId.Value).FirstOrDefault();
+
+                                        if (roomType != null)
+                                        {
+                                            obj.Accommodation = (Convert.ToString(model.NoOfRoom) + " " + roomType.Description);
+                                        }
+                                        else
+                                        {
+                                            obj.Accommodation = string.Empty;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        obj.Accommodation = string.Empty;
+                                    }
+
+                                    if (userDetail != null)
+                                    {
+                                        //Package
+                                        var reservationPackageMapping = reservationRepository.GetReservationPackageMapping(model.Id, null, userDetail.UserId);
+
+                                        if (reservationPackageMapping != null && reservationPackageMapping.Count > 0)
+                                        {
+                                            obj.IsBreakFast = reservationPackageMapping.Where(i => i.PackageName == "Full Irish Breakfast").Any();
+                                        }
+                                    }
+
+                                    //obj.DepositPaid = "EUR";
+                                    obj.DepositPaid = currencyCode;
+                                    obj.CurrencySymbol = currencySymbol;
+
+                                    //HTML generation.
+                                    string html = Utility.Utility.RenderPartialViewToString((Controller)this, "ReservationConfirmation", obj);
+
+                                    //HTML to PDF.
+                                    byte[] pdfBytes = Utility.Utility.GetPDF(html);
+
+                                    StringBuilder bodyMsg = new StringBuilder();
+                                    using (var sr = new StreamReader(System.Web.Hosting.HostingEnvironment.MapPath("~/HtmlTemplates/ReservationConfirmationEmail.html")))
+                                    {
+                                        bodyMsg.Append(sr.ReadToEnd());
+
+                                        bodyMsg.Replace("[@UserName]", obj.UserName);
+                                        bodyMsg.Replace("[@CashierName]", LogInManager.UserName);
+
+                                        //File Name.
+                                        string fileName = string.Format("Confirm-Of-Changes-Of-Reservation-{0}.pdf", model.ConfirmationNumber);
+
+                                        //Send Email.                                        
+                                        string EmailSubject = string.Format("Confirmation of changes in your reservation at Roche International Hotel and Spa. {0} ", model.ConfirmationNumber);
+
+                                        bool blnMailSend = SuccessHotelierHub.Utility.Email.sendMail(email, EmailSubject, Convert.ToString(bodyMsg), fileName, true, pdfBytes);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     #endregion
 
                     return Json(new
