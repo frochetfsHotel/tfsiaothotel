@@ -517,6 +517,7 @@ namespace SuccessHotelierHub.Controllers
 
                         //HTML to PDF
                         html.Append(Utility.Utility.RenderPartialViewToString((Controller)this, "PreviewRegistrationCard", model));
+                        html.Append("<div style='page-break-after: always;'></div>");
                     }
                 }
             }
